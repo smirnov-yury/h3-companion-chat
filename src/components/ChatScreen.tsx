@@ -87,6 +87,19 @@ export default function ChatScreen() {
     setInput("");
     setLoading(true);
 
+    const matches = searchRules(rules, text, lang);
+    const rulesContext = matches
+      .map((r) =>
+        lang === "RU"
+          ? `### ${r.title_ru}\n${r.text_ru}`
+          : `### ${r.title_en}\n${r.text_en}`
+      )
+      .join("\n\n");
+
+    const systemContent = rulesContext
+      ? `${SYSTEM_PROMPTS[lang]}\n\nКонтекст правил:\n${rulesContext}`
+      : SYSTEM_PROMPTS[lang];
+
     try {
       const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",
@@ -97,7 +110,7 @@ export default function ChatScreen() {
         body: JSON.stringify({
           model: "llama-3.3-70b-versatile",
           messages: [
-            { role: "system", content: SYSTEM_PROMPTS[lang] },
+            { role: "system", content: systemContent },
             ...newMessages,
           ],
         }),
@@ -113,7 +126,7 @@ export default function ChatScreen() {
     } finally {
       setLoading(false);
     }
-  }, [input, loading, messages, lang, apiKey]);
+  }, [input, loading, messages, lang, apiKey, rules]);
 
   return (
     <div className="flex flex-col h-full">
