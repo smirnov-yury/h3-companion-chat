@@ -96,16 +96,18 @@ export default function ChatScreen() {
 
     const matches = searchRules(rules, text, lang);
     const rulesContext = matches
-      .map((r) =>
-        lang === "RU"
-          ? `### ${r.title_ru}\n${r.text_ru}`
-          : `### ${r.title_en}\n${r.text_en}`
-      )
+      .map((r) => {
+        const title = r.title_ru || r.title_en || "";
+        const body = r.text_ru || r.text_en || "";
+        return `### ${title}\n${body}`;
+      })
       .join("\n\n");
 
     const systemContent = rulesContext
       ? `${SYSTEM_PROMPTS[lang]}\n\nКонтекст правил:\n${rulesContext}`
       : SYSTEM_PROMPTS[lang];
+
+    console.log("[Groq] system prompt (first 500 chars):", systemContent.slice(0, 500));
 
     try {
       const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
