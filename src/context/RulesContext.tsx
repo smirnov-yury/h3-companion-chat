@@ -1,0 +1,43 @@
+import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+
+export interface Rule {
+  id: string;
+  category: string;
+  title_en: string;
+  title_ru: string;
+  text_en: string;
+  text_ru: string;
+}
+
+export interface Component {
+  id: string;
+  title_en: string;
+  title_ru: string;
+  description_en: string;
+  description_ru: string;
+  image: string;
+  rule_id: string | null;
+}
+
+interface RulesData {
+  rules: Rule[];
+  components: Component[];
+  loaded: boolean;
+}
+
+const RulesContext = createContext<RulesData>({ rules: [], components: [], loaded: false });
+
+export function RulesProvider({ children }: { children: ReactNode }) {
+  const [data, setData] = useState<RulesData>({ rules: [], components: [], loaded: false });
+
+  useEffect(() => {
+    fetch("/merged_database_final.json")
+      .then((r) => r.json())
+      .then((json) => setData({ rules: json.rules ?? [], components: json.components ?? [], loaded: true }))
+      .catch(() => setData((d) => ({ ...d, loaded: true })));
+  }, []);
+
+  return <RulesContext.Provider value={data}>{children}</RulesContext.Provider>;
+}
+
+export const useRules = () => useContext(RulesContext);

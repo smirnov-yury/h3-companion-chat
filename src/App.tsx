@@ -23,6 +23,7 @@ const App = () => (
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
+    </RulesProvider>
   </QueryClientProvider>
 );
 
