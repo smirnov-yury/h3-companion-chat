@@ -89,10 +89,18 @@ export default function ChatScreen() {
     } finally {
       setLoading(false);
     }
-  }, [input, loading, messages, lang]);
+  }, [input, loading, messages, lang, apiKey]);
 
   return (
     <div className="flex flex-col h-full">
+      <ApiKeyModal
+        open={showKeyModal}
+        onSave={(key) => {
+          localStorage.setItem("groq_api_key", key);
+          setApiKey(key);
+          setShowKeyModal(false);
+        }}
+      />
       {/* Top bar */}
       <header className="flex items-center justify-between px-4 py-3 border-b border-border shrink-0">
         <h1 className="text-lg font-semibold text-foreground">{TITLE[lang]}</h1>
