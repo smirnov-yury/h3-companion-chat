@@ -33,8 +33,16 @@ export function RulesProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     fetch("/merged_database_final.json")
       .then((r) => r.json())
-      .then((json) => setData({ rules: json.rules ?? [], components: json.components ?? [], loaded: true }))
-      .catch(() => setData((d) => ({ ...d, loaded: true })));
+      .then((json) => {
+        const rules = json.rules ?? [];
+        const components = json.components ?? [];
+        console.log(`[RulesContext] Loaded ${rules.length} rules, ${components.length} components`);
+        setData({ rules, components, loaded: true });
+      })
+      .catch((err) => {
+        console.error("[RulesContext] Failed to load rules database:", err);
+        setData((d) => ({ ...d, loaded: true }));
+      });
   }, []);
 
   return <RulesContext.Provider value={data}>{children}</RulesContext.Provider>;
