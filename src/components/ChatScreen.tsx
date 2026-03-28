@@ -24,12 +24,18 @@ const OFFLINE_MSG: Record<Lang, string> = {
   EN: "This module requires an internet connection",
 };
 
+function getApiKey() {
+  return localStorage.getItem("groq_api_key") || import.meta.env.VITE_GROQ_API_KEY || "";
+}
+
 export default function ChatScreen() {
   const [lang, setLang] = useState<Lang>("RU");
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [online, setOnline] = useState(navigator.onLine);
+  const [apiKey, setApiKey] = useState(getApiKey);
+  const [showKeyModal, setShowKeyModal] = useState(!getApiKey());
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
