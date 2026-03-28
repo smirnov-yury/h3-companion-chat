@@ -61,7 +61,7 @@ function searchRules(rules: Rule[], query: string, lang: string, limit = 5): Rul
 
 export default function ChatScreen() {
   const { rules } = useRules();
-  const { lang, toggleLang } = useLang();
+  const { lang } = useLang();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
