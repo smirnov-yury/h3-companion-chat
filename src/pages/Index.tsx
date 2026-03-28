@@ -4,14 +4,17 @@ import ChatScreen from "@/components/ChatScreen";
 import RulesTab from "@/components/RulesTab";
 import PlaceholderTab from "@/components/PlaceholderTab";
 
-const PLACEHOLDERS: Record<Exclude<TabId, "ai" | "rules">, string> = {
-  components: "Компоненты — скоро",
-  setup: "Сетап — скоро",
-  city: "Город — скоро",
+import { useLang } from "@/context/LanguageContext";
+
+const PLACEHOLDERS: Record<Exclude<TabId, "ai" | "rules">, { RU: string; EN: string }> = {
+  components: { RU: "Компоненты — скоро", EN: "Components — coming soon" },
+  setup: { RU: "Сетап — скоро", EN: "Setup — coming soon" },
+  city: { RU: "Город — скоро", EN: "City — coming soon" },
 };
 
 export default function Index() {
   const [tab, setTab] = useState<TabId>("ai");
+  const { lang } = useLang();
 
   return (
     <div className="flex flex-col h-dvh">
@@ -21,7 +24,7 @@ export default function Index() {
         ) : tab === "rules" ? (
           <RulesTab />
         ) : (
-          <PlaceholderTab title={PLACEHOLDERS[tab as keyof typeof PLACEHOLDERS]} />
+          <PlaceholderTab title={PLACEHOLDERS[tab as keyof typeof PLACEHOLDERS][lang]} />
         )}
       </div>
       <BottomNav active={tab} onChange={setTab} />

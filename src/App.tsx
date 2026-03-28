@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { RulesProvider } from "./context/RulesContext";
+import { LanguageProvider } from "./context/LanguageContext";
 import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
@@ -11,6 +12,7 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
+    <LanguageProvider>
     <RulesProvider>
     <TooltipProvider>
       <Toaster />
@@ -24,6 +26,7 @@ const App = () => (
       </BrowserRouter>
     </TooltipProvider>
     </RulesProvider>
+    </LanguageProvider>
   </QueryClientProvider>
 );
 
