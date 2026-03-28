@@ -61,7 +61,7 @@ function searchRules(rules: Rule[], query: string, lang: string, limit = 5): Rul
 
 export default function ChatScreen() {
   const { rules } = useRules();
-  const { lang, toggleLang } = useLang();
+  const { lang } = useLang();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -149,12 +149,6 @@ export default function ChatScreen() {
       />
       <header className="flex items-center justify-between px-4 py-3 border-b border-border shrink-0">
         <h1 className="text-lg font-semibold text-foreground">{TITLE[lang]}</h1>
-        <button
-          onClick={toggleLang}
-          className="px-3 py-1 text-xs font-medium rounded-full bg-secondary text-secondary-foreground transition-colors hover:bg-primary hover:text-primary-foreground"
-        >
-          {lang}
-        </button>
       </header>
 
       <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">

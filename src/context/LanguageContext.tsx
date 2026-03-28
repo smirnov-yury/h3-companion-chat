@@ -13,8 +13,12 @@ const LanguageContext = createContext<LanguageContextValue>({
 });
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [lang, setLang] = useState<Lang>("RU");
-  const toggleLang = useCallback(() => setLang((l) => (l === "RU" ? "EN" : "RU")), []);
+  const [lang, setLang] = useState<Lang>(() => (localStorage.getItem("app_language") as Lang) || "RU");
+  const toggleLang = useCallback(() => setLang((l) => {
+    const next = l === "RU" ? "EN" : "RU";
+    localStorage.setItem("app_language", next);
+    return next;
+  }), []);
   return (
     <LanguageContext.Provider value={{ lang, toggleLang }}>
       {children}
