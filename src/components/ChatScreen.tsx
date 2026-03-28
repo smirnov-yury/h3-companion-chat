@@ -30,11 +30,18 @@ function getApiKey() {
   return localStorage.getItem("groq_api_key") || import.meta.env.VITE_GROQ_API_KEY || "";
 }
 
+const RU_STOP_WORDS = new Set([
+  'что', 'такое', 'как', 'это', 'где', 'когда', 'можно', 'нельзя',
+  'есть', 'для', 'при', 'или', 'все', 'они', 'его', 'ему', 'мне',
+  'тут', 'там', 'уже', 'ещё', 'раз',
+]);
+
 function searchRules(rules: Rule[], query: string, lang: Lang, limit = 5): Rule[] {
   const keywords = query
     .toLowerCase()
     .split(/\s+/)
-    .filter((w) => w.length > 2);
+    .map((w) => w.replace(/[^\wа-яёА-ЯЁ]/g, ''))
+    .filter((w) => w.length > 2 && !RU_STOP_WORDS.has(w));
 
   console.log("[searchRules] keywords:", keywords, "| rules count:", rules.length);
 
