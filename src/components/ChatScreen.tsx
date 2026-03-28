@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Send } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import ApiKeyModal from "./ApiKeyModal";
 
 type Lang = "RU" | "EN";
 
@@ -24,12 +25,18 @@ const OFFLINE_MSG: Record<Lang, string> = {
   EN: "This module requires an internet connection",
 };
 
+function getApiKey() {
+  return localStorage.getItem("groq_api_key") || import.meta.env.VITE_GROQ_API_KEY || "";
+}
+
 export default function ChatScreen() {
   const [lang, setLang] = useState<Lang>("RU");
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [online, setOnline] = useState(navigator.onLine);
+  const [apiKey, setApiKey] = useState(getApiKey);
+  const [showKeyModal, setShowKeyModal] = useState(!getApiKey());
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -61,7 +68,7 @@ export default function ChatScreen() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_GROQ_API_KEY}`,
+          Authorization: `Bearer ${apiKey}`,
         },
         body: JSON.stringify({
           model: "llama-3.3-70b-versatile",
@@ -82,10 +89,18 @@ export default function ChatScreen() {
     } finally {
       setLoading(false);
     }
-  }, [input, loading, messages, lang]);
+  }, [input, loading, messages, lang, apiKey]);
 
   return (
     <div className="flex flex-col h-full">
+      <ApiKeyModal
+        open={showKeyModal}
+        onSave={(key) => {
+          localStorage.setItem("groq_api_key", key);
+          setApiKey(key);
+          setShowKeyModal(false);
+        }}
+      />
       {/* Top bar */}
       <header className="flex items-center justify-between px-4 py-3 border-b border-border shrink-0">
         <h1 className="text-lg font-semibold text-foreground">{TITLE[lang]}</h1>
