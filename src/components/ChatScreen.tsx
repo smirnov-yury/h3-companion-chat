@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Send } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import ApiKeyModal from "./ApiKeyModal";
 
 type Lang = "RU" | "EN";
 
