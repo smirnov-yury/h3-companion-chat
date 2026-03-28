@@ -38,16 +38,60 @@ function renderTextWithBadges(text: string) {
   return parts;
 }
 
-function formatCategoryEN(key: string): string {
-  return key.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-}
+const CATEGORY_RU: Record<string, string> = {
+  "abilities": "Способности", "ability": "Способности", "advanced": "Дополнительные правила",
+  "adventure": "Приключение", "ai": "ИИ противник", "alliance": "Альянс",
+  "artifact": "Артефакты", "artifacts": "Артефакты", "astrologers": "Астрологи",
+  "astrologers_proclaim": "Астрологи", "campaign": "Кампания", "campaign_combat": "Бой в кампании",
+  "cards": "Карты", "combat": "Бой", "components": "Компоненты",
+  "cooperative": "Кооператив", "core": "Основные правила", "deckbuilding": "Колода",
+  "differences": "Отличия", "economy": "Экономика", "editor": "Редактор",
+  "effects": "Эффекты", "event": "События", "events": "События",
+  "game_mechanics": "Механики", "general": "Общие правила", "global": "Глобальные правила",
+  "hero": "Герой", "heroes": "Герои", "interaction": "Взаимодействие",
+  "location": "Локации", "locations": "Локации", "magic": "Магия",
+  "map": "Карта", "mechanic": "Механики", "mode": "Режим игры",
+  "morale": "Мораль", "movement": "Передвижение", "recruitment": "Найм",
+  "reference": "Справка", "resources": "Ресурсы", "round": "Раунд",
+  "round_effects": "Эффекты раунда", "rounds": "Раунды", "scenario": "Сценарий",
+  "scoring": "Очки", "settings": "Настройки", "setup": "Подготовка",
+  "siege": "Осада", "solo_mode": "Соло режим", "specialty": "Специализация",
+  "spell": "Заклинания", "spells": "Заклинания", "statistics": "Статистики",
+  "storage": "Хранение", "timed": "Временные правила", "timed_event": "Временные события",
+  "town": "Город", "trade": "Торговля", "turn": "Ход",
+  "unit_ability": "Способности юнитов", "units": "Юниты", "victory": "Победа",
+  "war_machine": "Военные машины",
+};
 
-/** Group rules by translated category name to merge duplicates like "event"/"events" */
+const CATEGORY_EN: Record<string, string> = {
+  "abilities": "Abilities", "ability": "Abilities", "advanced": "Advanced Rules",
+  "adventure": "Adventure", "ai": "AI Opponent", "alliance": "Alliance",
+  "artifact": "Artifacts", "artifacts": "Artifacts", "astrologers": "Astrologers",
+  "astrologers_proclaim": "Astrologers", "campaign": "Campaign", "campaign_combat": "Campaign Combat",
+  "cards": "Cards", "combat": "Combat", "components": "Components",
+  "cooperative": "Cooperative", "core": "Core Rules", "deckbuilding": "Deck Building",
+  "differences": "Differences", "economy": "Economy", "editor": "Editor",
+  "effects": "Effects", "event": "Events", "events": "Events",
+  "game_mechanics": "Game Mechanics", "general": "General Rules", "global": "Global Rules",
+  "hero": "Hero", "heroes": "Heroes", "interaction": "Interaction",
+  "location": "Locations", "locations": "Locations", "magic": "Magic",
+  "map": "Map", "mechanic": "Mechanics", "mode": "Game Mode",
+  "morale": "Morale", "movement": "Movement", "recruitment": "Recruitment",
+  "reference": "Reference", "resources": "Resources", "round": "Round",
+  "round_effects": "Round Effects", "rounds": "Rounds", "scenario": "Scenario",
+  "scoring": "Scoring", "settings": "Settings", "setup": "Setup",
+  "siege": "Siege", "solo_mode": "Solo Mode", "specialty": "Specialty",
+  "spell": "Spells", "spells": "Spells", "statistics": "Statistics",
+  "storage": "Storage", "timed": "Timed Rules", "timed_event": "Timed Events",
+  "town": "Town", "trade": "Trade", "turn": "Turn",
+  "unit_ability": "Unit Abilities", "units": "Units", "victory": "Victory",
+  "war_machine": "War Machines",
+};
+
 function getTranslatedCategory(rule: Rule, lang: string): string {
-  if (lang === "RU") {
-    return rule.category || "";
-  }
-  return rule.category ? formatCategoryEN(rule.category) : "";
+  const key = rule.category || "";
+  const map = lang === "RU" ? CATEGORY_RU : CATEGORY_EN;
+  return map[key] || key;
 }
 
 export default function RulesTab() {
