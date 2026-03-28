@@ -35,21 +35,28 @@ function searchRules(rules: Rule[], query: string, lang: Lang, limit = 5): Rule[
     .toLowerCase()
     .split(/\s+/)
     .filter((w) => w.length > 2);
+
+  console.log("[searchRules] keywords:", keywords, "| rules count:", rules.length);
+
   if (!keywords.length) return rules.slice(0, limit);
 
   const scored = rules.map((r) => {
     const haystack = lang === "RU"
-      ? `${r.title_ru} ${r.text_ru}`.toLowerCase()
-      : `${r.title_en} ${r.text_en}`.toLowerCase();
+      ? `${r.title_ru || ""} ${r.text_ru || ""}`.toLowerCase()
+      : `${r.title_en || ""} ${r.text_en || ""}`.toLowerCase();
     const score = keywords.reduce((s, kw) => s + (haystack.includes(kw) ? 1 : 0), 0);
     return { rule: r, score };
   });
 
-  return scored
+  const matches = scored
     .filter((s) => s.score > 0)
     .sort((a, b) => b.score - a.score)
     .slice(0, limit)
     .map((s) => s.rule);
+
+  console.log("[searchRules] matched rules:", matches.length, matches.map((r) => r.title_ru || r.title_en));
+
+  return matches;
 }
 
 export default function ChatScreen() {
