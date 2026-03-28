@@ -1,4 +1,5 @@
 import { BookOpen, LayoutGrid, Map, Castle, MessageCircle } from "lucide-react";
+import { useLang } from "@/context/LanguageContext";
 
 export type TabId = "rules" | "components" | "setup" | "city" | "ai";
 
@@ -7,18 +8,20 @@ interface BottomNavProps {
   onChange: (tab: TabId) => void;
 }
 
-const tabs: { id: TabId; label: string; icon: typeof BookOpen }[] = [
-  { id: "rules", label: "Правила", icon: BookOpen },
-  { id: "components", label: "Компоненты", icon: LayoutGrid },
-  { id: "setup", label: "Сетап", icon: Map },
-  { id: "city", label: "Город", icon: Castle },
-  { id: "ai", label: "ИИ Мастер", icon: MessageCircle },
+const tabs: { id: TabId; labelRU: string; labelEN: string; icon: typeof BookOpen }[] = [
+  { id: "rules", labelRU: "Правила", labelEN: "Rules", icon: BookOpen },
+  { id: "components", labelRU: "Компоненты", labelEN: "Components", icon: LayoutGrid },
+  { id: "setup", labelRU: "Сетап", labelEN: "Setup", icon: Map },
+  { id: "city", labelRU: "Город", labelEN: "City", icon: Castle },
+  { id: "ai", labelRU: "ИИ Мастер", labelEN: "AI Master", icon: MessageCircle },
 ];
 
 export default function BottomNav({ active, onChange }: BottomNavProps) {
+  const { lang } = useLang();
+
   return (
     <nav className="flex items-center justify-around border-t border-border bg-background px-1 py-2 shrink-0">
-      {tabs.map(({ id, label, icon: Icon }) => {
+      {tabs.map(({ id, labelRU, labelEN, icon: Icon }) => {
         const isActive = active === id;
         return (
           <button
@@ -29,7 +32,7 @@ export default function BottomNav({ active, onChange }: BottomNavProps) {
             }`}
           >
             <Icon className="w-5 h-5" />
-            {label}
+            {lang === "RU" ? labelRU : labelEN}
           </button>
         );
       })}

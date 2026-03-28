@@ -4,10 +4,12 @@ import ChatScreen from "@/components/ChatScreen";
 import RulesTab from "@/components/RulesTab";
 import PlaceholderTab from "@/components/PlaceholderTab";
 
-const PLACEHOLDERS: Record<Exclude<TabId, "ai" | "rules">, string> = {
-  components: "Компоненты — скоро",
-  setup: "Сетап — скоро",
-  city: "Город — скоро",
+import { useLang } from "@/context/LanguageContext";
+
+const PLACEHOLDERS: Record<Exclude<TabId, "ai" | "rules">, { RU: string; EN: string }> = {
+  components: { RU: "Компоненты — скоро", EN: "Components — coming soon" },
+  setup: { RU: "Сетап — скоро", EN: "Setup — coming soon" },
+  city: { RU: "Город — скоро", EN: "City — coming soon" },
 };
 
 export default function Index() {

@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback, useRef } from "react";
 import { Search, ChevronDown, ChevronUp } from "lucide-react";
 import { useRules, Rule } from "@/context/RulesContext";
+import { useLang } from "@/context/LanguageContext";
 import { Badge } from "@/components/ui/badge";
 
 function useDebounce(value: string, delay: number) {
@@ -37,30 +38,48 @@ function renderTextWithBadges(text: string) {
   return parts;
 }
 
+function formatCategoryEN(key: string): string {
+  return key.split('_').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+}
+
+/** Group rules by translated category name to merge duplicates like "event"/"events" */
+function getTranslatedCategory(rule: Rule, lang: string): string {
+  if (lang === "RU") {
+    return rule.category || "";
+  }
+  return rule.category ? formatCategoryEN(rule.category) : "";
+}
+
 export default function RulesTab() {
   const { rules, loaded } = useRules();
+  const { lang } = useLang();
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useDebounce("", 300);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
+  // Build categories from translated names (merges duplicates)
   const categories = useMemo(
-    () => Array.from(new Set(rules.map((r) => r.category).filter(Boolean))),
-    [rules],
+    () => Array.from(new Set(rules.map((r) => getTranslatedCategory(r, lang)).filter(Boolean))).sort(),
+    [rules, lang],
   );
 
   const filtered = useMemo(() => {
     let list = rules;
-    if (selectedCategory) list = list.filter((r) => r.category === selectedCategory);
+    if (selectedCategory) {
+      list = list.filter((r) => getTranslatedCategory(r, lang) === selectedCategory);
+    }
     const q = debouncedSearch.toLowerCase();
     if (q.length >= 2) {
       list = list.filter((r) => {
-        const hay = `${r.title_ru || ""} ${r.text_ru || ""}`.toLowerCase();
+        const title = lang === "RU" ? (r.title_ru || r.title_en) : (r.title_en || r.title_ru);
+        const text = lang === "RU" ? (r.text_ru || r.text_en) : (r.text_en || r.text_ru);
+        const hay = `${title || ""} ${text || ""}`.toLowerCase();
         return hay.includes(q);
       });
     }
     return list;
-  }, [rules, selectedCategory, debouncedSearch]);
+  }, [rules, selectedCategory, debouncedSearch, lang]);
 
   const handleSearch = (v: string) => {
     setSearch(v);
@@ -70,27 +89,25 @@ export default function RulesTab() {
   if (!loaded) {
     return (
       <div className="flex flex-1 items-center justify-center">
-        <p className="text-muted-foreground text-sm">Загрузка…</p>
+        <p className="text-muted-foreground text-sm">{lang === "RU" ? "Загрузка…" : "Loading…"}</p>
       </div>
     );
   }
 
   return (
     <div className="flex flex-col h-full">
-      {/* Search */}
       <div className="px-3 pt-3 pb-2 shrink-0">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             value={search}
             onChange={(e) => handleSearch(e.target.value)}
-            placeholder="Поиск правил…"
+            placeholder={lang === "RU" ? "Поиск правил…" : "Search rules…"}
             className="w-full rounded-xl bg-input pl-9 pr-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-ring"
           />
         </div>
       </div>
 
-      {/* Category filter */}
       <div className="px-3 pb-2 shrink-0 overflow-x-auto scrollbar-none">
         <div className="flex gap-2 w-max">
           <button
@@ -101,7 +118,7 @@ export default function RulesTab() {
                 : "bg-secondary text-secondary-foreground"
             }`}
           >
-            Все
+            {lang === "RU" ? "Все" : "All"}
           </button>
           {categories.map((cat) => (
             <button
@@ -119,24 +136,24 @@ export default function RulesTab() {
         </div>
       </div>
 
-      {/* Rules list */}
       <div className="flex-1 overflow-y-auto px-3 pb-3 space-y-1.5">
         {filtered.length === 0 && (
-          <p className="text-muted-foreground text-sm text-center py-8">Ничего не найдено</p>
+          <p className="text-muted-foreground text-sm text-center py-8">
+            {lang === "RU" ? "Ничего не найдено" : "Nothing found"}
+          </p>
         )}
         {filtered.map((rule) => {
           const isOpen = expandedId === rule.id;
+          const title = lang === "RU" ? (rule.title_ru || rule.title_en) : (rule.title_en || rule.title_ru);
+          const text = lang === "RU" ? (rule.text_ru || rule.text_en) : (rule.text_en || rule.text_ru);
           return (
-            <div
-              key={rule.id}
-              className="rounded-xl bg-card border border-border overflow-hidden"
-            >
+            <div key={rule.id} className="rounded-xl bg-card border border-border overflow-hidden">
               <button
                 onClick={() => setExpandedId(isOpen ? null : rule.id)}
                 className="w-full flex items-center justify-between px-4 py-3 text-left"
               >
                 <span className="text-sm font-medium text-card-foreground leading-snug pr-2">
-                  {rule.title_ru || rule.title_en}
+                  {title}
                 </span>
                 {isOpen ? (
                   <ChevronUp className="w-4 h-4 shrink-0 text-muted-foreground" />
@@ -146,7 +163,7 @@ export default function RulesTab() {
               </button>
               {isOpen && (
                 <div className="px-4 pb-3 text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
-                  {renderTextWithBadges(rule.text_ru || rule.text_en || "")}
+                  {renderTextWithBadges(text || "")}
                 </div>
               )}
             </div>
