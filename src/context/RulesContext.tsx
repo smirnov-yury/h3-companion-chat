@@ -23,6 +23,7 @@ export interface Component {
   category?: string;
   type?: string;
   faction?: string;
+  media_url?: string | null;
 }
 
 interface RulesData {
