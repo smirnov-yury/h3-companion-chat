@@ -706,7 +706,15 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
   }, [loaded, rules]);
 
   // === Components tree ===
-  const compTree = useMemo(() => buildTree(adminComps), [adminComps]);
+  const [compVirtualSubs, setCompVirtualSubs] = useState<{ cat: string; sub: string }[]>([]);
+  const compTree = useMemo(() => {
+    const t = buildTree(adminComps);
+    for (const v of compVirtualSubs) {
+      if (!t[v.cat]) t[v.cat] = {};
+      if (!t[v.cat][v.sub]) t[v.cat][v.sub] = [];
+    }
+    return t;
+  }, [adminComps, compVirtualSubs]);
   const [compOpenCats, setCompOpenCats] = useState<Set<string>>(new Set());
   const [compActiveSub, setCompActiveSub] = useState<{ cat: string; sub: string } | null>(null);
   const [compDragItem, setCompDragItem] = useState<AdminComponent | null>(null);
