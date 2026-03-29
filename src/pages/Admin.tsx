@@ -711,6 +711,34 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
   };
   const handleAddRuleSubcategory = (_catRu: string, _subRu: string, _subEn: string) => {};
 
+  // === Rename category/subcategory ===
+  const handleRenameCompCategory = (oldRu: string, newRu: string, newEn: string) => {
+    setAdminComps(prev => prev.map(c =>
+      c.category_ru === oldRu ? { ...c, category_ru: newRu, category_en: newEn } : c
+    ));
+    if (compActiveSub?.cat === oldRu) setCompActiveSub({ cat: newRu, sub: compActiveSub.sub });
+    setCompOpenCats(prev => { const n = new Set(prev); if (n.has(oldRu)) { n.delete(oldRu); n.add(newRu); } return n; });
+  };
+  const handleRenameCompSubcategory = (catRu: string, oldSubRu: string, newSubRu: string, newSubEn: string) => {
+    setAdminComps(prev => prev.map(c =>
+      c.category_ru === catRu && c.subcategory_ru === oldSubRu ? { ...c, subcategory_ru: newSubRu, subcategory_en: newSubEn } : c
+    ));
+    if (compActiveSub?.cat === catRu && compActiveSub?.sub === oldSubRu) setCompActiveSub({ cat: catRu, sub: newSubRu });
+  };
+  const handleRenameRuleCategory = (oldRu: string, newRu: string, newEn: string) => {
+    setAdminRules(prev => prev.map(r =>
+      r.category_ru === oldRu ? { ...r, category_ru: newRu, category_en: newEn } : r
+    ));
+    if (ruleActiveSub?.cat === oldRu) setRuleActiveSub({ cat: newRu, sub: ruleActiveSub.sub });
+    setRuleOpenCats(prev => { const n = new Set(prev); if (n.has(oldRu)) { n.delete(oldRu); n.add(newRu); } return n; });
+  };
+  const handleRenameRuleSubcategory = (catRu: string, oldSubRu: string, newSubRu: string, newSubEn: string) => {
+    setAdminRules(prev => prev.map(r =>
+      r.category_ru === catRu && r.subcategory_ru === oldSubRu ? { ...r, subcategory_ru: newSubRu, subcategory_en: newSubEn } : r
+    ));
+    if (ruleActiveSub?.cat === catRu && ruleActiveSub?.sub === oldSubRu) setRuleActiveSub({ cat: catRu, sub: newSubRu });
+  };
+
   // === Export ===
   const handleExport = () => {
     const output = {
