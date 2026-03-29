@@ -244,7 +244,7 @@ export default function ComponentsTab({ onNavigateToRule }: ComponentsTabProps) 
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {categories.map((cat) => {
-                const label = lang === "RU" ? CATEGORY_LABELS[cat]?.ru : CATEGORY_LABELS[cat]?.en;
+                const label = lang === "RU" ? categoryLabels[cat]?.ru : categoryLabels[cat]?.en;
                 const count = grouped[cat]?.length ?? 0;
                 const imageUrl = categoryImages[cat];
                 return (
