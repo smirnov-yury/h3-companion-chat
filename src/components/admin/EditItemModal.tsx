@@ -124,6 +124,23 @@ export default function EditItemModal({
               rows={4}
             />
           </div>
+          {showTypeField && (
+            <div className="space-y-1">
+              <Label className="text-xs">Type</Label>
+              <Select value={itemType} onValueChange={setItemType}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {COMPONENT_TYPES.map((t) => (
+                    <SelectItem key={t} value={t}>
+                      {t}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
           {categories.length > 0 && (
             <div className="space-y-1">
               <Label className="text-xs">Category</Label>
