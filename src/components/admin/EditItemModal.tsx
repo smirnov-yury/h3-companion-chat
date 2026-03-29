@@ -84,6 +84,7 @@ export default function EditItemModal({
         body_en: bodyEn,
         body_ru: bodyRu,
         category,
+        type: itemType,
       });
       setSaved(true);
       setTimeout(() => onClose(), 800);
