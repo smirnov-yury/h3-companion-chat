@@ -645,11 +645,11 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
   useEffect(() => {
     if (!loaded) return;
     setAdminComps(components.map(c => {
-      const typeKey = (c as any).type || "other";
-      const typeInfo = componentTypes.find(t => t.key === typeKey);
-      const catRu = typeInfo?.label_ru || typeKey;
-      const catEn = typeInfo?.label_en || typeKey;
-      // For units, sub-group by faction; for others, flat "Общее"
+      const typeKey = (c as any).type;
+      const typeInfo = typeKey ? componentTypes.find(t => t.key === typeKey) : null;
+      const isUncategorized = !typeKey || !typeInfo;
+      const catRu = isUncategorized ? "Другие" : typeInfo!.label_ru;
+      const catEn = isUncategorized ? "Other" : typeInfo!.label_en;
       const subBi = typeKey === "unit" ? deriveFactionBi(c) : { name_ru: "Общее", name_en: "General" };
       return {
         ...c,
