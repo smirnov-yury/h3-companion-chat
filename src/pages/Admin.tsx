@@ -677,14 +677,14 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
   useEffect(() => {
     if (!loaded) return;
     setAdminRules(rules.map(r => {
-      const existing = r as any;
-      const catBi = deriveRuleCatBi(r);
+      const key = r.category || "general";
+      const mapEntry = RULE_CAT_MAP[key];
       return {
         ...r,
-        category_ru: existing.category_ru || catBi.name_ru,
-        category_en: existing.category_en || catBi.name_en,
-        subcategory_ru: existing.subcategory_ru || "Общее",
-        subcategory_en: existing.subcategory_en || "General",
+        category_ru: mapEntry?.name_ru || key,
+        category_en: mapEntry?.name_en || key,
+        subcategory_ru: (r as any).subcategory_ru || "Общее",
+        subcategory_en: (r as any).subcategory_en || "General",
       };
     }));
   }, [loaded, rules]);
