@@ -630,32 +630,61 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
   useEffect(() => {
     if (!loaded) return;
     setAdminComps(components.map(c => {
-      const existing = c as any;
-      const catBi = deriveCatBi(c.image);
+      const typeKey = (c as any).type || "other";
+      const typeInfo = componentTypes.find(t => t.key === typeKey);
+      const catRu = typeInfo?.label_ru || typeKey;
+      const catEn = typeInfo?.label_en || typeKey;
       const subBi = deriveSubcatBi(c);
       return {
         ...c,
-        category_ru: existing.category_ru || existing.category || catBi.name_ru,
-        category_en: existing.category_en || catBi.name_en,
-        subcategory_ru: existing.subcategory_ru || existing.subcategory || subBi.name_ru,
-        subcategory_en: existing.subcategory_en || subBi.name_en,
+        category_ru: catRu,
+        category_en: catEn,
+        subcategory_ru: (c as any).subcategory_ru || subBi.name_ru,
+        subcategory_en: (c as any).subcategory_en || subBi.name_en,
       };
     }));
-  }, [loaded, components]);
+  }, [loaded, components, componentTypes]);
+
+  // === Create new component ===
+  const [showCreateComp, setShowCreateComp] = useState(false);
+  const [newComp, setNewComp] = useState({ title_ru: "", title_en: "", body_ru: "", body_en: "", type: "" });
+
+  const handleCreateComponent = async () => {
+    if (!newComp.title_ru.trim() || !newComp.type) { alert("Заполните название (RU) и тип"); return; }
+    const id = crypto.randomUUID();
+    const { data, error } = await supabase.from("components").insert({
+      id, title_ru: newComp.title_ru.trim(), title_en: newComp.title_en.trim(),
+      body_ru: newComp.body_ru.trim(), body_en: newComp.body_en.trim(),
+      type: newComp.type, category: "",
+    } as any).select();
+    if (error) { alert("Ошибка: " + error.message); return; }
+    if (data?.[0]) {
+      const row = data[0] as any;
+      const typeInfo = componentTypes.find(t => t.key === row.type);
+      setAdminComps(prev => [...prev, {
+        ...row, description_ru: row.body_ru, description_en: row.body_en,
+        category_ru: typeInfo?.label_ru || row.type,
+        category_en: typeInfo?.label_en || row.type,
+        subcategory_ru: "Общее", subcategory_en: "General",
+      }]);
+    }
+    setNewComp({ title_ru: "", title_en: "", body_ru: "", body_en: "", type: "" });
+    setShowCreateComp(false);
+  };
 
   // === Rules state ===
   const [adminRules, setAdminRules] = useState<AdminRule[]>([]);
   useEffect(() => {
     if (!loaded) return;
     setAdminRules(rules.map(r => {
-      const existing = r as any;
-      const catBi = deriveRuleCatBi(r);
+      const key = r.category || "general";
+      const mapEntry = RULE_CAT_MAP[key];
       return {
         ...r,
-        category_ru: existing.category_ru || catBi.name_ru,
-        category_en: existing.category_en || catBi.name_en,
-        subcategory_ru: existing.subcategory_ru || "Общее",
-        subcategory_en: existing.subcategory_en || "General",
+        category_ru: mapEntry?.name_ru || key,
+        category_en: mapEntry?.name_en || key,
+        subcategory_ru: (r as any).subcategory_ru || "Общее",
+        subcategory_en: (r as any).subcategory_en || "General",
       };
     }));
   }, [loaded, rules]);
@@ -970,8 +999,60 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
                 onRenameSubcategory={handleRenameCompSubcategory}
               />
               <main className="flex-1 overflow-y-auto p-4">
+                {/* Create Component Button */}
+                <div className="mb-4">
+                  <Button size="sm" variant="outline" onClick={() => setShowCreateComp(!showCreateComp)}>
+                    <Plus className="w-4 h-4 mr-1" /> Создать компонент
+                  </Button>
+                </div>
+
+                {/* Create Component Form */}
+                {showCreateComp && (
+                  <div className="mb-6 p-4 rounded-lg border border-border bg-card space-y-3">
+                    <h3 className="text-sm font-medium text-foreground">Новый компонент</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <label className="text-[10px] text-muted-foreground">Название RU *</label>
+                        <input value={newComp.title_ru} onChange={e => setNewComp(p => ({ ...p, title_ru: e.target.value }))}
+                          className="w-full text-xs px-2 py-1.5 rounded bg-input text-foreground border border-border outline-none focus:ring-1 focus:ring-ring" />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[10px] text-muted-foreground">Название EN</label>
+                        <input value={newComp.title_en} onChange={e => setNewComp(p => ({ ...p, title_en: e.target.value }))}
+                          className="w-full text-xs px-2 py-1.5 rounded bg-input text-foreground border border-border outline-none focus:ring-1 focus:ring-ring" />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div className="space-y-1">
+                        <label className="text-[10px] text-muted-foreground">Описание RU</label>
+                        <textarea value={newComp.body_ru} onChange={e => setNewComp(p => ({ ...p, body_ru: e.target.value }))} rows={3}
+                          className="w-full text-xs px-2 py-1.5 rounded bg-input text-foreground border border-border outline-none focus:ring-1 focus:ring-ring resize-y" />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[10px] text-muted-foreground">Описание EN</label>
+                        <textarea value={newComp.body_en} onChange={e => setNewComp(p => ({ ...p, body_en: e.target.value }))} rows={3}
+                          className="w-full text-xs px-2 py-1.5 rounded bg-input text-foreground border border-border outline-none focus:ring-1 focus:ring-ring resize-y" />
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] text-muted-foreground">Тип *</label>
+                      <select value={newComp.type} onChange={e => setNewComp(p => ({ ...p, type: e.target.value }))}
+                        className="w-full text-xs px-2 py-1.5 rounded bg-input text-foreground border border-border outline-none focus:ring-1 focus:ring-ring">
+                        <option value="">— Выберите тип —</option>
+                        {componentTypes.map(t => (
+                          <option key={t.key} value={t.key}>{t.key} — {t.label_ru} / {t.label_en}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button size="sm" onClick={handleCreateComponent}>Создать</Button>
+                      <Button size="sm" variant="ghost" onClick={() => setShowCreateComp(false)}>Отмена</Button>
+                    </div>
+                  </div>
+                )}
+
                 {!compActiveSub ? (
-                  <div className="flex items-center justify-center h-full">
+                  <div className="flex items-center justify-center h-64">
                     <p className="text-muted-foreground text-sm">Выберите подкатегорию слева</p>
                   </div>
                 ) : (
