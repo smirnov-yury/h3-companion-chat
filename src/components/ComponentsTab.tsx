@@ -24,6 +24,14 @@ function useDebounce(value: string, delay: number) {
   return [debounced, update] as const;
 }
 
+function matchesSearch(comp: Component, q: string): boolean {
+  return (
+    (comp.title_ru || "").toLowerCase().includes(q) ||
+    (comp.title_en || "").toLowerCase().includes(q) ||
+    (comp.image || "").toLowerCase().includes(q)
+  );
+}
+
 function ImagePlaceholder({ tag }: { tag: string }) {
   const lastWord = tag.replace(/\}$/, "").split(/[\s:/\\]+/).pop() || tag;
   return (
@@ -97,7 +105,9 @@ export default function ComponentsTab({ onNavigateToRule }: ComponentsTabProps) 
   const { components, loaded } = useRules();
   const { lang } = useLang();
   const [search, setSearch] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useDebounce("", 300);
+  const [debouncedSearch, setDebouncedSearch] = useDebounce("", 150);
+  const [topSearch, setTopSearch] = useState("");
+  const [debouncedTopSearch, setDebouncedTopSearch] = useDebounce("", 150);
   const [selected, setSelected] = useState<Component | null>(null);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [activeFaction, setActiveFaction] = useState<string>("all");
@@ -143,6 +153,17 @@ export default function ComponentsTab({ onNavigateToRule }: ComponentsTabProps) 
     setDebouncedSearch(v);
   };
 
+  const handleTopSearch = (v: string) => {
+    setTopSearch(v);
+    setDebouncedTopSearch(v);
+  };
+
+  const topSearchResults = useMemo(() => {
+    const q = debouncedTopSearch.toLowerCase();
+    if (q.length < 2) return null;
+    return components.filter((c) => matchesSearch(c, q));
+  }, [debouncedTopSearch, components]);
+
   const openCategory = (cat: string) => {
     setActiveCategory(cat);
     setActiveFaction("all");
@@ -169,26 +190,63 @@ export default function ComponentsTab({ onNavigateToRule }: ComponentsTabProps) 
   if (!activeCategory) {
     return (
       <div className="flex flex-col h-full">
-        <div className="flex-1 overflow-y-auto px-3 py-3">
-          <div className="space-y-1.5">
-            {categories.map((cat) => {
-              const label = lang === "RU" ? CATEGORY_LABELS[cat]?.ru : CATEGORY_LABELS[cat]?.en;
-              const count = grouped[cat]?.length ?? 0;
-              return (
-                <button
-                  key={cat}
-                  onClick={() => openCategory(cat)}
-                  className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-card border border-border hover:border-primary/50 transition-colors"
-                >
-                  <span className="text-sm font-medium text-card-foreground">{label || cat}</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-muted-foreground">{count}</span>
-                    <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                  </div>
-                </button>
-              );
-            })}
+        <div className="px-3 pt-3 pb-2 shrink-0">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <input
+              value={topSearch}
+              onChange={(e) => handleTopSearch(e.target.value)}
+              placeholder={lang === "RU" ? "Поиск…" : "Search…"}
+              className="w-full rounded-xl bg-input pl-9 pr-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-ring"
+            />
           </div>
+        </div>
+        <div className="flex-1 overflow-y-auto px-3 pb-3">
+          {topSearchResults !== null ? (
+            topSearchResults.length === 0 ? (
+              <p className="text-muted-foreground text-sm text-center py-8">
+                {lang === "RU" ? "Компоненты не найдены" : "No components found"}
+              </p>
+            ) : (
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2">
+                {topSearchResults.map((comp) => {
+                  const title = lang === "RU" ? (comp.title_ru || comp.title_en) : (comp.title_en || comp.title_ru);
+                  return (
+                    <button
+                      key={comp.id}
+                      onClick={() => setSelected(comp)}
+                      className="flex flex-col items-center gap-1.5 p-2 rounded-xl bg-card border border-border hover:border-primary/50 transition-colors"
+                    >
+                      <ComponentImage image={comp.image} />
+                      <span className="text-[10px] text-card-foreground text-center leading-tight line-clamp-2">
+                        {title}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            )
+          ) : (
+            <div className="space-y-1.5">
+              {categories.map((cat) => {
+                const label = lang === "RU" ? CATEGORY_LABELS[cat]?.ru : CATEGORY_LABELS[cat]?.en;
+                const count = grouped[cat]?.length ?? 0;
+                return (
+                  <button
+                    key={cat}
+                    onClick={() => openCategory(cat)}
+                    className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-card border border-border hover:border-primary/50 transition-colors"
+                  >
+                    <span className="text-sm font-medium text-card-foreground">{label || cat}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-muted-foreground">{count}</span>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
     );
