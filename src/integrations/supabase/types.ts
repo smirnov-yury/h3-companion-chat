@@ -16,28 +16,34 @@ export type Database = {
     Tables: {
       categories: {
         Row: {
+          cover_image_url: string | null
           created_at: string | null
           image_url: string | null
           key: string
           label_en: string
           label_ru: string
           sort_order: number | null
+          updated_at: string | null
         }
         Insert: {
+          cover_image_url?: string | null
           created_at?: string | null
           image_url?: string | null
           key: string
           label_en: string
           label_ru: string
           sort_order?: number | null
+          updated_at?: string | null
         }
         Update: {
+          cover_image_url?: string | null
           created_at?: string | null
           image_url?: string | null
           key?: string
           label_en?: string
           label_ru?: string
           sort_order?: number | null
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -46,10 +52,12 @@ export type Database = {
           body_en: string | null
           body_ru: string | null
           category: string
+          cover_image_url: string | null
           created_at: string | null
           faction: string | null
           id: string
           image: string | null
+          rule_id: string | null
           sort_order: number | null
           title_en: string | null
           title_ru: string | null
@@ -60,10 +68,12 @@ export type Database = {
           body_en?: string | null
           body_ru?: string | null
           category: string
+          cover_image_url?: string | null
           created_at?: string | null
           faction?: string | null
-          id: string
+          id?: string
           image?: string | null
+          rule_id?: string | null
           sort_order?: number | null
           title_en?: string | null
           title_ru?: string | null
@@ -74,10 +84,12 @@ export type Database = {
           body_en?: string | null
           body_ru?: string | null
           category?: string
+          cover_image_url?: string | null
           created_at?: string | null
           faction?: string | null
           id?: string
           image?: string | null
+          rule_id?: string | null
           sort_order?: number | null
           title_en?: string | null
           title_ru?: string | null
