@@ -18,10 +18,6 @@ import {
 } from "@/components/ui/select";
 import { Check } from "lucide-react";
 
-const COMPONENT_TYPES = [
-  "unit", "card", "hero", "token", "icon", "schema", "game", "book", "mission", "location", "rule", "other",
-] as const;
-
 interface EditItemModalProps {
   open: boolean;
   onClose: () => void;
@@ -36,6 +32,7 @@ interface EditItemModalProps {
   } | null;
   categories: { key: string; label: string }[];
   showTypeField?: boolean;
+  componentTypes?: { key: string; label_ru: string; label_en: string }[];
   onSave: (data: {
     title_en: string;
     title_ru: string;
@@ -52,6 +49,7 @@ export default function EditItemModal({
   item,
   categories,
   showTypeField,
+  componentTypes = [],
   onSave,
 }: EditItemModalProps) {
   const [titleEn, setTitleEn] = useState("");
@@ -132,9 +130,9 @@ export default function EditItemModal({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {COMPONENT_TYPES.map((t) => (
-                    <SelectItem key={t} value={t}>
-                      {t}
+                  {componentTypes.map((t) => (
+                    <SelectItem key={t.key} value={t.key}>
+                      {t.key} — {t.label_ru} / {t.label_en}
                     </SelectItem>
                   ))}
                 </SelectContent>
