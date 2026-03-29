@@ -630,18 +630,47 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
   useEffect(() => {
     if (!loaded) return;
     setAdminComps(components.map(c => {
-      const existing = c as any;
-      const catBi = deriveCatBi(c.image);
+      const typeKey = (c as any).type || "other";
+      const typeInfo = componentTypes.find(t => t.key === typeKey);
+      const catRu = typeInfo?.label_ru || typeKey;
+      const catEn = typeInfo?.label_en || typeKey;
       const subBi = deriveSubcatBi(c);
       return {
         ...c,
-        category_ru: existing.category_ru || existing.category || catBi.name_ru,
-        category_en: existing.category_en || catBi.name_en,
-        subcategory_ru: existing.subcategory_ru || existing.subcategory || subBi.name_ru,
-        subcategory_en: existing.subcategory_en || subBi.name_en,
+        category_ru: catRu,
+        category_en: catEn,
+        subcategory_ru: (c as any).subcategory_ru || subBi.name_ru,
+        subcategory_en: (c as any).subcategory_en || subBi.name_en,
       };
     }));
-  }, [loaded, components]);
+  }, [loaded, components, componentTypes]);
+
+  // === Create new component ===
+  const [showCreateComp, setShowCreateComp] = useState(false);
+  const [newComp, setNewComp] = useState({ title_ru: "", title_en: "", body_ru: "", body_en: "", type: "" });
+
+  const handleCreateComponent = async () => {
+    if (!newComp.title_ru.trim() || !newComp.type) { alert("Заполните название (RU) и тип"); return; }
+    const id = crypto.randomUUID();
+    const { data, error } = await supabase.from("components").insert({
+      id, title_ru: newComp.title_ru.trim(), title_en: newComp.title_en.trim(),
+      body_ru: newComp.body_ru.trim(), body_en: newComp.body_en.trim(),
+      type: newComp.type, category: "",
+    } as any).select();
+    if (error) { alert("Ошибка: " + error.message); return; }
+    if (data?.[0]) {
+      const row = data[0] as any;
+      const typeInfo = componentTypes.find(t => t.key === row.type);
+      setAdminComps(prev => [...prev, {
+        ...row, description_ru: row.body_ru, description_en: row.body_en,
+        category_ru: typeInfo?.label_ru || row.type,
+        category_en: typeInfo?.label_en || row.type,
+        subcategory_ru: "Общее", subcategory_en: "General",
+      }]);
+    }
+    setNewComp({ title_ru: "", title_en: "", body_ru: "", body_en: "", type: "" });
+    setShowCreateComp(false);
+  };
 
   // === Rules state ===
   const [adminRules, setAdminRules] = useState<AdminRule[]>([]);
