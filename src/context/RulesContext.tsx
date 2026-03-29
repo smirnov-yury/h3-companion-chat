@@ -66,6 +66,7 @@ export function RulesProvider({ children }: { children: ReactNode }) {
       category: c.category || "",
       type: c.type || "",
       faction: c.faction || "",
+      media_url: c.media_url || null,
     }));
 
     return { rules, components };

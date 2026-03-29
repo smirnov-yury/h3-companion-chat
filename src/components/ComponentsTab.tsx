@@ -47,7 +47,10 @@ function ImagePlaceholder({ tag }: { tag: string }) {
 const IMG_TAG_RE = /\{img:[^}]+\}/;
 const UNIT_RE = /\{img:[^_]+_unit/;
 
-function ComponentImage({ image }: { image: string }) {
+function ComponentImage({ image, mediaUrl }: { image: string; mediaUrl?: string | null }) {
+  if (mediaUrl) {
+    return <img src={mediaUrl} alt="" className="w-12 h-12 rounded object-cover bg-muted" />;
+  }
   if (!image) return <div className="w-12 h-12 rounded bg-muted" />;
   const match = image.match(IMG_TAG_RE);
   if (match) return <ImagePlaceholder tag={match[0]} />;
