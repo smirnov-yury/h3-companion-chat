@@ -47,6 +47,27 @@ export type Database = {
         }
         Relationships: []
       }
+      component_types: {
+        Row: {
+          key: string
+          label_en: string
+          label_ru: string
+          sort_order: number | null
+        }
+        Insert: {
+          key: string
+          label_en: string
+          label_ru: string
+          sort_order?: number | null
+        }
+        Update: {
+          key?: string
+          label_en?: string
+          label_ru?: string
+          sort_order?: number | null
+        }
+        Relationships: []
+      }
       components: {
         Row: {
           body_en: string | null
