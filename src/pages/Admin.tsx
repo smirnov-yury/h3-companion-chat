@@ -856,6 +856,8 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
                 overSubId={ruleOverSubId}
                 onAddCategory={handleAddRuleCategory}
                 onAddSubcategory={handleAddRuleSubcategory}
+                onRenameCategory={handleRenameRuleCategory}
+                onRenameSubcategory={handleRenameRuleSubcategory}
               />
               <main className="flex-1 overflow-y-auto p-4">
                 {!ruleActiveSub ? (
