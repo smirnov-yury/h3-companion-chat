@@ -381,6 +381,8 @@ interface CategoryTreePanelProps<T extends TreeItem> {
   overSubId: string | null;
   onAddCategory: (ru: string, en: string) => void;
   onAddSubcategory: (catRu: string, subRu: string, subEn: string) => void;
+  onRenameCategory: (oldRu: string, newRu: string, newEn: string) => void;
+  onRenameSubcategory: (catRu: string, oldSubRu: string, newSubRu: string, newSubEn: string) => void;
 }
 
 function CategoryTreePanel<T extends TreeItem>({
