@@ -994,6 +994,19 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
         </DragOverlay>
       </div>
 
+      <EditItemModal
+        open={!!editItem}
+        onClose={() => setEditItem(null)}
+        item={editModalItem}
+        categories={editCategories}
+        onSave={handleSaveEdit}
+      />
+      <DeleteConfirmDialog
+        open={!!deleteItem}
+        onClose={() => setDeleteItem(null)}
+        onConfirm={handleConfirmDelete}
+        deleting={isDeleting}
+      />
       <InstructionModal open={showInstruction} onClose={() => setShowInstruction(false)} />
     </DndContext>
   );

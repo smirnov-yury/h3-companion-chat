@@ -228,20 +228,27 @@ export default function ComponentsTab({ onNavigateToRule }: ComponentsTabProps) 
               </div>
             )
           ) : (
-            <div className="space-y-1.5">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {categories.map((cat) => {
                 const label = lang === "RU" ? CATEGORY_LABELS[cat]?.ru : CATEGORY_LABELS[cat]?.en;
                 const count = grouped[cat]?.length ?? 0;
+                const imageUrl = categoryImages[cat];
                 return (
                   <button
                     key={cat}
                     onClick={() => openCategory(cat)}
-                    className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-card border border-border hover:border-primary/50 transition-colors"
+                    className="flex flex-col rounded-xl bg-card border border-border hover:border-primary/50 transition-colors overflow-hidden text-left"
                   >
-                    <span className="text-sm font-medium text-card-foreground">{label || cat}</span>
-                    <div className="flex items-center gap-2">
+                    <div className="aspect-[4/3] bg-muted flex items-center justify-center overflow-hidden">
+                      {imageUrl ? (
+                        <img src={imageUrl} alt={label || cat} className="w-full h-full object-cover" onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                      ) : (
+                        <ImageIcon className="w-8 h-8 text-muted-foreground" />
+                      )}
+                    </div>
+                    <div className="px-3 py-2 flex items-center justify-between w-full">
+                      <span className="text-sm font-medium text-card-foreground">{label || cat}</span>
                       <span className="text-xs text-muted-foreground">{count}</span>
-                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
                     </div>
                   </button>
                 );
