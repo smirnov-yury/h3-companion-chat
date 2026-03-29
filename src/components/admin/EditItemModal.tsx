@@ -130,9 +130,9 @@ export default function EditItemModal({
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {COMPONENT_TYPES.map((t) => (
-                    <SelectItem key={t} value={t}>
-                      {t}
+                  {componentTypes.map((t) => (
+                    <SelectItem key={t.key} value={t.key}>
+                      {t.key} — {t.label_ru} / {t.label_en}
                     </SelectItem>
                   ))}
                 </SelectContent>
