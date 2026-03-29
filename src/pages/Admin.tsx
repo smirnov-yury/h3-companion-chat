@@ -553,6 +553,12 @@ function CategoryTreePanel<T extends TreeItem>({
                       className="opacity-0 group-hover/sub:opacity-100 p-1 text-muted-foreground hover:text-foreground transition-opacity shrink-0">
                       <Pencil className="w-3 h-3" />
                     </button>
+                    {onDeleteSubcategory && (
+                      <button onClick={() => onDeleteSubcategory(catRu, subRu)}
+                        className="opacity-0 group-hover/sub:opacity-100 p-1 text-muted-foreground hover:text-destructive transition-opacity shrink-0">
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    )}
                   </div>
                 );
               })}
