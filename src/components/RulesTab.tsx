@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useRef } from "react";
+import { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import { Search, ChevronDown, ChevronUp } from "lucide-react";
 import { useRules, Rule } from "@/context/RulesContext";
 import { useLang } from "@/context/LanguageContext";
