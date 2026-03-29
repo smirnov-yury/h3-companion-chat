@@ -105,7 +105,9 @@ export default function ComponentsTab({ onNavigateToRule }: ComponentsTabProps) 
   const { components, loaded } = useRules();
   const { lang } = useLang();
   const [search, setSearch] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useDebounce("", 300);
+  const [debouncedSearch, setDebouncedSearch] = useDebounce("", 150);
+  const [topSearch, setTopSearch] = useState("");
+  const [debouncedTopSearch, setDebouncedTopSearch] = useDebounce("", 150);
   const [selected, setSelected] = useState<Component | null>(null);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [activeFaction, setActiveFaction] = useState<string>("all");
