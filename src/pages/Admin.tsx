@@ -41,7 +41,12 @@ import {
   Lock,
   Pencil,
   Check,
+  Trash2,
 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import EditItemModal from "@/components/admin/EditItemModal";
+import DeleteConfirmDialog from "@/components/admin/DeleteConfirmDialog";
+import CategoriesManager from "@/components/admin/CategoriesManager";
 
 /* ─── types ─── */
 
@@ -264,19 +269,36 @@ function PinScreen({ onAuth }: { onAuth: (pin: string) => void }) {
 
 /* ─── Sortable card (generic) ─── */
 
-function SortableCard({ id, title, subtitle, isOverlay }: { id: string; title: string; subtitle?: string; isOverlay?: boolean }) {
+function SortableCard({ id, title, subtitle, isOverlay, onEdit, onDelete }: {
+  id: string; title: string; subtitle?: string; isOverlay?: boolean;
+  onEdit?: () => void; onDelete?: () => void;
+}) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
   const style = isOverlay ? undefined : { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.4 : 1 };
 
   return (
-    <div ref={setNodeRef} style={style} className={`flex items-center gap-2 p-2 rounded-lg bg-card border border-border ${isOverlay ? "shadow-xl ring-2 ring-primary" : ""}`}>
+    <div ref={setNodeRef} style={style} className={`group/card flex items-center gap-2 p-2 rounded-lg bg-card border border-border ${isOverlay ? "shadow-xl ring-2 ring-primary" : ""}`}>
       <button {...attributes} {...listeners} className="shrink-0 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground">
         <GripVertical className="w-4 h-4" />
       </button>
-      <div className="min-w-0">
+      <div className="min-w-0 flex-1">
         <span className="text-xs text-card-foreground truncate block">{title}</span>
         {subtitle && <span className="text-[10px] text-muted-foreground truncate block">{subtitle}</span>}
       </div>
+      {!isOverlay && (onEdit || onDelete) && (
+        <div className="flex gap-1 shrink-0 opacity-0 group-hover/card:opacity-100 max-md:opacity-100 transition-opacity">
+          {onEdit && (
+            <button onClick={(e) => { e.stopPropagation(); onEdit(); }} className="p-1 rounded text-muted-foreground hover:text-foreground hover:bg-accent transition-colors">
+              <Pencil className="w-3.5 h-3.5" />
+            </button>
+          )}
+          {onDelete && (
+            <button onClick={(e) => { e.stopPropagation(); onDelete(); }} className="p-1 rounded text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors">
+              <Trash2 className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -561,7 +583,12 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
   const { components, rules, loaded } = useRules();
   const navigate = useNavigate();
   const [showInstruction, setShowInstruction] = useState(false);
-  const [activeTab, setActiveTab] = useState<"components" | "rules">("components");
+  const [activeTab, setActiveTab] = useState<"components" | "rules" | "categories">("components");
+
+  // Edit / Delete state
+  const [editItem, setEditItem] = useState<{ type: "component" | "rule"; item: AdminComponent | AdminRule } | null>(null);
+  const [deleteItem, setDeleteItem] = useState<{ type: "component" | "rule"; item: AdminComponent | AdminRule } | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // === Components state ===
   const [adminComps, setAdminComps] = useState<AdminComponent[]>([]);
@@ -736,6 +763,73 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
     if (ruleActiveSub?.cat === catRu && ruleActiveSub?.sub === oldSubRu) setRuleActiveSub({ cat: catRu, sub: newSubRu });
   };
 
+  // === Edit / Delete handlers ===
+  const editCategories = useMemo(() => {
+    if (!editItem) return [];
+    if (editItem.type === "component") {
+      return Object.entries(COMP_CAT_MAP).map(([key, bi]) => ({ key, label: `${bi.name_ru} / ${bi.name_en}` }));
+    }
+    return Object.entries(RULE_CAT_MAP).map(([key, bi]) => ({ key, label: `${bi.name_ru} / ${bi.name_en}` }));
+  }, [editItem]);
+
+  const editModalItem = useMemo(() => {
+    if (!editItem) return null;
+    const { type, item } = editItem;
+    if (type === "component") {
+      const comp = item as AdminComponent;
+      const catMatch = comp.image?.match(/\{img:[^_}]+_([^_}]+)/);
+      return {
+        id: comp.id,
+        title_en: comp.title_en || "",
+        title_ru: comp.title_ru || "",
+        body_en: comp.description_en || "",
+        body_ru: comp.description_ru || "",
+        category: catMatch?.[1] ?? "other",
+      };
+    }
+    const rule = item as AdminRule;
+    return {
+      id: rule.id,
+      title_en: rule.title_en || "",
+      title_ru: rule.title_ru || "",
+      body_en: rule.text_en || "",
+      body_ru: rule.text_ru || "",
+      category: rule.category || "",
+    };
+  }, [editItem]);
+
+  const handleSaveEdit = async (data: { title_en: string; title_ru: string; body_en: string; body_ru: string; category: string }) => {
+    if (!editItem) return;
+    const { type, item } = editItem;
+    if (type === "component") {
+      await supabase.from("components").update({
+        title_en: data.title_en, title_ru: data.title_ru,
+        body_en: data.body_en, body_ru: data.body_ru, category: data.category,
+      }).eq("id", item.id);
+      setAdminComps(prev => prev.map(c =>
+        c.id === item.id ? { ...c, title_en: data.title_en, title_ru: data.title_ru, description_en: data.body_en, description_ru: data.body_ru } : c
+      ));
+    } else {
+      setAdminRules(prev => prev.map(r =>
+        r.id === item.id ? { ...r, title_en: data.title_en, title_ru: data.title_ru, text_en: data.body_en, text_ru: data.body_ru, category: data.category } : r
+      ));
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteItem) return;
+    setIsDeleting(true);
+    const { type, item } = deleteItem;
+    if (type === "component") {
+      await supabase.from("components").delete().eq("id", item.id);
+      setAdminComps(prev => prev.filter(c => c.id !== item.id));
+    } else {
+      setAdminRules(prev => prev.filter(r => r.id !== item.id));
+    }
+    setIsDeleting(false);
+    setDeleteItem(null);
+  };
+
   // === Export ===
   const handleExport = () => {
     const output = {
@@ -797,6 +891,10 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
             className={`px-4 py-2 text-sm font-medium transition-colors ${activeTab === "rules" ? "border-b-2 border-primary text-primary" : "text-muted-foreground hover:text-foreground"}`}>
             Правила
           </button>
+          <button onClick={() => setActiveTab("categories")}
+            className={`px-4 py-2 text-sm font-medium transition-colors ${activeTab === "categories" ? "border-b-2 border-primary text-primary" : "text-muted-foreground hover:text-foreground"}`}>
+            Категории
+          </button>
         </div>
 
         {/* Two-panel layout */}
@@ -831,7 +929,10 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
                     <SortableContext items={compActiveItems.map(c => c.id)} strategy={rectSortingStrategy}>
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                         {compActiveItems.map(comp => (
-                          <SortableCard key={comp.id} id={comp.id} title={comp.title_ru || comp.title_en || comp.id} />
+                          <SortableCard key={comp.id} id={comp.id} title={comp.title_ru || comp.title_en || comp.id}
+                            onEdit={() => setEditItem({ type: "component", item: comp })}
+                            onDelete={() => setDeleteItem({ type: "component", item: comp })}
+                          />
                         ))}
                       </div>
                     </SortableContext>
@@ -840,7 +941,7 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
                 )}
               </main>
             </>
-          ) : (
+          ) : activeTab === "rules" ? (
             <>
               <CategoryTreePanel
                 items={adminRules}
@@ -870,7 +971,10 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
                     <SortableContext items={ruleActiveItems.map(r => r.id)} strategy={rectSortingStrategy}>
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                         {ruleActiveItems.map(rule => (
-                          <SortableCard key={rule.id} id={rule.id} title={rule.title_ru || rule.title_en || rule.id} />
+                          <SortableCard key={rule.id} id={rule.id} title={rule.title_ru || rule.title_en || rule.id}
+                            onEdit={() => setEditItem({ type: "rule", item: rule })}
+                            onDelete={() => setDeleteItem({ type: "rule", item: rule })}
+                          />
                         ))}
                       </div>
                     </SortableContext>
@@ -879,6 +983,8 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
                 )}
               </main>
             </>
+          ) : (
+            <CategoriesManager />
           )}
         </div>
 
@@ -888,6 +994,19 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
         </DragOverlay>
       </div>
 
+      <EditItemModal
+        open={!!editItem}
+        onClose={() => setEditItem(null)}
+        item={editModalItem}
+        categories={editCategories}
+        onSave={handleSaveEdit}
+      />
+      <DeleteConfirmDialog
+        open={!!deleteItem}
+        onClose={() => setDeleteItem(null)}
+        onConfirm={handleConfirmDelete}
+        deleting={isDeleting}
+      />
       <InstructionModal open={showInstruction} onClose={() => setShowInstruction(false)} />
     </DndContext>
   );
