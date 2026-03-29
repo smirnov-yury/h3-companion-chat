@@ -1,6 +1,7 @@
-import { useState, useMemo, useCallback, useRef } from "react";
-import { Search, ChevronLeft, ChevronRight } from "lucide-react";
+import { useState, useMemo, useCallback, useRef, useEffect } from "react";
+import { Search, ChevronLeft, ChevronRight, ImageIcon } from "lucide-react";
 import { useRules, Component } from "@/context/RulesContext";
+import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/context/LanguageContext";
 import {
   Dialog,
