@@ -112,6 +112,19 @@ export default function ComponentsTab({ onNavigateToRule }: ComponentsTabProps) 
   const [selected, setSelected] = useState<Component | null>(null);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [activeFaction, setActiveFaction] = useState<string>("all");
+  const [categoryImages, setCategoryImages] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    supabase.from("categories").select("key, image_url").then(({ data }) => {
+      if (data) {
+        const map: Record<string, string> = {};
+        for (const row of data) {
+          if (row.image_url) map[row.key] = row.image_url;
+        }
+        setCategoryImages(map);
+      }
+    });
+  }, []);
 
   const grouped = useMemo(() => {
     const map: Record<string, Component[]> = {};
