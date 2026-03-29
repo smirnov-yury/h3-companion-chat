@@ -211,7 +211,7 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled }: RulesTabPr
           const title = lang === "RU" ? (rule.title_ru || rule.title_en) : (rule.title_en || rule.title_ru);
           const text = lang === "RU" ? (rule.text_ru || rule.text_en) : (rule.text_en || rule.text_ru);
           return (
-            <div key={rule.id} className="rounded-xl bg-card border border-border overflow-hidden">
+            <div key={rule.id} id={`rule-${rule.id}`} className="rounded-xl bg-card border border-border overflow-hidden">
               <button
                 onClick={() => setExpandedId(isOpen ? null : rule.id)}
                 className="w-full flex items-center justify-between px-4 py-3 text-left"
