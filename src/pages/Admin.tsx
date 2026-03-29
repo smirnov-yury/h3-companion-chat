@@ -583,7 +583,12 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
   const { components, rules, loaded } = useRules();
   const navigate = useNavigate();
   const [showInstruction, setShowInstruction] = useState(false);
-  const [activeTab, setActiveTab] = useState<"components" | "rules">("components");
+  const [activeTab, setActiveTab] = useState<"components" | "rules" | "categories">("components");
+
+  // Edit / Delete state
+  const [editItem, setEditItem] = useState<{ type: "component" | "rule"; item: AdminComponent | AdminRule } | null>(null);
+  const [deleteItem, setDeleteItem] = useState<{ type: "component" | "rule"; item: AdminComponent | AdminRule } | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // === Components state ===
   const [adminComps, setAdminComps] = useState<AdminComponent[]>([]);
