@@ -51,6 +51,7 @@ export default function EditItemModal({
   onClose,
   item,
   categories,
+  showTypeField,
   onSave,
 }: EditItemModalProps) {
   const [titleEn, setTitleEn] = useState("");
@@ -58,6 +59,7 @@ export default function EditItemModal({
   const [bodyEn, setBodyEn] = useState("");
   const [bodyRu, setBodyRu] = useState("");
   const [category, setCategory] = useState("");
+  const [itemType, setItemType] = useState("");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
@@ -68,6 +70,7 @@ export default function EditItemModal({
       setBodyEn(item.body_en);
       setBodyRu(item.body_ru);
       setCategory(item.category);
+      setItemType(item.type || "other");
       setSaved(false);
     }
   }, [item]);
