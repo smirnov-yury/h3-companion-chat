@@ -1,6 +1,6 @@
-import { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { useRules, type Component } from "@/context/RulesContext";
+import { useRules, type Component, type Rule } from "@/context/RulesContext";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -41,52 +41,116 @@ import {
   Lock,
 } from "lucide-react";
 
-/* ─── helpers ─── */
+/* ─── types ─── */
 
 interface AdminComponent extends Component {
-  category: string;
-  subcategory: string;
+  category_ru: string;
+  category_en: string;
+  subcategory_ru: string;
+  subcategory_en: string;
 }
 
-function deriveCategory(image: string): string {
+interface AdminRule extends Rule {
+  category_ru: string;
+  category_en: string;
+  subcategory_ru: string;
+  subcategory_en: string;
+}
+
+interface BiName {
+  name_ru: string;
+  name_en: string;
+}
+
+/* ─── helpers ─── */
+
+const COMP_CAT_MAP: Record<string, BiName> = {
+  unit: { name_ru: "Юниты", name_en: "Units" },
+  card: { name_ru: "Карты", name_en: "Cards" },
+  hero: { name_ru: "Герои", name_en: "Heroes" },
+  token: { name_ru: "Жетоны", name_en: "Tokens" },
+  icon: { name_ru: "Иконки", name_en: "Icons" },
+  schema: { name_ru: "Схемы", name_en: "Schemas" },
+  game: { name_ru: "Игровое", name_en: "Game" },
+  book: { name_ru: "Книги", name_en: "Books" },
+  mission: { name_ru: "Миссии", name_en: "Missions" },
+  location: { name_ru: "Локации", name_en: "Locations" },
+  rule: { name_ru: "Правила", name_en: "Rules" },
+  miss: { name_ru: "Разное", name_en: "Miscellaneous" },
+  other: { name_ru: "Прочее", name_en: "Other" },
+};
+
+function deriveCatBi(image: string): BiName {
   const m = image.match(/\{img:[^_}]+_([^_}]+)/);
   const raw = m?.[1] ?? "other";
-  const MAP: Record<string, string> = {
-    unit: "Юниты",
-    card: "Карты",
-    hero: "Герои",
-    token: "Жетоны",
-    icon: "Иконки",
-    schema: "Схемы",
-    game: "Игровое",
-    book: "Книги",
-    mission: "Миссии",
-    location: "Локации",
-    rule: "Правила",
-    miss: "Разное",
-    other: "Прочее",
-  };
-  return MAP[raw] ?? "Прочее";
+  return COMP_CAT_MAP[raw] ?? COMP_CAT_MAP.other;
 }
 
-function deriveSubcategory(c: Component): string {
-  // If it looks like a unit, use faction as subcategory
+const SUBCAT_MAP: Record<string, BiName> = {
+  castle: { name_ru: "Замок", name_en: "Castle" },
+  tower: { name_ru: "Башня", name_en: "Tower" },
+  inferno: { name_ru: "Инферно", name_en: "Inferno" },
+  fortress: { name_ru: "Крепость", name_en: "Fortress" },
+  conflux: { name_ru: "Сплетение", name_en: "Conflux" },
+  cove: { name_ru: "Причал", name_en: "Cove" },
+  neutral: { name_ru: "Нейтральные", name_en: "Neutral" },
+};
+
+function deriveSubcatBi(c: Component): BiName {
   if (/\{img:[^_]+_unit/.test(c.image)) {
     const match = c.image.match(/\{img:([^_]+)_unit/);
     const folder = match?.[1] ?? "other";
     const neutrals = ["tray", "design", "supp", "naval", "tournament"];
-    if (neutrals.includes(folder)) return "Нейтральные";
-    const MAP: Record<string, string> = {
-      castle: "Замок",
-      tower: "Башня",
-      inferno: "Инферно",
-      fortress: "Крепость",
-      conflux: "Сплетение",
-      cove: "Причал",
-    };
-    return MAP[folder] ?? "Прочее";
+    if (neutrals.includes(folder)) return SUBCAT_MAP.neutral;
+    return SUBCAT_MAP[folder] ?? { name_ru: "Прочее", name_en: "Other" };
   }
-  return "Общее";
+  return { name_ru: "Общее", name_en: "General" };
+}
+
+const RULE_CAT_MAP: Record<string, BiName> = {
+  abilities: { name_ru: "Способности", name_en: "Abilities" },
+  ability: { name_ru: "Способности", name_en: "Abilities" },
+  advanced: { name_ru: "Дополнительные правила", name_en: "Advanced Rules" },
+  adventure: { name_ru: "Приключение", name_en: "Adventure" },
+  ai: { name_ru: "ИИ противник", name_en: "AI Opponent" },
+  alliance: { name_ru: "Альянс", name_en: "Alliance" },
+  artifact: { name_ru: "Артефакты", name_en: "Artifacts" },
+  artifacts: { name_ru: "Артефакты", name_en: "Artifacts" },
+  combat: { name_ru: "Бой", name_en: "Combat" },
+  core: { name_ru: "Основные правила", name_en: "Core Rules" },
+  economy: { name_ru: "Экономика", name_en: "Economy" },
+  effects: { name_ru: "Эффекты", name_en: "Effects" },
+  events: { name_ru: "События", name_en: "Events" },
+  event: { name_ru: "События", name_en: "Events" },
+  general: { name_ru: "Общие правила", name_en: "General Rules" },
+  hero: { name_ru: "Герой", name_en: "Hero" },
+  heroes: { name_ru: "Герои", name_en: "Heroes" },
+  magic: { name_ru: "Магия", name_en: "Magic" },
+  map: { name_ru: "Карта", name_en: "Map" },
+  movement: { name_ru: "Передвижение", name_en: "Movement" },
+  recruitment: { name_ru: "Найм", name_en: "Recruitment" },
+  resources: { name_ru: "Ресурсы", name_en: "Resources" },
+  round: { name_ru: "Раунд", name_en: "Round" },
+  scenario: { name_ru: "Сценарий", name_en: "Scenario" },
+  setup: { name_ru: "Подготовка", name_en: "Setup" },
+  siege: { name_ru: "Осада", name_en: "Siege" },
+  spells: { name_ru: "Заклинания", name_en: "Spells" },
+  spell: { name_ru: "Заклинания", name_en: "Spells" },
+  town: { name_ru: "Город", name_en: "Town" },
+  trade: { name_ru: "Торговля", name_en: "Trade" },
+  turn: { name_ru: "Ход", name_en: "Turn" },
+  units: { name_ru: "Юниты", name_en: "Units" },
+  victory: { name_ru: "Победа", name_en: "Victory" },
+};
+
+function deriveRuleCatBi(rule: Rule): BiName {
+  const key = rule.category || "general";
+  return RULE_CAT_MAP[key] ?? { name_ru: key, name_en: key };
+}
+
+/** key for tree map — uses ru name as internal key */
+function biKey(b: BiName): string {
+  return b.name_ru;
 }
 
 /* ─── PIN Screen ─── */
@@ -116,13 +180,8 @@ function PinScreen({ onAuth }: { onAuth: (pin: string) => void }) {
     if (lockUntil <= Date.now()) return;
     const id = setInterval(() => {
       const left = Math.ceil((lockUntil - Date.now()) / 1000);
-      if (left <= 0) {
-        setCountdown(0);
-        setAttempts(0);
-        clearInterval(id);
-      } else {
-        setCountdown(left);
-      }
+      if (left <= 0) { setCountdown(0); setAttempts(0); clearInterval(id); }
+      else setCountdown(left);
     }, 500);
     return () => clearInterval(id);
   }, [lockUntil]);
@@ -131,70 +190,40 @@ function PinScreen({ onAuth }: { onAuth: (pin: string) => void }) {
 
   const handleDigit = (d: string) => {
     if (locked) return;
-    if (mode === "create") {
-      if (pin.length < 4) setPin((p) => p + d);
-    } else if (mode === "confirm") {
-      if (confirmPin.length < 4) setConfirmPin((p) => p + d);
-    } else {
-      if (pin.length < 4) setPin((p) => p + d);
-    }
+    if (mode === "create") { if (pin.length < 4) setPin(p => p + d); }
+    else if (mode === "confirm") { if (confirmPin.length < 4) setConfirmPin(p => p + d); }
+    else { if (pin.length < 4) setPin(p => p + d); }
     setError("");
   };
 
   const handleDelete = () => {
-    if (mode === "confirm") setConfirmPin((p) => p.slice(0, -1));
-    else setPin((p) => p.slice(0, -1));
+    if (mode === "confirm") setConfirmPin(p => p.slice(0, -1));
+    else setPin(p => p.slice(0, -1));
   };
 
   const handleSubmit = () => {
-    if (mode === "create") {
-      if (pin.length !== 4) return;
-      setMode("confirm");
-      return;
-    }
+    if (mode === "create") { if (pin.length !== 4) return; setMode("confirm"); return; }
     if (mode === "confirm") {
-      if (confirmPin !== pin) {
-        setError("PIN не совпадает");
-        setConfirmPin("");
-        return;
-      }
+      if (confirmPin !== pin) { setError("PIN не совпадает"); setConfirmPin(""); return; }
       sessionStorage.setItem("adminPin", pin);
       onAuth(pin);
       return;
     }
-    // check mode
-    if (pin === storedPin) {
-      onAuth(pin);
-      return;
-    }
+    if (pin === storedPin) { onAuth(pin); return; }
     const next = attempts + 1;
     setAttempts(next);
     setPin("");
-    if (next >= 3) {
-      const until = Date.now() + 60000;
-      setLockUntil(until);
-      setCountdown(60);
-      setError("Слишком много попыток");
-    } else {
-      setError(`Неверный PIN (попытка ${next}/3)`);
-    }
+    if (next >= 3) { setLockUntil(Date.now() + 60000); setCountdown(60); setError("Слишком много попыток"); }
+    else setError(`Неверный PIN (попытка ${next}/3)`);
   };
 
   useEffect(() => {
     const current = mode === "confirm" ? confirmPin : pin;
-    if (current.length === 4) {
-      const t = setTimeout(handleSubmit, 150);
-      return () => clearTimeout(t);
-    }
+    if (current.length === 4) { const t = setTimeout(handleSubmit, 150); return () => clearTimeout(t); }
   }, [pin, confirmPin]);
 
   const currentValue = mode === "confirm" ? confirmPin : pin;
-  const title =
-    mode === "create"
-      ? "Создать PIN"
-      : mode === "confirm"
-      ? "Подтвердите PIN"
-      : "Введите PIN";
+  const title = mode === "create" ? "Создать PIN" : mode === "confirm" ? "Подтвердите PIN" : "Введите PIN";
 
   return (
     <div className="min-h-dvh flex flex-col items-center justify-center bg-background p-4">
@@ -203,63 +232,27 @@ function PinScreen({ onAuth }: { onAuth: (pin: string) => void }) {
           <Lock className="w-10 h-10 mx-auto text-primary" />
           <h1 className="text-xl font-semibold text-foreground">{title}</h1>
         </div>
-
-        {/* Dots */}
         <div className="flex justify-center gap-3">
-          {[0, 1, 2, 3].map((i) => (
-            <div
-              key={i}
-              className={`w-4 h-4 rounded-full border-2 transition-colors ${
-                i < currentValue.length
-                  ? "bg-primary border-primary"
-                  : "border-muted-foreground"
-              }`}
-            />
+          {[0, 1, 2, 3].map(i => (
+            <div key={i} className={`w-4 h-4 rounded-full border-2 transition-colors ${i < currentValue.length ? "bg-primary border-primary" : "border-muted-foreground"}`} />
           ))}
         </div>
-
-        {error && (
-          <p className="text-center text-sm text-destructive">{error}</p>
-        )}
-        {locked && (
-          <p className="text-center text-sm text-muted-foreground">
-            Повторите через {countdown} сек.
-          </p>
-        )}
-
-        {/* Numpad */}
+        {error && <p className="text-center text-sm text-destructive">{error}</p>}
+        {locked && <p className="text-center text-sm text-muted-foreground">Повторите через {countdown} сек.</p>}
         <div className="grid grid-cols-3 gap-3">
           {[1, 2, 3, 4, 5, 6, 7, 8, 9, null, 0, "del"].map((d, i) => {
             if (d === null) return <div key={i} />;
-            if (d === "del")
-              return (
-                <button
-                  key="del"
-                  onClick={handleDelete}
-                  className="h-14 rounded-xl bg-muted text-foreground text-lg font-medium hover:bg-accent transition-colors"
-                >
-                  ←
-                </button>
-              );
+            if (d === "del") return (
+              <button key="del" onClick={handleDelete} className="h-14 rounded-xl bg-muted text-foreground text-lg font-medium hover:bg-accent transition-colors">←</button>
+            );
             return (
-              <button
-                key={d}
-                onClick={() => handleDigit(String(d))}
-                disabled={locked}
-                className="h-14 rounded-xl bg-card border border-border text-foreground text-lg font-semibold hover:bg-accent disabled:opacity-40 transition-colors"
-              >
-                {d}
-              </button>
+              <button key={d} onClick={() => handleDigit(String(d))} disabled={locked} className="h-14 rounded-xl bg-card border border-border text-foreground text-lg font-semibold hover:bg-accent disabled:opacity-40 transition-colors">{d}</button>
             );
           })}
         </div>
-
-        {/* Recovery */}
         {mode === "check" && (
           <Collapsible open={showRecovery} onOpenChange={setShowRecovery}>
-            <CollapsibleTrigger className="w-full text-center text-xs text-muted-foreground hover:text-foreground transition-colors">
-              Забыли PIN?
-            </CollapsibleTrigger>
+            <CollapsibleTrigger className="w-full text-center text-xs text-muted-foreground hover:text-foreground transition-colors">Забыли PIN?</CollapsibleTrigger>
             <CollapsibleContent className="mt-2 p-3 rounded-lg bg-muted text-xs text-muted-foreground leading-relaxed">
               Откройте файл JSON в GitHub и найдите поле <code className="text-primary">adminPin</code>
             </CollapsibleContent>
@@ -270,114 +263,60 @@ function PinScreen({ onAuth }: { onAuth: (pin: string) => void }) {
   );
 }
 
-/* ─── Sortable card ─── */
+/* ─── Sortable card (generic) ─── */
 
-function SortableCard({
-  comp,
-  isOverlay,
-}: {
-  comp: AdminComponent;
-  isOverlay?: boolean;
-}) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: comp.id });
-
-  const style = isOverlay
-    ? undefined
-    : {
-        transform: CSS.Transform.toString(transform),
-        transition,
-        opacity: isDragging ? 0.4 : 1,
-      };
-
-  const title = comp.title_ru || comp.title_en || comp.id;
-  const lastWord = comp.image
-    .replace(/\}$/, "")
-    .split(/[\s:/\\]+/)
-    .pop() || "";
+function SortableCard({ id, title, subtitle, isOverlay }: { id: string; title: string; subtitle?: string; isOverlay?: boolean }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
+  const style = isOverlay ? undefined : { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.4 : 1 };
 
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className={`flex items-center gap-2 p-2 rounded-lg bg-card border border-border ${
-        isOverlay ? "shadow-xl ring-2 ring-primary" : ""
-      }`}
-    >
-      <button
-        {...attributes}
-        {...listeners}
-        className="shrink-0 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground"
-      >
+    <div ref={setNodeRef} style={style} className={`flex items-center gap-2 p-2 rounded-lg bg-card border border-border ${isOverlay ? "shadow-xl ring-2 ring-primary" : ""}`}>
+      <button {...attributes} {...listeners} className="shrink-0 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground">
         <GripVertical className="w-4 h-4" />
       </button>
-      <div className="w-8 h-8 rounded bg-muted flex items-center justify-center shrink-0">
-        <span className="text-[7px] text-muted-foreground leading-tight">
-          {lastWord}
-        </span>
+      <div className="min-w-0">
+        <span className="text-xs text-card-foreground truncate block">{title}</span>
+        {subtitle && <span className="text-[10px] text-muted-foreground truncate block">{subtitle}</span>}
       </div>
-      <span className="text-xs text-card-foreground truncate">{title}</span>
     </div>
   );
 }
 
 /* ─── Droppable subcategory label ─── */
 
-function DroppableSubcategory({
-  catName,
-  subName,
-  count,
-  isActive,
-  isOver,
-  onClick,
-}: {
-  catName: string;
-  subName: string;
-  count: number;
-  isActive: boolean;
-  isOver: boolean;
-  onClick: () => void;
+function DroppableSubcategory({ dropId, label, count, isActive, isOver, onClick }: {
+  dropId: string; label: string; count: number; isActive: boolean; isOver: boolean; onClick: () => void;
 }) {
-  const { setNodeRef, isOver: dndOver } = useSortable({
-    id: `drop:${catName}/${subName}`,
-    disabled: true,
-  });
-
+  const { setNodeRef, isOver: dndOver } = useSortable({ id: dropId, disabled: true });
   const highlight = isOver || dndOver;
 
   return (
-    <button
-      ref={setNodeRef}
-      onClick={onClick}
-      className={`w-full text-left pl-8 pr-3 py-1.5 text-xs rounded transition-colors ${
-        isActive
-          ? "bg-primary/20 text-primary font-medium"
-          : highlight
-          ? "bg-accent text-accent-foreground"
-          : "text-muted-foreground hover:text-foreground"
-      }`}
-    >
-      {subName}{" "}
-      <span className="text-muted-foreground">({count})</span>
+    <button ref={setNodeRef} onClick={onClick} className={`w-full text-left pl-8 pr-3 py-1.5 text-xs rounded transition-colors ${
+      isActive ? "bg-primary/20 text-primary font-medium" : highlight ? "bg-accent text-accent-foreground" : "text-muted-foreground hover:text-foreground"
+    }`}>
+      {label} <span className="text-muted-foreground">({count})</span>
     </button>
+  );
+}
+
+/* ─── Bilingual name input ─── */
+
+function BiNameInput({ nameRu, nameEn, onChangeRu, onChangeEn, autoFocus }: {
+  nameRu: string; nameEn: string; onChangeRu: (v: string) => void; onChangeEn: (v: string) => void; autoFocus?: boolean;
+}) {
+  return (
+    <div className="space-y-1">
+      <input autoFocus={autoFocus} value={nameRu} onChange={e => onChangeRu(e.target.value)} placeholder="Название (RU)"
+        className="w-full text-xs px-2 py-1 rounded bg-input text-foreground border border-border outline-none focus:ring-1 focus:ring-ring" />
+      <input value={nameEn} onChange={e => onChangeEn(e.target.value)} placeholder="Name (EN)"
+        className="w-full text-xs px-2 py-1 rounded bg-input text-foreground border border-border outline-none focus:ring-1 focus:ring-ring" />
+    </div>
   );
 }
 
 /* ─── Instruction Modal ─── */
 
-function InstructionModal({
-  open,
-  onClose,
-}: {
-  open: boolean;
-  onClose: () => void;
-}) {
+function InstructionModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const steps = [
     'Нажмите «Экспорт JSON» — файл скачается автоматически',
     "Откройте ваш GitHub репозиторий",
@@ -387,22 +326,148 @@ function InstructionModal({
     "Lovable автоматически подтянет изменения из GitHub (или пересоберите вручную)",
     "Проверьте результат в приложении",
   ];
-
   return (
-    <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
+    <Dialog open={open} onOpenChange={o => !o && onClose()}>
       <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>Что делать после редактирования</DialogTitle>
-        </DialogHeader>
+        <DialogHeader><DialogTitle>Что делать после редактирования</DialogTitle></DialogHeader>
         <ol className="space-y-2 text-sm text-foreground list-decimal pl-5">
-          {steps.map((s, i) => (
-            <li key={i} className="leading-relaxed">
-              {s}
-            </li>
-          ))}
+          {steps.map((s, i) => <li key={i} className="leading-relaxed">{s}</li>)}
         </ol>
       </DialogContent>
     </Dialog>
+  );
+}
+
+/* ─── Generic tree+grid panel ─── */
+
+type TreeMap<T> = Record<string, Record<string, T[]>>;
+
+interface TreeItem {
+  id: string;
+  category_ru: string;
+  category_en: string;
+  subcategory_ru: string;
+  subcategory_en: string;
+}
+
+function buildTree<T extends TreeItem>(items: T[]): TreeMap<T> {
+  const map: TreeMap<T> = {};
+  for (const item of items) {
+    const catKey = item.category_ru;
+    const subKey = item.subcategory_ru;
+    if (!map[catKey]) map[catKey] = {};
+    if (!map[catKey][subKey]) map[catKey][subKey] = [];
+    map[catKey][subKey].push(item);
+  }
+  return map;
+}
+
+/** Find the EN name for a given RU cat/sub key from the items */
+function findEnName<T extends TreeItem>(items: T[], ruKey: string, field: "category" | "subcategory"): string {
+  const item = items.find(i => field === "category" ? i.category_ru === ruKey : i.subcategory_ru === ruKey);
+  return item ? (field === "category" ? item.category_en : item.subcategory_en) : ruKey;
+}
+
+interface CategoryTreePanelProps<T extends TreeItem> {
+  items: T[];
+  tree: TreeMap<T>;
+  prefix: string;
+  openCats: Set<string>;
+  toggleCat: (cat: string) => void;
+  activeSub: { cat: string; sub: string } | null;
+  setActiveSub: (v: { cat: string; sub: string } | null) => void;
+  overSubId: string | null;
+  onAddCategory: (ru: string, en: string) => void;
+  onAddSubcategory: (catRu: string, subRu: string, subEn: string) => void;
+}
+
+function CategoryTreePanel<T extends TreeItem>({
+  items, tree, prefix, openCats, toggleCat, activeSub, setActiveSub, overSubId, onAddCategory, onAddSubcategory,
+}: CategoryTreePanelProps<T>) {
+  const categories = useMemo(() => Object.keys(tree).sort(), [tree]);
+
+  const [newCatRu, setNewCatRu] = useState("");
+  const [newCatEn, setNewCatEn] = useState("");
+  const [addingSubFor, setAddingSubFor] = useState<string | null>(null);
+  const [newSubRu, setNewSubRu] = useState("");
+  const [newSubEn, setNewSubEn] = useState("");
+
+  const handleAddCat = () => {
+    const ru = newCatRu.trim();
+    const en = newCatEn.trim() || ru;
+    if (!ru) return;
+    onAddCategory(ru, en);
+    setNewCatRu("");
+    setNewCatEn("");
+  };
+
+  const handleAddSub = (catRu: string) => {
+    const ru = newSubRu.trim();
+    const en = newSubEn.trim() || ru;
+    if (!ru) return;
+    onAddSubcategory(catRu, ru, en);
+    setAddingSubFor(null);
+    setNewSubRu("");
+    setNewSubEn("");
+  };
+
+  return (
+    <aside className="w-64 shrink-0 border-r border-border overflow-y-auto p-3 space-y-1">
+      {categories.map(catRu => {
+        const subs = Object.keys(tree[catRu]).sort();
+        const isOpen = openCats.has(catRu);
+        const catEn = findEnName(items, catRu, "category");
+        return (
+          <Collapsible key={catRu} open={isOpen} onOpenChange={() => toggleCat(catRu)}>
+            <CollapsibleTrigger className="w-full flex items-center gap-1.5 px-2 py-2 text-sm font-medium text-foreground hover:bg-accent rounded transition-colors">
+              {isOpen ? <ChevronDown className="w-4 h-4 shrink-0" /> : <ChevronRight className="w-4 h-4 shrink-0" />}
+              <span className="truncate">{catRu}</span>
+              <span className="text-[10px] text-muted-foreground ml-1">/ {catEn}</span>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="space-y-0.5 mt-0.5">
+              {subs.map(subRu => {
+                const count = tree[catRu][subRu].length;
+                const isActive = activeSub?.cat === catRu && activeSub?.sub === subRu;
+                const dropId = `${prefix}drop:${catRu}/${subRu}`;
+                const subEn = findEnName(items, subRu, "subcategory");
+                return (
+                  <DroppableSubcategory
+                    key={dropId}
+                    dropId={dropId}
+                    label={`${subRu} / ${subEn}`}
+                    count={count}
+                    isActive={isActive}
+                    isOver={overSubId === dropId}
+                    onClick={() => setActiveSub({ cat: catRu, sub: subRu })}
+                  />
+                );
+              })}
+              {addingSubFor === catRu ? (
+                <div className="pl-6 pr-2 py-1 space-y-1">
+                  <BiNameInput nameRu={newSubRu} nameEn={newSubEn} onChangeRu={setNewSubRu} onChangeEn={setNewSubEn} autoFocus />
+                  <div className="flex gap-1">
+                    <Button size="sm" variant="ghost" className="h-6 px-2 text-xs" onClick={() => handleAddSub(catRu)}>OK</Button>
+                    <Button size="sm" variant="ghost" className="h-6 px-2 text-xs" onClick={() => setAddingSubFor(null)}>✕</Button>
+                  </div>
+                </div>
+              ) : (
+                <button onClick={() => { setAddingSubFor(catRu); setNewSubRu(""); setNewSubEn(""); }}
+                  className="pl-8 py-1 text-[11px] text-muted-foreground hover:text-primary transition-colors flex items-center gap-1">
+                  <Plus className="w-3 h-3" /> Добавить подкатегорию
+                </button>
+              )}
+            </CollapsibleContent>
+          </Collapsible>
+        );
+      })}
+
+      <div className="pt-2 space-y-1">
+        <BiNameInput nameRu={newCatRu} nameEn={newCatEn} onChangeRu={setNewCatRu} onChangeEn={setNewCatEn} />
+        <Button size="sm" variant="ghost" className="h-7 px-2 text-xs w-full" onClick={handleAddCat}>
+          <Plus className="w-3 h-3 mr-1" /> Добавить категорию
+        </Button>
+      </div>
+    </aside>
   );
 }
 
@@ -412,108 +477,165 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
   const { components, rules, loaded } = useRules();
   const navigate = useNavigate();
   const [showInstruction, setShowInstruction] = useState(false);
+  const [activeTab, setActiveTab] = useState<"components" | "rules">("components");
 
-  // Build admin components with category/subcategory
+  // === Components state ===
   const [adminComps, setAdminComps] = useState<AdminComponent[]>([]);
-
   useEffect(() => {
     if (!loaded) return;
-    setAdminComps(
-      components.map((c) => ({
+    setAdminComps(components.map(c => {
+      const existing = c as any;
+      const catBi = deriveCatBi(c.image);
+      const subBi = deriveSubcatBi(c);
+      return {
         ...c,
-        category: (c as any).category || deriveCategory(c.image),
-        subcategory: (c as any).subcategory || deriveSubcategory(c),
-      }))
-    );
+        category_ru: existing.category_ru || existing.category || catBi.name_ru,
+        category_en: existing.category_en || catBi.name_en,
+        subcategory_ru: existing.subcategory_ru || existing.subcategory || subBi.name_ru,
+        subcategory_en: existing.subcategory_en || subBi.name_en,
+      };
+    }));
   }, [loaded, components]);
 
-  // Build tree: category → subcategory → items
-  const tree = useMemo(() => {
-    const map: Record<string, Record<string, AdminComponent[]>> = {};
-    for (const c of adminComps) {
-      if (!map[c.category]) map[c.category] = {};
-      if (!map[c.category][c.subcategory])
-        map[c.category][c.subcategory] = [];
-      map[c.category][c.subcategory].push(c);
-    }
-    return map;
-  }, [adminComps]);
+  // === Rules state ===
+  const [adminRules, setAdminRules] = useState<AdminRule[]>([]);
+  useEffect(() => {
+    if (!loaded) return;
+    setAdminRules(rules.map(r => {
+      const existing = r as any;
+      const catBi = deriveRuleCatBi(r);
+      return {
+        ...r,
+        category_ru: existing.category_ru || catBi.name_ru,
+        category_en: existing.category_en || catBi.name_en,
+        subcategory_ru: existing.subcategory_ru || "Общее",
+        subcategory_en: existing.subcategory_en || "General",
+      };
+    }));
+  }, [loaded, rules]);
 
-  const categories = useMemo(() => Object.keys(tree).sort(), [tree]);
+  // === Components tree ===
+  const compTree = useMemo(() => buildTree(adminComps), [adminComps]);
+  const [compOpenCats, setCompOpenCats] = useState<Set<string>>(new Set());
+  const [compActiveSub, setCompActiveSub] = useState<{ cat: string; sub: string } | null>(null);
+  const [compDragItem, setCompDragItem] = useState<AdminComponent | null>(null);
+  const [compOverSubId, setCompOverSubId] = useState<string | null>(null);
 
-  const [openCats, setOpenCats] = useState<Set<string>>(new Set());
-  const [activeSub, setActiveSub] = useState<{
-    cat: string;
-    sub: string;
-  } | null>(null);
-  const [dragItem, setDragItem] = useState<AdminComponent | null>(null);
-  const [overSubId, setOverSubId] = useState<string | null>(null);
-  const [newCatName, setNewCatName] = useState("");
-  const [addingSubFor, setAddingSubFor] = useState<string | null>(null);
-  const [newSubName, setNewSubName] = useState("");
+  const toggleCompCat = useCallback((cat: string) => {
+    setCompOpenCats(prev => { const n = new Set(prev); n.has(cat) ? n.delete(cat) : n.add(cat); return n; });
+  }, []);
 
-  const toggleCat = (cat: string) => {
-    setOpenCats((prev) => {
-      const next = new Set(prev);
-      next.has(cat) ? next.delete(cat) : next.add(cat);
-      return next;
-    });
-  };
+  const compActiveItems = useMemo(() => {
+    if (!compActiveSub) return [];
+    return compTree[compActiveSub.cat]?.[compActiveSub.sub] ?? [];
+  }, [compActiveSub, compTree]);
 
-  const activeItems = useMemo(() => {
-    if (!activeSub) return [];
-    return tree[activeSub.cat]?.[activeSub.sub] ?? [];
-  }, [activeSub, tree]);
+  // === Rules tree ===
+  const ruleTree = useMemo(() => buildTree(adminRules), [adminRules]);
+  const [ruleOpenCats, setRuleOpenCats] = useState<Set<string>>(new Set());
+  const [ruleActiveSub, setRuleActiveSub] = useState<{ cat: string; sub: string } | null>(null);
+  const [ruleDragItem, setRuleDragItem] = useState<AdminRule | null>(null);
+  const [ruleOverSubId, setRuleOverSubId] = useState<string | null>(null);
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
-  );
+  const toggleRuleCat = useCallback((cat: string) => {
+    setRuleOpenCats(prev => { const n = new Set(prev); n.has(cat) ? n.delete(cat) : n.add(cat); return n; });
+  }, []);
+
+  const ruleActiveItems = useMemo(() => {
+    if (!ruleActiveSub) return [];
+    return ruleTree[ruleActiveSub.cat]?.[ruleActiveSub.sub] ?? [];
+  }, [ruleActiveSub, ruleTree]);
+
+  // === DnD ===
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 5 } }));
 
   const handleDragStart = (e: DragStartEvent) => {
-    const item = adminComps.find((c) => c.id === e.active.id);
-    if (item) setDragItem(item);
+    if (activeTab === "components") {
+      const item = adminComps.find(c => c.id === e.active.id);
+      if (item) setCompDragItem(item);
+    } else {
+      const item = adminRules.find(r => r.id === e.active.id);
+      if (item) setRuleDragItem(item);
+    }
   };
 
   const handleDragOver = (e: DragOverEvent) => {
     const overId = e.over?.id as string | undefined;
-    if (overId?.startsWith("drop:")) {
-      setOverSubId(overId);
+    const pfx = activeTab === "components" ? "comp-" : "rule-";
+    if (overId?.startsWith(`${pfx}drop:`)) {
+      if (activeTab === "components") setCompOverSubId(overId);
+      else setRuleOverSubId(overId);
     } else {
-      setOverSubId(null);
+      setCompOverSubId(null);
+      setRuleOverSubId(null);
     }
   };
 
   const handleDragEnd = (e: DragEndEvent) => {
     const overId = e.over?.id as string | undefined;
-    if (overId?.startsWith("drop:") && dragItem) {
-      const [cat, sub] = overId.replace("drop:", "").split("/");
-      if (cat && sub) {
-        setAdminComps((prev) =>
-          prev.map((c) =>
-            c.id === dragItem.id
-              ? { ...c, category: cat, subcategory: sub }
-              : c
-          )
-        );
+    if (activeTab === "components" && compDragItem) {
+      const pfx = "comp-drop:";
+      if (overId?.startsWith(pfx)) {
+        const rest = overId.replace(pfx, "");
+        const slashIdx = rest.indexOf("/");
+        const catRu = rest.slice(0, slashIdx);
+        const subRu = rest.slice(slashIdx + 1);
+        if (catRu && subRu) {
+          const catEn = findEnName(adminComps, catRu, "category") || catRu;
+          const subEn = findEnName(adminComps, subRu, "subcategory") || subRu;
+          setAdminComps(prev => prev.map(c =>
+            c.id === compDragItem.id ? { ...c, category_ru: catRu, category_en: catEn, subcategory_ru: subRu, subcategory_en: subEn } : c
+          ));
+        }
       }
+      setCompDragItem(null);
     }
-    setDragItem(null);
-    setOverSubId(null);
+    if (activeTab === "rules" && ruleDragItem) {
+      const pfx = "rule-drop:";
+      if (overId?.startsWith(pfx)) {
+        const rest = overId.replace(pfx, "");
+        const slashIdx = rest.indexOf("/");
+        const catRu = rest.slice(0, slashIdx);
+        const subRu = rest.slice(slashIdx + 1);
+        if (catRu && subRu) {
+          const catEn = findEnName(adminRules, catRu, "category") || catRu;
+          const subEn = findEnName(adminRules, subRu, "subcategory") || subRu;
+          setAdminRules(prev => prev.map(r =>
+            r.id === ruleDragItem.id ? { ...r, category_ru: catRu, category_en: catEn, subcategory_ru: subRu, subcategory_en: subEn } : r
+          ));
+        }
+      }
+      setRuleDragItem(null);
+    }
+    setCompOverSubId(null);
+    setRuleOverSubId(null);
   };
 
+  // === Add category/subcategory ===
+  const handleAddCompCategory = (ru: string, en: string) => {
+    // Empty categories tracked via a placeholder — simply open it
+    setCompOpenCats(prev => new Set([...prev, ru]));
+  };
+  const handleAddCompSubcategory = (_catRu: string, _subRu: string, _subEn: string) => {
+    // Subcategories only materialize when items are dragged into them
+  };
+  const handleAddRuleCategory = (ru: string, en: string) => {
+    setRuleOpenCats(prev => new Set([...prev, ru]));
+  };
+  const handleAddRuleSubcategory = (_catRu: string, _subRu: string, _subEn: string) => {};
+
+  // === Export ===
   const handleExport = () => {
     const output = {
-      rules,
-      components: adminComps.map(({ category, subcategory, ...rest }) => ({
+      rules: adminRules.map(({ category, ...rest }) => ({
         ...rest,
-        category,
-        subcategory,
+      })),
+      components: adminComps.map(({ category, subcategory, ...rest }: any) => ({
+        ...rest,
       })),
       adminPin,
     };
-    const blob = new Blob([JSON.stringify(output, null, 2)], {
-      type: "application/json",
-    });
+    const blob = new Blob([JSON.stringify(output, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -523,217 +645,134 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
     alert("Файл скачан. Замените его в GitHub и задеплойте.");
   };
 
-  const handleAddCategory = () => {
-    const name = newCatName.trim();
-    if (!name) return;
-    if (tree[name]) return;
-    // Add a dummy entry so the category shows up
-    setAdminComps((prev) => [...prev]);
-    // Force tree to include it by adding to openCats
-    setOpenCats((prev) => new Set([...prev, name]));
-    // We need to create the key in tree - simplest: add hidden placeholder
-    // Actually, just track empty categories separately
-    setNewCatName("");
-  };
-
-  const handleAddSubcategory = (cat: string) => {
-    const name = newSubName.trim();
-    if (!name) return;
-    setAddingSubFor(null);
-    setNewSubName("");
-    // Nothing to persist unless items are moved here
-  };
-
-  const handleLogout = () => {
-    sessionStorage.removeItem("adminPin");
-    navigate("/");
-  };
+  const handleLogout = () => { sessionStorage.removeItem("adminPin"); navigate("/"); };
 
   if (!loaded) {
-    return (
-      <div className="min-h-dvh flex items-center justify-center bg-background">
-        <p className="text-muted-foreground text-sm">Загрузка…</p>
-      </div>
-    );
+    return <div className="min-h-dvh flex items-center justify-center bg-background"><p className="text-muted-foreground text-sm">Загрузка…</p></div>;
   }
 
+  const dragItem = activeTab === "components" ? compDragItem : ruleDragItem;
+  const dragTitle = dragItem
+    ? (activeTab === "components"
+      ? ((dragItem as AdminComponent).title_ru || (dragItem as AdminComponent).title_en || dragItem.id)
+      : ((dragItem as AdminRule).title_ru || (dragItem as AdminRule).title_en || dragItem.id))
+    : "";
+
   return (
-    <DndContext
-      sensors={sensors}
-      collisionDetection={closestCenter}
-      onDragStart={handleDragStart}
-      onDragOver={handleDragOver}
-      onDragEnd={handleDragEnd}
-    >
+    <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragOver={handleDragOver} onDragEnd={handleDragEnd}>
       <div className="min-h-dvh flex flex-col bg-background">
         {/* Header */}
         <header className="flex items-center gap-3 px-4 py-3 border-b border-border shrink-0 flex-wrap">
-          <h1 className="text-lg font-semibold text-foreground mr-auto">
-            Админ-панель
-          </h1>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => setShowInstruction(true)}
-          >
-            <HelpCircle className="w-4 h-4 mr-1" />
-            Инструкция
+          <h1 className="text-lg font-semibold text-foreground mr-auto">Админ-панель</h1>
+          <Button size="sm" variant="outline" onClick={() => setShowInstruction(true)}>
+            <HelpCircle className="w-4 h-4 mr-1" /> Инструкция
           </Button>
           <Button size="sm" onClick={handleExport}>
-            <Download className="w-4 h-4 mr-1" />
-            Экспорт JSON
+            <Download className="w-4 h-4 mr-1" /> Экспорт JSON
           </Button>
           <Button size="sm" variant="ghost" onClick={handleLogout}>
-            <LogOut className="w-4 h-4 mr-1" />
-            Выйти
+            <LogOut className="w-4 h-4 mr-1" /> Выйти
           </Button>
         </header>
 
+        {/* Tabs */}
+        <div className="flex border-b border-border shrink-0">
+          <button onClick={() => setActiveTab("components")}
+            className={`px-4 py-2 text-sm font-medium transition-colors ${activeTab === "components" ? "border-b-2 border-primary text-primary" : "text-muted-foreground hover:text-foreground"}`}>
+            Компоненты
+          </button>
+          <button onClick={() => setActiveTab("rules")}
+            className={`px-4 py-2 text-sm font-medium transition-colors ${activeTab === "rules" ? "border-b-2 border-primary text-primary" : "text-muted-foreground hover:text-foreground"}`}>
+            Правила
+          </button>
+        </div>
+
         {/* Two-panel layout */}
         <div className="flex flex-1 overflow-hidden">
-          {/* Left panel: category tree */}
-          <aside className="w-64 shrink-0 border-r border-border overflow-y-auto p-3 space-y-1">
-            {categories.map((cat) => {
-              const subs = Object.keys(tree[cat]).sort();
-              const isOpen = openCats.has(cat);
-              return (
-                <Collapsible
-                  key={cat}
-                  open={isOpen}
-                  onOpenChange={() => toggleCat(cat)}
-                >
-                  <CollapsibleTrigger className="w-full flex items-center gap-1.5 px-2 py-2 text-sm font-medium text-foreground hover:bg-accent rounded transition-colors">
-                    {isOpen ? (
-                      <ChevronDown className="w-4 h-4 shrink-0" />
-                    ) : (
-                      <ChevronRight className="w-4 h-4 shrink-0" />
-                    )}
-                    {cat}
-                  </CollapsibleTrigger>
-                  <CollapsibleContent className="space-y-0.5 mt-0.5">
-                    {subs.map((sub) => {
-                      const count = tree[cat][sub].length;
-                      const isActive =
-                        activeSub?.cat === cat && activeSub?.sub === sub;
-                      const dropId = `drop:${cat}/${sub}`;
-                      return (
-                        <DroppableSubcategory
-                          key={dropId}
-                          catName={cat}
-                          subName={sub}
-                          count={count}
-                          isActive={isActive}
-                          isOver={overSubId === dropId}
-                          onClick={() => setActiveSub({ cat, sub })}
-                        />
-                      );
-                    })}
-                    {addingSubFor === cat ? (
-                      <div className="pl-8 pr-2 py-1 flex gap-1">
-                        <input
-                          autoFocus
-                          value={newSubName}
-                          onChange={(e) => setNewSubName(e.target.value)}
-                          onKeyDown={(e) =>
-                            e.key === "Enter" && handleAddSubcategory(cat)
-                          }
-                          placeholder="Название"
-                          className="flex-1 text-xs px-2 py-1 rounded bg-input text-foreground border border-border outline-none focus:ring-1 focus:ring-ring"
-                        />
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="h-6 px-2 text-xs"
-                          onClick={() => handleAddSubcategory(cat)}
-                        >
-                          OK
-                        </Button>
-                      </div>
-                    ) : (
-                      <button
-                        onClick={() => {
-                          setAddingSubFor(cat);
-                          setNewSubName("");
-                        }}
-                        className="pl-8 py-1 text-[11px] text-muted-foreground hover:text-primary transition-colors flex items-center gap-1"
-                      >
-                        <Plus className="w-3 h-3" />
-                        Добавить подкатегорию
-                      </button>
-                    )}
-                  </CollapsibleContent>
-                </Collapsible>
-              );
-            })}
-
-            {/* Add category */}
-            <div className="pt-2 space-y-1">
-              <div className="flex gap-1">
-                <input
-                  value={newCatName}
-                  onChange={(e) => setNewCatName(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleAddCategory()}
-                  placeholder="Новая категория"
-                  className="flex-1 text-xs px-2 py-1.5 rounded bg-input text-foreground border border-border outline-none focus:ring-1 focus:ring-ring"
-                />
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="h-7 px-2 text-xs"
-                  onClick={handleAddCategory}
-                >
-                  <Plus className="w-3 h-3" />
-                </Button>
-              </div>
-            </div>
-          </aside>
-
-          {/* Right panel: component grid */}
-          <main className="flex-1 overflow-y-auto p-4">
-            {!activeSub ? (
-              <div className="flex items-center justify-center h-full">
-                <p className="text-muted-foreground text-sm">
-                  Выберите подкатегорию слева
-                </p>
-              </div>
-            ) : (
-              <>
-                <h2 className="text-sm font-medium text-foreground mb-3">
-                  {activeSub.cat} → {activeSub.sub}{" "}
-                  <span className="text-muted-foreground font-normal">
-                    ({activeItems.length})
-                  </span>
-                </h2>
-                <SortableContext
-                  items={activeItems.map((c) => c.id)}
-                  strategy={rectSortingStrategy}
-                >
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-                    {activeItems.map((comp) => (
-                      <SortableCard key={comp.id} comp={comp} />
-                    ))}
+          {activeTab === "components" ? (
+            <>
+              <CategoryTreePanel
+                items={adminComps}
+                tree={compTree}
+                prefix="comp-"
+                openCats={compOpenCats}
+                toggleCat={toggleCompCat}
+                activeSub={compActiveSub}
+                setActiveSub={setCompActiveSub}
+                overSubId={compOverSubId}
+                onAddCategory={handleAddCompCategory}
+                onAddSubcategory={handleAddCompSubcategory}
+              />
+              <main className="flex-1 overflow-y-auto p-4">
+                {!compActiveSub ? (
+                  <div className="flex items-center justify-center h-full">
+                    <p className="text-muted-foreground text-sm">Выберите подкатегорию слева</p>
                   </div>
-                </SortableContext>
-                {activeItems.length === 0 && (
-                  <p className="text-muted-foreground text-xs mt-4">
-                    Перетащите компоненты сюда
-                  </p>
+                ) : (
+                  <>
+                    <h2 className="text-sm font-medium text-foreground mb-3">
+                      {compActiveSub.cat} → {compActiveSub.sub}{" "}
+                      <span className="text-muted-foreground font-normal">({compActiveItems.length})</span>
+                    </h2>
+                    <SortableContext items={compActiveItems.map(c => c.id)} strategy={rectSortingStrategy}>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                        {compActiveItems.map(comp => (
+                          <SortableCard key={comp.id} id={comp.id} title={comp.title_ru || comp.title_en || comp.id} />
+                        ))}
+                      </div>
+                    </SortableContext>
+                    {compActiveItems.length === 0 && <p className="text-muted-foreground text-xs mt-4">Перетащите компоненты сюда</p>}
+                  </>
                 )}
-              </>
-            )}
-          </main>
+              </main>
+            </>
+          ) : (
+            <>
+              <CategoryTreePanel
+                items={adminRules}
+                tree={ruleTree}
+                prefix="rule-"
+                openCats={ruleOpenCats}
+                toggleCat={toggleRuleCat}
+                activeSub={ruleActiveSub}
+                setActiveSub={setRuleActiveSub}
+                overSubId={ruleOverSubId}
+                onAddCategory={handleAddRuleCategory}
+                onAddSubcategory={handleAddRuleSubcategory}
+              />
+              <main className="flex-1 overflow-y-auto p-4">
+                {!ruleActiveSub ? (
+                  <div className="flex items-center justify-center h-full">
+                    <p className="text-muted-foreground text-sm">Выберите подкатегорию слева</p>
+                  </div>
+                ) : (
+                  <>
+                    <h2 className="text-sm font-medium text-foreground mb-3">
+                      {ruleActiveSub.cat} → {ruleActiveSub.sub}{" "}
+                      <span className="text-muted-foreground font-normal">({ruleActiveItems.length})</span>
+                    </h2>
+                    <SortableContext items={ruleActiveItems.map(r => r.id)} strategy={rectSortingStrategy}>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                        {ruleActiveItems.map(rule => (
+                          <SortableCard key={rule.id} id={rule.id} title={rule.title_ru || rule.title_en || rule.id} />
+                        ))}
+                      </div>
+                    </SortableContext>
+                    {ruleActiveItems.length === 0 && <p className="text-muted-foreground text-xs mt-4">Перетащите правила сюда</p>}
+                  </>
+                )}
+              </main>
+            </>
+          )}
         </div>
 
         {/* Drag overlay */}
         <DragOverlay>
-          {dragItem && <SortableCard comp={dragItem} isOverlay />}
+          {dragItem && <SortableCard id={dragItem.id} title={dragTitle} isOverlay />}
         </DragOverlay>
       </div>
 
-      <InstructionModal
-        open={showInstruction}
-        onClose={() => setShowInstruction(false)}
-      />
+      <InstructionModal open={showInstruction} onClose={() => setShowInstruction(false)} />
     </DndContext>
   );
 }
@@ -744,19 +783,11 @@ export default function Admin() {
   const [authed, setAuthed] = useState(false);
   const [pin, setPin] = useState("");
 
-  const handleAuth = (p: string) => {
-    sessionStorage.setItem("adminPin", p);
-    setPin(p);
-    setAuthed(true);
-  };
+  const handleAuth = (p: string) => { sessionStorage.setItem("adminPin", p); setPin(p); setAuthed(true); };
 
-  // Auto-auth if PIN exists in session
   useEffect(() => {
     const saved = sessionStorage.getItem("adminPin");
-    if (saved) {
-      setPin(saved);
-      setAuthed(true);
-    }
+    if (saved) { setPin(saved); setAuthed(true); }
   }, []);
 
   if (!authed) return <PinScreen onAuth={handleAuth} />;
