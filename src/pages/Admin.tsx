@@ -401,10 +401,13 @@ interface CategoryTreePanelProps<T extends TreeItem> {
   onAddSubcategory: (catRu: string, subRu: string, subEn: string) => void;
   onRenameCategory: (oldRu: string, newRu: string, newEn: string) => void;
   onRenameSubcategory: (catRu: string, oldSubRu: string, newSubRu: string, newSubEn: string) => void;
+  onDeleteCategory?: (catRu: string) => void;
+  onDeleteSubcategory?: (catRu: string, subRu: string) => void;
+  extraFooter?: React.ReactNode;
 }
 
 function CategoryTreePanel<T extends TreeItem>({
-  items, tree, prefix, openCats, toggleCat, activeSub, setActiveSub, overSubId, onAddCategory, onAddSubcategory, onRenameCategory, onRenameSubcategory,
+  items, tree, prefix, openCats, toggleCat, activeSub, setActiveSub, overSubId, onAddCategory, onAddSubcategory, onRenameCategory, onRenameSubcategory, onDeleteCategory, onDeleteSubcategory, extraFooter,
 }: CategoryTreePanelProps<T>) {
   const categories = useMemo(() => Object.keys(tree).sort(), [tree]);
 
@@ -505,6 +508,12 @@ function CategoryTreePanel<T extends TreeItem>({
                 className="opacity-0 group-hover:opacity-100 p-1 text-muted-foreground hover:text-foreground transition-opacity shrink-0">
                 <Pencil className="w-3 h-3" />
               </button>
+              {onDeleteCategory && (
+                <button onClick={(e) => { e.stopPropagation(); onDeleteCategory(catRu); }}
+                  className="opacity-0 group-hover:opacity-100 p-1 text-muted-foreground hover:text-destructive transition-opacity shrink-0">
+                  <Trash2 className="w-3 h-3" />
+                </button>
+              )}
             </div>
             <CollapsibleContent className="space-y-0.5 mt-0.5">
               {subs.map(subRu => {
@@ -544,6 +553,12 @@ function CategoryTreePanel<T extends TreeItem>({
                       className="opacity-0 group-hover/sub:opacity-100 p-1 text-muted-foreground hover:text-foreground transition-opacity shrink-0">
                       <Pencil className="w-3 h-3" />
                     </button>
+                    {onDeleteSubcategory && (
+                      <button onClick={() => onDeleteSubcategory(catRu, subRu)}
+                        className="opacity-0 group-hover/sub:opacity-100 p-1 text-muted-foreground hover:text-destructive transition-opacity shrink-0">
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    )}
                   </div>
                 );
               })}
@@ -572,6 +587,7 @@ function CategoryTreePanel<T extends TreeItem>({
           <Plus className="w-3 h-3 mr-1" /> Добавить категорию
         </Button>
       </div>
+      {extraFooter}
     </aside>
   );
 }
@@ -629,11 +645,11 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
   useEffect(() => {
     if (!loaded) return;
     setAdminComps(components.map(c => {
-      const typeKey = (c as any).type || "other";
-      const typeInfo = componentTypes.find(t => t.key === typeKey);
-      const catRu = typeInfo?.label_ru || typeKey;
-      const catEn = typeInfo?.label_en || typeKey;
-      // For units, sub-group by faction; for others, flat "Общее"
+      const typeKey = (c as any).type;
+      const typeInfo = typeKey ? componentTypes.find(t => t.key === typeKey) : null;
+      const isUncategorized = !typeKey || !typeInfo;
+      const catRu = isUncategorized ? "Другие" : typeInfo!.label_ru;
+      const catEn = isUncategorized ? "Other" : typeInfo!.label_en;
       const subBi = typeKey === "unit" ? deriveFactionBi(c) : { name_ru: "Общее", name_en: "General" };
       return {
         ...c,
@@ -690,7 +706,15 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
   }, [loaded, rules]);
 
   // === Components tree ===
-  const compTree = useMemo(() => buildTree(adminComps), [adminComps]);
+  const [compVirtualSubs, setCompVirtualSubs] = useState<{ cat: string; sub: string }[]>([]);
+  const compTree = useMemo(() => {
+    const t = buildTree(adminComps);
+    for (const v of compVirtualSubs) {
+      if (!t[v.cat]) t[v.cat] = {};
+      if (!t[v.cat][v.sub]) t[v.cat][v.sub] = [];
+    }
+    return t;
+  }, [adminComps, compVirtualSubs]);
   const [compOpenCats, setCompOpenCats] = useState<Set<string>>(new Set());
   const [compActiveSub, setCompActiveSub] = useState<{ cat: string; sub: string } | null>(null);
   const [compDragItem, setCompDragItem] = useState<AdminComponent | null>(null);
@@ -787,14 +811,13 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
   };
 
   // === Add category/subcategory ===
-  const handleAddCompCategory = (ru: string, en: string) => {
-    // Empty categories tracked via a placeholder — simply open it
+  const handleAddCompCategory = (ru: string, _en: string) => {
     setCompOpenCats(prev => new Set([...prev, ru]));
   };
-  const handleAddCompSubcategory = (_catRu: string, _subRu: string, _subEn: string) => {
-    // Subcategories only materialize when items are dragged into them
+  const handleAddCompSubcategory = (catRu: string, subRu: string, _subEn: string) => {
+    setCompVirtualSubs(prev => [...prev, { cat: catRu, sub: subRu }]);
   };
-  const handleAddRuleCategory = (ru: string, en: string) => {
+  const handleAddRuleCategory = (ru: string, _en: string) => {
     setRuleOpenCats(prev => new Set([...prev, ru]));
   };
   const handleAddRuleSubcategory = (_catRu: string, _subRu: string, _subEn: string) => {};
@@ -825,6 +848,34 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
       r.category_ru === catRu && r.subcategory_ru === oldSubRu ? { ...r, subcategory_ru: newSubRu, subcategory_en: newSubEn } : r
     ));
     if (ruleActiveSub?.cat === catRu && ruleActiveSub?.sub === oldSubRu) setRuleActiveSub({ cat: catRu, sub: newSubRu });
+  };
+
+  // === Delete category/subcategory ===
+  const handleDeleteCompCategory = async (catRu: string) => {
+    const typeEntry = componentTypes.find(t => t.label_ru === catRu);
+    if (!typeEntry) return;
+    if (!confirm(`Удалить категорию "${catRu}"? Все компоненты будут перемещены в "Другие".`)) return;
+    await supabase.from("components").update({ type: null } as any).eq("type", typeEntry.key);
+    await supabase.from("component_types").delete().eq("key", typeEntry.key);
+    setComponentTypes(prev => prev.filter(t => t.key !== typeEntry.key));
+    setAdminComps(prev => prev.map(c =>
+      c.category_ru === catRu ? { ...c, type: null as any, category_ru: "Другие", category_en: "Other", subcategory_ru: "Общее", subcategory_en: "General" } : c
+    ));
+    if (compActiveSub?.cat === catRu) setCompActiveSub(null);
+  };
+  const handleDeleteCompSubcategory = async (catRu: string, subRu: string) => {
+    if (!confirm(`Удалить подкатегорию "${subRu}"? Компоненты будут перемещены в "Общее".`)) return;
+    const factionKey = Object.entries(FACTION_MAP).find(([_, v]) => v.name_ru === subRu)?.[0];
+    if (factionKey) {
+      await supabase.from("components").update({ faction: null } as any).eq("faction", factionKey);
+    }
+    setAdminComps(prev => prev.map(c =>
+      c.category_ru === catRu && c.subcategory_ru === subRu
+        ? { ...c, subcategory_ru: "Общее", subcategory_en: "General" }
+        : c
+    ));
+    setCompVirtualSubs(prev => prev.filter(v => !(v.cat === catRu && v.sub === subRu)));
+    if (compActiveSub?.cat === catRu && compActiveSub?.sub === subRu) setCompActiveSub(null);
   };
 
   // === Edit / Delete handlers ===
@@ -997,6 +1048,34 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
                 onAddSubcategory={handleAddCompSubcategory}
                 onRenameCategory={handleRenameCompCategory}
                 onRenameSubcategory={handleRenameCompSubcategory}
+                onDeleteCategory={handleDeleteCompCategory}
+                onDeleteSubcategory={handleDeleteCompSubcategory}
+                extraFooter={
+                  <div className="border-t border-border pt-3 mt-3 space-y-2">
+                    <h4 className="text-xs font-medium text-muted-foreground px-2">Типы компонентов</h4>
+                    <div className="space-y-1 px-2">
+                      {componentTypes.map(t => (
+                        <div key={t.key} className="flex items-center gap-1 text-[11px] text-foreground">
+                          <span className="truncate flex-1">{t.key} — {t.label_ru}</span>
+                          <button onClick={() => handleDeleteType(t.key)} className="shrink-0 p-0.5 text-muted-foreground hover:text-destructive transition-colors">
+                            <Trash2 className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="px-2 space-y-1">
+                      <input value={newTypeKey} onChange={e => setNewTypeKey(e.target.value)} placeholder="key (latin)"
+                        className="w-full text-[11px] px-2 py-1 rounded bg-input text-foreground border border-border outline-none focus:ring-1 focus:ring-ring" />
+                      <input value={newTypeLabelRu} onChange={e => setNewTypeLabelRu(e.target.value)} placeholder="Label RU"
+                        className="w-full text-[11px] px-2 py-1 rounded bg-input text-foreground border border-border outline-none focus:ring-1 focus:ring-ring" />
+                      <input value={newTypeLabelEn} onChange={e => setNewTypeLabelEn(e.target.value)} placeholder="Label EN"
+                        className="w-full text-[11px] px-2 py-1 rounded bg-input text-foreground border border-border outline-none focus:ring-1 focus:ring-ring" />
+                      <Button size="sm" variant="ghost" className="h-6 px-2 text-[11px] w-full" onClick={handleAddType}>
+                        <Plus className="w-3 h-3 mr-1" /> Добавить тип
+                      </Button>
+                    </div>
+                  </div>
+                }
               />
               <main className="flex-1 overflow-y-auto p-4">
                 {/* Create Component Button */}
@@ -1074,42 +1153,6 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
                     {compActiveItems.length === 0 && <p className="text-muted-foreground text-xs mt-4">Перетащите компоненты сюда</p>}
                   </>
                 )}
-
-                {/* Component Types Manager */}
-                <div className="mt-8 border-t border-border pt-4">
-                  <h3 className="text-sm font-medium text-foreground mb-3">Типы компонентов</h3>
-                  <div className="flex flex-wrap gap-2 mb-3">
-                    {componentTypes.map(t => (
-                      <div key={t.key} className="flex items-center gap-1 px-2 py-1 rounded bg-muted text-xs text-foreground">
-                        <span className="font-medium">{t.key}</span>
-                        <span className="text-muted-foreground">— {t.label_ru} / {t.label_en}</span>
-                        <button onClick={() => handleDeleteType(t.key)} className="ml-1 text-muted-foreground hover:text-destructive transition-colors">
-                          <Trash2 className="w-3 h-3" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="flex flex-wrap gap-2 items-end">
-                    <div className="space-y-1">
-                      <label className="text-[10px] text-muted-foreground">Key</label>
-                      <input value={newTypeKey} onChange={e => setNewTypeKey(e.target.value)} placeholder="terrain"
-                        className="w-28 text-xs px-2 py-1.5 rounded bg-input text-foreground border border-border outline-none focus:ring-1 focus:ring-ring" />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-[10px] text-muted-foreground">Label RU</label>
-                      <input value={newTypeLabelRu} onChange={e => setNewTypeLabelRu(e.target.value)} placeholder="Террейн"
-                        className="w-32 text-xs px-2 py-1.5 rounded bg-input text-foreground border border-border outline-none focus:ring-1 focus:ring-ring" />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-[10px] text-muted-foreground">Label EN</label>
-                      <input value={newTypeLabelEn} onChange={e => setNewTypeLabelEn(e.target.value)} placeholder="Terrain"
-                        className="w-32 text-xs px-2 py-1.5 rounded bg-input text-foreground border border-border outline-none focus:ring-1 focus:ring-ring" />
-                    </div>
-                    <Button size="sm" variant="outline" onClick={handleAddType} className="h-7 text-xs">
-                      <Plus className="w-3 h-3 mr-1" /> Добавить тип
-                    </Button>
-                  </div>
-                </div>
               </main>
             </>
           ) : activeTab === "rules" ? (
