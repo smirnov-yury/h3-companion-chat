@@ -952,6 +952,7 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
       setAdminRules(prev => prev.map(r =>
         r.id === item.id ? { ...r, title_en: saveData.title_en, title_ru: saveData.title_ru, text_en: saveData.body_en, text_ru: saveData.body_ru, category: saveData.category } : r
       ));
+      refetch();
     }
   };
 
