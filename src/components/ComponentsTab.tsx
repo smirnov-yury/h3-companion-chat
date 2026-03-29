@@ -57,11 +57,6 @@ function ComponentImage({ image, mediaUrl }: { image: string; mediaUrl?: string 
   return <div className="w-12 h-12 rounded bg-muted" />;
 }
 
-function getComponentCategory(image: string): string {
-  const m = image.match(/\{img:[^_}]+_([^_}]+)/);
-  return m?.[1] ?? "other";
-}
-
 function getFaction(image: string): string {
   const match = image.match(/\{img:([^_]+)_unit/);
   return match?.[1] ?? "other";
@@ -82,24 +77,13 @@ const FACTION_LABELS: Record<string, { ru: string; en: string }> = {
   other: { ru: "Прочие", en: "Other" },
 };
 
-const CATEGORY_LABELS: Record<string, { ru: string; en: string }> = {
-  unit: { ru: "Юниты", en: "Units" },
-  card: { ru: "Карты", en: "Cards" },
-  hero: { ru: "Герои", en: "Heroes" },
-  token: { ru: "Жетоны", en: "Tokens" },
-  icon: { ru: "Иконки", en: "Icons" },
-  schema: { ru: "Схемы", en: "Schemas" },
-  game: { ru: "Игровое", en: "Game" },
-  book: { ru: "Книги", en: "Books" },
-  mission: { ru: "Миссии", en: "Missions" },
-  location: { ru: "Локации", en: "Locations" },
-  rule: { ru: "Правила", en: "Rules" },
-  miss: { ru: "Разное", en: "Misc" },
-  other: { ru: "Прочее", en: "Other" },
-};
-
-
-const CATEGORY_ORDER = ["unit", "card", "hero", "token", "icon", "schema", "game", "book", "mission", "location", "rule", "miss", "other"];
+interface DbCategory {
+  key: string;
+  label_ru: string;
+  label_en: string;
+  cover_image_url: string | null;
+  sort_order: number | null;
+}
 
 interface ComponentsTabProps {
   onNavigateToRule?: (ruleId: string) => void;
@@ -115,32 +99,46 @@ export default function ComponentsTab({ onNavigateToRule }: ComponentsTabProps) 
   const [selected, setSelected] = useState<Component | null>(null);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [activeFaction, setActiveFaction] = useState<string>("all");
-  const [categoryImages, setCategoryImages] = useState<Record<string, string>>({});
+  const [dbCategories, setDbCategories] = useState<DbCategory[]>([]);
 
   useEffect(() => {
-    supabase.from("categories").select("key, cover_image_url").then(({ data }) => {
-      if (data) {
-        const map: Record<string, string> = {};
-        for (const row of data) {
-          if (row.cover_image_url) map[row.key] = row.cover_image_url;
-        }
-        setCategoryImages(map);
-      }
+    supabase.from("categories").select("*").order("sort_order").then(({ data }) => {
+      if (data) setDbCategories(data as DbCategory[]);
     });
   }, []);
+
+  const categoryLabels = useMemo(() => {
+    const map: Record<string, { ru: string; en: string }> = {};
+    for (const cat of dbCategories) {
+      map[cat.key] = { ru: cat.label_ru, en: cat.label_en };
+    }
+    return map;
+  }, [dbCategories]);
+
+  const categoryImages = useMemo(() => {
+    const map: Record<string, string> = {};
+    for (const cat of dbCategories) {
+      if (cat.cover_image_url) map[cat.key] = cat.cover_image_url;
+    }
+    return map;
+  }, [dbCategories]);
 
   const grouped = useMemo(() => {
     const map: Record<string, Component[]> = {};
     for (const c of components) {
-      const cat = getComponentCategory(c.image);
+      const cat = c.category || "other";
       (map[cat] ??= []).push(c);
     }
     return map;
   }, [components]);
 
   const categories = useMemo(() => {
-    return CATEGORY_ORDER.filter((k) => grouped[k]?.length);
-  }, [grouped]);
+    const orderedKeys = dbCategories.map(c => c.key);
+    const present = orderedKeys.filter((k) => grouped[k]?.length);
+    // Add any keys present in data but not in DB categories
+    const extra = Object.keys(grouped).filter(k => !orderedKeys.includes(k) && grouped[k]?.length);
+    return [...present, ...extra];
+  }, [grouped, dbCategories]);
 
   const categoryItems = useMemo(() => {
     if (!activeCategory) return [];
@@ -246,7 +244,7 @@ export default function ComponentsTab({ onNavigateToRule }: ComponentsTabProps) 
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {categories.map((cat) => {
-                const label = lang === "RU" ? CATEGORY_LABELS[cat]?.ru : CATEGORY_LABELS[cat]?.en;
+                const label = lang === "RU" ? categoryLabels[cat]?.ru : categoryLabels[cat]?.en;
                 const count = grouped[cat]?.length ?? 0;
                 const imageUrl = categoryImages[cat];
                 return (
@@ -277,7 +275,7 @@ export default function ComponentsTab({ onNavigateToRule }: ComponentsTabProps) 
   }
 
   // Category detail view
-  const catLabel = lang === "RU" ? CATEGORY_LABELS[activeCategory]?.ru : CATEGORY_LABELS[activeCategory]?.en;
+  const catLabel = lang === "RU" ? categoryLabels[activeCategory]?.ru : categoryLabels[activeCategory]?.en;
 
   return (
     <div className="flex flex-col h-full">
