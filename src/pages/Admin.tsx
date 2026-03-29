@@ -1054,6 +1054,7 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
         item={editModalItem}
         categories={editCategories}
         showTypeField={editItem?.type === "component"}
+        componentTypes={componentTypes}
         onSave={handleSaveEdit}
       />
       <DeleteConfirmDialog
