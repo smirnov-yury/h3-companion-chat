@@ -24,6 +24,14 @@ function useDebounce(value: string, delay: number) {
   return [debounced, update] as const;
 }
 
+function matchesSearch(comp: Component, q: string): boolean {
+  return (
+    (comp.title_ru || "").toLowerCase().includes(q) ||
+    (comp.title_en || "").toLowerCase().includes(q) ||
+    (comp.image || "").toLowerCase().includes(q)
+  );
+}
+
 function ImagePlaceholder({ tag }: { tag: string }) {
   const lastWord = tag.replace(/\}$/, "").split(/[\s:/\\]+/).pop() || tag;
   return (
