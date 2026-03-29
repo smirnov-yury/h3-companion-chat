@@ -1,0 +1,1 @@
+DELETE FROM component_types WHERE key = 'test';

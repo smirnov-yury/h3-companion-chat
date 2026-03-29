@@ -93,24 +93,23 @@ function deriveCatBi(image: string): BiName {
   return COMP_CAT_MAP[raw] ?? COMP_CAT_MAP.other;
 }
 
-const SUBCAT_MAP: Record<string, BiName> = {
+const FACTION_MAP: Record<string, BiName> = {
   castle: { name_ru: "Замок", name_en: "Castle" },
   tower: { name_ru: "Башня", name_en: "Tower" },
   inferno: { name_ru: "Инферно", name_en: "Inferno" },
+  necropolis: { name_ru: "Некрополис", name_en: "Necropolis" },
+  rampart: { name_ru: "Оплот", name_en: "Rampart" },
   fortress: { name_ru: "Крепость", name_en: "Fortress" },
   conflux: { name_ru: "Сплетение", name_en: "Conflux" },
   cove: { name_ru: "Причал", name_en: "Cove" },
-  neutral: { name_ru: "Нейтральные", name_en: "Neutral" },
+  tray: { name_ru: "Нейтральные", name_en: "Neutrals" },
+  other: { name_ru: "Прочие", name_en: "Other" },
 };
 
-function deriveSubcatBi(c: Component): BiName {
-  if (/\{img:[^_]+_unit/.test(c.image)) {
-    const match = c.image.match(/\{img:([^_]+)_unit/);
-    const folder = match?.[1] ?? "other";
-    const neutrals = ["tray", "design", "supp", "naval", "tournament"];
-    if (neutrals.includes(folder)) return SUBCAT_MAP.neutral;
-    return SUBCAT_MAP[folder] ?? { name_ru: "Прочее", name_en: "Other" };
-  }
+function deriveFactionBi(c: Component): BiName {
+  const faction = (c as any).faction;
+  if (faction && FACTION_MAP[faction]) return FACTION_MAP[faction];
+  if (faction) return { name_ru: faction, name_en: faction };
   return { name_ru: "Общее", name_en: "General" };
 }
 
@@ -634,7 +633,8 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
       const typeInfo = componentTypes.find(t => t.key === typeKey);
       const catRu = typeInfo?.label_ru || typeKey;
       const catEn = typeInfo?.label_en || typeKey;
-      const subBi = deriveSubcatBi(c);
+      // For units, sub-group by faction; for others, flat "Общее"
+      const subBi = typeKey === "unit" ? deriveFactionBi(c) : { name_ru: "Общее", name_en: "General" };
       return {
         ...c,
         category_ru: catRu,
