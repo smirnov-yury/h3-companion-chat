@@ -269,19 +269,36 @@ function PinScreen({ onAuth }: { onAuth: (pin: string) => void }) {
 
 /* ─── Sortable card (generic) ─── */
 
-function SortableCard({ id, title, subtitle, isOverlay }: { id: string; title: string; subtitle?: string; isOverlay?: boolean }) {
+function SortableCard({ id, title, subtitle, isOverlay, onEdit, onDelete }: {
+  id: string; title: string; subtitle?: string; isOverlay?: boolean;
+  onEdit?: () => void; onDelete?: () => void;
+}) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
   const style = isOverlay ? undefined : { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.4 : 1 };
 
   return (
-    <div ref={setNodeRef} style={style} className={`flex items-center gap-2 p-2 rounded-lg bg-card border border-border ${isOverlay ? "shadow-xl ring-2 ring-primary" : ""}`}>
+    <div ref={setNodeRef} style={style} className={`group/card flex items-center gap-2 p-2 rounded-lg bg-card border border-border ${isOverlay ? "shadow-xl ring-2 ring-primary" : ""}`}>
       <button {...attributes} {...listeners} className="shrink-0 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground">
         <GripVertical className="w-4 h-4" />
       </button>
-      <div className="min-w-0">
+      <div className="min-w-0 flex-1">
         <span className="text-xs text-card-foreground truncate block">{title}</span>
         {subtitle && <span className="text-[10px] text-muted-foreground truncate block">{subtitle}</span>}
       </div>
+      {!isOverlay && (onEdit || onDelete) && (
+        <div className="flex gap-1 shrink-0 opacity-0 group-hover/card:opacity-100 max-md:opacity-100 transition-opacity">
+          {onEdit && (
+            <button onClick={(e) => { e.stopPropagation(); onEdit(); }} className="p-1 rounded text-muted-foreground hover:text-foreground hover:bg-accent transition-colors">
+              <Pencil className="w-3.5 h-3.5" />
+            </button>
+          )}
+          {onDelete && (
+            <button onClick={(e) => { e.stopPropagation(); onDelete(); }} className="p-1 rounded text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors">
+              <Trash2 className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
+      )}
     </div>
   );
 }
