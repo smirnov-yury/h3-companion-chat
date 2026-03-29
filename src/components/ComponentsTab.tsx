@@ -275,7 +275,7 @@ export default function ComponentsTab({ onNavigateToRule }: ComponentsTabProps) 
   }
 
   // Category detail view
-  const catLabel = lang === "RU" ? CATEGORY_LABELS[activeCategory]?.ru : CATEGORY_LABELS[activeCategory]?.en;
+  const catLabel = lang === "RU" ? categoryLabels[activeCategory]?.ru : categoryLabels[activeCategory]?.en;
 
   return (
     <div className="flex flex-col h-full">
