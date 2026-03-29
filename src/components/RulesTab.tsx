@@ -116,7 +116,7 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled }: RulesTabPr
   const filtered = useMemo(() => {
     let list = rules;
     if (selectedCategory) {
-      list = list.filter((r) => getTranslatedCategory(r, lang) === selectedCategory);
+      list = list.filter((r) => r.category === selectedCategory);
     }
     const q = debouncedSearch.toLowerCase();
     if (q.length >= 2) {
