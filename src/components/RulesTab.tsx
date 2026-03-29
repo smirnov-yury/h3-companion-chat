@@ -107,10 +107,10 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled }: RulesTabPr
     }
   }, [scrollToRuleId, loaded]);
 
-  // Build categories from translated names (merges duplicates)
+  // Only show categories that have rules in the data
   const categories = useMemo(
-    () => Array.from(new Set(rules.map((r) => getTranslatedCategory(r, lang)).filter(Boolean))).sort(),
-    [rules, lang],
+    () => RULE_CATEGORIES.filter((c) => rules.some((r) => r.category === c.key)),
+    [rules],
   );
 
   const filtered = useMemo(() => {
