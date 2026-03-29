@@ -811,14 +811,13 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
   };
 
   // === Add category/subcategory ===
-  const handleAddCompCategory = (ru: string, en: string) => {
-    // Empty categories tracked via a placeholder — simply open it
+  const handleAddCompCategory = (ru: string, _en: string) => {
     setCompOpenCats(prev => new Set([...prev, ru]));
   };
-  const handleAddCompSubcategory = (_catRu: string, _subRu: string, _subEn: string) => {
-    // Subcategories only materialize when items are dragged into them
+  const handleAddCompSubcategory = (catRu: string, subRu: string, _subEn: string) => {
+    setCompVirtualSubs(prev => [...prev, { cat: catRu, sub: subRu }]);
   };
-  const handleAddRuleCategory = (ru: string, en: string) => {
+  const handleAddRuleCategory = (ru: string, _en: string) => {
     setRuleOpenCats(prev => new Set([...prev, ru]));
   };
   const handleAddRuleSubcategory = (_catRu: string, _subRu: string, _subEn: string) => {};
@@ -849,6 +848,34 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
       r.category_ru === catRu && r.subcategory_ru === oldSubRu ? { ...r, subcategory_ru: newSubRu, subcategory_en: newSubEn } : r
     ));
     if (ruleActiveSub?.cat === catRu && ruleActiveSub?.sub === oldSubRu) setRuleActiveSub({ cat: catRu, sub: newSubRu });
+  };
+
+  // === Delete category/subcategory ===
+  const handleDeleteCompCategory = async (catRu: string) => {
+    const typeEntry = componentTypes.find(t => t.label_ru === catRu);
+    if (!typeEntry) return;
+    if (!confirm(`Удалить категорию "${catRu}"? Все компоненты будут перемещены в "Другие".`)) return;
+    await supabase.from("components").update({ type: null } as any).eq("type", typeEntry.key);
+    await supabase.from("component_types").delete().eq("key", typeEntry.key);
+    setComponentTypes(prev => prev.filter(t => t.key !== typeEntry.key));
+    setAdminComps(prev => prev.map(c =>
+      c.category_ru === catRu ? { ...c, type: null as any, category_ru: "Другие", category_en: "Other", subcategory_ru: "Общее", subcategory_en: "General" } : c
+    ));
+    if (compActiveSub?.cat === catRu) setCompActiveSub(null);
+  };
+  const handleDeleteCompSubcategory = async (catRu: string, subRu: string) => {
+    if (!confirm(`Удалить подкатегорию "${subRu}"? Компоненты будут перемещены в "Общее".`)) return;
+    const factionKey = Object.entries(FACTION_MAP).find(([_, v]) => v.name_ru === subRu)?.[0];
+    if (factionKey) {
+      await supabase.from("components").update({ faction: null } as any).eq("faction", factionKey);
+    }
+    setAdminComps(prev => prev.map(c =>
+      c.category_ru === catRu && c.subcategory_ru === subRu
+        ? { ...c, subcategory_ru: "Общее", subcategory_en: "General" }
+        : c
+    ));
+    setCompVirtualSubs(prev => prev.filter(v => !(v.cat === catRu && v.sub === subRu)));
+    if (compActiveSub?.cat === catRu && compActiveSub?.sub === subRu) setCompActiveSub(null);
   };
 
   // === Edit / Delete handlers ===
