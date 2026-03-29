@@ -777,14 +777,14 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
     const { type, item } = editItem;
     if (type === "component") {
       const comp = item as AdminComponent;
-      const catMatch = comp.image?.match(/\{img:[^_}]+_([^_}]+)/);
       return {
         id: comp.id,
         title_en: comp.title_en || "",
         title_ru: comp.title_ru || "",
         body_en: comp.description_en || "",
         body_ru: comp.description_ru || "",
-        category: catMatch?.[1] ?? "other",
+        category: "",
+        type: comp.type || "other",
       };
     }
     const rule = item as AdminRule;
