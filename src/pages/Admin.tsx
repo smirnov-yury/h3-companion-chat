@@ -1149,6 +1149,7 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                         {compActiveItems.map(comp => (
                           <SortableCard key={comp.id} id={comp.id} title={comp.title_ru || comp.title_en || comp.id}
+                            thumbnailUrl={(comp as any).media_url}
                             onEdit={() => setEditItem({ type: "component", item: comp })}
                             onDelete={() => setDeleteItem({ type: "component", item: comp })}
                           />
