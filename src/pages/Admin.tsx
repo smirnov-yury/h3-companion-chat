@@ -767,7 +767,7 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
   const editCategories = useMemo(() => {
     if (!editItem) return [];
     if (editItem.type === "component") {
-      return Object.entries(COMP_CAT_MAP).map(([key, bi]) => ({ key, label: `${bi.name_ru} / ${bi.name_en}` }));
+      return []; // Components are grouped by type, not category — hide category selector
     }
     return Object.entries(RULE_CAT_MAP).map(([key, bi]) => ({ key, label: `${bi.name_ru} / ${bi.name_en}` }));
   }, [editItem]);
