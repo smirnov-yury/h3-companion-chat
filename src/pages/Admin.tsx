@@ -763,6 +763,73 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
     if (ruleActiveSub?.cat === catRu && ruleActiveSub?.sub === oldSubRu) setRuleActiveSub({ cat: catRu, sub: newSubRu });
   };
 
+  // === Edit / Delete handlers ===
+  const editCategories = useMemo(() => {
+    if (!editItem) return [];
+    if (editItem.type === "component") {
+      return Object.entries(COMP_CAT_MAP).map(([key, bi]) => ({ key, label: `${bi.name_ru} / ${bi.name_en}` }));
+    }
+    return Object.entries(RULE_CAT_MAP).map(([key, bi]) => ({ key, label: `${bi.name_ru} / ${bi.name_en}` }));
+  }, [editItem]);
+
+  const editModalItem = useMemo(() => {
+    if (!editItem) return null;
+    const { type, item } = editItem;
+    if (type === "component") {
+      const comp = item as AdminComponent;
+      const catMatch = comp.image?.match(/\{img:[^_}]+_([^_}]+)/);
+      return {
+        id: comp.id,
+        title_en: comp.title_en || "",
+        title_ru: comp.title_ru || "",
+        body_en: comp.description_en || "",
+        body_ru: comp.description_ru || "",
+        category: catMatch?.[1] ?? "other",
+      };
+    }
+    const rule = item as AdminRule;
+    return {
+      id: rule.id,
+      title_en: rule.title_en || "",
+      title_ru: rule.title_ru || "",
+      body_en: rule.text_en || "",
+      body_ru: rule.text_ru || "",
+      category: rule.category || "",
+    };
+  }, [editItem]);
+
+  const handleSaveEdit = async (data: { title_en: string; title_ru: string; body_en: string; body_ru: string; category: string }) => {
+    if (!editItem) return;
+    const { type, item } = editItem;
+    if (type === "component") {
+      await supabase.from("components").update({
+        title_en: data.title_en, title_ru: data.title_ru,
+        body_en: data.body_en, body_ru: data.body_ru, category: data.category,
+      }).eq("id", item.id);
+      setAdminComps(prev => prev.map(c =>
+        c.id === item.id ? { ...c, title_en: data.title_en, title_ru: data.title_ru, description_en: data.body_en, description_ru: data.body_ru } : c
+      ));
+    } else {
+      setAdminRules(prev => prev.map(r =>
+        r.id === item.id ? { ...r, title_en: data.title_en, title_ru: data.title_ru, text_en: data.body_en, text_ru: data.body_ru, category: data.category } : r
+      ));
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteItem) return;
+    setIsDeleting(true);
+    const { type, item } = deleteItem;
+    if (type === "component") {
+      await supabase.from("components").delete().eq("id", item.id);
+      setAdminComps(prev => prev.filter(c => c.id !== item.id));
+    } else {
+      setAdminRules(prev => prev.filter(r => r.id !== item.id));
+    }
+    setIsDeleting(false);
+    setDeleteItem(null);
+  };
+
   // === Export ===
   const handleExport = () => {
     const output = {
