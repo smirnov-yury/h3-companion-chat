@@ -41,7 +41,12 @@ import {
   Lock,
   Pencil,
   Check,
+  Trash2,
 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import EditItemModal from "@/components/admin/EditItemModal";
+import DeleteConfirmDialog from "@/components/admin/DeleteConfirmDialog";
+import CategoriesManager from "@/components/admin/CategoriesManager";
 
 /* ─── types ─── */
 
