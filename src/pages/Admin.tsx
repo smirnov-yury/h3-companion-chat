@@ -804,7 +804,7 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
     if (type === "component") {
       await supabase.from("components").update({
         title_en: data.title_en, title_ru: data.title_ru,
-        body_en: data.body_en, body_ru: data.body_ru, category: data.category,
+        body_en: data.body_en, body_ru: data.body_ru,
       }).eq("id", item.id);
       setAdminComps(prev => prev.map(c =>
         c.id === item.id ? { ...c, title_en: data.title_en, title_ru: data.title_ru, description_en: data.body_en, description_ru: data.body_ru } : c
