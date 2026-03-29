@@ -7,7 +7,7 @@ interface Category {
   key: string;
   label_ru: string;
   label_en: string;
-  image_url: string | null;
+  cover_image_url: string | null;
   sort_order: number | null;
 }
 
@@ -36,10 +36,10 @@ export default function CategoriesManager() {
     const ext = file.name.split(".").pop() || "webp";
     const path = `${key}.${ext}`;
 
-    await supabase.storage.from("category-images").remove([path]);
+    await supabase.storage.from("category-covers").remove([path]);
 
     const { error: uploadError } = await supabase.storage
-      .from("category-images")
+      .from("category-covers")
       .upload(path, file, { contentType: file.type, upsert: true });
 
     if (uploadError) {
@@ -52,15 +52,15 @@ export default function CategoriesManager() {
 
     const {
       data: { publicUrl },
-    } = supabase.storage.from("category-images").getPublicUrl(path);
+    } = supabase.storage.from("category-covers").getPublicUrl(path);
 
     await supabase
       .from("categories")
-      .update({ image_url: publicUrl })
+      .update({ cover_image_url: publicUrl })
       .eq("key", key);
 
     setCategories((prev) =>
-      prev.map((c) => (c.key === key ? { ...c, image_url: publicUrl } : c))
+      prev.map((c) => (c.key === key ? { ...c, cover_image_url: publicUrl } : c))
     );
     setUploading(null);
   };
@@ -68,13 +68,13 @@ export default function CategoriesManager() {
   const handleRemove = async (key: string) => {
     // Try removing common extensions
     const paths = [`${key}.webp`, `${key}.jpg`, `${key}.jpeg`, `${key}.png`];
-    await supabase.storage.from("category-images").remove(paths);
+    await supabase.storage.from("category-covers").remove(paths);
     await supabase
       .from("categories")
-      .update({ image_url: null })
+      .update({ cover_image_url: null })
       .eq("key", key);
     setCategories((prev) =>
-      prev.map((c) => (c.key === key ? { ...c, image_url: null } : c))
+      prev.map((c) => (c.key === key ? { ...c, cover_image_url: null } : c))
     );
   };
 
@@ -122,9 +122,9 @@ function CategoryCard({
   return (
     <div className="rounded-xl border border-border bg-card overflow-hidden">
       <div className="aspect-[4/3] bg-muted flex items-center justify-center overflow-hidden">
-        {category.image_url ? (
+        {category.cover_image_url ? (
           <img
-            src={category.image_url}
+            src={category.cover_image_url}
             alt={category.label_en}
             className="w-full h-full object-cover"
           />
@@ -161,11 +161,11 @@ function CategoryCard({
             <Upload className="w-3 h-3 mr-1" />
             {uploading
               ? "Загрузка..."
-              : category.image_url
+              : category.cover_image_url
                 ? "Заменить"
                 : "Загрузить"}
           </Button>
-          {category.image_url && (
+          {category.cover_image_url && (
             <Button
               size="sm"
               variant="destructive"

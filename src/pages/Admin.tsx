@@ -810,6 +810,10 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
         c.id === item.id ? { ...c, title_en: data.title_en, title_ru: data.title_ru, description_en: data.body_en, description_ru: data.body_ru } : c
       ));
     } else {
+      await supabase.from("rules").update({
+        title_en: data.title_en, title_ru: data.title_ru,
+        text_en: data.body_en, text_ru: data.body_ru, category: data.category,
+      }).eq("id", item.id);
       setAdminRules(prev => prev.map(r =>
         r.id === item.id ? { ...r, title_en: data.title_en, title_ru: data.title_ru, text_en: data.body_en, text_ru: data.body_ru, category: data.category } : r
       ));
@@ -824,6 +828,7 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
       await supabase.from("components").delete().eq("id", item.id);
       setAdminComps(prev => prev.filter(c => c.id !== item.id));
     } else {
+      await supabase.from("rules").delete().eq("id", item.id);
       setAdminRules(prev => prev.filter(r => r.id !== item.id));
     }
     setIsDeleting(false);

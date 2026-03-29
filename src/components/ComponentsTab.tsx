@@ -115,11 +115,11 @@ export default function ComponentsTab({ onNavigateToRule }: ComponentsTabProps) 
   const [categoryImages, setCategoryImages] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    supabase.from("categories").select("key, image_url").then(({ data }) => {
+    supabase.from("categories").select("key, cover_image_url").then(({ data }) => {
       if (data) {
         const map: Record<string, string> = {};
         for (const row of data) {
-          if (row.image_url) map[row.key] = row.image_url;
+          if (row.cover_image_url) map[row.key] = row.cover_image_url;
         }
         setCategoryImages(map);
       }
