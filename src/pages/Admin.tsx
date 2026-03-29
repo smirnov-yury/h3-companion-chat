@@ -508,6 +508,12 @@ function CategoryTreePanel<T extends TreeItem>({
                 className="opacity-0 group-hover:opacity-100 p-1 text-muted-foreground hover:text-foreground transition-opacity shrink-0">
                 <Pencil className="w-3 h-3" />
               </button>
+              {onDeleteCategory && (
+                <button onClick={(e) => { e.stopPropagation(); onDeleteCategory(catRu); }}
+                  className="opacity-0 group-hover:opacity-100 p-1 text-muted-foreground hover:text-destructive transition-opacity shrink-0">
+                  <Trash2 className="w-3 h-3" />
+                </button>
+              )}
             </div>
             <CollapsibleContent className="space-y-0.5 mt-0.5">
               {subs.map(subRu => {
