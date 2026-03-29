@@ -903,6 +903,7 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
         body_ru: comp.description_ru || "",
         category: "",
         type: comp.type || "other",
+        media_url: (comp as any).media_url || null,
       };
     }
     const rule = item as AdminRule;
