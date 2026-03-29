@@ -86,15 +86,6 @@ const CATEGORY_LABELS: Record<string, { ru: string; en: string }> = {
   other: { ru: "Прочее", en: "Other" },
 };
 
-const FACTION_LABELS: Record<string, { ru: string; en: string }> = {
-  castle: { ru: "Замок", en: "Castle" },
-  tower: { ru: "Башня", en: "Tower" },
-  inferno: { ru: "Инферно", en: "Inferno" },
-  fortress: { ru: "Крепость", en: "Fortress" },
-  conflux: { ru: "Сплетение", en: "Conflux" },
-  cove: { ru: "Причал", en: "Cove" },
-  neutral: { ru: "Нейтральные", en: "Neutral" },
-};
 
 const CATEGORY_ORDER = ["unit", "card", "hero", "token", "icon", "schema", "game", "book", "mission", "location", "rule", "miss", "other"];
 
