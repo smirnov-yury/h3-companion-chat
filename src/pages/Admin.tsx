@@ -633,7 +633,8 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
       const typeInfo = componentTypes.find(t => t.key === typeKey);
       const catRu = typeInfo?.label_ru || typeKey;
       const catEn = typeInfo?.label_en || typeKey;
-      const subBi = deriveSubcatBi(c);
+      // For units, sub-group by faction; for others, flat "Общее"
+      const subBi = typeKey === "unit" ? deriveFactionBi(c) : { name_ru: "Общее", name_en: "General" };
       return {
         ...c,
         category_ru: catRu,
