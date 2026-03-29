@@ -57,11 +57,6 @@ function ComponentImage({ image, mediaUrl }: { image: string; mediaUrl?: string 
   return <div className="w-12 h-12 rounded bg-muted" />;
 }
 
-function getComponentCategory(image: string): string {
-  const m = image.match(/\{img:[^_}]+_([^_}]+)/);
-  return m?.[1] ?? "other";
-}
-
 function getFaction(image: string): string {
   const match = image.match(/\{img:([^_]+)_unit/);
   return match?.[1] ?? "other";
@@ -82,24 +77,13 @@ const FACTION_LABELS: Record<string, { ru: string; en: string }> = {
   other: { ru: "Прочие", en: "Other" },
 };
 
-const CATEGORY_LABELS: Record<string, { ru: string; en: string }> = {
-  unit: { ru: "Юниты", en: "Units" },
-  card: { ru: "Карты", en: "Cards" },
-  hero: { ru: "Герои", en: "Heroes" },
-  token: { ru: "Жетоны", en: "Tokens" },
-  icon: { ru: "Иконки", en: "Icons" },
-  schema: { ru: "Схемы", en: "Schemas" },
-  game: { ru: "Игровое", en: "Game" },
-  book: { ru: "Книги", en: "Books" },
-  mission: { ru: "Миссии", en: "Missions" },
-  location: { ru: "Локации", en: "Locations" },
-  rule: { ru: "Правила", en: "Rules" },
-  miss: { ru: "Разное", en: "Misc" },
-  other: { ru: "Прочее", en: "Other" },
-};
-
-
-const CATEGORY_ORDER = ["unit", "card", "hero", "token", "icon", "schema", "game", "book", "mission", "location", "rule", "miss", "other"];
+interface DbCategory {
+  key: string;
+  label_ru: string;
+  label_en: string;
+  cover_image_url: string | null;
+  sort_order: number | null;
+}
 
 interface ComponentsTabProps {
   onNavigateToRule?: (ruleId: string) => void;
