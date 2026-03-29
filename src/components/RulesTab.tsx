@@ -171,15 +171,15 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled }: RulesTabPr
           </button>
           {categories.map((cat) => (
             <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat === selectedCategory ? null : cat)}
+              key={cat.key}
+              onClick={() => setSelectedCategory(cat.key === selectedCategory ? null : cat.key)}
               className={`px-3 py-1 text-xs font-medium rounded-full whitespace-nowrap transition-colors ${
-                selectedCategory === cat
+                selectedCategory === cat.key
                   ? "bg-primary text-primary-foreground"
                   : "bg-secondary text-secondary-foreground"
               }`}
             >
-              {cat}
+              {lang === "RU" ? cat.ru : cat.en}
             </button>
           ))}
         </div>
