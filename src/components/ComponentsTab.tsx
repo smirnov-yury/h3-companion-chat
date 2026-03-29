@@ -99,19 +99,29 @@ export default function ComponentsTab({ onNavigateToRule }: ComponentsTabProps) 
   const [selected, setSelected] = useState<Component | null>(null);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [activeFaction, setActiveFaction] = useState<string>("all");
-  const [categoryImages, setCategoryImages] = useState<Record<string, string>>({});
+  const [dbCategories, setDbCategories] = useState<DbCategory[]>([]);
 
   useEffect(() => {
-    supabase.from("categories").select("key, cover_image_url").then(({ data }) => {
-      if (data) {
-        const map: Record<string, string> = {};
-        for (const row of data) {
-          if (row.cover_image_url) map[row.key] = row.cover_image_url;
-        }
-        setCategoryImages(map);
-      }
+    supabase.from("categories").select("*").order("sort_order").then(({ data }) => {
+      if (data) setDbCategories(data as DbCategory[]);
     });
   }, []);
+
+  const categoryLabels = useMemo(() => {
+    const map: Record<string, { ru: string; en: string }> = {};
+    for (const cat of dbCategories) {
+      map[cat.key] = { ru: cat.label_ru, en: cat.label_en };
+    }
+    return map;
+  }, [dbCategories]);
+
+  const categoryImages = useMemo(() => {
+    const map: Record<string, string> = {};
+    for (const cat of dbCategories) {
+      if (cat.cover_image_url) map[cat.key] = cat.cover_image_url;
+    }
+    return map;
+  }, [dbCategories]);
 
   const grouped = useMemo(() => {
     const map: Record<string, Component[]> = {};
