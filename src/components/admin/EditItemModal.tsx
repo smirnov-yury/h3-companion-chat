@@ -18,6 +18,10 @@ import {
 } from "@/components/ui/select";
 import { Check } from "lucide-react";
 
+const COMPONENT_TYPES = [
+  "unit", "card", "hero", "token", "icon", "schema", "game", "book", "mission", "location", "rule", "other",
+] as const;
+
 interface EditItemModalProps {
   open: boolean;
   onClose: () => void;
@@ -28,14 +32,17 @@ interface EditItemModalProps {
     body_en: string;
     body_ru: string;
     category: string;
+    type?: string;
   } | null;
   categories: { key: string; label: string }[];
+  showTypeField?: boolean;
   onSave: (data: {
     title_en: string;
     title_ru: string;
     body_en: string;
     body_ru: string;
     category: string;
+    type?: string;
   }) => Promise<void>;
 }
 
@@ -44,6 +51,7 @@ export default function EditItemModal({
   onClose,
   item,
   categories,
+  showTypeField,
   onSave,
 }: EditItemModalProps) {
   const [titleEn, setTitleEn] = useState("");
@@ -51,6 +59,7 @@ export default function EditItemModal({
   const [bodyEn, setBodyEn] = useState("");
   const [bodyRu, setBodyRu] = useState("");
   const [category, setCategory] = useState("");
+  const [itemType, setItemType] = useState("");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
@@ -61,6 +70,7 @@ export default function EditItemModal({
       setBodyEn(item.body_en);
       setBodyRu(item.body_ru);
       setCategory(item.category);
+      setItemType(item.type || "other");
       setSaved(false);
     }
   }, [item]);
@@ -74,6 +84,7 @@ export default function EditItemModal({
         body_en: bodyEn,
         body_ru: bodyRu,
         category,
+        type: itemType,
       });
       setSaved(true);
       setTimeout(() => onClose(), 800);
@@ -113,6 +124,23 @@ export default function EditItemModal({
               rows={4}
             />
           </div>
+          {showTypeField && (
+            <div className="space-y-1">
+              <Label className="text-xs">Type</Label>
+              <Select value={itemType} onValueChange={setItemType}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {COMPONENT_TYPES.map((t) => (
+                    <SelectItem key={t} value={t}>
+                      {t}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
           {categories.length > 0 && (
             <div className="space-y-1">
               <Label className="text-xs">Category</Label>
