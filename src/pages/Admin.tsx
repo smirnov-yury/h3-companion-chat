@@ -983,6 +983,8 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
                 )}
               </main>
             </>
+          ) : (
+            <CategoriesManager />
           )}
         </div>
 
