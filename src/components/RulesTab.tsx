@@ -38,60 +38,45 @@ function renderTextWithBadges(text: string) {
   return parts;
 }
 
-const CATEGORY_RU: Record<string, string> = {
-  "abilities": "Способности", "ability": "Способности", "advanced": "Дополнительные правила",
-  "adventure": "Приключение", "ai": "ИИ противник", "alliance": "Альянс",
-  "artifact": "Артефакты", "artifacts": "Артефакты", "astrologers": "Астрологи",
-  "astrologers_proclaim": "Астрологи", "campaign": "Кампания", "campaign_combat": "Бой в кампании",
-  "cards": "Карты", "combat": "Бой", "components": "Компоненты",
-  "cooperative": "Кооператив", "core": "Основные правила", "deckbuilding": "Колода",
-  "differences": "Отличия", "economy": "Экономика", "editor": "Редактор",
-  "effects": "Эффекты", "event": "События", "events": "События",
-  "game_mechanics": "Механики", "general": "Общие правила", "global": "Глобальные правила",
-  "hero": "Герой", "heroes": "Герои", "interaction": "Взаимодействие",
-  "location": "Локации", "locations": "Локации", "magic": "Магия",
-  "map": "Карта", "mechanic": "Механики", "mode": "Режим игры",
-  "morale": "Мораль", "movement": "Передвижение", "recruitment": "Найм",
-  "reference": "Справка", "resources": "Ресурсы", "round": "Раунд",
-  "round_effects": "Эффекты раунда", "rounds": "Раунды", "scenario": "Сценарий",
-  "scoring": "Очки", "settings": "Настройки", "setup": "Подготовка",
-  "siege": "Осада", "solo_mode": "Соло режим", "specialty": "Специализация",
-  "spell": "Заклинания", "spells": "Заклинания", "statistics": "Статистики",
-  "storage": "Хранение", "timed": "Временные правила", "timed_event": "Временные события",
-  "town": "Город", "trade": "Торговля", "turn": "Ход",
-  "unit_ability": "Способности юнитов", "units": "Юниты", "victory": "Победа",
-  "war_machine": "Военные машины",
-};
+const RULE_CATEGORIES: { key: string; ru: string; en: string }[] = [
+  { key: "alliance", ru: "Альянс", en: "Alliance" },
+  { key: "astrologers", ru: "Астрологи", en: "Astrologers" },
+  { key: "astrologers_proclaim", ru: "Провозглашение астрологов", en: "Astrologers' Proclamation" },
+  { key: "campaign", ru: "Кампания", en: "Campaign" },
+  { key: "campaign_combat", ru: "Бой в кампании", en: "Campaign Combat" },
+  { key: "cards", ru: "Карты", en: "Cards" },
+  { key: "components", ru: "Компоненты", en: "Components" },
+  { key: "cooperative", ru: "Кооперативный режим", en: "Cooperative" },
+  { key: "deckbuilding", ru: "Составление колоды", en: "Deck Building" },
+  { key: "differences", ru: "Отличия от оригинала", en: "Differences" },
+  { key: "editor", ru: "Редактор", en: "Editor" },
+  { key: "game_mechanics", ru: "Игровая механика", en: "Game Mechanics" },
+  { key: "global", ru: "Общие правила", en: "Global Rules" },
+  { key: "interaction", ru: "Взаимодействие", en: "Interaction" },
+  { key: "locations", ru: "Локации", en: "Locations" },
+  { key: "mode", ru: "Режим игры", en: "Game Mode" },
+  { key: "morale", ru: "Мораль", en: "Morale" },
+  { key: "reference", ru: "Справочник", en: "Reference" },
+  { key: "round_effects", ru: "Эффекты раунда", en: "Round Effects" },
+  { key: "rounds", ru: "Раунды", en: "Rounds" },
+  { key: "scoring", ru: "Подсчёт очков", en: "Scoring" },
+  { key: "settings", ru: "Настройка игры", en: "Setup" },
+  { key: "solo_mode", ru: "Одиночный режим", en: "Solo Mode" },
+  { key: "specialty", ru: "Специализация", en: "Specialty" },
+  { key: "statistics", ru: "Статистика", en: "Statistics" },
+  { key: "storage", ru: "Хранение", en: "Storage" },
+  { key: "timed", ru: "Игра на время", en: "Timed" },
+  { key: "timed_event", ru: "Событие по таймеру", en: "Timed Event" },
+  { key: "unit_ability", ru: "Способности юнитов", en: "Unit Abilities" },
+  { key: "war_machine", ru: "Боевые машины", en: "War Machines" },
+];
 
-const CATEGORY_EN: Record<string, string> = {
-  "abilities": "Abilities", "ability": "Abilities", "advanced": "Advanced Rules",
-  "adventure": "Adventure", "ai": "AI Opponent", "alliance": "Alliance",
-  "artifact": "Artifacts", "artifacts": "Artifacts", "astrologers": "Astrologers",
-  "astrologers_proclaim": "Astrologers", "campaign": "Campaign", "campaign_combat": "Campaign Combat",
-  "cards": "Cards", "combat": "Combat", "components": "Components",
-  "cooperative": "Cooperative", "core": "Core Rules", "deckbuilding": "Deck Building",
-  "differences": "Differences", "economy": "Economy", "editor": "Editor",
-  "effects": "Effects", "event": "Events", "events": "Events",
-  "game_mechanics": "Game Mechanics", "general": "General Rules", "global": "Global Rules",
-  "hero": "Hero", "heroes": "Heroes", "interaction": "Interaction",
-  "location": "Locations", "locations": "Locations", "magic": "Magic",
-  "map": "Map", "mechanic": "Mechanics", "mode": "Game Mode",
-  "morale": "Morale", "movement": "Movement", "recruitment": "Recruitment",
-  "reference": "Reference", "resources": "Resources", "round": "Round",
-  "round_effects": "Round Effects", "rounds": "Rounds", "scenario": "Scenario",
-  "scoring": "Scoring", "settings": "Settings", "setup": "Setup",
-  "siege": "Siege", "solo_mode": "Solo Mode", "specialty": "Specialty",
-  "spell": "Spells", "spells": "Spells", "statistics": "Statistics",
-  "storage": "Storage", "timed": "Timed Rules", "timed_event": "Timed Events",
-  "town": "Town", "trade": "Trade", "turn": "Turn",
-  "unit_ability": "Unit Abilities", "units": "Units", "victory": "Victory",
-  "war_machine": "War Machines",
-};
+const RULE_CAT_MAP = Object.fromEntries(RULE_CATEGORIES.map((c) => [c.key, c]));
 
-function getTranslatedCategory(rule: Rule, lang: string): string {
-  const key = rule.category || "";
-  const map = lang === "RU" ? CATEGORY_RU : CATEGORY_EN;
-  return map[key] || key;
+function getCategoryLabel(key: string, lang: string): string {
+  const entry = RULE_CAT_MAP[key];
+  if (!entry) return key;
+  return lang === "RU" ? entry.ru : entry.en;
 }
 
 interface RulesTabProps {
@@ -122,16 +107,16 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled }: RulesTabPr
     }
   }, [scrollToRuleId, loaded]);
 
-  // Build categories from translated names (merges duplicates)
+  // Only show categories that have rules in the data
   const categories = useMemo(
-    () => Array.from(new Set(rules.map((r) => getTranslatedCategory(r, lang)).filter(Boolean))).sort(),
-    [rules, lang],
+    () => RULE_CATEGORIES.filter((c) => rules.some((r) => r.category === c.key)),
+    [rules],
   );
 
   const filtered = useMemo(() => {
     let list = rules;
     if (selectedCategory) {
-      list = list.filter((r) => getTranslatedCategory(r, lang) === selectedCategory);
+      list = list.filter((r) => r.category === selectedCategory);
     }
     const q = debouncedSearch.toLowerCase();
     if (q.length >= 2) {
@@ -186,15 +171,15 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled }: RulesTabPr
           </button>
           {categories.map((cat) => (
             <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat === selectedCategory ? null : cat)}
+              key={cat.key}
+              onClick={() => setSelectedCategory(cat.key === selectedCategory ? null : cat.key)}
               className={`px-3 py-1 text-xs font-medium rounded-full whitespace-nowrap transition-colors ${
-                selectedCategory === cat
+                selectedCategory === cat.key
                   ? "bg-primary text-primary-foreground"
                   : "bg-secondary text-secondary-foreground"
               }`}
             >
-              {cat}
+              {lang === "RU" ? cat.ru : cat.en}
             </button>
           ))}
         </div>

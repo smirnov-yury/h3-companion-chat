@@ -52,11 +52,23 @@ function getComponentCategory(image: string): string {
 
 function getFaction(image: string): string {
   const match = image.match(/\{img:([^_]+)_unit/);
-  const folder = match?.[1] ?? "other";
-  const neutrals = ["tray", "design", "supp", "naval", "tournament"];
-  if (neutrals.includes(folder)) return "neutral";
-  return folder;
+  return match?.[1] ?? "other";
 }
+
+const FACTION_ORDER = ["castle", "tower", "inferno", "necropolis", "rampart", "fortress", "conflux", "cove", "tray", "other"];
+
+const FACTION_LABELS: Record<string, { ru: string; en: string }> = {
+  castle: { ru: "Замок", en: "Castle" },
+  tower: { ru: "Башня", en: "Tower" },
+  inferno: { ru: "Инферно", en: "Inferno" },
+  necropolis: { ru: "Некрополис", en: "Necropolis" },
+  rampart: { ru: "Оплот", en: "Rampart" },
+  fortress: { ru: "Крепость", en: "Fortress" },
+  conflux: { ru: "Сплетение", en: "Conflux" },
+  cove: { ru: "Причал", en: "Cove" },
+  tray: { ru: "Нейтральные", en: "Neutrals" },
+  other: { ru: "Прочие", en: "Other" },
+};
 
 const CATEGORY_LABELS: Record<string, { ru: string; en: string }> = {
   unit: { ru: "Юниты", en: "Units" },
@@ -74,15 +86,6 @@ const CATEGORY_LABELS: Record<string, { ru: string; en: string }> = {
   other: { ru: "Прочее", en: "Other" },
 };
 
-const FACTION_LABELS: Record<string, { ru: string; en: string }> = {
-  castle: { ru: "Замок", en: "Castle" },
-  tower: { ru: "Башня", en: "Tower" },
-  inferno: { ru: "Инферно", en: "Inferno" },
-  fortress: { ru: "Крепость", en: "Fortress" },
-  conflux: { ru: "Сплетение", en: "Conflux" },
-  cove: { ru: "Причал", en: "Cove" },
-  neutral: { ru: "Нейтральные", en: "Neutral" },
-};
 
 const CATEGORY_ORDER = ["unit", "card", "hero", "token", "icon", "schema", "game", "book", "mission", "location", "rule", "miss", "other"];
 
@@ -127,7 +130,7 @@ export default function ComponentsTab({ onNavigateToRule }: ComponentsTabProps) 
     if (activeCategory !== "unit") return [];
     const set = new Set<string>();
     for (const u of categoryItems) set.add(getFaction(u.image));
-    return Object.keys(FACTION_LABELS).filter((f) => set.has(f));
+    return FACTION_ORDER.filter((f) => set.has(f));
   }, [activeCategory, categoryItems]);
 
   const displayedItems = useMemo(() => {
