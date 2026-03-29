@@ -971,7 +971,10 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
                     <SortableContext items={ruleActiveItems.map(r => r.id)} strategy={rectSortingStrategy}>
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                         {ruleActiveItems.map(rule => (
-                          <SortableCard key={rule.id} id={rule.id} title={rule.title_ru || rule.title_en || rule.id} />
+                          <SortableCard key={rule.id} id={rule.id} title={rule.title_ru || rule.title_en || rule.id}
+                            onEdit={() => setEditItem({ type: "rule", item: rule })}
+                            onDelete={() => setDeleteItem({ type: "rule", item: rule })}
+                          />
                         ))}
                       </div>
                     </SortableContext>
