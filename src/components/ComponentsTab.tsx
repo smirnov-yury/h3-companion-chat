@@ -153,6 +153,17 @@ export default function ComponentsTab({ onNavigateToRule }: ComponentsTabProps) 
     setDebouncedSearch(v);
   };
 
+  const handleTopSearch = (v: string) => {
+    setTopSearch(v);
+    setDebouncedTopSearch(v);
+  };
+
+  const topSearchResults = useMemo(() => {
+    const q = debouncedTopSearch.toLowerCase();
+    if (q.length < 2) return null;
+    return components.filter((c) => matchesSearch(c, q));
+  }, [debouncedTopSearch, components]);
+
   const openCategory = (cat: string) => {
     setActiveCategory(cat);
     setActiveFaction("all");
