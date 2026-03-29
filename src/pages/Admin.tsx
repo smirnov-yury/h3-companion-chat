@@ -587,6 +587,7 @@ function CategoryTreePanel<T extends TreeItem>({
           <Plus className="w-3 h-3 mr-1" /> Добавить категорию
         </Button>
       </div>
+      {extraFooter}
     </aside>
   );
 }
