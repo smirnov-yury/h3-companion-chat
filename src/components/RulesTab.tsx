@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useRef } from "react";
+import { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import { Search, ChevronDown, ChevronUp } from "lucide-react";
 import { useRules, Rule } from "@/context/RulesContext";
 import { useLang } from "@/context/LanguageContext";
@@ -94,13 +94,33 @@ function getTranslatedCategory(rule: Rule, lang: string): string {
   return map[key] || key;
 }
 
-export default function RulesTab() {
+interface RulesTabProps {
+  scrollToRuleId?: string | null;
+  onScrollHandled?: () => void;
+}
+
+export default function RulesTab({ scrollToRuleId, onScrollHandled }: RulesTabProps) {
   const { rules, loaded } = useRules();
   const { lang } = useLang();
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useDebounce("", 300);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const listRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (scrollToRuleId && loaded) {
+      setSelectedCategory(null);
+      setSearch("");
+      setDebouncedSearch("");
+      setExpandedId(scrollToRuleId);
+      onScrollHandled?.();
+      requestAnimationFrame(() => {
+        const el = document.getElementById(`rule-${scrollToRuleId}`);
+        el?.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+    }
+  }, [scrollToRuleId, loaded]);
 
   // Build categories from translated names (merges duplicates)
   const categories = useMemo(
@@ -191,7 +211,7 @@ export default function RulesTab() {
           const title = lang === "RU" ? (rule.title_ru || rule.title_en) : (rule.title_en || rule.title_ru);
           const text = lang === "RU" ? (rule.text_ru || rule.text_en) : (rule.text_en || rule.text_ru);
           return (
-            <div key={rule.id} className="rounded-xl bg-card border border-border overflow-hidden">
+            <div key={rule.id} id={`rule-${rule.id}`} className="rounded-xl bg-card border border-border overflow-hidden">
               <button
                 onClick={() => setExpandedId(isOpen ? null : rule.id)}
                 className="w-full flex items-center justify-between px-4 py-3 text-left"
