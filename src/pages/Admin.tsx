@@ -401,6 +401,9 @@ interface CategoryTreePanelProps<T extends TreeItem> {
   onAddSubcategory: (catRu: string, subRu: string, subEn: string) => void;
   onRenameCategory: (oldRu: string, newRu: string, newEn: string) => void;
   onRenameSubcategory: (catRu: string, oldSubRu: string, newSubRu: string, newSubEn: string) => void;
+  onDeleteCategory?: (catRu: string) => void;
+  onDeleteSubcategory?: (catRu: string, subRu: string) => void;
+  extraFooter?: React.ReactNode;
 }
 
 function CategoryTreePanel<T extends TreeItem>({
