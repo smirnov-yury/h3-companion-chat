@@ -39,6 +39,8 @@ import {
   Plus,
   GripVertical,
   Lock,
+  Pencil,
+  Check,
 } from "lucide-react";
 
 /* ─── types ─── */
@@ -379,10 +381,12 @@ interface CategoryTreePanelProps<T extends TreeItem> {
   overSubId: string | null;
   onAddCategory: (ru: string, en: string) => void;
   onAddSubcategory: (catRu: string, subRu: string, subEn: string) => void;
+  onRenameCategory: (oldRu: string, newRu: string, newEn: string) => void;
+  onRenameSubcategory: (catRu: string, oldSubRu: string, newSubRu: string, newSubEn: string) => void;
 }
 
 function CategoryTreePanel<T extends TreeItem>({
-  items, tree, prefix, openCats, toggleCat, activeSub, setActiveSub, overSubId, onAddCategory, onAddSubcategory,
+  items, tree, prefix, openCats, toggleCat, activeSub, setActiveSub, overSubId, onAddCategory, onAddSubcategory, onRenameCategory, onRenameSubcategory,
 }: CategoryTreePanelProps<T>) {
   const categories = useMemo(() => Object.keys(tree).sort(), [tree]);
 
@@ -391,6 +395,14 @@ function CategoryTreePanel<T extends TreeItem>({
   const [addingSubFor, setAddingSubFor] = useState<string | null>(null);
   const [newSubRu, setNewSubRu] = useState("");
   const [newSubEn, setNewSubEn] = useState("");
+
+  // Rename state
+  const [editingCat, setEditingCat] = useState<string | null>(null);
+  const [editCatRu, setEditCatRu] = useState("");
+  const [editCatEn, setEditCatEn] = useState("");
+  const [editingSub, setEditingSub] = useState<{ cat: string; sub: string } | null>(null);
+  const [editSubRu, setEditSubRu] = useState("");
+  const [editSubEn, setEditSubEn] = useState("");
 
   const handleAddCat = () => {
     const ru = newCatRu.trim();
@@ -411,35 +423,110 @@ function CategoryTreePanel<T extends TreeItem>({
     setNewSubEn("");
   };
 
+  const startEditCat = (catRu: string, catEn: string) => {
+    setEditingCat(catRu);
+    setEditCatRu(catRu);
+    setEditCatEn(catEn);
+  };
+
+  const confirmEditCat = () => {
+    if (!editingCat) return;
+    const ru = editCatRu.trim();
+    const en = editCatEn.trim() || ru;
+    if (ru) onRenameCategory(editingCat, ru, en);
+    setEditingCat(null);
+  };
+
+  const startEditSub = (catRu: string, subRu: string, subEn: string) => {
+    setEditingSub({ cat: catRu, sub: subRu });
+    setEditSubRu(subRu);
+    setEditSubEn(subEn);
+  };
+
+  const confirmEditSub = () => {
+    if (!editingSub) return;
+    const ru = editSubRu.trim();
+    const en = editSubEn.trim() || ru;
+    if (ru) onRenameSubcategory(editingSub.cat, editingSub.sub, ru, en);
+    setEditingSub(null);
+  };
+
   return (
     <aside className="w-64 shrink-0 border-r border-border overflow-y-auto p-3 space-y-1">
       {categories.map(catRu => {
         const subs = Object.keys(tree[catRu]).sort();
         const isOpen = openCats.has(catRu);
         const catEn = findEnName(items, catRu, "category");
+
+        if (editingCat === catRu) {
+          return (
+            <div key={catRu} className="px-2 py-1.5 space-y-1 rounded bg-muted/50">
+              <input autoFocus value={editCatRu} onChange={e => setEditCatRu(e.target.value)}
+                onKeyDown={e => { if (e.key === "Enter") confirmEditCat(); if (e.key === "Escape") setEditingCat(null); }}
+                placeholder="RU" className="w-full text-xs px-2 py-1 rounded bg-input text-foreground border border-border outline-none focus:ring-1 focus:ring-ring" />
+              <input value={editCatEn} onChange={e => setEditCatEn(e.target.value)}
+                onKeyDown={e => { if (e.key === "Enter") confirmEditCat(); if (e.key === "Escape") setEditingCat(null); }}
+                placeholder="EN" className="w-full text-xs px-2 py-1 rounded bg-input text-foreground border border-border outline-none focus:ring-1 focus:ring-ring" />
+              <div className="flex gap-1">
+                <Button size="sm" variant="ghost" className="h-6 px-2 text-xs" onClick={confirmEditCat}><Check className="w-3 h-3" /></Button>
+                <Button size="sm" variant="ghost" className="h-6 px-2 text-xs" onClick={() => setEditingCat(null)}>✕</Button>
+              </div>
+            </div>
+          );
+        }
+
         return (
           <Collapsible key={catRu} open={isOpen} onOpenChange={() => toggleCat(catRu)}>
-            <CollapsibleTrigger className="w-full flex items-center gap-1.5 px-2 py-2 text-sm font-medium text-foreground hover:bg-accent rounded transition-colors">
-              {isOpen ? <ChevronDown className="w-4 h-4 shrink-0" /> : <ChevronRight className="w-4 h-4 shrink-0" />}
-              <span className="truncate">{catRu}</span>
-              <span className="text-[10px] text-muted-foreground ml-1">/ {catEn}</span>
-            </CollapsibleTrigger>
+            <div className="group flex items-center">
+              <CollapsibleTrigger className="flex-1 flex items-center gap-1.5 px-2 py-2 text-sm font-medium text-foreground hover:bg-accent rounded transition-colors">
+                {isOpen ? <ChevronDown className="w-4 h-4 shrink-0" /> : <ChevronRight className="w-4 h-4 shrink-0" />}
+                <span className="truncate">{catRu}</span>
+                <span className="text-[10px] text-muted-foreground ml-1">/ {catEn}</span>
+              </CollapsibleTrigger>
+              <button onClick={(e) => { e.stopPropagation(); startEditCat(catRu, catEn); }}
+                className="opacity-0 group-hover:opacity-100 p-1 text-muted-foreground hover:text-foreground transition-opacity shrink-0">
+                <Pencil className="w-3 h-3" />
+              </button>
+            </div>
             <CollapsibleContent className="space-y-0.5 mt-0.5">
               {subs.map(subRu => {
                 const count = tree[catRu][subRu].length;
                 const isActive = activeSub?.cat === catRu && activeSub?.sub === subRu;
                 const dropId = `${prefix}drop:${catRu}/${subRu}`;
                 const subEn = findEnName(items, subRu, "subcategory");
+
+                if (editingSub?.cat === catRu && editingSub?.sub === subRu) {
+                  return (
+                    <div key={dropId} className="pl-6 pr-2 py-1 space-y-1 rounded bg-muted/50">
+                      <input autoFocus value={editSubRu} onChange={e => setEditSubRu(e.target.value)}
+                        onKeyDown={e => { if (e.key === "Enter") confirmEditSub(); if (e.key === "Escape") setEditingSub(null); }}
+                        placeholder="RU" className="w-full text-xs px-2 py-1 rounded bg-input text-foreground border border-border outline-none focus:ring-1 focus:ring-ring" />
+                      <input value={editSubEn} onChange={e => setEditSubEn(e.target.value)}
+                        onKeyDown={e => { if (e.key === "Enter") confirmEditSub(); if (e.key === "Escape") setEditingSub(null); }}
+                        placeholder="EN" className="w-full text-xs px-2 py-1 rounded bg-input text-foreground border border-border outline-none focus:ring-1 focus:ring-ring" />
+                      <div className="flex gap-1">
+                        <Button size="sm" variant="ghost" className="h-6 px-2 text-xs" onClick={confirmEditSub}><Check className="w-3 h-3" /></Button>
+                        <Button size="sm" variant="ghost" className="h-6 px-2 text-xs" onClick={() => setEditingSub(null)}>✕</Button>
+                      </div>
+                    </div>
+                  );
+                }
+
                 return (
-                  <DroppableSubcategory
-                    key={dropId}
-                    dropId={dropId}
-                    label={`${subRu} / ${subEn}`}
-                    count={count}
-                    isActive={isActive}
-                    isOver={overSubId === dropId}
-                    onClick={() => setActiveSub({ cat: catRu, sub: subRu })}
-                  />
+                  <div key={dropId} className="group/sub flex items-center">
+                    <DroppableSubcategory
+                      dropId={dropId}
+                      label={`${subRu} / ${subEn}`}
+                      count={count}
+                      isActive={isActive}
+                      isOver={overSubId === dropId}
+                      onClick={() => setActiveSub({ cat: catRu, sub: subRu })}
+                    />
+                    <button onClick={() => startEditSub(catRu, subRu, subEn)}
+                      className="opacity-0 group-hover/sub:opacity-100 p-1 text-muted-foreground hover:text-foreground transition-opacity shrink-0">
+                      <Pencil className="w-3 h-3" />
+                    </button>
+                  </div>
                 );
               })}
               {addingSubFor === catRu ? (
@@ -624,6 +711,34 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
   };
   const handleAddRuleSubcategory = (_catRu: string, _subRu: string, _subEn: string) => {};
 
+  // === Rename category/subcategory ===
+  const handleRenameCompCategory = (oldRu: string, newRu: string, newEn: string) => {
+    setAdminComps(prev => prev.map(c =>
+      c.category_ru === oldRu ? { ...c, category_ru: newRu, category_en: newEn } : c
+    ));
+    if (compActiveSub?.cat === oldRu) setCompActiveSub({ cat: newRu, sub: compActiveSub.sub });
+    setCompOpenCats(prev => { const n = new Set(prev); if (n.has(oldRu)) { n.delete(oldRu); n.add(newRu); } return n; });
+  };
+  const handleRenameCompSubcategory = (catRu: string, oldSubRu: string, newSubRu: string, newSubEn: string) => {
+    setAdminComps(prev => prev.map(c =>
+      c.category_ru === catRu && c.subcategory_ru === oldSubRu ? { ...c, subcategory_ru: newSubRu, subcategory_en: newSubEn } : c
+    ));
+    if (compActiveSub?.cat === catRu && compActiveSub?.sub === oldSubRu) setCompActiveSub({ cat: catRu, sub: newSubRu });
+  };
+  const handleRenameRuleCategory = (oldRu: string, newRu: string, newEn: string) => {
+    setAdminRules(prev => prev.map(r =>
+      r.category_ru === oldRu ? { ...r, category_ru: newRu, category_en: newEn } : r
+    ));
+    if (ruleActiveSub?.cat === oldRu) setRuleActiveSub({ cat: newRu, sub: ruleActiveSub.sub });
+    setRuleOpenCats(prev => { const n = new Set(prev); if (n.has(oldRu)) { n.delete(oldRu); n.add(newRu); } return n; });
+  };
+  const handleRenameRuleSubcategory = (catRu: string, oldSubRu: string, newSubRu: string, newSubEn: string) => {
+    setAdminRules(prev => prev.map(r =>
+      r.category_ru === catRu && r.subcategory_ru === oldSubRu ? { ...r, subcategory_ru: newSubRu, subcategory_en: newSubEn } : r
+    ));
+    if (ruleActiveSub?.cat === catRu && ruleActiveSub?.sub === oldSubRu) setRuleActiveSub({ cat: catRu, sub: newSubRu });
+  };
+
   // === Export ===
   const handleExport = () => {
     const output = {
@@ -702,6 +817,8 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
                 overSubId={compOverSubId}
                 onAddCategory={handleAddCompCategory}
                 onAddSubcategory={handleAddCompSubcategory}
+                onRenameCategory={handleRenameCompCategory}
+                onRenameSubcategory={handleRenameCompSubcategory}
               />
               <main className="flex-1 overflow-y-auto p-4">
                 {!compActiveSub ? (
@@ -739,6 +856,8 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
                 overSubId={ruleOverSubId}
                 onAddCategory={handleAddRuleCategory}
                 onAddSubcategory={handleAddRuleSubcategory}
+                onRenameCategory={handleRenameRuleCategory}
+                onRenameSubcategory={handleRenameRuleSubcategory}
               />
               <main className="flex-1 overflow-y-auto p-4">
                 {!ruleActiveSub ? (
