@@ -47,7 +47,10 @@ function ImagePlaceholder({ tag }: { tag: string }) {
 const IMG_TAG_RE = /\{img:[^}]+\}/;
 const UNIT_RE = /\{img:[^_]+_unit/;
 
-function ComponentImage({ image }: { image: string }) {
+function ComponentImage({ image, mediaUrl }: { image: string; mediaUrl?: string | null }) {
+  if (mediaUrl) {
+    return <img src={mediaUrl} alt="" className="w-12 h-12 rounded object-cover bg-muted" />;
+  }
   if (!image) return <div className="w-12 h-12 rounded bg-muted" />;
   const match = image.match(IMG_TAG_RE);
   if (match) return <ImagePlaceholder tag={match[0]} />;
@@ -231,7 +234,7 @@ export default function ComponentsTab({ onNavigateToRule }: ComponentsTabProps) 
                       onClick={() => setSelected(comp)}
                       className="flex flex-col items-center gap-1.5 p-2 rounded-xl bg-card border border-border hover:border-primary/50 transition-colors"
                     >
-                      <ComponentImage image={comp.image} />
+                      <ComponentImage image={comp.image} mediaUrl={comp.media_url} />
                       <span className="text-[10px] text-card-foreground text-center leading-tight line-clamp-2">
                         {title}
                       </span>
@@ -341,7 +344,7 @@ export default function ComponentsTab({ onNavigateToRule }: ComponentsTabProps) 
                   onClick={() => setSelected(comp)}
                   className="flex flex-col items-center gap-1.5 p-2 rounded-xl bg-card border border-border hover:border-primary/50 transition-colors"
                 >
-                  <ComponentImage image={comp.image} />
+                  <ComponentImage image={comp.image} mediaUrl={comp.media_url} />
                   <span className="text-[10px] text-card-foreground text-center leading-tight line-clamp-2">
                     {title}
                   </span>

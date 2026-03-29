@@ -598,7 +598,7 @@ function CategoryTreePanel<T extends TreeItem>({
 /* ─── Admin Dashboard ─── */
 
 function AdminDashboard({ adminPin }: { adminPin: string }) {
-  const { components, rules, loaded } = useRules();
+  const { components, rules, loaded, refetch } = useRules();
   const navigate = useNavigate();
   const [showInstruction, setShowInstruction] = useState(false);
   const [activeTab, setActiveTab] = useState<"components" | "rules" | "categories">("components");
@@ -937,6 +937,7 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
       setAdminComps(prev => prev.map(c =>
         c.id === item.id ? { ...c, title_en: saveData.title_en, title_ru: saveData.title_ru, description_en: saveData.body_en, description_ru: saveData.body_ru, type: saveData.type || "other", media_url: saveData.media_url ?? null } as any : c
       ));
+      refetch();
     } else {
       const { data: result, error } = await supabase.from("rules").update({
         title_en: saveData.title_en, title_ru: saveData.title_ru,
@@ -951,6 +952,7 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
       setAdminRules(prev => prev.map(r =>
         r.id === item.id ? { ...r, title_en: saveData.title_en, title_ru: saveData.title_ru, text_en: saveData.body_en, text_ru: saveData.body_ru, category: saveData.category } : r
       ));
+      refetch();
     }
   };
 

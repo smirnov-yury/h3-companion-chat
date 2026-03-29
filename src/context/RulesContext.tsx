@@ -23,6 +23,7 @@ export interface Component {
   category?: string;
   type?: string;
   faction?: string;
+  media_url?: string | null;
 }
 
 interface RulesData {
@@ -65,6 +66,7 @@ export function RulesProvider({ children }: { children: ReactNode }) {
       category: c.category || "",
       type: c.type || "",
       faction: c.faction || "",
+      media_url: c.media_url || null,
     }));
 
     return { rules, components };
