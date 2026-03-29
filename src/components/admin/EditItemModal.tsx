@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Dialog,
   DialogContent,
@@ -16,7 +16,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Check } from "lucide-react";
+import { Check, Upload, Trash2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 interface EditItemModalProps {
   open: boolean;
@@ -29,6 +30,7 @@ interface EditItemModalProps {
     body_ru: string;
     category: string;
     type?: string;
+    media_url?: string | null;
   } | null;
   categories: { key: string; label: string }[];
   showTypeField?: boolean;
@@ -40,6 +42,7 @@ interface EditItemModalProps {
     body_ru: string;
     category: string;
     type?: string;
+    media_url?: string | null;
   }) => Promise<void>;
 }
 
@@ -58,8 +61,11 @@ export default function EditItemModal({
   const [bodyRu, setBodyRu] = useState("");
   const [category, setCategory] = useState("");
   const [itemType, setItemType] = useState("");
+  const [mediaUrl, setMediaUrl] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (item) {
@@ -69,9 +75,38 @@ export default function EditItemModal({
       setBodyRu(item.body_ru);
       setCategory(item.category);
       setItemType(item.type || "other");
+      setMediaUrl(item.media_url || null);
       setSaved(false);
     }
   }, [item]);
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !item) return;
+    setUploading(true);
+    try {
+      const ext = file.name.split(".").pop() || "png";
+      const path = `${item.id}/${Date.now()}.${ext}`;
+      const { error: uploadError } = await supabase.storage
+        .from("component-media")
+        .upload(path, file, { upsert: true });
+      if (uploadError) {
+        alert("Upload failed: " + uploadError.message);
+        return;
+      }
+      const { data: urlData } = supabase.storage
+        .from("component-media")
+        .getPublicUrl(path);
+      setMediaUrl(urlData.publicUrl);
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
+  const handleDeleteMedia = () => {
+    setMediaUrl(null);
+  };
 
   const handleSave = async () => {
     setSaving(true);
@@ -83,6 +118,7 @@ export default function EditItemModal({
         body_ru: bodyRu,
         category,
         type: itemType,
+        media_url: mediaUrl,
       });
       setSaved(true);
       setTimeout(() => onClose(), 800);
@@ -122,6 +158,51 @@ export default function EditItemModal({
               rows={4}
             />
           </div>
+
+          {/* Media upload section */}
+          {showTypeField && (
+            <div className="space-y-2">
+              <Label className="text-xs">Медиа / Media</Label>
+              {mediaUrl && (
+                <div className="relative inline-block">
+                  <img
+                    src={mediaUrl}
+                    alt="Component media"
+                    className="max-h-[200px] rounded-md border border-border object-contain"
+                  />
+                  <button
+                    onClick={handleDeleteMedia}
+                    className="absolute top-1 right-1 p-1 rounded bg-destructive/80 text-destructive-foreground hover:bg-destructive transition-colors"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              )}
+              <div className="flex items-center gap-2">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleUpload}
+                  className="hidden"
+                />
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
+                >
+                  <Upload className="w-3.5 h-3.5 mr-1" />
+                  {uploading ? "Загрузка..." : "Загрузить / Upload"}
+                </Button>
+              </div>
+              <p className="text-[10px] text-muted-foreground">
+                Одинаково для RU и EN / Same for both languages
+              </p>
+            </div>
+          )}
+
           {showTypeField && (
             <div className="space-y-1">
               <Label className="text-xs">Type</Label>

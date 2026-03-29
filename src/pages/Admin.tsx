@@ -268,8 +268,8 @@ function PinScreen({ onAuth }: { onAuth: (pin: string) => void }) {
 
 /* ─── Sortable card (generic) ─── */
 
-function SortableCard({ id, title, subtitle, isOverlay, onEdit, onDelete }: {
-  id: string; title: string; subtitle?: string; isOverlay?: boolean;
+function SortableCard({ id, title, subtitle, thumbnailUrl, isOverlay, onEdit, onDelete }: {
+  id: string; title: string; subtitle?: string; thumbnailUrl?: string | null; isOverlay?: boolean;
   onEdit?: () => void; onDelete?: () => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
@@ -280,6 +280,9 @@ function SortableCard({ id, title, subtitle, isOverlay, onEdit, onDelete }: {
       <button {...attributes} {...listeners} className="shrink-0 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground">
         <GripVertical className="w-4 h-4" />
       </button>
+      {thumbnailUrl && (
+        <img src={thumbnailUrl} alt="" className="w-6 h-6 rounded object-cover shrink-0" />
+      )}
       <div className="min-w-0 flex-1">
         <span className="text-xs text-card-foreground truncate block">{title}</span>
         {subtitle && <span className="text-[10px] text-muted-foreground truncate block">{subtitle}</span>}
@@ -900,6 +903,7 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
         body_ru: comp.description_ru || "",
         category: "",
         type: comp.type || "other",
+        media_url: (comp as any).media_url || null,
       };
     }
     const rule = item as AdminRule;
@@ -913,7 +917,7 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
     };
   }, [editItem]);
 
-  const handleSaveEdit = async (saveData: { title_en: string; title_ru: string; body_en: string; body_ru: string; category: string; type?: string }) => {
+  const handleSaveEdit = async (saveData: { title_en: string; title_ru: string; body_en: string; body_ru: string; category: string; type?: string; media_url?: string | null }) => {
     if (!editItem) return;
     const { type, item } = editItem;
     if (type === "component") {
@@ -922,7 +926,8 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
         body_en: saveData.body_en, body_ru: saveData.body_ru,
         type: saveData.type || "other",
         category: "",
-      }).eq("id", item.id).select();
+        media_url: saveData.media_url ?? null,
+      } as any).eq("id", item.id).select();
       console.log("[Admin] Component update response:", { result, error });
       if (error) {
         console.error("[Admin] Component update failed:", error);
@@ -930,7 +935,7 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
         return;
       }
       setAdminComps(prev => prev.map(c =>
-        c.id === item.id ? { ...c, title_en: saveData.title_en, title_ru: saveData.title_ru, description_en: saveData.body_en, description_ru: saveData.body_ru, type: saveData.type || "other" } : c
+        c.id === item.id ? { ...c, title_en: saveData.title_en, title_ru: saveData.title_ru, description_en: saveData.body_en, description_ru: saveData.body_ru, type: saveData.type || "other", media_url: saveData.media_url ?? null } as any : c
       ));
     } else {
       const { data: result, error } = await supabase.from("rules").update({
@@ -1144,6 +1149,7 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                         {compActiveItems.map(comp => (
                           <SortableCard key={comp.id} id={comp.id} title={comp.title_ru || comp.title_en || comp.id}
+                            thumbnailUrl={(comp as any).media_url}
                             onEdit={() => setEditItem({ type: "component", item: comp })}
                             onDelete={() => setDeleteItem({ type: "component", item: comp })}
                           />

@@ -78,6 +78,7 @@ export type Database = {
           faction: string | null
           id: string
           image: string | null
+          media_url: string | null
           rule_id: string | null
           sort_order: number | null
           title_en: string | null
@@ -94,6 +95,7 @@ export type Database = {
           faction?: string | null
           id?: string
           image?: string | null
+          media_url?: string | null
           rule_id?: string | null
           sort_order?: number | null
           title_en?: string | null
@@ -110,6 +112,7 @@ export type Database = {
           faction?: string | null
           id?: string
           image?: string | null
+          media_url?: string | null
           rule_id?: string | null
           sort_order?: number | null
           title_en?: string | null
