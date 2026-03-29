@@ -1018,6 +1018,7 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
         onClose={() => setEditItem(null)}
         item={editModalItem}
         categories={editCategories}
+        showTypeField={editItem?.type === "component"}
         onSave={handleSaveEdit}
       />
       <DeleteConfirmDialog
