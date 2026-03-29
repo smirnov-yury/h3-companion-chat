@@ -941,7 +941,7 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
                 )}
               </main>
             </>
-          ) : (
+          ) : activeTab === "rules" ? (
             <>
               <CategoryTreePanel
                 items={adminRules}
