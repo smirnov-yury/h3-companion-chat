@@ -817,6 +817,8 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
                 overSubId={compOverSubId}
                 onAddCategory={handleAddCompCategory}
                 onAddSubcategory={handleAddCompSubcategory}
+                onRenameCategory={handleRenameCompCategory}
+                onRenameSubcategory={handleRenameCompSubcategory}
               />
               <main className="flex-1 overflow-y-auto p-4">
                 {!compActiveSub ? (
