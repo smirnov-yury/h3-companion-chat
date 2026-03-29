@@ -127,7 +127,7 @@ export default function ComponentsTab({ onNavigateToRule }: ComponentsTabProps) 
     if (activeCategory !== "unit") return [];
     const set = new Set<string>();
     for (const u of categoryItems) set.add(getFaction(u.image));
-    return Object.keys(FACTION_LABELS).filter((f) => set.has(f));
+    return FACTION_ORDER.filter((f) => set.has(f));
   }, [activeCategory, categoryItems]);
 
   const displayedItems = useMemo(() => {
