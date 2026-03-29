@@ -49,6 +49,7 @@ export default function EditItemModal({
   item,
   categories,
   showTypeField,
+  componentTypes = [],
   onSave,
 }: EditItemModalProps) {
   const [titleEn, setTitleEn] = useState("");
