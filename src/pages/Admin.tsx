@@ -71,27 +71,7 @@ interface BiName {
 
 /* ─── helpers ─── */
 
-const COMP_CAT_MAP: Record<string, BiName> = {
-  unit: { name_ru: "Юниты", name_en: "Units" },
-  card: { name_ru: "Карты", name_en: "Cards" },
-  hero: { name_ru: "Герои", name_en: "Heroes" },
-  token: { name_ru: "Жетоны", name_en: "Tokens" },
-  icon: { name_ru: "Иконки", name_en: "Icons" },
-  schema: { name_ru: "Схемы", name_en: "Schemas" },
-  game: { name_ru: "Игровое", name_en: "Game" },
-  book: { name_ru: "Книги", name_en: "Books" },
-  mission: { name_ru: "Миссии", name_en: "Missions" },
-  location: { name_ru: "Локации", name_en: "Locations" },
-  rule: { name_ru: "Правила", name_en: "Rules" },
-  miss: { name_ru: "Разное", name_en: "Miscellaneous" },
-  other: { name_ru: "Прочее", name_en: "Other" },
-};
-
-function deriveCatBi(image: string): BiName {
-  const m = image.match(/\{img:[^_}]+_([^_}]+)/);
-  const raw = m?.[1] ?? "other";
-  return COMP_CAT_MAP[raw] ?? COMP_CAT_MAP.other;
-}
+/* removed hardcoded COMP_CAT_MAP — categories are loaded dynamically from component_types table */
 
 const FACTION_MAP: Record<string, BiName> = {
   castle: { name_ru: "Замок", name_en: "Castle" },
