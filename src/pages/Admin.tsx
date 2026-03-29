@@ -598,7 +598,7 @@ function CategoryTreePanel<T extends TreeItem>({
 /* ─── Admin Dashboard ─── */
 
 function AdminDashboard({ adminPin }: { adminPin: string }) {
-  const { components, rules, loaded } = useRules();
+  const { components, rules, loaded, refetch } = useRules();
   const navigate = useNavigate();
   const [showInstruction, setShowInstruction] = useState(false);
   const [activeTab, setActiveTab] = useState<"components" | "rules" | "categories">("components");
