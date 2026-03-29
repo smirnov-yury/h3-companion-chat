@@ -891,6 +891,10 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
             className={`px-4 py-2 text-sm font-medium transition-colors ${activeTab === "rules" ? "border-b-2 border-primary text-primary" : "text-muted-foreground hover:text-foreground"}`}>
             Правила
           </button>
+          <button onClick={() => setActiveTab("categories")}
+            className={`px-4 py-2 text-sm font-medium transition-colors ${activeTab === "categories" ? "border-b-2 border-primary text-primary" : "text-muted-foreground hover:text-foreground"}`}>
+            Категории
+          </button>
         </div>
 
         {/* Two-panel layout */}
