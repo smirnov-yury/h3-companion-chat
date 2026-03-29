@@ -407,7 +407,7 @@ interface CategoryTreePanelProps<T extends TreeItem> {
 }
 
 function CategoryTreePanel<T extends TreeItem>({
-  items, tree, prefix, openCats, toggleCat, activeSub, setActiveSub, overSubId, onAddCategory, onAddSubcategory, onRenameCategory, onRenameSubcategory,
+  items, tree, prefix, openCats, toggleCat, activeSub, setActiveSub, overSubId, onAddCategory, onAddSubcategory, onRenameCategory, onRenameSubcategory, onDeleteCategory, onDeleteSubcategory, extraFooter,
 }: CategoryTreePanelProps<T>) {
   const categories = useMemo(() => Object.keys(tree).sort(), [tree]);
 
