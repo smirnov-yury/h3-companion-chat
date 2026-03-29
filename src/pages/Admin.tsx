@@ -590,6 +590,41 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
   const [deleteItem, setDeleteItem] = useState<{ type: "component" | "rule"; item: AdminComponent | AdminRule } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  // === Dynamic component types ===
+  const [componentTypes, setComponentTypes] = useState<{ key: string; label_ru: string; label_en: string; sort_order: number }[]>([]);
+  const [newTypeKey, setNewTypeKey] = useState("");
+  const [newTypeLabelRu, setNewTypeLabelRu] = useState("");
+  const [newTypeLabelEn, setNewTypeLabelEn] = useState("");
+
+  useEffect(() => {
+    supabase.from("component_types").select("*").order("sort_order")
+      .then(({ data, error }) => {
+        if (data) setComponentTypes(data as any);
+        if (error) console.error("[Admin] Failed to load component_types:", error);
+      });
+  }, []);
+
+  const handleAddType = async () => {
+    const key = newTypeKey.trim().toLowerCase();
+    const labelRu = newTypeLabelRu.trim();
+    const labelEn = newTypeLabelEn.trim() || labelRu;
+    if (!key || !labelRu) return;
+    if (!/^[a-z_]+$/.test(key)) { alert("Key must be lowercase letters and underscores only"); return; }
+    if (componentTypes.some(t => t.key === key)) { alert("Type already exists"); return; }
+    const newType = { key, label_ru: labelRu, label_en: labelEn, sort_order: componentTypes.length };
+    const { error } = await supabase.from("component_types").insert(newType as any);
+    if (error) { alert("Failed to add type: " + error.message); return; }
+    setComponentTypes(prev => [...prev, newType]);
+    setNewTypeKey(""); setNewTypeLabelRu(""); setNewTypeLabelEn("");
+  };
+
+  const handleDeleteType = async (key: string) => {
+    if (!confirm(`Delete type "${key}"?`)) return;
+    const { error } = await supabase.from("component_types").delete().eq("key", key);
+    if (error) { alert("Failed to delete type: " + error.message); return; }
+    setComponentTypes(prev => prev.filter(t => t.key !== key));
+  };
+
   // === Components state ===
   const [adminComps, setAdminComps] = useState<AdminComponent[]>([]);
   useEffect(() => {
