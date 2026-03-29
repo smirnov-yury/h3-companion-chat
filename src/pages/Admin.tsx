@@ -280,6 +280,9 @@ function SortableCard({ id, title, subtitle, thumbnailUrl, isOverlay, onEdit, on
       <button {...attributes} {...listeners} className="shrink-0 cursor-grab active:cursor-grabbing text-muted-foreground hover:text-foreground">
         <GripVertical className="w-4 h-4" />
       </button>
+      {thumbnailUrl && (
+        <img src={thumbnailUrl} alt="" className="w-6 h-6 rounded object-cover shrink-0" />
+      )}
       <div className="min-w-0 flex-1">
         <span className="text-xs text-card-foreground truncate block">{title}</span>
         {subtitle && <span className="text-[10px] text-muted-foreground truncate block">{subtitle}</span>}
