@@ -798,24 +798,36 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
     };
   }, [editItem]);
 
-  const handleSaveEdit = async (data: { title_en: string; title_ru: string; body_en: string; body_ru: string; category: string }) => {
+  const handleSaveEdit = async (saveData: { title_en: string; title_ru: string; body_en: string; body_ru: string; category: string }) => {
     if (!editItem) return;
     const { type, item } = editItem;
     if (type === "component") {
-      await supabase.from("components").update({
-        title_en: data.title_en, title_ru: data.title_ru,
-        body_en: data.body_en, body_ru: data.body_ru,
-      }).eq("id", item.id);
+      const { data: result, error } = await supabase.from("components").update({
+        title_en: saveData.title_en, title_ru: saveData.title_ru,
+        body_en: saveData.body_en, body_ru: saveData.body_ru,
+      }).eq("id", item.id).select();
+      console.log("[Admin] Component update response:", { result, error });
+      if (error) {
+        console.error("[Admin] Component update failed:", error);
+        alert("Save failed: " + error.message);
+        return;
+      }
       setAdminComps(prev => prev.map(c =>
-        c.id === item.id ? { ...c, title_en: data.title_en, title_ru: data.title_ru, description_en: data.body_en, description_ru: data.body_ru } : c
+        c.id === item.id ? { ...c, title_en: saveData.title_en, title_ru: saveData.title_ru, description_en: saveData.body_en, description_ru: saveData.body_ru } : c
       ));
     } else {
-      await supabase.from("rules").update({
-        title_en: data.title_en, title_ru: data.title_ru,
-        text_en: data.body_en, text_ru: data.body_ru, category: data.category,
-      }).eq("id", item.id);
+      const { data: result, error } = await supabase.from("rules").update({
+        title_en: saveData.title_en, title_ru: saveData.title_ru,
+        text_en: saveData.body_en, text_ru: saveData.body_ru, category: saveData.category,
+      }).eq("id", item.id).select();
+      console.log("[Admin] Rule update response:", { result, error });
+      if (error) {
+        console.error("[Admin] Rule update failed:", error);
+        alert("Save failed: " + error.message);
+        return;
+      }
       setAdminRules(prev => prev.map(r =>
-        r.id === item.id ? { ...r, title_en: data.title_en, title_ru: data.title_ru, text_en: data.body_en, text_ru: data.body_ru, category: data.category } : r
+        r.id === item.id ? { ...r, title_en: saveData.title_en, title_ru: saveData.title_ru, text_en: saveData.body_en, text_ru: saveData.body_ru, category: saveData.category } : r
       ));
     }
   };
