@@ -993,6 +993,42 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
                     {compActiveItems.length === 0 && <p className="text-muted-foreground text-xs mt-4">Перетащите компоненты сюда</p>}
                   </>
                 )}
+
+                {/* Component Types Manager */}
+                <div className="mt-8 border-t border-border pt-4">
+                  <h3 className="text-sm font-medium text-foreground mb-3">Типы компонентов</h3>
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {componentTypes.map(t => (
+                      <div key={t.key} className="flex items-center gap-1 px-2 py-1 rounded bg-muted text-xs text-foreground">
+                        <span className="font-medium">{t.key}</span>
+                        <span className="text-muted-foreground">— {t.label_ru} / {t.label_en}</span>
+                        <button onClick={() => handleDeleteType(t.key)} className="ml-1 text-muted-foreground hover:text-destructive transition-colors">
+                          <Trash2 className="w-3 h-3" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex flex-wrap gap-2 items-end">
+                    <div className="space-y-1">
+                      <label className="text-[10px] text-muted-foreground">Key</label>
+                      <input value={newTypeKey} onChange={e => setNewTypeKey(e.target.value)} placeholder="terrain"
+                        className="w-28 text-xs px-2 py-1.5 rounded bg-input text-foreground border border-border outline-none focus:ring-1 focus:ring-ring" />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] text-muted-foreground">Label RU</label>
+                      <input value={newTypeLabelRu} onChange={e => setNewTypeLabelRu(e.target.value)} placeholder="Террейн"
+                        className="w-32 text-xs px-2 py-1.5 rounded bg-input text-foreground border border-border outline-none focus:ring-1 focus:ring-ring" />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] text-muted-foreground">Label EN</label>
+                      <input value={newTypeLabelEn} onChange={e => setNewTypeLabelEn(e.target.value)} placeholder="Terrain"
+                        className="w-32 text-xs px-2 py-1.5 rounded bg-input text-foreground border border-border outline-none focus:ring-1 focus:ring-ring" />
+                    </div>
+                    <Button size="sm" variant="outline" onClick={handleAddType} className="h-7 text-xs">
+                      <Plus className="w-3 h-3 mr-1" /> Добавить тип
+                    </Button>
+                  </div>
+                </div>
               </main>
             </>
           ) : activeTab === "rules" ? (
