@@ -126,15 +126,19 @@ export default function ComponentsTab({ onNavigateToRule }: ComponentsTabProps) 
   const grouped = useMemo(() => {
     const map: Record<string, Component[]> = {};
     for (const c of components) {
-      const cat = getComponentCategory(c.image);
+      const cat = c.category || "other";
       (map[cat] ??= []).push(c);
     }
     return map;
   }, [components]);
 
   const categories = useMemo(() => {
-    return CATEGORY_ORDER.filter((k) => grouped[k]?.length);
-  }, [grouped]);
+    const orderedKeys = dbCategories.map(c => c.key);
+    const present = orderedKeys.filter((k) => grouped[k]?.length);
+    // Add any keys present in data but not in DB categories
+    const extra = Object.keys(grouped).filter(k => !orderedKeys.includes(k) && grouped[k]?.length);
+    return [...present, ...extra];
+  }, [grouped, dbCategories]);
 
   const categoryItems = useMemo(() => {
     if (!activeCategory) return [];
