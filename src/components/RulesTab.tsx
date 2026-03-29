@@ -94,13 +94,33 @@ function getTranslatedCategory(rule: Rule, lang: string): string {
   return map[key] || key;
 }
 
-export default function RulesTab() {
+interface RulesTabProps {
+  scrollToRuleId?: string | null;
+  onScrollHandled?: () => void;
+}
+
+export default function RulesTab({ scrollToRuleId, onScrollHandled }: RulesTabProps) {
   const { rules, loaded } = useRules();
   const { lang } = useLang();
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useDebounce("", 300);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const listRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (scrollToRuleId && loaded) {
+      setSelectedCategory(null);
+      setSearch("");
+      setDebouncedSearch("");
+      setExpandedId(scrollToRuleId);
+      onScrollHandled?.();
+      requestAnimationFrame(() => {
+        const el = document.getElementById(`rule-${scrollToRuleId}`);
+        el?.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+    }
+  }, [scrollToRuleId, loaded]);
 
   // Build categories from translated names (merges duplicates)
   const categories = useMemo(
