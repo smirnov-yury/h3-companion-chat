@@ -39,6 +39,8 @@ import {
   Plus,
   GripVertical,
   Lock,
+  Pencil,
+  Check,
 } from "lucide-react";
 
 /* ─── types ─── */
