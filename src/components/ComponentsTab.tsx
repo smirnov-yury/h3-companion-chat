@@ -344,7 +344,7 @@ export default function ComponentsTab({ onNavigateToRule }: ComponentsTabProps) 
                   onClick={() => setSelected(comp)}
                   className="flex flex-col items-center gap-1.5 p-2 rounded-xl bg-card border border-border hover:border-primary/50 transition-colors"
                 >
-                  <ComponentImage image={comp.image} />
+                  <ComponentImage image={comp.image} mediaUrl={comp.media_url} />
                   <span className="text-[10px] text-card-foreground text-center leading-tight line-clamp-2">
                     {title}
                   </span>

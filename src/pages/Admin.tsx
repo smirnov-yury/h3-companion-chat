@@ -937,6 +937,7 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
       setAdminComps(prev => prev.map(c =>
         c.id === item.id ? { ...c, title_en: saveData.title_en, title_ru: saveData.title_ru, description_en: saveData.body_en, description_ru: saveData.body_ru, type: saveData.type || "other", media_url: saveData.media_url ?? null } as any : c
       ));
+      refetch();
     } else {
       const { data: result, error } = await supabase.from("rules").update({
         title_en: saveData.title_en, title_ru: saveData.title_ru,
