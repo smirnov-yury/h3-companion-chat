@@ -268,8 +268,8 @@ function PinScreen({ onAuth }: { onAuth: (pin: string) => void }) {
 
 /* ─── Sortable card (generic) ─── */
 
-function SortableCard({ id, title, subtitle, isOverlay, onEdit, onDelete }: {
-  id: string; title: string; subtitle?: string; isOverlay?: boolean;
+function SortableCard({ id, title, subtitle, thumbnailUrl, isOverlay, onEdit, onDelete }: {
+  id: string; title: string; subtitle?: string; thumbnailUrl?: string | null; isOverlay?: boolean;
   onEdit?: () => void; onDelete?: () => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
