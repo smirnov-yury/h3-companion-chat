@@ -98,6 +98,42 @@ export type Database = {
         }
         Relationships: []
       }
+      rules: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          id: string
+          sort_order: number | null
+          text_en: string | null
+          text_ru: string | null
+          title_en: string | null
+          title_ru: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          id: string
+          sort_order?: number | null
+          text_en?: string | null
+          text_ru?: string | null
+          title_en?: string | null
+          title_ru?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          id?: string
+          sort_order?: number | null
+          text_en?: string | null
+          text_ru?: string | null
+          title_en?: string | null
+          title_ru?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
