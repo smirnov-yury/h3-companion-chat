@@ -767,7 +767,7 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
   const editCategories = useMemo(() => {
     if (!editItem) return [];
     if (editItem.type === "component") {
-      return Object.entries(COMP_CAT_MAP).map(([key, bi]) => ({ key, label: `${bi.name_ru} / ${bi.name_en}` }));
+      return []; // Components are grouped by type, not category — hide category selector
     }
     return Object.entries(RULE_CAT_MAP).map(([key, bi]) => ({ key, label: `${bi.name_ru} / ${bi.name_en}` }));
   }, [editItem]);
@@ -804,7 +804,7 @@ function AdminDashboard({ adminPin }: { adminPin: string }) {
     if (type === "component") {
       await supabase.from("components").update({
         title_en: data.title_en, title_ru: data.title_ru,
-        body_en: data.body_en, body_ru: data.body_ru, category: data.category,
+        body_en: data.body_en, body_ru: data.body_ru,
       }).eq("id", item.id);
       setAdminComps(prev => prev.map(c =>
         c.id === item.id ? { ...c, title_en: data.title_en, title_ru: data.title_ru, description_en: data.body_en, description_ru: data.body_ru } : c
