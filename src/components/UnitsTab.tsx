@@ -161,7 +161,8 @@ export default function UnitsTab() {
       const hasStandard = variants.some((u) => u.number === 'Few' || u.number === 'Pack');
 
       if (mode === 'neutral' && !hasNeutral) continue;
-      if (mode === 'standard' && !hasStandard) continue;
+      if (mode === 'standard' && hasNeutral && !hasStandard) continue;
+      if (mode === 'standard' && variants.every((u) => u.number === 'Neutral')) continue;
 
       result[slug] = variants;
     }
@@ -211,7 +212,19 @@ export default function UnitsTab() {
     <div className="flex-1 flex flex-col overflow-hidden">
       {/* Filters */}
       <div className="shrink-0 p-3 space-y-2 border-b border-border bg-background">
-        {/* Row 1: Faction chips */}
+        {/* Row 1: Mode switch */}
+        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+          {(['all', 'standard', 'neutral'] as ModeFilter[]).map((m) => (
+            <FilterChip
+              key={m}
+              label={modeLabels[m]}
+              active={mode === m}
+              onClick={() => setMode(m)}
+            />
+          ))}
+        </div>
+
+        {/* Row 2: Faction chips */}
         <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
           {factions.map((f) => (
             <FilterChip
@@ -223,19 +236,8 @@ export default function UnitsTab() {
           ))}
         </div>
 
-        {/* Row 2: Mode switch + Tier + Type */}
+        {/* Row 3: Tier + Type */}
         <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
-          {(['all', 'standard', 'neutral'] as ModeFilter[]).map((m) => (
-            <FilterChip
-              key={m}
-              label={modeLabels[m]}
-              active={mode === m}
-              onClick={() => setMode(m)}
-            />
-          ))}
-
-          <div className="w-px bg-border mx-1 shrink-0" />
-
           {tiers.map((t) => (
             <FilterChip
               key={t}
@@ -288,12 +290,17 @@ export default function UnitsTab() {
                         alt={unit.name_en}
                         className="w-full h-full object-contain"
                         loading="lazy"
+                        onError={(e) => {
+                          const target = e.currentTarget;
+                          target.style.display = 'none';
+                          const fallback = target.nextElementSibling as HTMLElement;
+                          if (fallback) fallback.style.display = 'flex';
+                        }}
                       />
-                    ) : (
-                      <div className="flex items-center justify-center h-full text-muted-foreground text-xs">
-                        No image
-                      </div>
-                    )}
+                    ) : null}
+                    <div className={`${imgSrc ? 'hidden' : 'flex'} items-center justify-center h-full text-muted-foreground text-xs text-center p-2`}>
+                      {lang === 'RU' && unit.name_ru ? unit.name_ru : unit.name_en}
+                    </div>
                     <Badge
                       className={`absolute top-1 left-1 text-[10px] ${
                         TIER_COLOR[unit.tier] ?? 'bg-muted text-foreground'
@@ -348,12 +355,27 @@ export default function UnitsTab() {
 
                     return (
                       <TabsContent key={u.id} value={u.number} className="space-y-3">
-                        {imgSrc && (
-                          <img
-                            src={imgSrc}
-                            alt={u.name_en}
-                            className="w-full max-h-48 object-contain rounded-lg bg-muted"
-                          />
+                        {imgSrc ? (
+                          <div className="relative w-full max-h-48 bg-muted rounded-lg overflow-hidden">
+                            <img
+                              src={imgSrc}
+                              alt={u.name_en}
+                              className="w-full max-h-48 object-contain"
+                              onError={(e) => {
+                                const target = e.currentTarget;
+                                target.style.display = 'none';
+                                const fallback = target.nextElementSibling as HTMLElement;
+                                if (fallback) fallback.style.display = 'flex';
+                              }}
+                            />
+                            <div className="hidden items-center justify-center h-48 text-muted-foreground text-sm">
+                              {lang === 'RU' && u.name_ru ? u.name_ru : u.name_en}
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex items-center justify-center h-48 rounded-lg bg-muted text-muted-foreground text-sm">
+                            {lang === 'RU' && u.name_ru ? u.name_ru : u.name_en}
+                          </div>
                         )}
 
                         {/* Stat cards with glyph icons */}
