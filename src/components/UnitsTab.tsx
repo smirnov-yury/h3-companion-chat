@@ -78,21 +78,11 @@ export default function UnitsTab() {
     });
   }, []);
 
-  const { regularFactions, hasNeutrals } = useMemo(() => {
-    const regular = new Set<string>();
-    let neutrals = false;
-    units.forEach(u => {
-      if (isNeutral(u.town)) { neutrals = true; }
-      else { regular.add(u.town); }
-    });
-    return { regularFactions: Array.from(regular).sort(), hasNeutrals: neutrals };
+  const factions = useMemo(() => {
+    const towns = new Set<string>();
+    units.forEach(u => { if (u.town) towns.add(u.town); });
+    return ['all', ...Array.from(towns).sort()];
   }, [units]);
-
-  const factions = useMemo(() => [
-    'all',
-    ...regularFactions,
-    ...(hasNeutrals ? ['neutrals'] : []),
-  ], [regularFactions, hasNeutrals]);
 
   const tiers = ['all', 'bronze', 'silver', 'golden'];
   const types = ['all', 'unit_ground', 'unit_ranged', 'unit_flying'];
