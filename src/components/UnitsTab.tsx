@@ -290,12 +290,17 @@ export default function UnitsTab() {
                         alt={unit.name_en}
                         className="w-full h-full object-contain"
                         loading="lazy"
+                        onError={(e) => {
+                          const target = e.currentTarget;
+                          target.style.display = 'none';
+                          const fallback = target.nextElementSibling as HTMLElement;
+                          if (fallback) fallback.style.display = 'flex';
+                        }}
                       />
-                    ) : (
-                      <div className="flex items-center justify-center h-full text-muted-foreground text-xs">
-                        No image
-                      </div>
-                    )}
+                    ) : null}
+                    <div className={`${imgSrc ? 'hidden' : 'flex'} items-center justify-center h-full text-muted-foreground text-xs text-center p-2`}>
+                      {lang === 'RU' && unit.name_ru ? unit.name_ru : unit.name_en}
+                    </div>
                     <Badge
                       className={`absolute top-1 left-1 text-[10px] ${
                         TIER_COLOR[unit.tier] ?? 'bg-muted text-foreground'
