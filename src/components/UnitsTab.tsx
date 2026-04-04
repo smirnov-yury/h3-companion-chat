@@ -132,14 +132,18 @@ export default function UnitsTab() {
       {/* Filters */}
       <div className="shrink-0 p-3 space-y-2 border-b border-border bg-background">
         <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
-          {factions.map(f => {
-            let label = f;
-            if (f === 'all') label = lang === 'RU' ? 'Все' : 'All';
-            else if (f === 'neutrals') label = lang === 'RU' ? 'Нейтралы' : 'Neutrals';
-            return <FilterBtn key={f} label={label} value={f} active={filterFaction} onClick={setFilterFaction} />;
-          })}
+          {factions.map(f => (
+            <FilterBtn key={f} label={f === 'all' ? (lang === 'RU' ? 'Все' : 'All') : f} value={f} active={filterFaction} onClick={setFilterFaction} />
+          ))}
         </div>
         <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+          {(['all', 'normal', 'neutral'] as NeutralFilter[]).map(v => {
+            const labels: Record<NeutralFilter, string> = lang === 'RU'
+              ? { all: 'Все', normal: 'Обычные', neutral: 'Нейтралы' }
+              : { all: 'All', normal: 'Normal', neutral: 'Neutral' };
+            return <FilterBtn key={v} label={labels[v]} value={v} active={filterNeutral} onClick={(val) => setFilterNeutral(val as NeutralFilter)} />;
+          })}
+          <div className="w-px bg-border mx-1" />
           {tiers.map(t => (
             <FilterBtn key={t} label={t === 'all' ? (lang === 'RU' ? 'Все' : 'All') : t} value={t} active={filterTier} onClick={setFilterTier} />
           ))}
