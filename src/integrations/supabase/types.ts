@@ -14,6 +14,126 @@ export type Database = {
   }
   public: {
     Tables: {
+      abilities: {
+        Row: {
+          effect_empowered_en: string | null
+          effect_en: string | null
+          effect_expert_en: string | null
+          id: string
+          image_regular: string | null
+          name_en: string
+          name_ru: string | null
+          notes_en: string | null
+          notes_ru: string | null
+          sort_order: number | null
+        }
+        Insert: {
+          effect_empowered_en?: string | null
+          effect_en?: string | null
+          effect_expert_en?: string | null
+          id: string
+          image_regular?: string | null
+          name_en: string
+          name_ru?: string | null
+          notes_en?: string | null
+          notes_ru?: string | null
+          sort_order?: number | null
+        }
+        Update: {
+          effect_empowered_en?: string | null
+          effect_en?: string | null
+          effect_expert_en?: string | null
+          id?: string
+          image_regular?: string | null
+          name_en?: string
+          name_ru?: string | null
+          notes_en?: string | null
+          notes_ru?: string | null
+          sort_order?: number | null
+        }
+        Relationships: []
+      }
+      artifacts: {
+        Row: {
+          description_en: string | null
+          description_ru: string | null
+          effect_en: string | null
+          effect_ru: string | null
+          id: string
+          image: string | null
+          name_en: string
+          name_ru: string | null
+          quality: string | null
+          sort_order: number | null
+        }
+        Insert: {
+          description_en?: string | null
+          description_ru?: string | null
+          effect_en?: string | null
+          effect_ru?: string | null
+          id: string
+          image?: string | null
+          name_en: string
+          name_ru?: string | null
+          quality?: string | null
+          sort_order?: number | null
+        }
+        Update: {
+          description_en?: string | null
+          description_ru?: string | null
+          effect_en?: string | null
+          effect_ru?: string | null
+          id?: string
+          image?: string | null
+          name_en?: string
+          name_ru?: string | null
+          quality?: string | null
+          sort_order?: number | null
+        }
+        Relationships: []
+      }
+      astrologers_proclaim: {
+        Row: {
+          description_en: string | null
+          description_ru: string | null
+          effect_en: string | null
+          effect_ru: string | null
+          id: string
+          image: string | null
+          name_en: string
+          name_ru: string | null
+          notes_en: string | null
+          notes_ru: string | null
+          sort_order: number | null
+        }
+        Insert: {
+          description_en?: string | null
+          description_ru?: string | null
+          effect_en?: string | null
+          effect_ru?: string | null
+          id: string
+          image?: string | null
+          name_en: string
+          name_ru?: string | null
+          notes_en?: string | null
+          notes_ru?: string | null
+          sort_order?: number | null
+        }
+        Update: {
+          description_en?: string | null
+          description_ru?: string | null
+          effect_en?: string | null
+          effect_ru?: string | null
+          id?: string
+          image?: string | null
+          name_en?: string
+          name_ru?: string | null
+          notes_en?: string | null
+          notes_ru?: string | null
+          sort_order?: number | null
+        }
+        Relationships: []
+      }
       categories: {
         Row: {
           cover_image_url: string | null
@@ -122,6 +242,174 @@ export type Database = {
         }
         Relationships: []
       }
+      events: {
+        Row: {
+          effect_en: string | null
+          effect_ru: string | null
+          id: string
+          image: string | null
+          name_en: string
+          name_ru: string | null
+          notes_en: string | null
+          notes_ru: string | null
+          sort_order: number | null
+        }
+        Insert: {
+          effect_en?: string | null
+          effect_ru?: string | null
+          id: string
+          image?: string | null
+          name_en: string
+          name_ru?: string | null
+          notes_en?: string | null
+          notes_ru?: string | null
+          sort_order?: number | null
+        }
+        Update: {
+          effect_en?: string | null
+          effect_ru?: string | null
+          id?: string
+          image?: string | null
+          name_en?: string
+          name_ru?: string | null
+          notes_en?: string | null
+          notes_ru?: string | null
+          sort_order?: number | null
+        }
+        Relationships: []
+      }
+      fields: {
+        Row: {
+          effect_en: string | null
+          effect_ru: string | null
+          id: string
+          image: string | null
+          name_en: string
+          name_ru: string | null
+          notes_en: string | null
+          notes_ru: string | null
+          sort_order: number | null
+          type_en: string | null
+          type_ru: string | null
+        }
+        Insert: {
+          effect_en?: string | null
+          effect_ru?: string | null
+          id: string
+          image?: string | null
+          name_en: string
+          name_ru?: string | null
+          notes_en?: string | null
+          notes_ru?: string | null
+          sort_order?: number | null
+          type_en?: string | null
+          type_ru?: string | null
+        }
+        Update: {
+          effect_en?: string | null
+          effect_ru?: string | null
+          id?: string
+          image?: string | null
+          name_en?: string
+          name_ru?: string | null
+          notes_en?: string | null
+          notes_ru?: string | null
+          sort_order?: number | null
+          type_en?: string | null
+          type_ru?: string | null
+        }
+        Relationships: []
+      }
+      glyphs: {
+        Row: {
+          category: string | null
+          description_en: string | null
+          description_ru: string | null
+          id: string
+          image: string | null
+          sort_order: number | null
+        }
+        Insert: {
+          category?: string | null
+          description_en?: string | null
+          description_ru?: string | null
+          id: string
+          image?: string | null
+          sort_order?: number | null
+        }
+        Update: {
+          category?: string | null
+          description_en?: string | null
+          description_ru?: string | null
+          id?: string
+          image?: string | null
+          sort_order?: number | null
+        }
+        Relationships: []
+      }
+      heroes: {
+        Row: {
+          ability_id: string | null
+          attack: number | null
+          class_en: string | null
+          class_ru: string | null
+          defense: number | null
+          id: string
+          image: string | null
+          knowledge: number | null
+          name_en: string
+          name_ru: string | null
+          notes_en: string | null
+          notes_ru: string | null
+          power: number | null
+          sort_order: number | null
+          specialty_en: string | null
+          specialty_levels: Json | null
+          specialty_ru: string | null
+          town: string | null
+        }
+        Insert: {
+          ability_id?: string | null
+          attack?: number | null
+          class_en?: string | null
+          class_ru?: string | null
+          defense?: number | null
+          id: string
+          image?: string | null
+          knowledge?: number | null
+          name_en: string
+          name_ru?: string | null
+          notes_en?: string | null
+          notes_ru?: string | null
+          power?: number | null
+          sort_order?: number | null
+          specialty_en?: string | null
+          specialty_levels?: Json | null
+          specialty_ru?: string | null
+          town?: string | null
+        }
+        Update: {
+          ability_id?: string | null
+          attack?: number | null
+          class_en?: string | null
+          class_ru?: string | null
+          defense?: number | null
+          id?: string
+          image?: string | null
+          knowledge?: number | null
+          name_en?: string
+          name_ru?: string | null
+          notes_en?: string | null
+          notes_ru?: string | null
+          power?: number | null
+          sort_order?: number | null
+          specialty_en?: string | null
+          specialty_levels?: Json | null
+          specialty_ru?: string | null
+          town?: string | null
+        }
+        Relationships: []
+      }
       rules: {
         Row: {
           category: string | null
@@ -155,6 +443,236 @@ export type Database = {
           title_en?: string | null
           title_ru?: string | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      spells: {
+        Row: {
+          effect_en: string | null
+          effect_ru: string | null
+          id: string
+          image: string | null
+          level: string | null
+          name_en: string
+          name_ru: string | null
+          notes_en: string | null
+          notes_ru: string | null
+          school: string | null
+          sort_order: number | null
+        }
+        Insert: {
+          effect_en?: string | null
+          effect_ru?: string | null
+          id: string
+          image?: string | null
+          level?: string | null
+          name_en: string
+          name_ru?: string | null
+          notes_en?: string | null
+          notes_ru?: string | null
+          school?: string | null
+          sort_order?: number | null
+        }
+        Update: {
+          effect_en?: string | null
+          effect_ru?: string | null
+          id?: string
+          image?: string | null
+          level?: string | null
+          name_en?: string
+          name_ru?: string | null
+          notes_en?: string | null
+          notes_ru?: string | null
+          school?: string | null
+          sort_order?: number | null
+        }
+        Relationships: []
+      }
+      town_buildings: {
+        Row: {
+          cost: string | null
+          effect_en: string | null
+          effect_ru: string | null
+          id: string
+          name_en: string
+          name_ru: string | null
+          sort_order: number | null
+          town_id: string | null
+        }
+        Insert: {
+          cost?: string | null
+          effect_en?: string | null
+          effect_ru?: string | null
+          id: string
+          name_en: string
+          name_ru?: string | null
+          sort_order?: number | null
+          town_id?: string | null
+        }
+        Update: {
+          cost?: string | null
+          effect_en?: string | null
+          effect_ru?: string | null
+          id?: string
+          name_en?: string
+          name_ru?: string | null
+          sort_order?: number | null
+          town_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "town_buildings_town_id_fkey"
+            columns: ["town_id"]
+            isOneToOne: false
+            referencedRelation: "towns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      towns: {
+        Row: {
+          id: string
+          image_back: string | null
+          image_empty: string | null
+          image_full: string | null
+          name_en: string
+          name_ru: string | null
+          notes_en: string | null
+          notes_ru: string | null
+          sort_order: number | null
+        }
+        Insert: {
+          id: string
+          image_back?: string | null
+          image_empty?: string | null
+          image_full?: string | null
+          name_en: string
+          name_ru?: string | null
+          notes_en?: string | null
+          notes_ru?: string | null
+          sort_order?: number | null
+        }
+        Update: {
+          id?: string
+          image_back?: string | null
+          image_empty?: string | null
+          image_full?: string | null
+          name_en?: string
+          name_ru?: string | null
+          notes_en?: string | null
+          notes_ru?: string | null
+          sort_order?: number | null
+        }
+        Relationships: []
+      }
+      unit_stats: {
+        Row: {
+          abilities_en: string | null
+          abilities_ru: string | null
+          attack: number | null
+          content: string | null
+          cost: string | null
+          defense: number | null
+          health_points: number | null
+          id: string
+          image: string | null
+          initiative: number | null
+          name_en: string
+          name_ru: string | null
+          notes_en: string | null
+          notes_ru: string | null
+          number: string | null
+          slug: string | null
+          sort_order: number | null
+          tier: string | null
+          town: string | null
+          type: string | null
+        }
+        Insert: {
+          abilities_en?: string | null
+          abilities_ru?: string | null
+          attack?: number | null
+          content?: string | null
+          cost?: string | null
+          defense?: number | null
+          health_points?: number | null
+          id: string
+          image?: string | null
+          initiative?: number | null
+          name_en: string
+          name_ru?: string | null
+          notes_en?: string | null
+          notes_ru?: string | null
+          number?: string | null
+          slug?: string | null
+          sort_order?: number | null
+          tier?: string | null
+          town?: string | null
+          type?: string | null
+        }
+        Update: {
+          abilities_en?: string | null
+          abilities_ru?: string | null
+          attack?: number | null
+          content?: string | null
+          cost?: string | null
+          defense?: number | null
+          health_points?: number | null
+          id?: string
+          image?: string | null
+          initiative?: number | null
+          name_en?: string
+          name_ru?: string | null
+          notes_en?: string | null
+          notes_ru?: string | null
+          number?: string | null
+          slug?: string | null
+          sort_order?: number | null
+          tier?: string | null
+          town?: string | null
+          type?: string | null
+        }
+        Relationships: []
+      }
+      war_machines: {
+        Row: {
+          ability_en: string | null
+          ability_ru: string | null
+          cost_blacksmith: string | null
+          cost_trade_post: string | null
+          id: string
+          image: string | null
+          name_en: string
+          name_ru: string | null
+          notes_en: string | null
+          notes_ru: string | null
+          sort_order: number | null
+        }
+        Insert: {
+          ability_en?: string | null
+          ability_ru?: string | null
+          cost_blacksmith?: string | null
+          cost_trade_post?: string | null
+          id: string
+          image?: string | null
+          name_en: string
+          name_ru?: string | null
+          notes_en?: string | null
+          notes_ru?: string | null
+          sort_order?: number | null
+        }
+        Update: {
+          ability_en?: string | null
+          ability_ru?: string | null
+          cost_blacksmith?: string | null
+          cost_trade_post?: string | null
+          id?: string
+          image?: string | null
+          name_en?: string
+          name_ru?: string | null
+          notes_en?: string | null
+          notes_ru?: string | null
+          sort_order?: number | null
         }
         Relationships: []
       }
