@@ -19,10 +19,14 @@ interface UnitStat {
   image: string | null; sort_order: number;
 }
 
-const NEUTRAL_NAMES = new Set(['', 'neutral', 'neutrals']);
+type NeutralFilter = 'all' | 'normal' | 'neutral';
 
-function isNeutral(town: string | null | undefined): boolean {
-  return !town || NEUTRAL_NAMES.has(town.toLowerCase());
+function groupHasNeutral(variants: UnitStat[]): boolean {
+  return variants.some(u => u.number === 'Neutral');
+}
+
+function groupHasNormal(variants: UnitStat[]): boolean {
+  return variants.some(u => u.number !== 'Neutral');
 }
 
 const TIER_COLOR: Record<string, string> = {
