@@ -35,7 +35,8 @@ interface UnitStat {
 
 type ModeFilter = 'all' | 'standard' | 'neutral';
 
-const VARIANT_ORDER = ['Few', 'Pack', 'Neutral'];
+// Faction variant order (no Neutral here)
+const FACTION_VARIANT_ORDER = ['Few', 'Pack', 'Few (Alternate)', 'Pack (Alternate)'];
 
 const TIER_COLOR: Record<string, string> = {
   bronze: 'bg-amber-700 text-white',
@@ -61,16 +62,12 @@ function StatIcon({ stat }: { stat: string }) {
   const { glyphs } = useGlyphs();
   const cfg = STAT_GLYPH[stat];
   if (!cfg) return null;
-  if (glyphs[cfg.token]) {
-    return (
-      <span
-        dangerouslySetInnerHTML={{
-          __html: renderGlyphs(`<${cfg.token}>`, glyphs),
-        }}
-      />
-    );
+  const html = renderGlyphs(`<${cfg.token}>`, glyphs);
+  // If renderGlyphs returned unchanged (no glyph found), show fallback
+  if (html === `<${cfg.token}>`) {
+    return <span className="text-[10px] text-muted-foreground">{cfg.fallback}</span>;
   }
-  return <span className="text-[10px] text-muted-foreground">{cfg.fallback}</span>;
+  return <span dangerouslySetInnerHTML={{ __html: html }} />;
 }
 
 function GlyphText({ text }: { text: string | null | undefined }) {
@@ -79,22 +76,12 @@ function GlyphText({ text }: { text: string | null | undefined }) {
   return <span dangerouslySetInnerHTML={{ __html: renderGlyphs(text, glyphs) }} />;
 }
 
-function FilterChip({
-  label,
-  active,
-  onClick,
-}: {
-  label: string;
-  active: boolean;
-  onClick: () => void;
-}) {
+function FilterChip({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
   return (
     <button
       onClick={onClick}
       className={`px-3 py-1 rounded-full text-xs font-medium transition-colors whitespace-nowrap ${
-        active
-          ? 'bg-primary text-primary-foreground'
-          : 'bg-muted text-muted-foreground hover:bg-muted/80'
+        active ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'
       }`}
     >
       {label}
@@ -102,11 +89,19 @@ function FilterChip({
   );
 }
 
+/** A display item: either a faction group (multiple variants) or a standalone neutral unit */
+interface DisplayItem {
+  key: string; // unique key for rendering
+  unit: UnitStat; // preview unit
+  variants: UnitStat[]; // all variants for modal
+  isNeutral: boolean;
+}
+
 export default function UnitsTab() {
   const { lang } = useLang();
   const [units, setUnits] = useState<UnitStat[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedSlug, setSelectedSlug] = useState<string | null>(null);
+  const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const [filterFaction, setFilterFaction] = useState('all');
   const [filterTier, setFilterTier] = useState('all');
   const [filterType, setFilterType] = useState('all');
@@ -123,20 +118,27 @@ export default function UnitsTab() {
       });
   }, []);
 
-  // All groups keyed by slug
-  const allGroups = useMemo(() => {
-    const map: Record<string, UnitStat[]> = {};
+  // Separate faction units (grouped by slug) and neutral units (standalone)
+  const { factionGroups, neutralUnits } = useMemo(() => {
+    const fGroups: Record<string, UnitStat[]> = {};
+    const nUnits: UnitStat[] = [];
+
     units.forEach((u) => {
-      (map[u.slug] ??= []).push(u);
+      if (u.town === 'Neutral') {
+        nUnits.push(u);
+      } else {
+        (fGroups[u.slug] ??= []).push(u);
+      }
     });
-    return map;
+
+    return { factionGroups: fGroups, neutralUnits: nUnits };
   }, [units]);
 
-  // Faction list from town field
+  // Faction chips: only non-Neutral towns
   const factions = useMemo(() => {
     const towns = new Set<string>();
     units.forEach((u) => {
-      if (u.town) towns.add(u.town);
+      if (u.town && u.town !== 'Neutral') towns.add(u.town);
     });
     return ['all', ...Array.from(towns).sort()];
   }, [units]);
@@ -144,53 +146,55 @@ export default function UnitsTab() {
   const tiers = ['all', 'bronze', 'silver', 'golden', 'azure'];
   const types = ['all', 'unit_ground', 'unit_ranged', 'unit_flying'];
 
-  // Filtered groups
-  const filtered = useMemo(() => {
-    const result: Record<string, UnitStat[]> = {};
+  // Build display items based on filters
+  const displayItems = useMemo(() => {
+    const items: DisplayItem[] = [];
 
-    for (const [slug, variants] of Object.entries(allGroups)) {
-      // faction filter — check any variant in group
-      if (filterFaction !== 'all' && !variants.some((u) => u.town === filterFaction)) continue;
-      // tier filter
-      if (filterTier !== 'all' && !variants.some((u) => u.tier === filterTier)) continue;
-      // type filter
-      if (filterType !== 'all' && !variants.some((u) => u.type === filterType)) continue;
+    // Add faction groups (when mode is 'all' or 'standard')
+    if (mode !== 'neutral') {
+      for (const [slug, variants] of Object.entries(factionGroups)) {
+        if (filterFaction !== 'all' && !variants.some((u) => u.town === filterFaction)) continue;
+        if (filterTier !== 'all' && !variants.some((u) => u.tier === filterTier)) continue;
+        if (filterType !== 'all' && !variants.some((u) => u.type === filterType)) continue;
 
-      // mode filter
-      const hasNeutral = variants.some((u) => u.number === 'Neutral');
-      const hasStandard = variants.some((u) => u.number === 'Few' || u.number === 'Pack');
+        // Pick preview: Few > Pack > first
+        const preview =
+          variants.find((u) => u.number === 'Few') ||
+          variants.find((u) => u.number === 'Pack') ||
+          variants[0];
 
-      if (mode === 'neutral' && !hasNeutral) continue;
-      if (mode === 'standard' && hasNeutral && !hasStandard) continue;
-      if (mode === 'standard' && variants.every((u) => u.number === 'Neutral')) continue;
+        // Sort variants by FACTION_VARIANT_ORDER
+        const sorted = [...variants].sort(
+          (a, b) => FACTION_VARIANT_ORDER.indexOf(a.number) - FACTION_VARIANT_ORDER.indexOf(b.number)
+        );
 
-      result[slug] = variants;
+        items.push({ key: `faction-${slug}`, unit: preview, variants: sorted, isNeutral: false });
+      }
     }
 
-    return result;
-  }, [allGroups, filterFaction, filterTier, filterType, mode]);
-
-  // Preview card picks best representative
-  function pickPreview(variants: UnitStat[]): UnitStat {
-    for (const num of VARIANT_ORDER) {
-      const found = variants.find((u) => u.number === num);
-      if (found) return found;
+    // Add neutral units (when mode is 'all' or 'neutral')
+    if (mode !== 'standard') {
+      for (const u of neutralUnits) {
+        if (filterTier !== 'all' && u.tier !== filterTier) continue;
+        if (filterType !== 'all' && u.type !== filterType) continue;
+        // Faction filter does NOT apply to neutral units
+        items.push({ key: `neutral-${u.id}`, unit: u, variants: [u], isNeutral: true });
+      }
     }
-    return variants[0];
-  }
 
-  // Sort variants for modal tabs
-  function sortedVariants(variants: UnitStat[]): UnitStat[] {
-    return [...variants].sort(
-      (a, b) => VARIANT_ORDER.indexOf(a.number) - VARIANT_ORDER.indexOf(b.number)
-    );
-  }
+    return items;
+  }, [factionGroups, neutralUnits, mode, filterFaction, filterTier, filterType]);
 
-  const selectedVariants = useMemo(() => {
-    if (!selectedSlug) return [];
-    const group = allGroups[selectedSlug];
-    return group ? sortedVariants(group) : [];
-  }, [selectedSlug, allGroups]);
+  // Find selected item for modal
+  const selectedItem = useMemo(() => {
+    if (!selectedKey) return null;
+    return displayItems.find((i) => i.key === selectedKey) ?? null;
+  }, [selectedKey, displayItems]);
+
+  const modeLabels: Record<ModeFilter, string> =
+    lang === 'RU'
+      ? { all: 'Все', standard: 'Обычные', neutral: 'Нейтралы' }
+      : { all: 'All', standard: 'Standard', neutral: 'Neutral' };
 
   if (loading) {
     return (
@@ -204,10 +208,6 @@ export default function UnitsTab() {
     );
   }
 
-  const modeLabels: Record<ModeFilter, string> = lang === 'RU'
-    ? { all: 'Все', standard: 'Обычные', neutral: 'Нейтралы' }
-    : { all: 'All', standard: 'Standard', neutral: 'Neutral' };
-
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       {/* Filters */}
@@ -215,26 +215,23 @@ export default function UnitsTab() {
         {/* Row 1: Mode switch */}
         <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
           {(['all', 'standard', 'neutral'] as ModeFilter[]).map((m) => (
-            <FilterChip
-              key={m}
-              label={modeLabels[m]}
-              active={mode === m}
-              onClick={() => setMode(m)}
-            />
+            <FilterChip key={m} label={modeLabels[m]} active={mode === m} onClick={() => setMode(m)} />
           ))}
         </div>
 
-        {/* Row 2: Faction chips */}
-        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
-          {factions.map((f) => (
-            <FilterChip
-              key={f}
-              label={f === 'all' ? (lang === 'RU' ? 'Все' : 'All') : f}
-              active={filterFaction === f}
-              onClick={() => setFilterFaction(f)}
-            />
-          ))}
-        </div>
+        {/* Row 2: Faction chips (only for All / Standard) */}
+        {mode !== 'neutral' && (
+          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+            {factions.map((f) => (
+              <FilterChip
+                key={f}
+                label={f === 'all' ? (lang === 'RU' ? 'Все' : 'All') : f}
+                active={filterFaction === f}
+                onClick={() => setFilterFaction(f)}
+              />
+            ))}
+          </div>
+        )}
 
         {/* Row 3: Tier + Type */}
         <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
@@ -246,17 +243,13 @@ export default function UnitsTab() {
               onClick={() => setFilterTier(t)}
             />
           ))}
-
           <div className="w-px bg-border mx-1 shrink-0" />
-
           {types.map((t) => (
             <FilterChip
               key={t}
               label={
                 t === 'all'
-                  ? lang === 'RU'
-                    ? 'Все'
-                    : 'All'
+                  ? lang === 'RU' ? 'Все' : 'All'
                   : `${TYPE_ICON[t] ?? ''} ${t.replace('unit_', '')}`
               }
               active={filterType === t}
@@ -268,19 +261,19 @@ export default function UnitsTab() {
 
       {/* Grid */}
       <div className="flex-1 overflow-auto p-3">
-        {Object.keys(filtered).length === 0 ? (
+        {displayItems.length === 0 ? (
           <div className="text-center text-muted-foreground py-12">
             {lang === 'RU' ? 'Юниты не найдены' : 'No units found'}
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            {Object.entries(filtered).map(([slug, variants]) => {
-              const unit = pickPreview(variants);
+            {displayItems.map((item) => {
+              const unit = item.unit;
               const imgSrc = unit.image ? `${STORAGE}/units/${unit.image}` : null;
               return (
                 <button
-                  key={slug}
-                  onClick={() => setSelectedSlug(slug)}
+                  key={item.key}
+                  onClick={() => setSelectedKey(item.key)}
                   className="flex flex-col rounded-xl border border-border bg-card overflow-hidden text-left hover:border-primary transition-colors"
                 >
                   <div className="relative aspect-square bg-muted">
@@ -298,19 +291,17 @@ export default function UnitsTab() {
                         }}
                       />
                     ) : null}
-                    <div className={`${imgSrc ? 'hidden' : 'flex'} items-center justify-center h-full text-muted-foreground text-xs text-center p-2`}>
+                    <div
+                      className={`${imgSrc ? 'hidden' : 'flex'} items-center justify-center h-full text-muted-foreground text-xs text-center p-2`}
+                    >
                       {lang === 'RU' && unit.name_ru ? unit.name_ru : unit.name_en}
                     </div>
                     <Badge
-                      className={`absolute top-1 left-1 text-[10px] ${
-                        TIER_COLOR[unit.tier] ?? 'bg-muted text-foreground'
-                      }`}
+                      className={`absolute top-1 left-1 text-[10px] ${TIER_COLOR[unit.tier] ?? 'bg-muted text-foreground'}`}
                     >
                       {unit.tier}
                     </Badge>
-                    <span className="absolute top-1 right-1 text-sm">
-                      {TYPE_ICON[unit.type] ?? ''}
-                    </span>
+                    <span className="absolute top-1 right-1 text-sm">{TYPE_ICON[unit.type] ?? ''}</span>
                   </div>
                   <div className="p-2">
                     <p className="text-xs font-semibold truncate">
@@ -326,10 +317,11 @@ export default function UnitsTab() {
       </div>
 
       {/* Detail modal */}
-      <Dialog open={!!selectedSlug} onOpenChange={(o) => !o && setSelectedSlug(null)}>
+      <Dialog open={!!selectedKey} onOpenChange={(o) => !o && setSelectedKey(null)}>
         <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto">
-          {selectedVariants.length > 0 && (() => {
-            const base = selectedVariants[0];
+          {selectedItem && (() => {
+            const { variants } = selectedItem;
+            const base = variants[0];
             return (
               <>
                 <DialogHeader>
@@ -338,19 +330,20 @@ export default function UnitsTab() {
                   </DialogTitle>
                 </DialogHeader>
 
-                <Tabs defaultValue={selectedVariants[0].number}>
-                  <TabsList className="w-full flex-wrap h-auto gap-1">
-                    {selectedVariants.map((u) => (
-                      <TabsTrigger key={u.id} value={u.number}>
-                        {u.number}
-                      </TabsTrigger>
-                    ))}
-                  </TabsList>
+                <Tabs defaultValue={variants[0].number}>
+                  {variants.length > 1 && (
+                    <TabsList className="w-full flex-wrap h-auto gap-1">
+                      {variants.map((u) => (
+                        <TabsTrigger key={u.id} value={u.number}>
+                          {u.number}
+                        </TabsTrigger>
+                      ))}
+                    </TabsList>
+                  )}
 
-                  {selectedVariants.map((u) => {
+                  {variants.map((u) => {
                     const imgSrc = u.image ? `${STORAGE}/units/${u.image}` : null;
-                    const abilities =
-                      lang === 'RU' && u.abilities_ru ? u.abilities_ru : u.abilities_en;
+                    const abilities = lang === 'RU' && u.abilities_ru ? u.abilities_ru : u.abilities_en;
                     const notes = lang === 'RU' && u.notes_ru ? u.notes_ru : u.notes_en;
 
                     return (
@@ -380,18 +373,16 @@ export default function UnitsTab() {
 
                         {/* Stat cards with glyph icons */}
                         <div className="grid grid-cols-4 gap-2 text-center">
-                          {(
-                            [
-                              ['attack', u.attack],
-                              ['defense', u.defense],
-                              ['health_points', u.health_points],
-                              ['initiative', u.initiative],
-                            ] as [string, number][]
-                          ).map(([stat, val]) => (
+                          {([
+                            ['attack', u.attack],
+                            ['defense', u.defense],
+                            ['health_points', u.health_points],
+                            ['initiative', u.initiative],
+                          ] as [string, number][]).map(([stat, val]) => (
                             <div key={stat} className="rounded-lg bg-muted p-2">
-                              <p className="text-[10px] text-muted-foreground">
+                              <div className="flex justify-center">
                                 <StatIcon stat={stat} />
-                              </p>
+                              </div>
                               <p className="text-lg font-bold">{val}</p>
                             </div>
                           ))}
