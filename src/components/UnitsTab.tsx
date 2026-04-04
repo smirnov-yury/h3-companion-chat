@@ -161,7 +161,8 @@ export default function UnitsTab() {
       const hasStandard = variants.some((u) => u.number === 'Few' || u.number === 'Pack');
 
       if (mode === 'neutral' && !hasNeutral) continue;
-      if (mode === 'standard' && !hasStandard) continue;
+      if (mode === 'standard' && hasNeutral && !hasStandard) continue;
+      if (mode === 'standard' && variants.every((u) => u.number === 'Neutral')) continue;
 
       result[slug] = variants;
     }
