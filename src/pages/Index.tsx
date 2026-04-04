@@ -31,6 +31,8 @@ export default function Index() {
           <RulesTab scrollToRuleId={scrollToRuleId} onScrollHandled={() => setScrollToRuleId(null)} />
         ) : tab === "components" ? (
           <ComponentsTab onNavigateToRule={handleNavigateToRule} />
+        ) : tab === "units" ? (
+          <UnitsTab />
         ) : (
           <PlaceholderTab title={PLACEHOLDERS[tab as keyof typeof PLACEHOLDERS][lang]} />
         )}

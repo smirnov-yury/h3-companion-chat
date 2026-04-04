@@ -11,6 +11,7 @@ interface BottomNavProps {
 const tabs: { id: TabId; labelRU: string; labelEN: string; icon: typeof BookOpen }[] = [
   { id: "rules", labelRU: "Правила", labelEN: "Rules", icon: BookOpen },
   { id: "components", labelRU: "Компоненты", labelEN: "Components", icon: LayoutGrid },
+  { id: "units", labelRU: "Юниты", labelEN: "Units", icon: Swords },
   { id: "setup", labelRU: "Сетап", labelEN: "Setup", icon: Map },
   { id: "city", labelRU: "Город", labelEN: "City", icon: Castle },
   { id: "ai", labelRU: "ИИ Мастер", labelEN: "AI Master", icon: MessageCircle },
