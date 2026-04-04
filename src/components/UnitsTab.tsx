@@ -163,7 +163,7 @@ export default function UnitsTab() {
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {Object.entries(grouped).map(([slug, variants]) => {
-              const unit = variants.find(u => u.number === 'Few') ?? variants[0];
+              const unit = variants.find(u => u.number === 'Few') ?? variants.find(u => u.number === 'Pack') ?? variants.find(u => u.number === 'Neutral') ?? variants[0];
               const imgSrc = unit.image ? `${STORAGE}/units/${unit.image}` : null;
               return (
                 <button
