@@ -1,7 +1,7 @@
-import { BookOpen, LayoutGrid, Map, Castle, MessageCircle } from "lucide-react";
+import { BookOpen, LayoutGrid, Map, Castle, MessageCircle, Swords } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
 
-export type TabId = "rules" | "components" | "setup" | "city" | "ai";
+export type TabId = "rules" | "components" | "units" | "setup" | "city" | "ai";
 
 interface BottomNavProps {
   active: TabId;
