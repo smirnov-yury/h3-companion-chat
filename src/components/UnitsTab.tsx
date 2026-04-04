@@ -41,6 +41,7 @@ const TIER_COLOR: Record<string, string> = {
   bronze: 'bg-amber-700 text-white',
   silver: 'bg-slate-400 text-white',
   golden: 'bg-yellow-500 text-black',
+  azure: 'bg-sky-500 text-white',
 };
 
 const TYPE_ICON: Record<string, string> = {
@@ -140,7 +141,7 @@ export default function UnitsTab() {
     return ['all', ...Array.from(towns).sort()];
   }, [units]);
 
-  const tiers = ['all', 'bronze', 'silver', 'golden'];
+  const tiers = ['all', 'bronze', 'silver', 'golden', 'azure'];
   const types = ['all', 'unit_ground', 'unit_ranged', 'unit_flying'];
 
   // Filtered groups
