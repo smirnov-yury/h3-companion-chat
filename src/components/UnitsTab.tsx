@@ -212,7 +212,19 @@ export default function UnitsTab() {
     <div className="flex-1 flex flex-col overflow-hidden">
       {/* Filters */}
       <div className="shrink-0 p-3 space-y-2 border-b border-border bg-background">
-        {/* Row 1: Faction chips */}
+        {/* Row 1: Mode switch */}
+        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+          {(['all', 'standard', 'neutral'] as ModeFilter[]).map((m) => (
+            <FilterChip
+              key={m}
+              label={modeLabels[m]}
+              active={mode === m}
+              onClick={() => setMode(m)}
+            />
+          ))}
+        </div>
+
+        {/* Row 2: Faction chips */}
         <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
           {factions.map((f) => (
             <FilterChip
@@ -224,19 +236,8 @@ export default function UnitsTab() {
           ))}
         </div>
 
-        {/* Row 2: Mode switch + Tier + Type */}
+        {/* Row 3: Tier + Type */}
         <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
-          {(['all', 'standard', 'neutral'] as ModeFilter[]).map((m) => (
-            <FilterChip
-              key={m}
-              label={modeLabels[m]}
-              active={mode === m}
-              onClick={() => setMode(m)}
-            />
-          ))}
-
-          <div className="w-px bg-border mx-1 shrink-0" />
-
           {tiers.map((t) => (
             <FilterChip
               key={t}
