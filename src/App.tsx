@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { RulesProvider } from "./context/RulesContext";
 import { LanguageProvider } from "./context/LanguageContext";
+import { GlyphsProvider } from "./context/GlyphsContext";
 import Index from "./pages/Index.tsx";
 import Admin from "./pages/Admin.tsx";
 import NotFound from "./pages/NotFound.tsx";
