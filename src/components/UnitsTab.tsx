@@ -41,6 +41,7 @@ const TIER_COLOR: Record<string, string> = {
   bronze: 'bg-amber-700 text-white',
   silver: 'bg-slate-400 text-white',
   golden: 'bg-yellow-500 text-black',
+  azure: 'bg-sky-500 text-white',
 };
 
 const TYPE_ICON: Record<string, string> = {
