@@ -69,6 +69,7 @@ export default function UnitsTab() {
   const [filterFaction, setFilterFaction] = useState('all');
   const [filterTier, setFilterTier] = useState('all');
   const [filterType, setFilterType] = useState('all');
+  const [filterNeutral, setFilterNeutral] = useState<NeutralFilter>('all');
 
   useEffect(() => {
     supabase.from('unit_stats').select('*').order('sort_order').then(({ data }) => {
