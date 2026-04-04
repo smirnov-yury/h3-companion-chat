@@ -355,12 +355,27 @@ export default function UnitsTab() {
 
                     return (
                       <TabsContent key={u.id} value={u.number} className="space-y-3">
-                        {imgSrc && (
-                          <img
-                            src={imgSrc}
-                            alt={u.name_en}
-                            className="w-full max-h-48 object-contain rounded-lg bg-muted"
-                          />
+                        {imgSrc ? (
+                          <div className="relative w-full max-h-48 bg-muted rounded-lg overflow-hidden">
+                            <img
+                              src={imgSrc}
+                              alt={u.name_en}
+                              className="w-full max-h-48 object-contain"
+                              onError={(e) => {
+                                const target = e.currentTarget;
+                                target.style.display = 'none';
+                                const fallback = target.nextElementSibling as HTMLElement;
+                                if (fallback) fallback.style.display = 'flex';
+                              }}
+                            />
+                            <div className="hidden items-center justify-center h-48 text-muted-foreground text-sm">
+                              {lang === 'RU' && u.name_ru ? u.name_ru : u.name_en}
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex items-center justify-center h-48 rounded-lg bg-muted text-muted-foreground text-sm">
+                            {lang === 'RU' && u.name_ru ? u.name_ru : u.name_en}
+                          </div>
                         )}
 
                         {/* Stat cards with glyph icons */}
