@@ -90,17 +90,18 @@ export default function UnitsTab() {
   const grouped = useMemo(() => {
     const slugMap: Record<string, UnitStat[]> = {};
     units.forEach(u => {
-      if (filterFaction === 'neutrals') {
-        if (!isNeutral(u.town)) return;
-      } else if (filterFaction !== 'all') {
-        if (u.town !== filterFaction) return;
-      }
+      if (filterFaction !== 'all' && u.town !== filterFaction) return;
       if (filterTier !== 'all' && u.tier !== filterTier) return;
       if (filterType !== 'all' && u.type !== filterType) return;
       (slugMap[u.slug] ??= []).push(u);
     });
+    if (filterNeutral === 'neutral') {
+      Object.keys(slugMap).forEach(s => { if (!groupHasNeutral(slugMap[s])) delete slugMap[s]; });
+    } else if (filterNeutral === 'normal') {
+      Object.keys(slugMap).forEach(s => { if (!groupHasNormal(slugMap[s])) delete slugMap[s]; });
+    }
     return slugMap;
-  }, [units, filterFaction, filterTier, filterType]);
+  }, [units, filterFaction, filterTier, filterType, filterNeutral]);
 
   const selectedUnits = useMemo(() =>
     selectedSlug ? (grouped[selectedSlug] ?? units.filter(u => u.slug === selectedSlug)) : [],
