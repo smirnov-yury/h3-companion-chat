@@ -19,6 +19,12 @@ interface UnitStat {
   image: string | null; sort_order: number;
 }
 
+const NEUTRAL_NAMES = new Set(['', 'neutral', 'neutrals']);
+
+function isNeutral(town: string | null | undefined): boolean {
+  return !town || NEUTRAL_NAMES.has(town.toLowerCase());
+}
+
 const TIER_COLOR: Record<string, string> = {
   bronze: 'bg-amber-700 text-white',
   silver: 'bg-slate-400 text-white',
@@ -29,10 +35,26 @@ const TYPE_ICON: Record<string, string> = {
   unit_ground: '🛡️', unit_ranged: '🏹', unit_flying: '🦅',
 };
 
+const STAT_GLYPH_TOKENS: Record<string, string> = {
+  ATK: 'attack',
+  DEF: 'defense',
+  HP: 'health_points',
+  INI: 'initiative',
+};
+
 function GlyphText({ text }: { text: string | null | undefined }) {
   const { glyphs } = useGlyphs();
   if (!text) return null;
   return <span dangerouslySetInnerHTML={{ __html: renderGlyphs(text, glyphs) }} />;
+}
+
+function StatLabel({ label }: { label: string }) {
+  const { glyphs } = useGlyphs();
+  const token = STAT_GLYPH_TOKENS[label];
+  if (token && glyphs[token]) {
+    return <span dangerouslySetInnerHTML={{ __html: renderGlyphs(`<${token}>`, glyphs) }} />;
+  }
+  return <>{label}</>;
 }
 
 export default function UnitsTab() {
@@ -51,14 +73,33 @@ export default function UnitsTab() {
     });
   }, []);
 
-  const factions = useMemo(() => ['all', ...Array.from(new Set(units.map(u => u.town))).sort()], [units]);
+  const { regularFactions, hasNeutrals } = useMemo(() => {
+    const regular = new Set<string>();
+    let neutrals = false;
+    units.forEach(u => {
+      if (isNeutral(u.town)) { neutrals = true; }
+      else { regular.add(u.town); }
+    });
+    return { regularFactions: Array.from(regular).sort(), hasNeutrals: neutrals };
+  }, [units]);
+
+  const factions = useMemo(() => [
+    'all',
+    ...regularFactions,
+    ...(hasNeutrals ? ['neutrals'] : []),
+  ], [regularFactions, hasNeutrals]);
+
   const tiers = ['all', 'bronze', 'silver', 'golden'];
   const types = ['all', 'unit_ground', 'unit_ranged', 'unit_flying'];
 
   const grouped = useMemo(() => {
     const slugMap: Record<string, UnitStat[]> = {};
     units.forEach(u => {
-      if (filterFaction !== 'all' && u.town !== filterFaction) return;
+      if (filterFaction === 'neutrals') {
+        if (!isNeutral(u.town)) return;
+      } else if (filterFaction !== 'all') {
+        if (u.town !== filterFaction) return;
+      }
       if (filterTier !== 'all' && u.tier !== filterTier) return;
       if (filterType !== 'all' && u.type !== filterType) return;
       (slugMap[u.slug] ??= []).push(u);
@@ -95,9 +136,12 @@ export default function UnitsTab() {
       {/* Filters */}
       <div className="shrink-0 p-3 space-y-2 border-b border-border bg-background">
         <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
-          {factions.map(f => (
-            <FilterBtn key={f} label={f === 'all' ? (lang === 'RU' ? 'Все' : 'All') : f} value={f} active={filterFaction} onClick={setFilterFaction} />
-          ))}
+          {factions.map(f => {
+            let label = f;
+            if (f === 'all') label = lang === 'RU' ? 'Все' : 'All';
+            else if (f === 'neutrals') label = lang === 'RU' ? 'Нейтралы' : 'Neutrals';
+            return <FilterBtn key={f} label={label} value={f} active={filterFaction} onClick={setFilterFaction} />;
+          })}
         </div>
         <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
           {tiers.map(t => (
@@ -140,7 +184,7 @@ export default function UnitsTab() {
                   </div>
                   <div className="p-2">
                     <p className="text-xs font-semibold truncate">{lang === 'RU' && unit.name_ru ? unit.name_ru : unit.name_en}</p>
-                    <p className="text-[10px] text-muted-foreground">{unit.town}</p>
+                    <p className="text-[10px] text-muted-foreground">{isNeutral(unit.town) ? (lang === 'RU' ? 'Нейтралы' : 'Neutrals') : unit.town}</p>
                   </div>
                 </button>
               );
@@ -176,7 +220,7 @@ export default function UnitsTab() {
                         <div className="grid grid-cols-4 gap-2 text-center">
                           {([['ATK', u.attack], ['DEF', u.defense], ['HP', u.health_points], ['INI', u.initiative]] as [string, number][]).map(([label, val]) => (
                             <div key={label} className="rounded-lg bg-muted p-2">
-                              <p className="text-[10px] text-muted-foreground">{label}</p>
+                              <p className="text-[10px] text-muted-foreground"><StatLabel label={label} /></p>
                               <p className="text-lg font-bold">{val}</p>
                             </div>
                           ))}
