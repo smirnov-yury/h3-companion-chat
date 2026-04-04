@@ -184,7 +184,7 @@ export default function UnitsTab() {
                   </div>
                   <div className="p-2">
                     <p className="text-xs font-semibold truncate">{lang === 'RU' && unit.name_ru ? unit.name_ru : unit.name_en}</p>
-                    <p className="text-[10px] text-muted-foreground">{isNeutral(unit.town) ? (lang === 'RU' ? 'Нейтралы' : 'Neutrals') : unit.town}</p>
+                    <p className="text-[10px] text-muted-foreground">{unit.town || '—'}</p>
                   </div>
                 </button>
               );
