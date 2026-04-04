@@ -7,7 +7,7 @@ import UnitsTab from "@/components/UnitsTab";
 import PlaceholderTab from "@/components/PlaceholderTab";
 import { useLang } from "@/context/LanguageContext";
 
-const PLACEHOLDERS: Record<Exclude<TabId, "ai" | "rules" | "components">, { RU: string; EN: string }> = {
+const PLACEHOLDERS: Record<Exclude<TabId, "ai" | "rules" | "components" | "units">, { RU: string; EN: string }> = {
   setup: { RU: "Сетап — скоро", EN: "Setup — coming soon" },
   city: { RU: "Город — скоро", EN: "City — coming soon" },
 };
