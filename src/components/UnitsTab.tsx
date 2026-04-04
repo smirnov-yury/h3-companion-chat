@@ -19,10 +19,14 @@ interface UnitStat {
   image: string | null; sort_order: number;
 }
 
-const NEUTRAL_NAMES = new Set(['', 'neutral', 'neutrals']);
+type NeutralFilter = 'all' | 'normal' | 'neutral';
 
-function isNeutral(town: string | null | undefined): boolean {
-  return !town || NEUTRAL_NAMES.has(town.toLowerCase());
+function groupHasNeutral(variants: UnitStat[]): boolean {
+  return variants.some(u => u.number === 'Neutral');
+}
+
+function groupHasNormal(variants: UnitStat[]): boolean {
+  return variants.some(u => u.number !== 'Neutral');
 }
 
 const TIER_COLOR: Record<string, string> = {
@@ -65,6 +69,7 @@ export default function UnitsTab() {
   const [filterFaction, setFilterFaction] = useState('all');
   const [filterTier, setFilterTier] = useState('all');
   const [filterType, setFilterType] = useState('all');
+  const [filterNeutral, setFilterNeutral] = useState<NeutralFilter>('all');
 
   useEffect(() => {
     supabase.from('unit_stats').select('*').order('sort_order').then(({ data }) => {
@@ -73,21 +78,11 @@ export default function UnitsTab() {
     });
   }, []);
 
-  const { regularFactions, hasNeutrals } = useMemo(() => {
-    const regular = new Set<string>();
-    let neutrals = false;
-    units.forEach(u => {
-      if (isNeutral(u.town)) { neutrals = true; }
-      else { regular.add(u.town); }
-    });
-    return { regularFactions: Array.from(regular).sort(), hasNeutrals: neutrals };
+  const factions = useMemo(() => {
+    const towns = new Set<string>();
+    units.forEach(u => { if (u.town) towns.add(u.town); });
+    return ['all', ...Array.from(towns).sort()];
   }, [units]);
-
-  const factions = useMemo(() => [
-    'all',
-    ...regularFactions,
-    ...(hasNeutrals ? ['neutrals'] : []),
-  ], [regularFactions, hasNeutrals]);
 
   const tiers = ['all', 'bronze', 'silver', 'golden'];
   const types = ['all', 'unit_ground', 'unit_ranged', 'unit_flying'];
@@ -95,17 +90,18 @@ export default function UnitsTab() {
   const grouped = useMemo(() => {
     const slugMap: Record<string, UnitStat[]> = {};
     units.forEach(u => {
-      if (filterFaction === 'neutrals') {
-        if (!isNeutral(u.town)) return;
-      } else if (filterFaction !== 'all') {
-        if (u.town !== filterFaction) return;
-      }
+      if (filterFaction !== 'all' && u.town !== filterFaction) return;
       if (filterTier !== 'all' && u.tier !== filterTier) return;
       if (filterType !== 'all' && u.type !== filterType) return;
       (slugMap[u.slug] ??= []).push(u);
     });
+    if (filterNeutral === 'neutral') {
+      Object.keys(slugMap).forEach(s => { if (!groupHasNeutral(slugMap[s])) delete slugMap[s]; });
+    } else if (filterNeutral === 'normal') {
+      Object.keys(slugMap).forEach(s => { if (!groupHasNormal(slugMap[s])) delete slugMap[s]; });
+    }
     return slugMap;
-  }, [units, filterFaction, filterTier, filterType]);
+  }, [units, filterFaction, filterTier, filterType, filterNeutral]);
 
   const selectedUnits = useMemo(() =>
     selectedSlug ? (grouped[selectedSlug] ?? units.filter(u => u.slug === selectedSlug)) : [],
@@ -136,14 +132,18 @@ export default function UnitsTab() {
       {/* Filters */}
       <div className="shrink-0 p-3 space-y-2 border-b border-border bg-background">
         <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
-          {factions.map(f => {
-            let label = f;
-            if (f === 'all') label = lang === 'RU' ? 'Все' : 'All';
-            else if (f === 'neutrals') label = lang === 'RU' ? 'Нейтралы' : 'Neutrals';
-            return <FilterBtn key={f} label={label} value={f} active={filterFaction} onClick={setFilterFaction} />;
-          })}
+          {factions.map(f => (
+            <FilterBtn key={f} label={f === 'all' ? (lang === 'RU' ? 'Все' : 'All') : f} value={f} active={filterFaction} onClick={setFilterFaction} />
+          ))}
         </div>
         <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+          {(['all', 'normal', 'neutral'] as NeutralFilter[]).map(v => {
+            const labels: Record<NeutralFilter, string> = lang === 'RU'
+              ? { all: 'Все', normal: 'Обычные', neutral: 'Нейтралы' }
+              : { all: 'All', normal: 'Normal', neutral: 'Neutral' };
+            return <FilterBtn key={v} label={labels[v]} value={v} active={filterNeutral} onClick={(val) => setFilterNeutral(val as NeutralFilter)} />;
+          })}
+          <div className="w-px bg-border mx-1" />
           {tiers.map(t => (
             <FilterBtn key={t} label={t === 'all' ? (lang === 'RU' ? 'Все' : 'All') : t} value={t} active={filterTier} onClick={setFilterTier} />
           ))}
@@ -163,7 +163,7 @@ export default function UnitsTab() {
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {Object.entries(grouped).map(([slug, variants]) => {
-              const unit = variants.find(u => u.number === 'Few') ?? variants[0];
+              const unit = variants.find(u => u.number === 'Few') ?? variants.find(u => u.number === 'Pack') ?? variants.find(u => u.number === 'Neutral') ?? variants[0];
               const imgSrc = unit.image ? `${STORAGE}/units/${unit.image}` : null;
               return (
                 <button
@@ -184,7 +184,7 @@ export default function UnitsTab() {
                   </div>
                   <div className="p-2">
                     <p className="text-xs font-semibold truncate">{lang === 'RU' && unit.name_ru ? unit.name_ru : unit.name_en}</p>
-                    <p className="text-[10px] text-muted-foreground">{isNeutral(unit.town) ? (lang === 'RU' ? 'Нейтралы' : 'Neutrals') : unit.town}</p>
+                    <p className="text-[10px] text-muted-foreground">{unit.town || '—'}</p>
                   </div>
                 </button>
               );
