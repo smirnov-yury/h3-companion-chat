@@ -140,7 +140,7 @@ export default function UnitsTab() {
     return ['all', ...Array.from(towns).sort()];
   }, [units]);
 
-  const tiers = ['all', 'bronze', 'silver', 'golden'];
+  const tiers = ['all', 'bronze', 'silver', 'golden', 'azure'];
   const types = ['all', 'unit_ground', 'unit_ranged', 'unit_flying'];
 
   // Filtered groups
