@@ -1,7 +1,7 @@
-import { BookOpen, LayoutGrid, Map, Castle, MessageCircle } from "lucide-react";
+import { BookOpen, LayoutGrid, Map, Castle, MessageCircle, Swords } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
 
-export type TabId = "rules" | "components" | "setup" | "city" | "ai";
+export type TabId = "rules" | "components" | "units" | "setup" | "city" | "ai";
 
 interface BottomNavProps {
   active: TabId;
@@ -11,6 +11,7 @@ interface BottomNavProps {
 const tabs: { id: TabId; labelRU: string; labelEN: string; icon: typeof BookOpen }[] = [
   { id: "rules", labelRU: "Правила", labelEN: "Rules", icon: BookOpen },
   { id: "components", labelRU: "Компоненты", labelEN: "Components", icon: LayoutGrid },
+  { id: "units", labelRU: "Юниты", labelEN: "Units", icon: Swords },
   { id: "setup", labelRU: "Сетап", labelEN: "Setup", icon: Map },
   { id: "city", labelRU: "Город", labelEN: "City", icon: Castle },
   { id: "ai", labelRU: "ИИ Мастер", labelEN: "AI Master", icon: MessageCircle },

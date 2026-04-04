@@ -3,10 +3,11 @@ import BottomNav, { type TabId } from "@/components/BottomNav";
 import ChatScreen from "@/components/ChatScreen";
 import RulesTab from "@/components/RulesTab";
 import ComponentsTab from "@/components/ComponentsTab";
+import UnitsTab from "@/components/UnitsTab";
 import PlaceholderTab from "@/components/PlaceholderTab";
 import { useLang } from "@/context/LanguageContext";
 
-const PLACEHOLDERS: Record<Exclude<TabId, "ai" | "rules" | "components">, { RU: string; EN: string }> = {
+const PLACEHOLDERS: Record<Exclude<TabId, "ai" | "rules" | "components" | "units">, { RU: string; EN: string }> = {
   setup: { RU: "Сетап — скоро", EN: "Setup — coming soon" },
   city: { RU: "Город — скоро", EN: "City — coming soon" },
 };
@@ -30,6 +31,8 @@ export default function Index() {
           <RulesTab scrollToRuleId={scrollToRuleId} onScrollHandled={() => setScrollToRuleId(null)} />
         ) : tab === "components" ? (
           <ComponentsTab onNavigateToRule={handleNavigateToRule} />
+        ) : tab === "units" ? (
+          <UnitsTab />
         ) : (
           <PlaceholderTab title={PLACEHOLDERS[tab as keyof typeof PLACEHOLDERS][lang]} />
         )}
