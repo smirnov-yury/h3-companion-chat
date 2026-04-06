@@ -1,6 +1,10 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/context/LanguageContext";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
+const STORAGE = `${SUPABASE_URL}/storage/v1/object/public/component-media`;
 
 interface WarMachine {
   id: string;
@@ -23,100 +27,78 @@ export default function WarMachinesTab() {
   const [selected, setSelected] = useState<WarMachine | null>(null);
 
   useEffect(() => {
-    supabase
-      .from("war_machines")
-      .select("*")
-      .order("sort_order")
-      .then(({ data }) => {
-        if (data) setItems(data as WarMachine[]);
-        setLoaded(true);
-      });
+    supabase.from("war_machines").select("*").order("sort_order").then(({ data }) => {
+      if (data) setItems(data as WarMachine[]);
+      setLoaded(true);
+    });
   }, []);
 
-  if (!loaded) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <p className="text-muted-foreground text-sm">
-          {lang === "RU" ? "Загрузка…" : "Loading…"}
-        </p>
-      </div>
-    );
-  }
+  if (!loaded) return <div className="flex items-center justify-center h-full"><p className="text-muted-foreground text-sm">{lang === "RU" ? "Загрузка…" : "Loading…"}</p></div>;
 
-  if (items.length === 0) {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <p className="text-muted-foreground text-sm">
-          {lang === "RU" ? "Нет данных" : "No data"}
-        </p>
-      </div>
-    );
-  }
+  const name = (i: WarMachine) => lang === "RU" ? (i.name_ru || i.name_en) : i.name_en;
 
   return (
-    <div className="flex flex-col gap-3 p-3 overflow-y-auto h-full">
-      {items.map((item) => (
-        <button
-          key={item.id}
-          onClick={() => setSelected(selected?.id === item.id ? null : item)}
-          className="text-left w-full rounded-xl border border-border bg-card p-3 transition-colors hover:border-primary/50"
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-lg bg-muted flex items-center justify-center overflow-hidden shrink-0">
-              {item.image ? (
-                <img src={item.image} alt={item.name_en} className="w-full h-full object-contain" />
-              ) : (
-                <span className="text-[10px] text-muted-foreground text-center leading-tight">
-                  {item.name_en}
-                </span>
-              )}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="font-semibold text-sm text-foreground truncate">
-                {lang === "RU" ? (item.name_ru || item.name_en) : item.name_en}
-              </p>
-              {item.ability_en && (
-                <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">
-                  {lang === "RU" ? (item.ability_ru || item.ability_en) : item.ability_en}
-                </p>
-              )}
-            </div>
-          </div>
+    <>
+      <div className="p-3 overflow-y-auto h-full">
+        <div className="grid grid-cols-3 gap-2">
+          {items.map((item) => {
+            const imgSrc = item.image ? `${STORAGE}/war_machines/${item.image}` : null;
+            return (
+              <button key={item.id} onClick={() => setSelected(item)}
+                className="flex flex-col rounded-xl border border-border bg-card overflow-hidden text-left hover:border-primary transition-colors">
+                <div className="aspect-square w-full bg-muted flex items-center justify-center overflow-hidden relative">
+                  {imgSrc
+                    ? <img src={imgSrc} alt={item.name_en} className="w-full h-full object-contain" />
+                    : <p className="text-[10px] text-muted-foreground text-center px-1">{item.name_en}</p>
+                  }
+                </div>
+                <div className="p-2">
+                  <p className="text-xs font-semibold text-foreground truncate">{name(item)}</p>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
 
-          {selected?.id === item.id && (
-            <div className="mt-3 pt-3 border-t border-border space-y-2">
-              {item.ability_en && (
+      <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>{selected ? name(selected) : ""}</DialogTitle>
+          </DialogHeader>
+          {selected && (
+            <div className="space-y-3">
+              {selected.image && (
+                <img src={`${STORAGE}/war_machines/${selected.image}`} alt={selected.name_en} className="w-full rounded-lg" />
+              )}
+              {selected.ability_en && (
                 <div>
                   <p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Способность" : "Ability"}</p>
-                  <p className="text-xs text-muted-foreground">{lang === "RU" ? (item.ability_ru || item.ability_en) : item.ability_en}</p>
+                  <p className="text-xs text-muted-foreground">{lang === "RU" ? (selected.ability_ru || selected.ability_en) : selected.ability_en}</p>
                 </div>
               )}
-              {item.cost_blacksmith && (
+              {selected.cost_blacksmith && (
                 <div>
-                  <p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Кузнец" : "Blacksmith"}</p>
-                  <p className="text-xs text-muted-foreground">{item.cost_blacksmith}</p>
+                  <p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Цена (Кузнец)" : "Cost (Blacksmith)"}</p>
+                  <p className="text-xs text-muted-foreground">{selected.cost_blacksmith}</p>
                 </div>
               )}
-              {item.cost_trade_post && (
+              {selected.cost_trade_post && (
                 <div>
-                  <p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Торговый пост" : "Trade Post"}</p>
-                  <p className="text-xs text-muted-foreground">{item.cost_trade_post}</p>
+                  <p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Цена (Торговый пост)" : "Cost (Trade Post)"}</p>
+                  <p className="text-xs text-muted-foreground">{selected.cost_trade_post}</p>
                 </div>
               )}
-              {(lang === "RU" ? item.notes_ru : item.notes_en) && (
+              {(lang === "RU" ? selected.notes_ru : selected.notes_en) && (
                 <div>
-                  <p className="text-xs font-semibold text-foreground">
-                    {lang === "RU" ? "Заметки" : "Notes"}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {lang === "RU" ? item.notes_ru : item.notes_en}
-                  </p>
+                  <p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Заметки" : "Notes"}</p>
+                  <p className="text-xs text-muted-foreground">{lang === "RU" ? selected.notes_ru : selected.notes_en}</p>
                 </div>
               )}
             </div>
           )}
-        </button>
-      ))}
-    </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
