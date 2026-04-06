@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from "react";
-import { Search, ChevronDown, ChevronUp } from "lucide-react";
+import { Search, ChevronDown, ChevronUp, Swords, HelpCircle } from "lucide-react";
 import { useRules, Rule } from "@/context/RulesContext";
 import { useLang } from "@/context/LanguageContext";
 import { Badge } from "@/components/ui/badge";
