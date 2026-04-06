@@ -32,7 +32,7 @@ export default function Index() {
         ) : tab === "towns" ? (
           <TownsTab />
         ) : tab === "heroes" ? (
-          <PlaceholderTab title={lang === "RU" ? "Герои — скоро" : "Heroes — coming soon"} />
+          <HeroesTab />
         ) : null}
       </div>
       <BottomNav active={tab} onChange={setTab} />
