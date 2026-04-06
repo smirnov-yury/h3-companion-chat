@@ -23,6 +23,10 @@ function getApiKey() {
   return localStorage.getItem("groq_api_key") || import.meta.env.VITE_GROQ_API_KEY || "";
 }
 
+const BATTLEFIELD_KEYWORDS = new Set([
+  'battlefield', 'поле', 'битва', 'битвы', 'боя', 'бой', 'combat', 'fight', 'battle',
+]);
+
 const RU_STOP_WORDS = new Set([
   'что', 'такое', 'как', 'это', 'где', 'когда', 'можно', 'нельзя',
   'есть', 'для', 'при', 'или', 'все', 'они', 'его', 'ему', 'мне',
@@ -38,13 +42,23 @@ function searchRules(rules: Rule[], query: string, lang: string, limit = 5): Rul
 
   console.log("[searchRules] keywords:", keywords, "| rules count:", rules.length);
 
-  if (!keywords.length) return rules.slice(0, limit);
+  if (!keywords.length) return rules.filter((r) => r.category !== "battlefield").slice(0, limit);
+
+  const wantsBattlefield = keywords.some((kw) => BATTLEFIELD_KEYWORDS.has(kw));
 
   const scored = rules.map((r) => {
     const haystack = lang === "RU"
       ? `${r.title_ru || ""} ${r.text_ru || ""}`.toLowerCase()
       : `${r.title_en || ""} ${r.text_en || ""}`.toLowerCase();
-    const score = keywords.reduce((s, kw) => s + (haystack.includes(kw) ? 1 : 0), 0);
+    let score = keywords.reduce((s, kw) => s + (haystack.includes(kw) ? 1 : 0), 0);
+    if (score === 0) return { rule: r, score: 0 };
+
+    // Battlefield rules only included when query is about battlefield
+    if (r.category === "battlefield" && !wantsBattlefield) return { rule: r, score: 0 };
+
+    // FAQ gets a slight penalty so core rules rank higher
+    if (r.category === "faq") score -= 0.3;
+
     return { rule: r, score };
   });
 
