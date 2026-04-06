@@ -47,6 +47,8 @@ export default function ComponentsTab({ onNavigateToRule }: ComponentsTabProps) 
       <div className="flex-1 overflow-hidden">
         {active === "units" ? (
           <UnitsTab />
+        ) : active === "war_machines" ? (
+          <WarMachinesTab />
         ) : (
           <PlaceholderTab
             title={
