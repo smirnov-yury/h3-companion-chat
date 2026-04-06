@@ -32,7 +32,11 @@ export default function AbilitiesTab() {
     });
   }, []);
 
-  if (!loaded) return <div className="flex items-center justify-center h-full"><p className="text-muted-foreground text-sm">{lang === "RU" ? "Загрузка…" : "Loading…"}</p></div>;
+  if (!loaded) return (
+    <div className="flex items-center justify-center h-full">
+      <p className="text-muted-foreground text-sm">{lang === "RU" ? "Загрузка…" : "Loading…"}</p>
+    </div>
+  );
 
   const name = (i: Ability) => lang === "RU" ? (i.name_ru || i.name_en) : i.name_en;
 
@@ -67,11 +71,41 @@ export default function AbilitiesTab() {
           </DialogHeader>
           {selected && (
             <div className="space-y-3">
-              {selected.image_regular && <img src={`${STORAGE}/abilities/${selected.image_regular}`} alt={selected.name_en} className="w-full rounded-lg" />}
-              {selected.effect_en && <div><p className="text-xs font-semibold text-foreground">Effect</p><p className="text-xs text-muted-foreground">{selected.effect_en}</p></div>}
-              {selected.effect_expert_en && <div><p className="text-xs font-semibold text-foreground">Expert</p><p className="text-xs text-muted-foreground">{selected.effect_expert_en}</p></div>}
-              {selected.effect_empowered_en && <div><p className="text-xs font-semibold text-foreground">Empowered</p><p className="text-xs text-muted-foreground">{selected.effect_empowered_en}</p></div>}
-              {(lang === "RU" ? selected.notes_ru : selected.notes_en) && <div><p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Заметки" : "Notes"}</p><p className="text-xs text-muted-foreground">{lang === "RU" ? selected.notes_ru : selected.notes_en}</p></div>}
+              {selected.image_regular && (
+                <img src={`${STORAGE}/abilities/${selected.image_regular}`} alt={selected.name_en} className="w-full rounded-lg" />
+              )}
+              {selected.effect_en && (
+                <div>
+                  <p className="text-xs font-semibold text-foreground">
+                    {lang === "RU" ? "Эффект" : "Effect"}
+                  </p>
+                  <p className="text-xs text-muted-foreground">{selected.effect_en}</p>
+                </div>
+              )}
+              {selected.effect_expert_en && (
+                <div>
+                  <p className="text-xs font-semibold text-foreground">
+                    {lang === "RU" ? "Эксперт" : "Expert"}
+                  </p>
+                  <p className="text-xs text-muted-foreground">{selected.effect_expert_en}</p>
+                </div>
+              )}
+              {selected.effect_empowered_en && (
+                <div>
+                  <p className="text-xs font-semibold text-foreground">
+                    {lang === "RU" ? "Усиленный" : "Empowered"}
+                  </p>
+                  <p className="text-xs text-muted-foreground">{selected.effect_empowered_en}</p>
+                </div>
+              )}
+              {(lang === "RU" ? selected.notes_ru : selected.notes_en) && (
+                <div>
+                  <p className="text-xs font-semibold text-foreground">
+                    {lang === "RU" ? "Заметки" : "Notes"}
+                  </p>
+                  <p className="text-xs text-muted-foreground">{lang === "RU" ? selected.notes_ru : selected.notes_en}</p>
+                </div>
+              )}
             </div>
           )}
         </DialogContent>
