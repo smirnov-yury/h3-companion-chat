@@ -38,10 +38,14 @@ function renderTextWithBadges(text: string) {
   return parts;
 }
 
+// Special categories displayed as separate sections
+const SPECIAL_CATEGORIES = new Set(["battlefield", "faq"]);
+
 const RULE_CATEGORIES: { key: string; ru: string; en: string }[] = [
   { key: "alliance", ru: "Альянс", en: "Alliance" },
   { key: "astrologers", ru: "Астрологи", en: "Astrologers" },
   { key: "astrologers_proclaim", ru: "Провозглашение астрологов", en: "Astrologers' Proclamation" },
+  { key: "battlefield", ru: "Поле битвы", en: "Battlefield" },
   { key: "campaign", ru: "Кампания", en: "Campaign" },
   { key: "campaign_combat", ru: "Бой в кампании", en: "Campaign Combat" },
   { key: "cards", ru: "Карты", en: "Cards" },
@@ -50,6 +54,7 @@ const RULE_CATEGORIES: { key: string; ru: string; en: string }[] = [
   { key: "deckbuilding", ru: "Составление колоды", en: "Deck Building" },
   { key: "differences", ru: "Отличия от оригинала", en: "Differences" },
   { key: "editor", ru: "Редактор", en: "Editor" },
+  { key: "faq", ru: "FAQ", en: "FAQ" },
   { key: "game_mechanics", ru: "Игровая механика", en: "Game Mechanics" },
   { key: "global", ru: "Общие правила", en: "Global Rules" },
   { key: "interaction", ru: "Взаимодействие", en: "Interaction" },
