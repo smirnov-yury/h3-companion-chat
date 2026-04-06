@@ -53,7 +53,7 @@ export default function HeroesTab() {
 
   useEffect(() => {
     supabase.from("heroes").select("*").order("sort_order").then(({ data }) => {
-      setHeroes((data as Hero[]) ?? []);
+      setHeroes((data as unknown as Hero[]) ?? []);
       setLoaded(true);
     });
   }, []);
