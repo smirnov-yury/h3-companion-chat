@@ -135,6 +135,19 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled }: RulesTabPr
     return list;
   }, [rules, selectedCategory, debouncedSearch, lang]);
 
+  // Split into 3 sections: core, battlefield, faq
+  const { coreRules, battlefieldRules, faqRules } = useMemo(() => {
+    const core: Rule[] = [];
+    const bf: Rule[] = [];
+    const faq: Rule[] = [];
+    for (const r of filtered) {
+      if (r.category === "battlefield") bf.push(r);
+      else if (r.category === "faq") faq.push(r);
+      else core.push(r);
+    }
+    return { coreRules: core, battlefieldRules: bf, faqRules: faq };
+  }, [filtered]);
+
   const handleSearch = (v: string) => {
     setSearch(v);
     setDebouncedSearch(v);
