@@ -30,7 +30,7 @@ export default function Index() {
         ) : tab === "units" ? (
           <UnitsTab />
         ) : tab === "towns" ? (
-          <PlaceholderTab title={lang === "RU" ? "Города — скоро" : "Towns — coming soon"} />
+          <TownsTab />
         ) : tab === "heroes" ? (
           <PlaceholderTab title={lang === "RU" ? "Герои — скоро" : "Heroes — coming soon"} />
         ) : null}
