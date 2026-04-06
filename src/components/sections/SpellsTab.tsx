@@ -46,10 +46,15 @@ export default function SpellsTab({ searchQuery = "" }: Props) {
 
   const schools = ["all", ...Array.from(new Set(items.map(i => i.school).filter(Boolean))) as string[]];
   const afterSchool = filterSchool === "all" ? items : items.filter(i => i.school === filterSchool);
-  const filtered = afterSchool.filter(i =>
-    i.name_en.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (i.name_ru && i.name_ru.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
+  const q = searchQuery.toLowerCase();
+  const filtered = searchQuery
+    ? afterSchool.filter(i => {
+        const fields = [i.name_en, i.name_ru, (i as any).ability_en, (i as any).ability_ru,
+          (i as any).effect_en, (i as any).effect_ru, (i as any).effect_expert_en,
+          (i as any).effect_empowered_en, (i as any).description_en, (i as any).description_ru];
+        return fields.some(f => f && f.toLowerCase().includes(q));
+      })
+    : afterSchool;
 
   if (!loaded) return <div className="flex items-center justify-center h-full"><p className="text-muted-foreground text-sm">{lang === "RU" ? "Загрузка…" : "Loading…"}</p></div>;
 
