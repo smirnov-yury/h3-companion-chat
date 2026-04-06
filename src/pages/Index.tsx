@@ -3,6 +3,7 @@ import BottomNav, { type TabId } from "@/components/BottomNav";
 import ChatScreen from "@/components/ChatScreen";
 import RulesTab from "@/components/RulesTab";
 import ComponentsTab from "@/components/ComponentsTab";
+import UnitsTab from "@/components/UnitsTab";
 import PlaceholderTab from "@/components/PlaceholderTab";
 import { useLang } from "@/context/LanguageContext";
 
@@ -25,6 +26,8 @@ export default function Index() {
           <RulesTab scrollToRuleId={scrollToRuleId} onScrollHandled={() => setScrollToRuleId(null)} />
         ) : tab === "components" ? (
           <ComponentsTab onNavigateToRule={handleNavigateToRule} />
+        ) : tab === "units" ? (
+          <UnitsTab />
         ) : tab === "towns" ? (
           <PlaceholderTab title={lang === "RU" ? "Города — скоро" : "Towns — coming soon"} />
         ) : tab === "heroes" ? (
