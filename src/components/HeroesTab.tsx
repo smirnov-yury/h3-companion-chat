@@ -172,23 +172,41 @@ export default function HeroesTab() {
             )}
 
             {levels(selected).length > 0 && (
-              <div className="space-y-3">
-                {levels(selected).map((lvl, i) => (
-                  <div key={i} className="bg-muted rounded-lg p-3">
-                    <span className="text-xs font-bold text-foreground">{lvl.level}</span>
-                    {lvl.image && (
-                      <img
-                        src={`${STORAGE}/heroes/${lvl.image}`}
-                        alt={lvl.level}
-                        className="w-full object-contain mt-1"
-                        onError={e => (e.currentTarget.style.display = "none")}
-                      />
-                    )}
-                    {lvl.effect_en && (
-                      <div className="text-xs text-muted-foreground mt-1" dangerouslySetInnerHTML={{ __html: renderGlyphs(lvl.effect_en, glyphs) }} />
-                    )}
+              <div>
+                {levels(selected).length > 1 && (
+                  <div className="flex gap-1.5 mb-2">
+                    {levels(selected).map((lvl, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setSpecialtyTab(i)}
+                        className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                          specialtyTab === i ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-muted/70"
+                        }`}
+                      >
+                        {lvl.level}
+                      </button>
+                    ))}
                   </div>
-                ))}
+                )}
+                {(() => {
+                  const lvl = levels(selected)[levels(selected).length > 1 ? specialtyTab : 0];
+                  if (!lvl) return null;
+                  return (
+                    <div className="bg-muted rounded-lg p-3">
+                      {lvl.image && (
+                        <img
+                          src={`${STORAGE}/heroes/${lvl.image}`}
+                          alt={lvl.level}
+                          className="w-full object-contain"
+                          onError={e => (e.currentTarget.style.display = "none")}
+                        />
+                      )}
+                      {lvl.effect_en && (
+                        <div className="text-xs text-muted-foreground mt-1" dangerouslySetInnerHTML={{ __html: renderGlyphs(lvl.effect_en, glyphs) }} />
+                      )}
+                    </div>
+                  );
+                })()}
               </div>
             )}
 
