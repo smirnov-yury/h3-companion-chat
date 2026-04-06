@@ -50,6 +50,7 @@ export default function HeroesTab() {
   const [loaded, setLoaded] = useState(false);
   const [faction, setFaction] = useState("all");
   const [selected, setSelected] = useState<Hero | null>(null);
+  const [specialtyTab, setSpecialtyTab] = useState(0);
 
   useEffect(() => {
     supabase.from("heroes").select("*").order("sort_order").then(({ data }) => {
@@ -114,9 +115,9 @@ export default function HeroesTab() {
       <div className="px-3 pb-3 flex-1">
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {filtered.map(h => (
-            <button key={h.id} onClick={() => setSelected(h)} className="bg-muted rounded-lg overflow-hidden text-left">
+            <button key={h.id} onClick={() => { setSelected(h); setSpecialtyTab(0); }} className="bg-muted rounded-lg overflow-hidden text-left">
               {hasPortrait(h.image) ? (
-                <img src={`${STORAGE}/heroes/${h.image}`} alt={name(h)} className="w-full aspect-[3/4] object-cover" />
+                <img src={`${STORAGE}/heroes/${h.image}`} alt={name(h)} className="w-full aspect-[3/4] object-cover object-left" />
               ) : (
                 <div className="w-full aspect-[3/4] bg-muted-foreground/10 flex items-center justify-center">
                   <span className="text-2xl font-bold text-muted-foreground/40">{heroInitials(h.name_en)}</span>
@@ -139,7 +140,7 @@ export default function HeroesTab() {
         </div>
       </div>
 
-      <Dialog open={!!selected} onOpenChange={open => !open && setSelected(null)}>
+      <Dialog open={!!selected} onOpenChange={open => { if (!open) setSelected(null); }} >
         {selected && (
           <DialogContent className="max-h-[85vh] overflow-y-auto">
             <DialogTitle className="sr-only">{name(selected)}</DialogTitle>
@@ -171,23 +172,41 @@ export default function HeroesTab() {
             )}
 
             {levels(selected).length > 0 && (
-              <div className="space-y-3">
-                {levels(selected).map((lvl, i) => (
-                  <div key={i} className="bg-muted rounded-lg p-3">
-                    <span className="text-xs font-bold text-foreground">{lvl.level}</span>
-                    {lvl.image && (
-                      <img
-                        src={`${STORAGE}/heroes/${lvl.image}`}
-                        alt={lvl.level}
-                        className="w-full object-contain mt-1"
-                        onError={e => (e.currentTarget.style.display = "none")}
-                      />
-                    )}
-                    {lvl.effect_en && (
-                      <div className="text-xs text-muted-foreground mt-1" dangerouslySetInnerHTML={{ __html: renderGlyphs(lvl.effect_en, glyphs) }} />
-                    )}
+              <div>
+                {levels(selected).length > 1 && (
+                  <div className="flex gap-1.5 mb-2">
+                    {levels(selected).map((lvl, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setSpecialtyTab(i)}
+                        className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                          specialtyTab === i ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-muted/70"
+                        }`}
+                      >
+                        {lvl.level}
+                      </button>
+                    ))}
                   </div>
-                ))}
+                )}
+                {(() => {
+                  const lvl = levels(selected)[levels(selected).length > 1 ? specialtyTab : 0];
+                  if (!lvl) return null;
+                  return (
+                    <div className="bg-muted rounded-lg p-3">
+                      {lvl.image && (
+                        <img
+                          src={`${STORAGE}/heroes/${lvl.image}`}
+                          alt={lvl.level}
+                          className="w-full object-contain"
+                          onError={e => (e.currentTarget.style.display = "none")}
+                        />
+                      )}
+                      {lvl.effect_en && (
+                        <div className="text-xs text-muted-foreground mt-1" dangerouslySetInnerHTML={{ __html: renderGlyphs(lvl.effect_en, glyphs) }} />
+                      )}
+                    </div>
+                  );
+                })()}
               </div>
             )}
 
