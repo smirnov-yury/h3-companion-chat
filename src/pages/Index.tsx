@@ -4,8 +4,8 @@ import ChatScreen from "@/components/ChatScreen";
 import RulesTab from "@/components/RulesTab";
 import ComponentsTab from "@/components/ComponentsTab";
 import UnitsTab from "@/components/UnitsTab";
-import PlaceholderTab from "@/components/PlaceholderTab";
 import TownsTab from "@/components/TownsTab";
+import HeroesTab from "@/components/HeroesTab";
 import { useLang } from "@/context/LanguageContext";
 
 export default function Index() {
