@@ -5,6 +5,7 @@ import RulesTab from "@/components/RulesTab";
 import ComponentsTab from "@/components/ComponentsTab";
 import UnitsTab from "@/components/UnitsTab";
 import PlaceholderTab from "@/components/PlaceholderTab";
+import TownsTab from "@/components/TownsTab";
 import { useLang } from "@/context/LanguageContext";
 
 export default function Index() {
@@ -29,7 +30,7 @@ export default function Index() {
         ) : tab === "units" ? (
           <UnitsTab />
         ) : tab === "towns" ? (
-          <PlaceholderTab title={lang === "RU" ? "Города — скоро" : "Towns — coming soon"} />
+          <TownsTab />
         ) : tab === "heroes" ? (
           <PlaceholderTab title={lang === "RU" ? "Герои — скоро" : "Heroes — coming soon"} />
         ) : null}
