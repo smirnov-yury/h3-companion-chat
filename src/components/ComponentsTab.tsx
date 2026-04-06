@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useLang } from "@/context/LanguageContext";
-import UnitsTab from "@/components/UnitsTab";
 import WarMachinesTab from "@/components/sections/WarMachinesTab";
 import EventsTab from "@/components/sections/EventsTab";
 import SpellsTab from "@/components/sections/SpellsTab";
@@ -9,10 +8,9 @@ import AbilitiesTab from "@/components/sections/AbilitiesTab";
 import AstrologersTab from "@/components/sections/AstrologersTab";
 import FieldsTab from "@/components/sections/FieldsTab";
 
-type ComponentSection = "units" | "war_machines" | "events" | "spells" | "artifacts" | "abilities" | "astrologers" | "fields";
+type ComponentSection = "war_machines" | "events" | "spells" | "artifacts" | "abilities" | "astrologers" | "fields";
 
 const SECTIONS: { id: ComponentSection; labelRU: string; labelEN: string }[] = [
-  { id: "units",        labelRU: "Юниты",        labelEN: "Units"        },
   { id: "war_machines", labelRU: "Боевые машины", labelEN: "War Machines" },
   { id: "events",       labelRU: "События",       labelEN: "Events"       },
   { id: "spells",       labelRU: "Заклинания",    labelEN: "Spells"       },
@@ -22,26 +20,13 @@ const SECTIONS: { id: ComponentSection; labelRU: string; labelEN: string }[] = [
   { id: "fields",       labelRU: "Поля",          labelEN: "Fields"       },
 ];
 
-const SECTION_COMPONENTS: Record<ComponentSection, React.ComponentType> = {
-  units: UnitsTab,
-  war_machines: WarMachinesTab,
-  events: EventsTab,
-  spells: SpellsTab,
-  artifacts: ArtifactsTab,
-  abilities: AbilitiesTab,
-  astrologers: AstrologersTab,
-  fields: FieldsTab,
-};
-
 interface ComponentsTabProps {
   onNavigateToRule?: (ruleId: string) => void;
 }
 
 export default function ComponentsTab({ onNavigateToRule }: ComponentsTabProps) {
   const { lang } = useLang();
-  const [active, setActive] = useState<ComponentSection>("units");
-
-  const ActiveComponent = SECTION_COMPONENTS[active];
+  const [active, setActive] = useState<ComponentSection>("war_machines");
 
   return (
     <div className="flex flex-col h-full">
@@ -61,7 +46,13 @@ export default function ComponentsTab({ onNavigateToRule }: ComponentsTabProps) 
         </div>
       </div>
       <div className="flex-1 overflow-hidden">
-        <ActiveComponent />
+        {active === "war_machines" ? <WarMachinesTab /> :
+         active === "events"       ? <EventsTab /> :
+         active === "spells"       ? <SpellsTab /> :
+         active === "artifacts"    ? <ArtifactsTab /> :
+         active === "abilities"    ? <AbilitiesTab /> :
+         active === "astrologers"  ? <AstrologersTab /> :
+         active === "fields"       ? <FieldsTab /> : null}
       </div>
     </div>
   );
