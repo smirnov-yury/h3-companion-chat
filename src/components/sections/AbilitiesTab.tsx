@@ -1,6 +1,10 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/context/LanguageContext";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
+const STORAGE = `${SUPABASE_URL}/storage/v1/object/public/component-media`;
 
 interface Ability {
   id: string;
@@ -29,32 +33,49 @@ export default function AbilitiesTab() {
   }, []);
 
   if (!loaded) return <div className="flex items-center justify-center h-full"><p className="text-muted-foreground text-sm">{lang === "RU" ? "Загрузка…" : "Loading…"}</p></div>;
-  if (items.length === 0) return <div className="flex items-center justify-center h-full"><p className="text-muted-foreground text-sm">{lang === "RU" ? "Нет данных" : "No data"}</p></div>;
+
+  const name = (i: Ability) => lang === "RU" ? (i.name_ru || i.name_en) : i.name_en;
 
   return (
-    <div className="flex flex-col gap-3 p-3 overflow-y-auto h-full">
-      {items.map((item) => (
-        <button key={item.id} onClick={() => setSelected(selected?.id === item.id ? null : item)}
-          className="text-left w-full rounded-xl border border-border bg-card p-3 transition-colors hover:border-primary/50">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-lg bg-muted flex items-center justify-center overflow-hidden shrink-0">
-              {item.image_regular ? <img src={item.image_regular} alt={item.name_en} className="w-full h-full object-contain" /> : <span className="text-[10px] text-muted-foreground text-center leading-tight">{item.name_en}</span>}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="font-semibold text-sm text-foreground truncate">{lang === "RU" ? (item.name_ru || item.name_en) : item.name_en}</p>
-              {item.effect_en && <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">{item.effect_en}</p>}
-            </div>
-          </div>
-          {selected?.id === item.id && (
-            <div className="mt-3 pt-3 border-t border-border space-y-2">
-              {item.effect_en && <div><p className="text-xs font-semibold text-foreground">Effect</p><p className="text-xs text-muted-foreground">{item.effect_en}</p></div>}
-              {item.effect_expert_en && <div><p className="text-xs font-semibold text-foreground">Expert</p><p className="text-xs text-muted-foreground">{item.effect_expert_en}</p></div>}
-              {item.effect_empowered_en && <div><p className="text-xs font-semibold text-foreground">Empowered</p><p className="text-xs text-muted-foreground">{item.effect_empowered_en}</p></div>}
-              {(lang === "RU" ? item.notes_ru : item.notes_en) && <div><p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Заметки" : "Notes"}</p><p className="text-xs text-muted-foreground">{lang === "RU" ? item.notes_ru : item.notes_en}</p></div>}
+    <>
+      <div className="p-3 overflow-y-auto h-full">
+        <div className="grid grid-cols-3 gap-2">
+          {items.map((item) => {
+            const imgSrc = item.image_regular ? `${STORAGE}/abilities/${item.image_regular}` : null;
+            return (
+              <button key={item.id} onClick={() => setSelected(item)}
+                className="flex flex-col rounded-xl border border-border bg-card overflow-hidden text-left hover:border-primary transition-colors">
+                <div className="aspect-square w-full bg-muted flex items-center justify-center overflow-hidden relative">
+                  {imgSrc
+                    ? <img src={imgSrc} alt={item.name_en} className="w-full h-full object-contain" />
+                    : <p className="text-[10px] text-muted-foreground text-center px-1">{item.name_en}</p>
+                  }
+                </div>
+                <div className="p-2">
+                  <p className="text-xs font-semibold text-foreground truncate">{name(item)}</p>
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>{selected ? name(selected) : ""}</DialogTitle>
+          </DialogHeader>
+          {selected && (
+            <div className="space-y-3">
+              {selected.image_regular && <img src={`${STORAGE}/abilities/${selected.image_regular}`} alt={selected.name_en} className="w-full rounded-lg" />}
+              {selected.effect_en && <div><p className="text-xs font-semibold text-foreground">Effect</p><p className="text-xs text-muted-foreground">{selected.effect_en}</p></div>}
+              {selected.effect_expert_en && <div><p className="text-xs font-semibold text-foreground">Expert</p><p className="text-xs text-muted-foreground">{selected.effect_expert_en}</p></div>}
+              {selected.effect_empowered_en && <div><p className="text-xs font-semibold text-foreground">Empowered</p><p className="text-xs text-muted-foreground">{selected.effect_empowered_en}</p></div>}
+              {(lang === "RU" ? selected.notes_ru : selected.notes_en) && <div><p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Заметки" : "Notes"}</p><p className="text-xs text-muted-foreground">{lang === "RU" ? selected.notes_ru : selected.notes_en}</p></div>}
             </div>
           )}
-        </button>
-      ))}
-    </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
