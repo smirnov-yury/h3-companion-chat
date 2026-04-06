@@ -153,6 +153,34 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled }: RulesTabPr
     setDebouncedSearch(v);
   };
 
+  const renderRuleCard = (rule: Rule) => {
+    const isOpen = expandedId === rule.id;
+    const title = lang === "RU" ? (rule.title_ru || rule.title_en) : (rule.title_en || rule.title_ru);
+    const text = lang === "RU" ? (rule.text_ru || rule.text_en) : (rule.text_en || rule.text_ru);
+    return (
+      <div key={rule.id} id={`rule-${rule.id}`} className="rounded-xl bg-card border border-border overflow-hidden">
+        <button
+          onClick={() => setExpandedId(isOpen ? null : rule.id)}
+          className="w-full flex items-center justify-between px-4 py-3 text-left"
+        >
+          <span className="text-sm font-medium text-card-foreground leading-snug pr-2">
+            {title}
+          </span>
+          {isOpen ? (
+            <ChevronUp className="w-4 h-4 shrink-0 text-muted-foreground" />
+          ) : (
+            <ChevronDown className="w-4 h-4 shrink-0 text-muted-foreground" />
+          )}
+        </button>
+        {isOpen && (
+          <div className="px-4 pb-3 text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
+            {renderTextWithBadges(text || "")}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   if (!loaded) {
     return (
       <div className="flex flex-1 items-center justify-center">
@@ -237,9 +265,6 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled }: RulesTabPr
             {faqRules.map((rule) => renderRuleCard(rule))}
           </>
         )}
-      </div>
-          );
-        })}
       </div>
     </div>
   );
