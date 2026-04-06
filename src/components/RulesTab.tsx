@@ -209,31 +209,35 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled }: RulesTabPr
             {lang === "RU" ? "Ничего не найдено" : "Nothing found"}
           </p>
         )}
-        {filtered.map((rule) => {
-          const isOpen = expandedId === rule.id;
-          const title = lang === "RU" ? (rule.title_ru || rule.title_en) : (rule.title_en || rule.title_ru);
-          const text = lang === "RU" ? (rule.text_ru || rule.text_en) : (rule.text_en || rule.text_ru);
-          return (
-            <div key={rule.id} id={`rule-${rule.id}`} className="rounded-xl bg-card border border-border overflow-hidden">
-              <button
-                onClick={() => setExpandedId(isOpen ? null : rule.id)}
-                className="w-full flex items-center justify-between px-4 py-3 text-left"
-              >
-                <span className="text-sm font-medium text-card-foreground leading-snug pr-2">
-                  {title}
-                </span>
-                {isOpen ? (
-                  <ChevronUp className="w-4 h-4 shrink-0 text-muted-foreground" />
-                ) : (
-                  <ChevronDown className="w-4 h-4 shrink-0 text-muted-foreground" />
-                )}
-              </button>
-              {isOpen && (
-                <div className="px-4 pb-3 text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
-                  {renderTextWithBadges(text || "")}
-                </div>
-              )}
+
+        {coreRules.map((rule) => renderRuleCard(rule))}
+
+        {battlefieldRules.length > 0 && (
+          <>
+            <div className="flex items-center gap-2 pt-4 pb-1 px-1">
+              <Swords className="w-4 h-4 text-primary" />
+              <span className="text-xs font-semibold uppercase tracking-wide text-primary">
+                {lang === "RU" ? "Поле битвы" : "Battlefield"}
+              </span>
+              <div className="flex-1 h-px bg-border" />
             </div>
+            {battlefieldRules.map((rule) => renderRuleCard(rule))}
+          </>
+        )}
+
+        {faqRules.length > 0 && (
+          <>
+            <div className="flex items-center gap-2 pt-4 pb-1 px-1">
+              <HelpCircle className="w-4 h-4 text-muted-foreground" />
+              <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                FAQ
+              </span>
+              <div className="flex-1 h-px bg-border" />
+            </div>
+            {faqRules.map((rule) => renderRuleCard(rule))}
+          </>
+        )}
+      </div>
           );
         })}
       </div>
