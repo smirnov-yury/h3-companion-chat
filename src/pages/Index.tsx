@@ -4,8 +4,8 @@ import ChatScreen from "@/components/ChatScreen";
 import RulesTab from "@/components/RulesTab";
 import ComponentsTab from "@/components/ComponentsTab";
 import UnitsTab from "@/components/UnitsTab";
-import PlaceholderTab from "@/components/PlaceholderTab";
 import TownsTab from "@/components/TownsTab";
+import HeroesTab from "@/components/HeroesTab";
 import { useLang } from "@/context/LanguageContext";
 
 export default function Index() {
@@ -32,7 +32,7 @@ export default function Index() {
         ) : tab === "towns" ? (
           <TownsTab />
         ) : tab === "heroes" ? (
-          <PlaceholderTab title={lang === "RU" ? "Герои — скоро" : "Heroes — coming soon"} />
+          <HeroesTab />
         ) : null}
       </div>
       <BottomNav active={tab} onChange={setTab} />
