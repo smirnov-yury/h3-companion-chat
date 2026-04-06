@@ -117,7 +117,7 @@ export default function HeroesTab() {
           {filtered.map(h => (
             <button key={h.id} onClick={() => setSelected(h)} className="bg-muted rounded-lg overflow-hidden text-left">
               {hasPortrait(h.image) ? (
-                <img src={`${STORAGE}/heroes/${h.image}`} alt={name(h)} className="w-full aspect-[3/4] object-cover" />
+                <img src={`${STORAGE}/heroes/${h.image}`} alt={name(h)} className="w-full aspect-[3/4] object-cover object-left" />
               ) : (
                 <div className="w-full aspect-[3/4] bg-muted-foreground/10 flex items-center justify-center">
                   <span className="text-2xl font-bold text-muted-foreground/40">{heroInitials(h.name_en)}</span>
