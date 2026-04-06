@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useLang } from "@/context/LanguageContext";
 import UnitsTab from "@/components/UnitsTab";
+import WarMachinesTab from "@/components/sections/WarMachinesTab";
 import PlaceholderTab from "@/components/PlaceholderTab";
 
 type ComponentSection = "units" | "war_machines" | "events" | "spells" | "artifacts" | "abilities" | "astrologers" | "fields";
