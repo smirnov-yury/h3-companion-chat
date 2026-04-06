@@ -1,7 +1,7 @@
-import { BookOpen, LayoutGrid, Map, Castle, MessageCircle, Swords } from "lucide-react";
+import { BookOpen, LayoutGrid, Castle, Swords, MessageCircle } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
 
-export type TabId = "rules" | "components" | "units" | "setup" | "city" | "ai";
+export type TabId = "rules" | "components" | "towns" | "heroes" | "ai";
 
 interface BottomNavProps {
   active: TabId;
@@ -9,17 +9,15 @@ interface BottomNavProps {
 }
 
 const tabs: { id: TabId; labelRU: string; labelEN: string; icon: typeof BookOpen }[] = [
-  { id: "rules", labelRU: "Правила", labelEN: "Rules", icon: BookOpen },
-  { id: "components", labelRU: "Компоненты", labelEN: "Components", icon: LayoutGrid },
-  { id: "units", labelRU: "Юниты", labelEN: "Units", icon: Swords },
-  { id: "setup", labelRU: "Сетап", labelEN: "Setup", icon: Map },
-  { id: "city", labelRU: "Город", labelEN: "City", icon: Castle },
-  { id: "ai", labelRU: "ИИ Мастер", labelEN: "AI Master", icon: MessageCircle },
+  { id: "rules",      labelRU: "Правила",    labelEN: "Rules",      icon: BookOpen     },
+  { id: "components", labelRU: "Компоненты", labelEN: "Components", icon: LayoutGrid   },
+  { id: "towns",      labelRU: "Города",     labelEN: "Towns",      icon: Castle       },
+  { id: "heroes",     labelRU: "Герои",      labelEN: "Heroes",     icon: Swords       },
+  { id: "ai",         labelRU: "ИИ Мастер",  labelEN: "AI Master",  icon: MessageCircle },
 ];
 
 export default function BottomNav({ active, onChange }: BottomNavProps) {
   const { lang, toggleLang } = useLang();
-
   return (
     <nav className="flex items-center border-t border-border bg-background px-1 py-2 shrink-0">
       <div className="flex flex-1 items-center justify-around">
