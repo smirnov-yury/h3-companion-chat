@@ -140,7 +140,7 @@ export default function HeroesTab() {
         </div>
       </div>
 
-      <Dialog open={!!selected} onOpenChange={open => !open && setSelected(null)}>
+      <Dialog open={!!selected} onOpenChange={open => { if (!open) setSelected(null); }} >
         {selected && (
           <DialogContent className="max-h-[85vh] overflow-y-auto">
             <DialogTitle className="sr-only">{name(selected)}</DialogTitle>
