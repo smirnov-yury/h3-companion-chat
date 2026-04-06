@@ -1,16 +1,10 @@
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback } from "react";
 import BottomNav, { type TabId } from "@/components/BottomNav";
 import ChatScreen from "@/components/ChatScreen";
 import RulesTab from "@/components/RulesTab";
 import ComponentsTab from "@/components/ComponentsTab";
-import UnitsTab from "@/components/UnitsTab";
 import PlaceholderTab from "@/components/PlaceholderTab";
 import { useLang } from "@/context/LanguageContext";
-
-const PLACEHOLDERS: Record<Exclude<TabId, "ai" | "rules" | "components" | "units">, { RU: string; EN: string }> = {
-  setup: { RU: "Сетап — скоро", EN: "Setup — coming soon" },
-  city: { RU: "Город — скоро", EN: "City — coming soon" },
-};
 
 export default function Index() {
   const [tab, setTab] = useState<TabId>("ai");
@@ -31,11 +25,11 @@ export default function Index() {
           <RulesTab scrollToRuleId={scrollToRuleId} onScrollHandled={() => setScrollToRuleId(null)} />
         ) : tab === "components" ? (
           <ComponentsTab onNavigateToRule={handleNavigateToRule} />
-        ) : tab === "units" ? (
-          <UnitsTab />
-        ) : (
-          <PlaceholderTab title={PLACEHOLDERS[tab as keyof typeof PLACEHOLDERS][lang]} />
-        )}
+        ) : tab === "towns" ? (
+          <PlaceholderTab title={lang === "RU" ? "Города — скоро" : "Towns — coming soon"} />
+        ) : tab === "heroes" ? (
+          <PlaceholderTab title={lang === "RU" ? "Герои — скоро" : "Heroes — coming soon"} />
+        ) : null}
       </div>
       <BottomNav active={tab} onChange={setTab} />
     </div>
