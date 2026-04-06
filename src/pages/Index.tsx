@@ -5,6 +5,7 @@ import RulesTab from "@/components/RulesTab";
 import ComponentsTab from "@/components/ComponentsTab";
 import UnitsTab from "@/components/UnitsTab";
 import PlaceholderTab from "@/components/PlaceholderTab";
+import TownsTab from "@/components/TownsTab";
 import { useLang } from "@/context/LanguageContext";
 
 export default function Index() {
