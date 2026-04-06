@@ -116,13 +116,30 @@ export default function HeroesTab() {
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {filtered.map(h => (
             <button key={h.id} onClick={() => { setSelected(h); setSpecialtyTab(0); }} className="bg-muted rounded-lg overflow-hidden text-left">
-              {hasPortrait(h.image) ? (
-                <img src={`${STORAGE}/heroes/${h.image}`} alt={name(h)} className="w-full aspect-[3/4] object-cover object-left" />
-              ) : (
-                <div className="w-full aspect-[3/4] bg-muted-foreground/10 flex items-center justify-center">
-                  <span className="text-2xl font-bold text-muted-foreground/40">{heroInitials(h.name_en)}</span>
-                </div>
-              )}
+              <div className="relative">
+                {hasPortrait(h.image) ? (
+                  <img src={`${STORAGE}/heroes/${h.image}`} alt={name(h)} className="w-full aspect-[3/4] object-cover object-left" />
+                ) : (
+                  <div className="w-full aspect-[3/4] bg-muted-foreground/10 flex items-center justify-center">
+                    <span className="text-2xl font-bold text-muted-foreground/40">{heroInitials(h.name_en)}</span>
+                  </div>
+                )}
+                {h.class_en && (() => {
+                  const isMagic = h.class_en.includes('<magic>');
+                  const heroType = isMagic ? 'Magic' : 'Might';
+                  const heroClass = h.class_en.replace(/<magic>|<might>/g, '').trim();
+                  return (
+                    <div className="absolute top-1.5 left-1.5 flex flex-col gap-1">
+                      <span className={`text-xs font-semibold px-1.5 py-0.5 rounded backdrop-blur-sm text-white ${isMagic ? 'bg-blue-600/80' : 'bg-red-700/80'}`}>
+                        {heroType}
+                      </span>
+                      <span className="text-xs px-1.5 py-0.5 rounded backdrop-blur-sm bg-black/50 text-white">
+                        {heroClass}
+                      </span>
+                    </div>
+                  );
+                })()}
+              </div>
               <div className="p-2">
                 <p className="text-sm font-medium text-foreground truncate">{name(h)}</p>
                 {h.town && <p className="text-xs text-muted-foreground capitalize">{h.town}</p>}
