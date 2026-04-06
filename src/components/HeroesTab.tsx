@@ -50,6 +50,7 @@ export default function HeroesTab() {
   const [loaded, setLoaded] = useState(false);
   const [faction, setFaction] = useState("all");
   const [selected, setSelected] = useState<Hero | null>(null);
+  const [specialtyTab, setSpecialtyTab] = useState(0);
 
   useEffect(() => {
     supabase.from("heroes").select("*").order("sort_order").then(({ data }) => {
