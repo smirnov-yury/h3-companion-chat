@@ -98,18 +98,20 @@ export default function StatisticsTab({ searchQuery = "" }: Props) {
                       ? <img src={imgSrc} alt={item.name_en || ""} className="absolute inset-0 w-full h-full object-cover" />
                       : <div className="absolute inset-0 flex items-center justify-center"><p className="text-[10px] text-muted-foreground text-center px-1">{item.name_en}</p></div>
                     }
-                    <div className="absolute bottom-0 left-0 right-0 p-1 flex gap-1 flex-wrap">
-                      {item.stat_type && (
-                        <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-medium capitalize ${STAT_COLORS[item.stat_type] || "bg-muted text-muted-foreground"}`}>
-                          {item.stat_type}
+                    {item.stat_type && (
+                      <div className="absolute top-1 left-1">
+                        <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-medium ${STAT_COLORS[item.stat_type] || "bg-muted text-muted-foreground"}`}>
+                          {item.stat_type.charAt(0).toUpperCase() + item.stat_type.slice(1)}
                         </span>
-                      )}
-                      {item.card_type && (
+                      </div>
+                    )}
+                    {item.card_type && (
+                      <div className="absolute top-1 right-1">
                         <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-medium ${CARD_TYPE_BADGE[item.card_type] || "bg-muted text-muted-foreground"}`}>
                           {cardTypeLabel(item.card_type)}
                         </span>
-                      )}
-                    </div>
+                      </div>
+                    )}
                   </div>
                 );
               })}
