@@ -113,7 +113,7 @@ export default function HeroesTab() {
       </div>
 
       <div className="px-3 pb-3 flex-1">
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           {filtered.map(h => (
             <button key={h.id} onClick={() => { setSelected(h); setSpecialtyTab(0); }} className="bg-muted rounded-lg overflow-hidden text-left">
               <div className="relative">
