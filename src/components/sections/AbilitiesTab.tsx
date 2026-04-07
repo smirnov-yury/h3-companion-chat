@@ -46,9 +46,7 @@ export default function AbilitiesTab({ searchQuery = "" }: Props) {
   const q = searchQuery.toLowerCase();
   const filtered = searchQuery
     ? items.filter(i => {
-        const fields = [i.name_en, i.name_ru, (i as any).ability_en, (i as any).ability_ru,
-          (i as any).effect_en, (i as any).effect_ru, (i as any).effect_expert_en,
-          (i as any).effect_empowered_en, (i as any).description_en, (i as any).description_ru];
+        const fields = [i.name_en, i.name_ru, i.effect_en, i.effect_expert_en, i.effect_empowered_en];
         return fields.some(f => f && f.toLowerCase().includes(q));
       })
     : items;
@@ -85,14 +83,14 @@ export default function AbilitiesTab({ searchQuery = "" }: Props) {
       </div>
 
       <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
+        <DialogContent className="max-w-md max-h-[90dvh] flex flex-col overflow-hidden">
+          <DialogHeader className="flex-shrink-0">
             <DialogTitle>{selected ? name(selected) : ""}</DialogTitle>
           </DialogHeader>
           {selected && (
-            <div className="space-y-3">
+            <div className="overflow-y-auto flex-1 pr-1 space-y-3">
               {selected.image_regular && (
-                <img src={`${STORAGE}/abilities/${selected.image_regular}`} alt={selected.name_en} className="w-full rounded-lg" />
+                <img src={`${STORAGE}/abilities/${selected.image_regular}`} alt={selected.name_en} className="max-h-[40vh] w-auto mx-auto rounded-lg object-contain" />
               )}
               {selected.effect_en && (
                 <div>

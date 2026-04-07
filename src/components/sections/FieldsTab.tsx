@@ -43,9 +43,7 @@ export default function FieldsTab({ searchQuery = "" }: Props) {
   const q = searchQuery.toLowerCase();
   const filtered = searchQuery
     ? items.filter(i => {
-        const fields = [i.name_en, i.name_ru, (i as any).ability_en, (i as any).ability_ru,
-          (i as any).effect_en, (i as any).effect_ru, (i as any).effect_expert_en,
-          (i as any).effect_empowered_en, (i as any).description_en, (i as any).description_ru];
+        const fields = [i.name_en, i.name_ru, i.effect_en, i.effect_ru];
         return fields.some(f => f && f.toLowerCase().includes(q));
       })
     : items;
@@ -82,13 +80,13 @@ export default function FieldsTab({ searchQuery = "" }: Props) {
       </div>
 
       <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
+        <DialogContent className="max-w-md max-h-[90dvh] flex flex-col overflow-hidden">
+          <DialogHeader className="flex-shrink-0">
             <DialogTitle>{selected ? name(selected) : ""}</DialogTitle>
           </DialogHeader>
           {selected && (
-            <div className="space-y-3">
-              {selected.image && <img src={`${STORAGE}/fields/${selected.image}`} alt={selected.name_en} className="w-full rounded-lg" />}
+            <div className="overflow-y-auto flex-1 pr-1 space-y-3">
+              {selected.image && <img src={`${STORAGE}/fields/${selected.image}`} alt={selected.name_en} className="max-h-[40vh] w-auto mx-auto rounded-lg object-contain" />}
               {selected.type_en && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground font-medium">{lang === "RU" ? (selected.type_ru || selected.type_en) : selected.type_en}</span>}
               {selected.effect_en && <div><p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Эффект" : "Effect"}</p><p className="text-xs text-muted-foreground">{lang === "RU" ? (selected.effect_ru || selected.effect_en) : selected.effect_en}</p></div>}
               {(lang === "RU" ? selected.notes_ru : selected.notes_en) && <div><p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Заметки" : "Notes"}</p><p className="text-xs text-muted-foreground">{lang === "RU" ? selected.notes_ru : selected.notes_en}</p></div>}
