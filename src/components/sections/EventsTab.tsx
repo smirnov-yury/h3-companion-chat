@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/context/LanguageContext";
+import { useGlyphs } from "@/context/GlyphsContext";
+import { renderGlyphs } from "@/utils/renderGlyphs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
@@ -23,6 +25,7 @@ interface Props { searchQuery?: string; }
 
 export default function EventsTab({ searchQuery = "" }: Props) {
   const { lang } = useLang();
+  const { glyphs } = useGlyphs();
   const [items, setItems] = useState<GameEvent[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [selected, setSelected] = useState<GameEvent | null>(null);
@@ -59,7 +62,7 @@ export default function EventsTab({ searchQuery = "" }: Props) {
             <p className="text-sm">{lang === "RU" ? "Ничего не найдено" : "Nothing found"}</p>
           </div>
         ) : (
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             {filtered.map((item) => {
               const imgSrc = item.image ? `${STORAGE}/events/${item.image}` : null;
               return (
@@ -94,13 +97,13 @@ export default function EventsTab({ searchQuery = "" }: Props) {
               {selected.effect_en && (
                 <div>
                   <p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Эффект" : "Effect"}</p>
-                  <p className="text-xs text-muted-foreground">{lang === "RU" ? (selected.effect_ru || selected.effect_en) : selected.effect_en}</p>
+                  <p className="text-xs text-muted-foreground" dangerouslySetInnerHTML={{ __html: renderGlyphs(lang === "RU" ? (selected.effect_ru || selected.effect_en) : selected.effect_en, glyphs) }} />
                 </div>
               )}
               {(lang === "RU" ? selected.notes_ru : selected.notes_en) && (
                 <div>
                   <p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Заметки" : "Notes"}</p>
-                  <p className="text-xs text-muted-foreground">{lang === "RU" ? selected.notes_ru : selected.notes_en}</p>
+                  <p className="text-xs text-muted-foreground" dangerouslySetInnerHTML={{ __html: renderGlyphs(lang === "RU" ? selected.notes_ru : selected.notes_en, glyphs) }} />
                 </div>
               )}
             </div>

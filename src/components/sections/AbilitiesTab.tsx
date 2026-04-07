@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/context/LanguageContext";
+import { useGlyphs } from "@/context/GlyphsContext";
+import { renderGlyphs } from "@/utils/renderGlyphs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
@@ -24,6 +26,7 @@ interface Props { searchQuery?: string; }
 
 export default function AbilitiesTab({ searchQuery = "" }: Props) {
   const { lang } = useLang();
+  const { glyphs } = useGlyphs();
   const [items, setItems] = useState<Ability[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [selected, setSelected] = useState<Ability | null>(null);
@@ -60,7 +63,7 @@ export default function AbilitiesTab({ searchQuery = "" }: Props) {
             <p className="text-sm">{lang === "RU" ? "Ничего не найдено" : "Nothing found"}</p>
           </div>
         ) : (
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             {filtered.map((item) => {
               const imgSrc = item.image_regular ? `${STORAGE}/abilities/${item.image_regular}` : null;
               return (
@@ -95,25 +98,25 @@ export default function AbilitiesTab({ searchQuery = "" }: Props) {
               {selected.effect_en && (
                 <div>
                   <p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Эффект" : "Effect"}</p>
-                  <p className="text-xs text-muted-foreground">{selected.effect_en}</p>
+                  <p className="text-xs text-muted-foreground" dangerouslySetInnerHTML={{ __html: renderGlyphs(selected.effect_en, glyphs) }} />
                 </div>
               )}
               {selected.effect_expert_en && (
                 <div>
                   <p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Эксперт" : "Expert"}</p>
-                  <p className="text-xs text-muted-foreground">{selected.effect_expert_en}</p>
+                  <p className="text-xs text-muted-foreground" dangerouslySetInnerHTML={{ __html: renderGlyphs(selected.effect_expert_en, glyphs) }} />
                 </div>
               )}
               {selected.effect_empowered_en && (
                 <div>
                   <p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Усиленный" : "Empowered"}</p>
-                  <p className="text-xs text-muted-foreground">{selected.effect_empowered_en}</p>
+                  <p className="text-xs text-muted-foreground" dangerouslySetInnerHTML={{ __html: renderGlyphs(selected.effect_empowered_en, glyphs) }} />
                 </div>
               )}
               {(lang === "RU" ? selected.notes_ru : selected.notes_en) && (
                 <div>
                   <p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Заметки" : "Notes"}</p>
-                  <p className="text-xs text-muted-foreground">{lang === "RU" ? selected.notes_ru : selected.notes_en}</p>
+                  <p className="text-xs text-muted-foreground" dangerouslySetInnerHTML={{ __html: renderGlyphs(lang === "RU" ? selected.notes_ru : selected.notes_en, glyphs) }} />
                 </div>
               )}
             </div>
