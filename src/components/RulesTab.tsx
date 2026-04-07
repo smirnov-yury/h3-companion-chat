@@ -1,7 +1,11 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from "react";
-import { Search, ChevronDown, ChevronUp, Swords, HelpCircle } from "lucide-react";
+import { Search, ChevronDown, ChevronUp, Swords, HelpCircle, Gauge, ArrowLeftRight } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { useRules, Rule } from "@/context/RulesContext";
 import { useLang } from "@/context/LanguageContext";
+import { useGlyphs } from "@/context/GlyphsContext";
+import { renderGlyphs } from "@/utils/renderGlyphs";
 import { Badge } from "@/components/ui/badge";
 
 function useDebounce(value: string, delay: number) {
@@ -38,8 +42,7 @@ function renderTextWithBadges(text: string) {
   return parts;
 }
 
-// Special categories displayed as separate sections
-const SPECIAL_CATEGORIES = new Set(["battlefield", "faq"]);
+const SPECIAL_CATEGORIES = new Set(["battlefield", "faq", "difficulties", "trading"]);
 
 const RULE_CATEGORIES: { key: string; ru: string; en: string }[] = [
   { key: "alliance", ru: "Альянс", en: "Alliance" },
@@ -53,6 +56,7 @@ const RULE_CATEGORIES: { key: string; ru: string; en: string }[] = [
   { key: "cooperative", ru: "Кооперативный режим", en: "Cooperative" },
   { key: "deckbuilding", ru: "Составление колоды", en: "Deck Building" },
   { key: "differences", ru: "Отличия от оригинала", en: "Differences" },
+  { key: "difficulties", ru: "Сложность", en: "Difficulties" },
   { key: "editor", ru: "Редактор", en: "Editor" },
   { key: "faq", ru: "FAQ", en: "FAQ" },
   { key: "game_mechanics", ru: "Игровая механика", en: "Game Mechanics" },
@@ -72,6 +76,7 @@ const RULE_CATEGORIES: { key: string; ru: string; en: string }[] = [
   { key: "storage", ru: "Хранение", en: "Storage" },
   { key: "timed", ru: "Игра на время", en: "Timed" },
   { key: "timed_event", ru: "Событие по таймеру", en: "Timed Event" },
+  { key: "trading", ru: "Торговля", en: "Trading" },
   { key: "unit_ability", ru: "Способности юнитов", en: "Unit Abilities" },
   { key: "war_machine", ru: "Боевые машины", en: "War Machines" },
 ];
@@ -84,6 +89,48 @@ function getCategoryLabel(key: string, lang: string): string {
   return lang === "RU" ? entry.ru : entry.en;
 }
 
+// Markdown components with glyph support
+function makeMarkdownComponents(glyphs: ReturnType<typeof useGlyphs>["glyphs"]) {
+  const processChildren = (children: React.ReactNode): string => {
+    if (typeof children === "string") return children;
+    if (Array.isArray(children)) return children.map(processChildren).join("");
+    return String(children ?? "");
+  };
+
+  const GlyphText = ({ children }: { children: React.ReactNode }) => {
+    const text = processChildren(children);
+    const html = renderGlyphs(text, glyphs);
+    if (html !== text) {
+      return <span dangerouslySetInnerHTML={{ __html: html }} />;
+    }
+    return <>{children}</>;
+  };
+
+  return {
+    table: ({ children, ...props }: any) => (
+      <div className="overflow-x-auto my-3">
+        <table className="text-sm border-collapse w-full" {...props}>{children}</table>
+      </div>
+    ),
+    th: ({ children, ...props }: any) => (
+      <th className="border border-border px-3 py-2 bg-muted text-left font-medium" {...props}>
+        <GlyphText>{children}</GlyphText>
+      </th>
+    ),
+    td: ({ children, ...props }: any) => (
+      <td className="border border-border px-3 py-2" {...props}>
+        <GlyphText>{children}</GlyphText>
+      </td>
+    ),
+    p: ({ children, ...props }: any) => (
+      <p {...props}><GlyphText>{children}</GlyphText></p>
+    ),
+    li: ({ children, ...props }: any) => (
+      <li {...props}><GlyphText>{children}</GlyphText></li>
+    ),
+  };
+}
+
 interface RulesTabProps {
   scrollToRuleId?: string | null;
   onScrollHandled?: () => void;
@@ -92,11 +139,14 @@ interface RulesTabProps {
 export default function RulesTab({ scrollToRuleId, onScrollHandled }: RulesTabProps) {
   const { rules, loaded } = useRules();
   const { lang } = useLang();
+  const { glyphs } = useGlyphs();
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useDebounce("", 300);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
+
+  const mdComponents = useMemo(() => makeMarkdownComponents(glyphs), [glyphs]);
 
   useEffect(() => {
     if (scrollToRuleId && loaded) {
@@ -112,7 +162,6 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled }: RulesTabPr
     }
   }, [scrollToRuleId, loaded]);
 
-  // Only show categories that have rules in the data
   const categories = useMemo(
     () => RULE_CATEGORIES.filter((c) => rules.some((r) => r.category === c.key)),
     [rules],
@@ -135,17 +184,20 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled }: RulesTabPr
     return list;
   }, [rules, selectedCategory, debouncedSearch, lang]);
 
-  // Split into 3 sections: core, battlefield, faq
-  const { coreRules, battlefieldRules, faqRules } = useMemo(() => {
+  const { coreRules, battlefieldRules, faqRules, difficultiesRules, tradingRules } = useMemo(() => {
     const core: Rule[] = [];
     const bf: Rule[] = [];
     const faq: Rule[] = [];
+    const diff: Rule[] = [];
+    const trade: Rule[] = [];
     for (const r of filtered) {
       if (r.category === "battlefield") bf.push(r);
       else if (r.category === "faq") faq.push(r);
+      else if (r.category === "difficulties") diff.push(r);
+      else if (r.category === "trading") trade.push(r);
       else core.push(r);
     }
-    return { coreRules: core, battlefieldRules: bf, faqRules: faq };
+    return { coreRules: core, battlefieldRules: bf, faqRules: faq, difficultiesRules: diff, tradingRules: trade };
   }, [filtered]);
 
   const handleSearch = (v: string) => {
@@ -153,10 +205,14 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled }: RulesTabPr
     setDebouncedSearch(v);
   };
 
+  const hasMarkdownTable = (text: string) => /\|.+\|/.test(text);
+
   const renderRuleCard = (rule: Rule) => {
     const isOpen = expandedId === rule.id;
     const title = lang === "RU" ? (rule.title_ru || rule.title_en) : (rule.title_en || rule.title_ru);
     const text = lang === "RU" ? (rule.text_ru || rule.text_en) : (rule.text_en || rule.text_ru);
+    const useMarkdown = hasMarkdownTable(text || "");
+
     return (
       <div key={rule.id} id={`rule-${rule.id}`} className="rounded-xl bg-card border border-border overflow-hidden">
         <button
@@ -173,8 +229,14 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled }: RulesTabPr
           )}
         </button>
         {isOpen && (
-          <div className="px-4 pb-3 text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
-            {renderTextWithBadges(text || "")}
+          <div className="px-4 pb-3 text-sm text-muted-foreground leading-relaxed">
+            {useMarkdown ? (
+              <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
+                {text || ""}
+              </ReactMarkdown>
+            ) : (
+              <div className="whitespace-pre-line">{renderTextWithBadges(text || "")}</div>
+            )}
           </div>
         )}
       </div>
@@ -188,6 +250,25 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled }: RulesTabPr
       </div>
     );
   }
+
+  const renderSection = (
+    rules: Rule[],
+    icon: React.ReactNode,
+    label: string,
+    colorClass: string,
+  ) =>
+    rules.length > 0 && (
+      <>
+        <div className="flex items-center gap-2 pt-4 pb-1 px-1">
+          {icon}
+          <span className={`text-xs font-semibold uppercase tracking-wide ${colorClass}`}>
+            {label}
+          </span>
+          <div className="flex-1 h-px bg-border" />
+        </div>
+        {rules.map((rule) => renderRuleCard(rule))}
+      </>
+    );
 
   return (
     <div className="flex flex-col h-full">
@@ -240,30 +321,32 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled }: RulesTabPr
 
         {coreRules.map((rule) => renderRuleCard(rule))}
 
-        {battlefieldRules.length > 0 && (
-          <>
-            <div className="flex items-center gap-2 pt-4 pb-1 px-1">
-              <Swords className="w-4 h-4 text-primary" />
-              <span className="text-xs font-semibold uppercase tracking-wide text-primary">
-                {lang === "RU" ? "Поле битвы" : "Battlefield"}
-              </span>
-              <div className="flex-1 h-px bg-border" />
-            </div>
-            {battlefieldRules.map((rule) => renderRuleCard(rule))}
-          </>
+        {renderSection(
+          battlefieldRules,
+          <Swords className="w-4 h-4 text-primary" />,
+          lang === "RU" ? "Поле битвы" : "Battlefield",
+          "text-primary",
         )}
 
-        {faqRules.length > 0 && (
-          <>
-            <div className="flex items-center gap-2 pt-4 pb-1 px-1">
-              <HelpCircle className="w-4 h-4 text-muted-foreground" />
-              <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                FAQ
-              </span>
-              <div className="flex-1 h-px bg-border" />
-            </div>
-            {faqRules.map((rule) => renderRuleCard(rule))}
-          </>
+        {renderSection(
+          difficultiesRules,
+          <Gauge className="w-4 h-4 text-orange-500" />,
+          lang === "RU" ? "Сложность" : "Difficulties",
+          "text-orange-500",
+        )}
+
+        {renderSection(
+          tradingRules,
+          <ArrowLeftRight className="w-4 h-4 text-emerald-500" />,
+          lang === "RU" ? "Торговля" : "Trading",
+          "text-emerald-500",
+        )}
+
+        {renderSection(
+          faqRules,
+          <HelpCircle className="w-4 h-4 text-muted-foreground" />,
+          "FAQ",
+          "text-muted-foreground",
         )}
       </div>
     </div>
