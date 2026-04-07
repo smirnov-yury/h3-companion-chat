@@ -93,12 +93,12 @@ export default function StatisticsTab({ searchQuery = "" }: Props) {
                 const imgSrc = item.image ? `${STORAGE}/statistics/${item.image}` : null;
                 return (
                   <div key={item.id} onClick={() => setSelected(item)}
-                    className="aspect-square bg-muted rounded-lg overflow-hidden cursor-pointer hover:opacity-80 transition-opacity relative">
+                    className="relative aspect-[2/3] bg-muted rounded-lg overflow-hidden cursor-pointer hover:opacity-80 transition-opacity">
                     {imgSrc
-                      ? <img src={imgSrc} alt={item.name_en || ""} className="w-full h-full object-cover" />
-                      : <div className="w-full h-full flex items-center justify-center"><p className="text-[10px] text-muted-foreground text-center px-1">{item.name_en}</p></div>
+                      ? <img src={imgSrc} alt={item.name_en || ""} className="absolute inset-0 w-full h-full object-cover" />
+                      : <div className="absolute inset-0 flex items-center justify-center"><p className="text-[10px] text-muted-foreground text-center px-1">{item.name_en}</p></div>
                     }
-                    <div className="absolute bottom-1 left-1 right-1 flex gap-1 flex-wrap">
+                    <div className="absolute bottom-0 left-0 right-0 p-1 flex gap-1 flex-wrap">
                       {item.stat_type && (
                         <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-medium capitalize ${STAT_COLORS[item.stat_type] || "bg-muted text-muted-foreground"}`}>
                           {item.stat_type}
