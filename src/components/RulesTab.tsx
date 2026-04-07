@@ -162,10 +162,20 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled }: RulesTabPr
     }
   }, [scrollToRuleId, loaded]);
 
-  const categories = useMemo(
-    () => RULE_CATEGORIES.filter((c) => rules.some((r) => r.category === c.key)),
-    [rules],
-  );
+  const CATEGORY_ORDER = ["difficulties", "trading", "faq", "deckbuilding", "battlefield"];
+
+  const categories = useMemo(() => {
+    const available = RULE_CATEGORIES.filter((c) => rules.some((r) => r.category === c.key));
+    const ordered: typeof available = [];
+    for (const key of CATEGORY_ORDER) {
+      const found = available.find((c) => c.key === key);
+      if (found) ordered.push(found);
+    }
+    for (const cat of available) {
+      if (!CATEGORY_ORDER.includes(cat.key)) ordered.push(cat);
+    }
+    return ordered;
+  }, [rules]);
 
   const filtered = useMemo(() => {
     let list = rules;
@@ -251,13 +261,36 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled }: RulesTabPr
     );
   }
 
+  const renderRuleCardExpanded = (rule: Rule) => {
+    const title = lang === "RU" ? (rule.title_ru || rule.title_en) : (rule.title_en || rule.title_ru);
+    const text = lang === "RU" ? (rule.text_ru || rule.text_en) : (rule.text_en || rule.text_ru);
+    const useMarkdown = hasMarkdownTable(text || "");
+
+    return (
+      <div key={rule.id} id={`rule-${rule.id}`} className="rounded-xl bg-card border border-border overflow-hidden">
+        <div className="px-4 py-3">
+          <span className="text-sm font-medium text-card-foreground leading-snug">{title}</span>
+        </div>
+        <div className="px-4 pb-3 text-sm text-muted-foreground leading-relaxed">
+          {useMarkdown ? (
+            <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
+              {text || ""}
+            </ReactMarkdown>
+          ) : (
+            <div className="whitespace-pre-line">{renderTextWithBadges(text || "")}</div>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   const renderSection = (
-    rules: Rule[],
+    sectionRules: Rule[],
     icon: React.ReactNode,
     label: string,
     colorClass: string,
   ) =>
-    rules.length > 0 && (
+    sectionRules.length > 0 && (
       <>
         <div className="flex items-center gap-2 pt-4 pb-1 px-1">
           {icon}
@@ -266,7 +299,9 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled }: RulesTabPr
           </span>
           <div className="flex-1 h-px bg-border" />
         </div>
-        {rules.map((rule) => renderRuleCard(rule))}
+        {sectionRules.map((rule) =>
+          sectionRules.length === 1 ? renderRuleCardExpanded(rule) : renderRuleCard(rule)
+        )}
       </>
     );
 
