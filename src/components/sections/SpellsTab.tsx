@@ -82,8 +82,8 @@ export default function SpellsTab({ searchQuery = "" }: Props) {
         <div className="flex gap-1.5 overflow-x-auto px-3 pt-3 pb-2 scrollbar-none shrink-0">
           {schools.map(s => (
             <button key={s} onClick={() => setFilterSchool(s)}
-              className={`shrink-0 px-2.5 py-1 rounded-full text-[11px] font-medium transition-colors capitalize ${filterSchool === s ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
-              {s === "all" ? (lang === "RU" ? "Все" : "All") : s}
+              className={`shrink-0 px-2.5 py-1 rounded-full text-[11px] font-medium transition-colors ${filterSchool === s ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
+              {s === "all" ? (lang === "RU" ? "Все" : "All") : s.charAt(0).toUpperCase() + s.slice(1)}
             </button>
           ))}
         </div>
@@ -106,8 +106,8 @@ export default function SpellsTab({ searchQuery = "" }: Props) {
                         : <p className="text-[10px] text-muted-foreground text-center px-1">{item.name_en}</p>
                       }
                       {item.school && (
-                        <span className={`absolute top-1 left-1 text-[9px] px-1.5 py-0.5 rounded-full font-medium capitalize ${SCHOOL_COLORS[item.school] || "bg-muted text-muted-foreground"}`}>
-                          {item.school}
+                        <span className={`absolute top-1 left-1 text-[9px] px-1.5 py-0.5 rounded-full font-medium ${SCHOOL_COLORS[item.school] || "bg-muted text-muted-foreground"}`}>
+                          {item.school.charAt(0).toUpperCase() + item.school.slice(1)}
                         </span>
                       )}
                       {item.level && (
@@ -136,7 +136,7 @@ export default function SpellsTab({ searchQuery = "" }: Props) {
             <div className="overflow-y-auto flex-1 pr-1 space-y-3">
               {selected.image && <img src={`${STORAGE}/spells/${selected.image}`} alt={selected.name_en} className="max-h-[40vh] w-auto mx-auto rounded-lg object-contain" />}
               <div className="flex gap-2 flex-wrap">
-                {selected.school && <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium capitalize ${SCHOOL_COLORS[selected.school] || "bg-muted text-muted-foreground"}`}>{selected.school}</span>}
+                {selected.school && <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${SCHOOL_COLORS[selected.school] || "bg-muted text-muted-foreground"}`}>{selected.school.charAt(0).toUpperCase() + selected.school.slice(1)}</span>}
                 {selected.level && <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${levelStyle(selected.level)}`}>{formatLevel(selected.level)}</span>}
               </div>
               {selected.effect_en && <div><p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Эффект" : "Effect"}</p><p className="text-xs text-muted-foreground" dangerouslySetInnerHTML={{ __html: renderGlyphs(lang === "RU" ? (selected.effect_ru || selected.effect_en) : selected.effect_en, glyphs) }} /></div>}
