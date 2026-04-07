@@ -488,6 +488,48 @@ export type Database = {
         }
         Relationships: []
       }
+      statistics: {
+        Row: {
+          card_type: string | null
+          effect_en: string | null
+          effect_en_expert: string | null
+          id: string
+          image: string | null
+          name_en: string | null
+          name_ru: string | null
+          notes_en: string | null
+          notes_ru: string | null
+          sort_order: number | null
+          stat_type: string | null
+        }
+        Insert: {
+          card_type?: string | null
+          effect_en?: string | null
+          effect_en_expert?: string | null
+          id: string
+          image?: string | null
+          name_en?: string | null
+          name_ru?: string | null
+          notes_en?: string | null
+          notes_ru?: string | null
+          sort_order?: number | null
+          stat_type?: string | null
+        }
+        Update: {
+          card_type?: string | null
+          effect_en?: string | null
+          effect_en_expert?: string | null
+          id?: string
+          image?: string | null
+          name_en?: string | null
+          name_ru?: string | null
+          notes_en?: string | null
+          notes_ru?: string | null
+          sort_order?: number | null
+          stat_type?: string | null
+        }
+        Relationships: []
+      }
       town_buildings: {
         Row: {
           cost: string | null
