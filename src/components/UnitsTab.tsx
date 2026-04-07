@@ -143,6 +143,7 @@ export default function UnitsTab() {
     return ['all', ...Array.from(towns).sort()];
   }, [units]);
 
+  const capitalize = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
   const tiers = ['all', 'bronze', 'silver', 'golden', 'azure'];
   const types = ['all', 'unit_ground', 'unit_ranged', 'unit_flying'];
 
@@ -172,12 +173,11 @@ export default function UnitsTab() {
       }
     }
 
-    // Add neutral units (when mode is 'all' or 'neutral')
-    if (mode !== 'standard') {
+    // Add neutral units only when mode is 'neutral' or mode is 'all' with no specific faction filter
+    if (mode === 'neutral' || (mode === 'all' && filterFaction === 'all')) {
       for (const u of neutralUnits) {
         if (filterTier !== 'all' && u.tier !== filterTier) continue;
         if (filterType !== 'all' && u.type !== filterType) continue;
-        // Faction filter does NOT apply to neutral units
         items.push({ key: `neutral-${u.id}`, unit: u, variants: [u], isNeutral: true });
       }
     }
@@ -238,7 +238,7 @@ export default function UnitsTab() {
           {tiers.map((t) => (
             <FilterChip
               key={t}
-              label={t === 'all' ? (lang === 'RU' ? 'Все' : 'All') : t}
+              label={t === 'all' ? (lang === 'RU' ? 'Все' : 'All') : capitalize(t)}
               active={filterTier === t}
               onClick={() => setFilterTier(t)}
             />
@@ -266,7 +266,7 @@ export default function UnitsTab() {
             {lang === 'RU' ? 'Юниты не найдены' : 'No units found'}
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             {displayItems.map((item) => {
               const unit = item.unit;
               const imgSrc = unit.image ? `${STORAGE}/units/${unit.image}` : null;
@@ -299,7 +299,7 @@ export default function UnitsTab() {
                     <Badge
                       className={`absolute top-1 left-1 text-[10px] ${TIER_COLOR[unit.tier] ?? 'bg-muted text-foreground'}`}
                     >
-                      {unit.tier}
+                      {capitalize(unit.tier)}
                     </Badge>
                     <span className="absolute top-1 right-1 text-sm">{TYPE_ICON[unit.type] ?? ''}</span>
                   </div>
