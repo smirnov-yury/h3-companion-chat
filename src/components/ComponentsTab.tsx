@@ -8,8 +8,9 @@ import ArtifactsTab from "@/components/sections/ArtifactsTab";
 import AbilitiesTab from "@/components/sections/AbilitiesTab";
 import AstrologersTab from "@/components/sections/AstrologersTab";
 import FieldsTab from "@/components/sections/FieldsTab";
+import StatisticsTab from "@/components/sections/StatisticsTab";
 
-type ComponentSection = "war_machines" | "events" | "spells" | "artifacts" | "abilities" | "astrologers" | "fields";
+type ComponentSection = "war_machines" | "events" | "spells" | "artifacts" | "abilities" | "astrologers" | "fields" | "statistics";
 
 const SECTIONS: { id: ComponentSection; labelRU: string; labelEN: string }[] = [
   { id: "war_machines", labelRU: "Боевые машины", labelEN: "War Machines" },
@@ -19,6 +20,7 @@ const SECTIONS: { id: ComponentSection; labelRU: string; labelEN: string }[] = [
   { id: "abilities",    labelRU: "Умения",        labelEN: "Abilities"    },
   { id: "astrologers",  labelRU: "Астрологи",     labelEN: "Astrologers"  },
   { id: "fields",       labelRU: "Поля",          labelEN: "Fields"       },
+  { id: "statistics",   labelRU: "Статистики",    labelEN: "Statistics"   },
 ];
 
 interface ComponentsTabProps {
@@ -75,7 +77,8 @@ export default function ComponentsTab({ onNavigateToRule }: ComponentsTabProps) 
          active === "artifacts"    ? <ArtifactsTab searchQuery={searchQuery} /> :
          active === "abilities"    ? <AbilitiesTab searchQuery={searchQuery} /> :
          active === "astrologers"  ? <AstrologersTab searchQuery={searchQuery} /> :
-         active === "fields"       ? <FieldsTab searchQuery={searchQuery} /> : null}
+         active === "fields"       ? <FieldsTab searchQuery={searchQuery} /> :
+         active === "statistics"  ? <StatisticsTab searchQuery={searchQuery} /> : null}
       </div>
     </div>
   );
