@@ -6,6 +6,7 @@ import ComponentsTab from "@/components/ComponentsTab";
 import UnitsTab from "@/components/UnitsTab";
 import TownsTab from "@/components/TownsTab";
 import HeroesTab from "@/components/HeroesTab";
+import BackToTop from "@/components/BackToTop";
 import { useLang } from "@/context/LanguageContext";
 
 export default function Index() {
@@ -35,6 +36,7 @@ export default function Index() {
           <HeroesTab />
         ) : null}
       </div>
+      <BackToTop />
       <BottomNav active={tab} onChange={setTab} />
     </div>
   );
