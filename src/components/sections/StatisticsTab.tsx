@@ -30,6 +30,11 @@ const STAT_COLORS: Record<string, string> = {
   knowledge: "bg-blue-500/10 text-blue-600",
 };
 
+const CARD_TYPE_BADGE: Record<string, string> = {
+  regular: "bg-muted text-muted-foreground",
+  empowered: "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200",
+};
+
 interface Props { searchQuery?: string; }
 
 export default function StatisticsTab({ searchQuery = "" }: Props) {
@@ -96,8 +101,8 @@ export default function StatisticsTab({ searchQuery = "" }: Props) {
                         </span>
                       )}
                       {item.card_type && (
-                        <span className="absolute top-1 right-1 text-[9px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground font-medium capitalize">
-                          {item.card_type}
+                        <span className={`absolute top-1 right-1 text-[9px] px-1.5 py-0.5 rounded-full font-medium capitalize ${CARD_TYPE_BADGE[item.card_type] || "bg-muted text-muted-foreground"}`}>
+                          {item.card_type === "regular" ? "Regular" : "Empowered"}
                         </span>
                       )}
                     </div>
@@ -113,16 +118,16 @@ export default function StatisticsTab({ searchQuery = "" }: Props) {
       </div>
 
       <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
+        <DialogContent className="max-w-md max-h-[90dvh] flex flex-col overflow-hidden">
+          <DialogHeader className="flex-shrink-0">
             <DialogTitle>{selected ? name(selected) : ""}</DialogTitle>
           </DialogHeader>
           {selected && (
-            <div className="space-y-3">
-              {selected.image && <img src={`${STORAGE}/statistics/${selected.image}`} alt={selected.name_en || ""} className="w-full rounded-lg" />}
+            <div className="overflow-y-auto flex-1 pr-1 space-y-3">
+              {selected.image && <img src={`${STORAGE}/statistics/${selected.image}`} alt={selected.name_en || ""} className="max-h-[40vh] w-auto mx-auto rounded-lg object-contain" />}
               <div className="flex gap-2 flex-wrap">
                 {selected.stat_type && <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium capitalize ${STAT_COLORS[selected.stat_type] || "bg-muted text-muted-foreground"}`}>{selected.stat_type}</span>}
-                {selected.card_type && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground font-medium capitalize">{selected.card_type === "regular" ? "Regular" : "Empowered"}</span>}
+                {selected.card_type && <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${CARD_TYPE_BADGE[selected.card_type] || "bg-muted text-muted-foreground"}`}>{selected.card_type === "regular" ? "Regular" : "Empowered"}</span>}
               </div>
               {selected.effect_en && (
                 <div>

@@ -22,11 +22,26 @@ interface Spell {
 }
 
 const SCHOOL_COLORS: Record<string, string> = {
-  fire: "bg-orange-500/10 text-orange-600",
-  water: "bg-blue-500/10 text-blue-600",
-  earth: "bg-green-500/10 text-green-600",
-  air: "bg-sky-500/10 text-sky-600",
+  air:   "bg-sky-100 text-sky-800 dark:bg-sky-900 dark:text-sky-200",
+  fire:  "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
+  earth: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
+  water: "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200",
 };
+
+const LEVEL_COLORS: Record<string, string> = {
+  basic:    "bg-muted text-muted-foreground",
+  expert:   "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
+  advanced: "bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200",
+};
+
+function formatLevel(level: string): string {
+  return level.replace(/^LV/i, "").replace(/^\w/, c => c.toUpperCase());
+}
+
+function levelStyle(level: string): string {
+  const key = level.replace(/^LV/i, "").toLowerCase();
+  return LEVEL_COLORS[key] || "bg-muted text-muted-foreground";
+}
 
 interface Props { searchQuery?: string; }
 
@@ -49,9 +64,7 @@ export default function SpellsTab({ searchQuery = "" }: Props) {
   const q = searchQuery.toLowerCase();
   const filtered = searchQuery
     ? afterSchool.filter(i => {
-        const fields = [i.name_en, i.name_ru, (i as any).ability_en, (i as any).ability_ru,
-          (i as any).effect_en, (i as any).effect_ru, (i as any).effect_expert_en,
-          (i as any).effect_empowered_en, (i as any).description_en, (i as any).description_ru];
+        const fields = [i.name_en, i.name_ru, i.effect_en, i.effect_ru];
         return fields.some(f => f && f.toLowerCase().includes(q));
       })
     : afterSchool;
@@ -95,8 +108,8 @@ export default function SpellsTab({ searchQuery = "" }: Props) {
                         </span>
                       )}
                       {item.level && (
-                        <span className="absolute top-1 right-1 text-[9px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground font-medium">
-                          Lv{item.level}
+                        <span className={`absolute top-1 right-1 text-[9px] px-1.5 py-0.5 rounded-full font-medium ${levelStyle(item.level)}`}>
+                          {formatLevel(item.level)}
                         </span>
                       )}
                     </div>
@@ -112,16 +125,16 @@ export default function SpellsTab({ searchQuery = "" }: Props) {
       </div>
 
       <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
+        <DialogContent className="max-w-md max-h-[90dvh] flex flex-col overflow-hidden">
+          <DialogHeader className="flex-shrink-0">
             <DialogTitle>{selected ? name(selected) : ""}</DialogTitle>
           </DialogHeader>
           {selected && (
-            <div className="space-y-3">
-              {selected.image && <img src={`${STORAGE}/spells/${selected.image}`} alt={selected.name_en} className="w-full rounded-lg" />}
+            <div className="overflow-y-auto flex-1 pr-1 space-y-3">
+              {selected.image && <img src={`${STORAGE}/spells/${selected.image}`} alt={selected.name_en} className="max-h-[40vh] w-auto mx-auto rounded-lg object-contain" />}
               <div className="flex gap-2 flex-wrap">
                 {selected.school && <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium capitalize ${SCHOOL_COLORS[selected.school] || "bg-muted text-muted-foreground"}`}>{selected.school}</span>}
-                {selected.level && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground font-medium">Level {selected.level}</span>}
+                {selected.level && <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${levelStyle(selected.level)}`}>{formatLevel(selected.level)}</span>}
               </div>
               {selected.effect_en && <div><p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Эффект" : "Effect"}</p><p className="text-xs text-muted-foreground">{lang === "RU" ? (selected.effect_ru || selected.effect_en) : selected.effect_en}</p></div>}
               {(lang === "RU" ? selected.notes_ru : selected.notes_en) && <div><p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Заметки" : "Notes"}</p><p className="text-xs text-muted-foreground">{lang === "RU" ? selected.notes_ru : selected.notes_en}</p></div>}

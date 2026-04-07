@@ -43,9 +43,7 @@ export default function AstrologersTab({ searchQuery = "" }: Props) {
   const q = searchQuery.toLowerCase();
   const filtered = searchQuery
     ? items.filter(i => {
-        const fields = [i.name_en, i.name_ru, (i as any).ability_en, (i as any).ability_ru,
-          (i as any).effect_en, (i as any).effect_ru, (i as any).effect_expert_en,
-          (i as any).effect_empowered_en, (i as any).description_en, (i as any).description_ru];
+        const fields = [i.name_en, i.name_ru, i.effect_en, i.effect_ru, i.description_en, i.description_ru];
         return fields.some(f => f && f.toLowerCase().includes(q));
       })
     : items;
@@ -82,13 +80,13 @@ export default function AstrologersTab({ searchQuery = "" }: Props) {
       </div>
 
       <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
+        <DialogContent className="max-w-md max-h-[90dvh] flex flex-col overflow-hidden">
+          <DialogHeader className="flex-shrink-0">
             <DialogTitle>{selected ? name(selected) : ""}</DialogTitle>
           </DialogHeader>
           {selected && (
-            <div className="space-y-3">
-              {selected.image && <img src={`${STORAGE}/astrologers_proclaim/${selected.image}`} alt={selected.name_en} className="w-full rounded-lg" />}
+            <div className="overflow-y-auto flex-1 pr-1 space-y-3">
+              {selected.image && <img src={`${STORAGE}/astrologers_proclaim/${selected.image}`} alt={selected.name_en} className="max-h-[40vh] w-auto mx-auto rounded-lg object-contain" />}
               {selected.effect_en && <div><p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Эффект" : "Effect"}</p><p className="text-xs text-muted-foreground">{lang === "RU" ? (selected.effect_ru || selected.effect_en) : selected.effect_en}</p></div>}
               {selected.description_en && <div><p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Описание" : "Description"}</p><p className="text-xs text-muted-foreground">{lang === "RU" ? (selected.description_ru || selected.description_en) : selected.description_en}</p></div>}
               {(lang === "RU" ? selected.notes_ru : selected.notes_en) && <div><p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Заметки" : "Notes"}</p><p className="text-xs text-muted-foreground">{lang === "RU" ? selected.notes_ru : selected.notes_en}</p></div>}
