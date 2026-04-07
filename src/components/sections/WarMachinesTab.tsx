@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/context/LanguageContext";
+import { useGlyphs } from "@/context/GlyphsContext";
+import { renderGlyphs } from "@/utils/renderGlyphs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
@@ -25,6 +27,7 @@ interface Props { searchQuery?: string; }
 
 export default function WarMachinesTab({ searchQuery = "" }: Props) {
   const { lang } = useLang();
+  const { glyphs } = useGlyphs();
   const [items, setItems] = useState<WarMachine[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [selected, setSelected] = useState<WarMachine | null>(null);
@@ -57,7 +60,7 @@ export default function WarMachinesTab({ searchQuery = "" }: Props) {
             <p className="text-sm">{lang === "RU" ? "Ничего не найдено" : "Nothing found"}</p>
           </div>
         ) : (
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             {filtered.map((item) => {
               const imgSrc = item.image ? `${STORAGE}/war_machines/${item.image}` : null;
               return (
@@ -90,25 +93,25 @@ export default function WarMachinesTab({ searchQuery = "" }: Props) {
               {selected.ability_en && (
                 <div>
                   <p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Способность" : "Ability"}</p>
-                  <p className="text-xs text-muted-foreground">{lang === "RU" ? (selected.ability_ru || selected.ability_en) : selected.ability_en}</p>
+                  <p className="text-xs text-muted-foreground" dangerouslySetInnerHTML={{ __html: renderGlyphs(lang === "RU" ? (selected.ability_ru || selected.ability_en) : selected.ability_en, glyphs) }} />
                 </div>
               )}
               {selected.cost_blacksmith && (
                 <div>
                   <p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Цена (Кузнец)" : "Cost (Blacksmith)"}</p>
-                  <p className="text-xs text-muted-foreground">{selected.cost_blacksmith}</p>
+                  <p className="text-xs text-muted-foreground" dangerouslySetInnerHTML={{ __html: renderGlyphs(selected.cost_blacksmith, glyphs) }} />
                 </div>
               )}
               {selected.cost_trade_post && (
                 <div>
                   <p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Цена (Торговый пост)" : "Cost (Trade Post)"}</p>
-                  <p className="text-xs text-muted-foreground">{selected.cost_trade_post}</p>
+                  <p className="text-xs text-muted-foreground" dangerouslySetInnerHTML={{ __html: renderGlyphs(selected.cost_trade_post, glyphs) }} />
                 </div>
               )}
               {(lang === "RU" ? selected.notes_ru : selected.notes_en) && (
                 <div>
                   <p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Заметки" : "Notes"}</p>
-                  <p className="text-xs text-muted-foreground">{lang === "RU" ? selected.notes_ru : selected.notes_en}</p>
+                  <p className="text-xs text-muted-foreground" dangerouslySetInnerHTML={{ __html: renderGlyphs(lang === "RU" ? selected.notes_ru : selected.notes_en, glyphs) }} />
                 </div>
               )}
             </div>

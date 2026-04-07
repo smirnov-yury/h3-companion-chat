@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/context/LanguageContext";
+import { useGlyphs } from "@/context/GlyphsContext";
+import { renderGlyphs } from "@/utils/renderGlyphs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
@@ -47,6 +49,7 @@ interface Props { searchQuery?: string; }
 
 export default function SpellsTab({ searchQuery = "" }: Props) {
   const { lang } = useLang();
+  const { glyphs } = useGlyphs();
   const [items, setItems] = useState<Spell[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [selected, setSelected] = useState<Spell | null>(null);
@@ -91,7 +94,7 @@ export default function SpellsTab({ searchQuery = "" }: Props) {
               <p className="text-sm">{lang === "RU" ? "Ничего не найдено" : "Nothing found"}</p>
             </div>
           ) : (
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
               {filtered.map((item) => {
                 const imgSrc = item.image ? `${STORAGE}/spells/${item.image}` : null;
                 return (
@@ -136,8 +139,8 @@ export default function SpellsTab({ searchQuery = "" }: Props) {
                 {selected.school && <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium capitalize ${SCHOOL_COLORS[selected.school] || "bg-muted text-muted-foreground"}`}>{selected.school}</span>}
                 {selected.level && <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${levelStyle(selected.level)}`}>{formatLevel(selected.level)}</span>}
               </div>
-              {selected.effect_en && <div><p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Эффект" : "Effect"}</p><p className="text-xs text-muted-foreground">{lang === "RU" ? (selected.effect_ru || selected.effect_en) : selected.effect_en}</p></div>}
-              {(lang === "RU" ? selected.notes_ru : selected.notes_en) && <div><p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Заметки" : "Notes"}</p><p className="text-xs text-muted-foreground">{lang === "RU" ? selected.notes_ru : selected.notes_en}</p></div>}
+              {selected.effect_en && <div><p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Эффект" : "Effect"}</p><p className="text-xs text-muted-foreground" dangerouslySetInnerHTML={{ __html: renderGlyphs(lang === "RU" ? (selected.effect_ru || selected.effect_en) : selected.effect_en, glyphs) }} /></div>}
+              {(lang === "RU" ? selected.notes_ru : selected.notes_en) && <div><p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Заметки" : "Notes"}</p><p className="text-xs text-muted-foreground" dangerouslySetInnerHTML={{ __html: renderGlyphs(lang === "RU" ? selected.notes_ru : selected.notes_en, glyphs) }} /></div>}
             </div>
           )}
         </DialogContent>

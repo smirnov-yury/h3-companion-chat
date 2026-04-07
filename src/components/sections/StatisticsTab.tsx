@@ -24,16 +24,20 @@ interface Statistic {
 }
 
 const STAT_COLORS: Record<string, string> = {
-  attack: "bg-red-500/10 text-red-600",
-  defense: "bg-green-500/10 text-green-600",
-  power: "bg-purple-500/10 text-purple-600",
-  knowledge: "bg-blue-500/10 text-blue-600",
+  attack:    "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300",
+  defense:   "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300",
+  power:     "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300",
+  knowledge: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
 };
 
 const CARD_TYPE_BADGE: Record<string, string> = {
-  regular: "bg-muted text-muted-foreground",
-  empowered: "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200",
+  regular:   "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400",
+  empowered: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
 };
+
+function cardTypeLabel(ct: string) {
+  return ct === "empowered" ? "✦ Empowered" : "Regular";
+}
 
 interface Props { searchQuery?: string; }
 
@@ -84,32 +88,29 @@ export default function StatisticsTab({ searchQuery = "" }: Props) {
               <p className="text-sm">{lang === "RU" ? "Ничего не найдено" : "Nothing found"}</p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
               {filtered.map((item) => {
                 const imgSrc = item.image ? `${STORAGE}/statistics/${item.image}` : null;
                 return (
-                  <button key={item.id} onClick={() => setSelected(item)}
-                    className="flex flex-col rounded-xl border border-border bg-card overflow-hidden text-left hover:border-primary transition-colors">
-                    <div className="aspect-square w-full bg-muted flex items-center justify-center overflow-hidden relative">
-                      {imgSrc
-                        ? <img src={imgSrc} alt={item.name_en || ""} className="w-full h-full object-cover" />
-                        : <p className="text-[10px] text-muted-foreground text-center px-1">{item.name_en}</p>
-                      }
+                  <div key={item.id} onClick={() => setSelected(item)}
+                    className="aspect-square bg-muted rounded-lg overflow-hidden cursor-pointer hover:opacity-80 transition-opacity relative">
+                    {imgSrc
+                      ? <img src={imgSrc} alt={item.name_en || ""} className="w-full h-full object-cover" />
+                      : <div className="w-full h-full flex items-center justify-center"><p className="text-[10px] text-muted-foreground text-center px-1">{item.name_en}</p></div>
+                    }
+                    <div className="absolute bottom-1 left-1 right-1 flex gap-1 flex-wrap">
                       {item.stat_type && (
-                        <span className={`absolute top-1 left-1 text-[9px] px-1.5 py-0.5 rounded-full font-medium capitalize ${STAT_COLORS[item.stat_type] || "bg-muted text-muted-foreground"}`}>
+                        <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-medium capitalize ${STAT_COLORS[item.stat_type] || "bg-muted text-muted-foreground"}`}>
                           {item.stat_type}
                         </span>
                       )}
                       {item.card_type && (
-                        <span className={`absolute top-1 right-1 text-[9px] px-1.5 py-0.5 rounded-full font-medium capitalize ${CARD_TYPE_BADGE[item.card_type] || "bg-muted text-muted-foreground"}`}>
-                          {item.card_type === "regular" ? "Regular" : "Empowered"}
+                        <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-medium ${CARD_TYPE_BADGE[item.card_type] || "bg-muted text-muted-foreground"}`}>
+                          {cardTypeLabel(item.card_type)}
                         </span>
                       )}
                     </div>
-                    <div className="p-2">
-                      <p className="text-xs font-semibold text-foreground truncate">{name(item)}</p>
-                    </div>
-                  </button>
+                  </div>
                 );
               })}
             </div>
@@ -121,14 +122,16 @@ export default function StatisticsTab({ searchQuery = "" }: Props) {
         <DialogContent className="max-w-md max-h-[90dvh] flex flex-col overflow-hidden">
           <DialogHeader className="flex-shrink-0">
             <DialogTitle>{selected ? name(selected) : ""}</DialogTitle>
+            {selected && (
+              <div className="flex gap-2 flex-wrap pt-1">
+                {selected.stat_type && <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium capitalize ${STAT_COLORS[selected.stat_type] || "bg-muted text-muted-foreground"}`}>{selected.stat_type}</span>}
+                {selected.card_type && <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${CARD_TYPE_BADGE[selected.card_type] || "bg-muted text-muted-foreground"}`}>{cardTypeLabel(selected.card_type)}</span>}
+              </div>
+            )}
           </DialogHeader>
           {selected && (
             <div className="overflow-y-auto flex-1 pr-1 space-y-3">
               {selected.image && <img src={`${STORAGE}/statistics/${selected.image}`} alt={selected.name_en || ""} className="max-h-[40vh] w-auto mx-auto rounded-lg object-contain" />}
-              <div className="flex gap-2 flex-wrap">
-                {selected.stat_type && <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium capitalize ${STAT_COLORS[selected.stat_type] || "bg-muted text-muted-foreground"}`}>{selected.stat_type}</span>}
-                {selected.card_type && <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${CARD_TYPE_BADGE[selected.card_type] || "bg-muted text-muted-foreground"}`}>{selected.card_type === "regular" ? "Regular" : "Empowered"}</span>}
-              </div>
               {selected.effect_en && (
                 <div>
                   <p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Эффект" : "Effect"}</p>
@@ -144,7 +147,7 @@ export default function StatisticsTab({ searchQuery = "" }: Props) {
               {(lang === "RU" ? selected.notes_ru : selected.notes_en) && (
                 <div>
                   <p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Заметки" : "Notes"}</p>
-                  <p className="text-xs text-muted-foreground">{lang === "RU" ? selected.notes_ru : selected.notes_en}</p>
+                  <p className="text-xs text-muted-foreground" dangerouslySetInnerHTML={{ __html: renderGlyphs(lang === "RU" ? selected.notes_ru : selected.notes_en, glyphs) }} />
                 </div>
               )}
             </div>

@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/context/LanguageContext";
+import { useGlyphs } from "@/context/GlyphsContext";
+import { renderGlyphs } from "@/utils/renderGlyphs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
@@ -32,6 +34,7 @@ interface Props { searchQuery?: string; }
 
 export default function ArtifactsTab({ searchQuery = "" }: Props) {
   const { lang } = useLang();
+  const { glyphs } = useGlyphs();
   const [items, setItems] = useState<Artifact[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [selected, setSelected] = useState<Artifact | null>(null);
@@ -76,7 +79,7 @@ export default function ArtifactsTab({ searchQuery = "" }: Props) {
               <p className="text-sm">{lang === "RU" ? "Ничего не найдено" : "Nothing found"}</p>
             </div>
           ) : (
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
               {filtered.map((item) => {
                 const imgSrc = item.image ? `${STORAGE}/artifacts/${item.image}` : null;
                 return (
@@ -113,8 +116,8 @@ export default function ArtifactsTab({ searchQuery = "" }: Props) {
             <div className="overflow-y-auto flex-1 pr-1 space-y-3">
               {selected.image && <img src={`${STORAGE}/artifacts/${selected.image}`} alt={selected.name_en} className="max-h-[40vh] w-auto mx-auto rounded-lg object-contain" />}
               {selected.quality && <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium capitalize ${QUALITY_COLORS[selected.quality] || "bg-muted text-muted-foreground"}`}>{selected.quality}</span>}
-              {selected.effect_en && <div><p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Эффект" : "Effect"}</p><p className="text-xs text-muted-foreground">{lang === "RU" ? (selected.effect_ru || selected.effect_en) : selected.effect_en}</p></div>}
-              {selected.description_en && <div><p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Описание" : "Description"}</p><p className="text-xs text-muted-foreground">{lang === "RU" ? (selected.description_ru || selected.description_en) : selected.description_en}</p></div>}
+              {selected.effect_en && <div><p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Эффект" : "Effect"}</p><p className="text-xs text-muted-foreground" dangerouslySetInnerHTML={{ __html: renderGlyphs(lang === "RU" ? (selected.effect_ru || selected.effect_en) : selected.effect_en, glyphs) }} /></div>}
+              {selected.description_en && <div><p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Описание" : "Description"}</p><p className="text-xs text-muted-foreground" dangerouslySetInnerHTML={{ __html: renderGlyphs(lang === "RU" ? (selected.description_ru || selected.description_en) : selected.description_en, glyphs) }} /></div>}
             </div>
           )}
         </DialogContent>
