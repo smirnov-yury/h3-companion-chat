@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Users, Clock, Gauge, Map, BookOpen, Zap, Swords } from "lucide-react";
+import { Users, Clock, Gauge, Map as MapIcon, BookOpen, Zap, Swords } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";

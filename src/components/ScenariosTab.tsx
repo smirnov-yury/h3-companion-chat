@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Search, Map, BookOpen, Users, Clock, Gauge, Swords, Heart, Crown } from "lucide-react";
+import { Search, Map as MapIcon, BookOpen, Users, Clock, Gauge, Swords, Heart, Crown } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/context/LanguageContext";
 import ScenarioDetail from "@/components/ScenarioDetail";
