@@ -3,6 +3,7 @@ import BottomNav, { type TabId } from "@/components/BottomNav";
 import ChatScreen from "@/components/ChatScreen";
 import RulesTab from "@/components/RulesTab";
 import ComponentsTab from "@/components/ComponentsTab";
+import ScenariosTab from "@/components/ScenariosTab";
 import UnitsTab from "@/components/UnitsTab";
 import TownsTab from "@/components/TownsTab";
 import HeroesTab from "@/components/HeroesTab";
@@ -28,6 +29,8 @@ export default function Index() {
           <RulesTab scrollToRuleId={scrollToRuleId} onScrollHandled={() => setScrollToRuleId(null)} />
         ) : tab === "components" ? (
           <ComponentsTab onNavigateToRule={handleNavigateToRule} />
+        ) : tab === "scenarios" ? (
+          <ScenariosTab />
         ) : tab === "units" ? (
           <UnitsTab />
         ) : tab === "towns" ? (

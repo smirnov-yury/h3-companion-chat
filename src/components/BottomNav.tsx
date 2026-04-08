@@ -1,4 +1,4 @@
-import { BookOpen, LayoutGrid, Swords, Castle, MessageCircle, Map } from "lucide-react";
+import { BookOpen, LayoutGrid, Swords, Castle, MessageCircle, Map, Shield } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
 
 export type TabId = "rules" | "components" | "scenarios" | "units" | "towns" | "heroes" | "ai";
@@ -14,7 +14,7 @@ const tabs: { id: TabId; labelRU: string; labelEN: string; icon: typeof BookOpen
   { id: "scenarios",  labelRU: "Сценарии",   labelEN: "Scenarios",  icon: Map          },
   { id: "units",      labelRU: "Юниты",      labelEN: "Units",      icon: Swords       },
   { id: "towns",      labelRU: "Города",     labelEN: "Towns",      icon: Castle       },
-  { id: "heroes",     labelRU: "Герои",      labelEN: "Heroes",     icon: Map          },
+  { id: "heroes",     labelRU: "Герои",      labelEN: "Heroes",     icon: Shield       },
   { id: "ai",         labelRU: "ИИ",         labelEN: "AI",         icon: MessageCircle },
 ];
 
