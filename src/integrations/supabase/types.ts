@@ -446,6 +446,420 @@ export type Database = {
         }
         Relationships: []
       }
+      scenario_ai_setup: {
+        Row: {
+          ai_faction_en: string | null
+          ai_faction_ru: string | null
+          enemy_armies_en: Json | null
+          enemy_armies_ru: Json | null
+          enemy_decks_en: Json | null
+          enemy_decks_ru: Json | null
+          enemy_heroes_en: Json | null
+          enemy_heroes_ru: Json | null
+          enemy_spell_deck_en: Json | null
+          enemy_spell_deck_ru: Json | null
+          id: number
+          notes_en: string | null
+          notes_ru: string | null
+          scenario_id: string
+          special_setup_en: string | null
+          special_setup_ru: string | null
+        }
+        Insert: {
+          ai_faction_en?: string | null
+          ai_faction_ru?: string | null
+          enemy_armies_en?: Json | null
+          enemy_armies_ru?: Json | null
+          enemy_decks_en?: Json | null
+          enemy_decks_ru?: Json | null
+          enemy_heroes_en?: Json | null
+          enemy_heroes_ru?: Json | null
+          enemy_spell_deck_en?: Json | null
+          enemy_spell_deck_ru?: Json | null
+          id?: number
+          notes_en?: string | null
+          notes_ru?: string | null
+          scenario_id: string
+          special_setup_en?: string | null
+          special_setup_ru?: string | null
+        }
+        Update: {
+          ai_faction_en?: string | null
+          ai_faction_ru?: string | null
+          enemy_armies_en?: Json | null
+          enemy_armies_ru?: Json | null
+          enemy_decks_en?: Json | null
+          enemy_decks_ru?: Json | null
+          enemy_heroes_en?: Json | null
+          enemy_heroes_ru?: Json | null
+          enemy_spell_deck_en?: Json | null
+          enemy_spell_deck_ru?: Json | null
+          id?: number
+          notes_en?: string | null
+          notes_ru?: string | null
+          scenario_id?: string
+          special_setup_en?: string | null
+          special_setup_ru?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scenario_ai_setup_scenario_id_fkey"
+            columns: ["scenario_id"]
+            isOneToOne: true
+            referencedRelation: "scenarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      scenario_books: {
+        Row: {
+          created_at: string
+          id: string
+          is_expansion: boolean
+          notes_en: string | null
+          notes_ru: string | null
+          release_order: number
+          slug: string
+          source_file_name: string | null
+          source_type: string
+          title_en: string
+          title_ru: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id: string
+          is_expansion?: boolean
+          notes_en?: string | null
+          notes_ru?: string | null
+          release_order?: number
+          slug: string
+          source_file_name?: string | null
+          source_type?: string
+          title_en: string
+          title_ru?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_expansion?: boolean
+          notes_en?: string | null
+          notes_ru?: string | null
+          release_order?: number
+          slug?: string
+          source_file_name?: string | null
+          source_type?: string
+          title_en?: string
+          title_ru?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      scenario_map_variants: {
+        Row: {
+          id: number
+          layout_notes_en: string | null
+          layout_notes_ru: string | null
+          layout_schema: Json | null
+          map_image: string | null
+          map_setup_text_en: string | null
+          map_setup_text_ru: string | null
+          player_count: number
+          scenario_id: string
+          sort_order: number
+          source_page: number | null
+          tile_counts: Json
+          variant_label_en: string | null
+          variant_label_ru: string | null
+        }
+        Insert: {
+          id?: number
+          layout_notes_en?: string | null
+          layout_notes_ru?: string | null
+          layout_schema?: Json | null
+          map_image?: string | null
+          map_setup_text_en?: string | null
+          map_setup_text_ru?: string | null
+          player_count: number
+          scenario_id: string
+          sort_order?: number
+          source_page?: number | null
+          tile_counts?: Json
+          variant_label_en?: string | null
+          variant_label_ru?: string | null
+        }
+        Update: {
+          id?: number
+          layout_notes_en?: string | null
+          layout_notes_ru?: string | null
+          layout_schema?: Json | null
+          map_image?: string | null
+          map_setup_text_en?: string | null
+          map_setup_text_ru?: string | null
+          player_count?: number
+          scenario_id?: string
+          sort_order?: number
+          source_page?: number | null
+          tile_counts?: Json
+          variant_label_en?: string | null
+          variant_label_ru?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scenario_map_variants_scenario_id_fkey"
+            columns: ["scenario_id"]
+            isOneToOne: false
+            referencedRelation: "scenarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      scenario_setup_blocks: {
+        Row: {
+          block_type: string
+          content_en: string | null
+          content_ru: string | null
+          id: number
+          player_count: number | null
+          scenario_id: string
+          sort_order: number
+          structured_data: Json | null
+          title_en: string | null
+          title_ru: string | null
+        }
+        Insert: {
+          block_type: string
+          content_en?: string | null
+          content_ru?: string | null
+          id?: number
+          player_count?: number | null
+          scenario_id: string
+          sort_order?: number
+          structured_data?: Json | null
+          title_en?: string | null
+          title_ru?: string | null
+        }
+        Update: {
+          block_type?: string
+          content_en?: string | null
+          content_ru?: string | null
+          id?: number
+          player_count?: number | null
+          scenario_id?: string
+          sort_order?: number
+          structured_data?: Json | null
+          title_en?: string | null
+          title_ru?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scenario_setup_blocks_scenario_id_fkey"
+            columns: ["scenario_id"]
+            isOneToOne: false
+            referencedRelation: "scenarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      scenario_story_sections: {
+        Row: {
+          content_en: string
+          content_ru: string | null
+          id: number
+          scenario_id: string
+          section_key: string
+          sort_order: number
+          title_en: string
+          title_ru: string | null
+          trigger_text_en: string | null
+          trigger_text_ru: string | null
+        }
+        Insert: {
+          content_en: string
+          content_ru?: string | null
+          id?: number
+          scenario_id: string
+          section_key: string
+          sort_order?: number
+          title_en: string
+          title_ru?: string | null
+          trigger_text_en?: string | null
+          trigger_text_ru?: string | null
+        }
+        Update: {
+          content_en?: string
+          content_ru?: string | null
+          id?: number
+          scenario_id?: string
+          section_key?: string
+          sort_order?: number
+          title_en?: string
+          title_ru?: string | null
+          trigger_text_en?: string | null
+          trigger_text_ru?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scenario_story_sections_scenario_id_fkey"
+            columns: ["scenario_id"]
+            isOneToOne: false
+            referencedRelation: "scenarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      scenario_timed_events: {
+        Row: {
+          condition_en: string | null
+          condition_ru: string | null
+          effect_en: string
+          effect_ru: string | null
+          id: number
+          player_count: number | null
+          scenario_id: string
+          sort_order: number
+          trigger_label_en: string | null
+          trigger_label_ru: string | null
+          trigger_round: number | null
+          trigger_type: string
+        }
+        Insert: {
+          condition_en?: string | null
+          condition_ru?: string | null
+          effect_en: string
+          effect_ru?: string | null
+          id?: number
+          player_count?: number | null
+          scenario_id: string
+          sort_order?: number
+          trigger_label_en?: string | null
+          trigger_label_ru?: string | null
+          trigger_round?: number | null
+          trigger_type: string
+        }
+        Update: {
+          condition_en?: string | null
+          condition_ru?: string | null
+          effect_en?: string
+          effect_ru?: string | null
+          id?: number
+          player_count?: number | null
+          scenario_id?: string
+          sort_order?: number
+          trigger_label_en?: string | null
+          trigger_label_ru?: string | null
+          trigger_round?: number | null
+          trigger_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scenario_timed_events_scenario_id_fkey"
+            columns: ["scenario_id"]
+            isOneToOne: false
+            referencedRelation: "scenarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      scenarios: {
+        Row: {
+          book_id: string
+          campaign_group_en: string | null
+          campaign_group_ru: string | null
+          created_at: string
+          difficulty_options: Json | null
+          difficulty_text_en: string | null
+          difficulty_text_ru: string | null
+          has_ai_setup: boolean
+          has_map_variants: boolean
+          has_story: boolean
+          id: string
+          max_players: number | null
+          min_players: number | null
+          mode: string
+          rounds_max: number | null
+          rounds_min: number | null
+          scenario_length_text_en: string | null
+          scenario_length_text_ru: string | null
+          scenario_number: number | null
+          slug: string
+          sort_order: number
+          summary_en: string | null
+          summary_ru: string | null
+          supported_player_counts: number[] | null
+          title_en: string
+          title_ru: string | null
+          updated_at: string
+        }
+        Insert: {
+          book_id: string
+          campaign_group_en?: string | null
+          campaign_group_ru?: string | null
+          created_at?: string
+          difficulty_options?: Json | null
+          difficulty_text_en?: string | null
+          difficulty_text_ru?: string | null
+          has_ai_setup?: boolean
+          has_map_variants?: boolean
+          has_story?: boolean
+          id: string
+          max_players?: number | null
+          min_players?: number | null
+          mode: string
+          rounds_max?: number | null
+          rounds_min?: number | null
+          scenario_length_text_en?: string | null
+          scenario_length_text_ru?: string | null
+          scenario_number?: number | null
+          slug: string
+          sort_order?: number
+          summary_en?: string | null
+          summary_ru?: string | null
+          supported_player_counts?: number[] | null
+          title_en: string
+          title_ru?: string | null
+          updated_at?: string
+        }
+        Update: {
+          book_id?: string
+          campaign_group_en?: string | null
+          campaign_group_ru?: string | null
+          created_at?: string
+          difficulty_options?: Json | null
+          difficulty_text_en?: string | null
+          difficulty_text_ru?: string | null
+          has_ai_setup?: boolean
+          has_map_variants?: boolean
+          has_story?: boolean
+          id?: string
+          max_players?: number | null
+          min_players?: number | null
+          mode?: string
+          rounds_max?: number | null
+          rounds_min?: number | null
+          scenario_length_text_en?: string | null
+          scenario_length_text_ru?: string | null
+          scenario_number?: number | null
+          slug?: string
+          sort_order?: number
+          summary_en?: string | null
+          summary_ru?: string | null
+          supported_player_counts?: number[] | null
+          title_en?: string
+          title_ru?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scenarios_book_id_fkey"
+            columns: ["book_id"]
+            isOneToOne: false
+            referencedRelation: "scenario_books"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       spells: {
         Row: {
           effect_en: string | null
