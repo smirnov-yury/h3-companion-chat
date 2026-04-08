@@ -173,7 +173,7 @@ function MapPane({ scenarioId }: { scenarioId: string }) {
         return (
           <div key={v.id} className="rounded-lg border border-border p-3">
             <div className="flex items-center gap-2 mb-1">
-              <Map size={14} className="text-muted-foreground" />
+              <MapIcon size={14} className="text-muted-foreground" />
               <p className="text-xs font-semibold text-foreground">{label || `${v.player_count}P`}</p>
             </div>
             {setupText && <p className="text-xs text-muted-foreground whitespace-pre-line mb-2">{setupText}</p>}

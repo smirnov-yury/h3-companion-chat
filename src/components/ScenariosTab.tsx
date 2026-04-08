@@ -203,7 +203,7 @@ export default function ScenariosTab({ searchQuery = "" }: Props) {
               <Gauge size={12} /> {diff}
             </span>
           )}
-          {s.has_map_variants && <Map size={12} className="text-muted-foreground" />}
+          {s.has_map_variants && <MapIcon size={12} className="text-muted-foreground" />}
           {s.has_story && <BookOpen size={12} className="text-muted-foreground" />}
         </div>
       </button>
