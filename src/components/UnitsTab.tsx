@@ -5,7 +5,6 @@ import { useLang } from '@/context/LanguageContext';
 import { renderGlyphs } from '@/utils/renderGlyphs';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Swords, Shield, Heart, Zap } from 'lucide-react';
-import { Swords, Shield, Heart, Zap } from 'lucide-react';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 const STORAGE = `${SUPABASE_URL}/storage/v1/object/public/component-media`;
@@ -289,11 +288,11 @@ export default function UnitsTab() {
                         {TYPE_BADGE[unit.type].label}
                       </span>
                     )}
-                    <Badge
-                      className={`absolute bottom-1 right-1 text-[10px] ${TIER_COLOR[unit.tier] ?? 'bg-muted text-foreground'}`}
+                    <span
+                      className={`absolute bottom-1 right-1 rounded text-[10px] font-medium px-1.5 py-0.5 ${TIER_COLOR[unit.tier] ?? 'bg-muted text-foreground'}`}
                     >
                       {capitalize(unit.tier)}
-                    </Badge>
+                    </span>
                   </div>
                   <div className="p-2">
                     <p className="text-xs font-semibold truncate">
