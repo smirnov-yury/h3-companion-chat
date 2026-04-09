@@ -89,6 +89,7 @@ export default function UnitsTab() {
   const [units, setUnits] = useState<UnitStat[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
+  const [activeVariant, setActiveVariant] = useState<string>('');
   const [filterFaction, setFilterFaction] = useState('all');
   const [filterTier, setFilterTier] = useState('all');
   const [filterType, setFilterType] = useState('all');
@@ -283,16 +284,16 @@ export default function UnitsTab() {
                     >
                       {lang === 'RU' && unit.name_ru ? unit.name_ru : unit.name_en}
                     </div>
-                    {unit.type && TYPE_BADGE[unit.type] && (
-                      <span className={`absolute top-1 left-1 rounded text-[10px] font-medium text-white px-1.5 py-0.5 ${TYPE_BADGE[unit.type].color}`}>
-                        {TYPE_BADGE[unit.type].label}
+                    <div className="absolute top-1 left-1 flex flex-col gap-1">
+                      <span className={`rounded text-[11px] font-medium px-1.5 py-0.5 ${TIER_COLOR[unit.tier] ?? 'bg-muted text-foreground'}`}>
+                        {capitalize(unit.tier)}
                       </span>
-                    )}
-                    <span
-                      className={`absolute bottom-1 right-1 rounded text-[10px] font-medium px-1.5 py-0.5 ${TIER_COLOR[unit.tier] ?? 'bg-muted text-foreground'}`}
-                    >
-                      {capitalize(unit.tier)}
-                    </span>
+                      {unit.type && TYPE_BADGE[unit.type] && (
+                        <span className={`rounded text-[11px] font-medium text-white px-1.5 py-0.5 ${TYPE_BADGE[unit.type].color}`}>
+                          {TYPE_BADGE[unit.type].label}
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <div className="p-2">
                     <p className="text-xs font-semibold truncate">
@@ -312,8 +313,8 @@ export default function UnitsTab() {
         <DialogContent className="max-h-[90dvh] w-[95vw] max-w-md flex flex-col overflow-hidden p-0">
           {selectedItem && (() => {
             const { variants } = selectedItem;
-            const [activeVariant, setActiveVariant] = React.useState(variants[0].number);
-            const u = variants.find((v) => v.number === activeVariant) ?? variants[0];
+            const currentVariant = variants.find((v) => v.number === activeVariant) ? activeVariant : variants[0].number;
+            const u = variants.find((v) => v.number === currentVariant) ?? variants[0];
             const imgSrc = u.image ? `${STORAGE}/units/${u.image}` : null;
             const abilities = lang === 'RU' && u.abilities_ru ? u.abilities_ru : u.abilities_en;
             const notes = lang === 'RU' && u.notes_ru ? u.notes_ru : u.notes_en;
