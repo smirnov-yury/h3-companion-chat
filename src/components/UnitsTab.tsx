@@ -322,21 +322,21 @@ export default function UnitsTab() {
 
       {/* Detail modal */}
       <Dialog open={!!selectedKey} onOpenChange={(o) => !o && setSelectedKey(null)}>
-        <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto">
+        <DialogContent className="max-w-md max-h-[80dvh] flex flex-col">
           {selectedItem && (() => {
             const { variants } = selectedItem;
             const base = variants[0];
             return (
               <>
-                <DialogHeader>
+                <DialogHeader className="shrink-0">
                   <DialogTitle>
                     {lang === 'RU' && base.name_ru ? base.name_ru : base.name_en}
                   </DialogTitle>
                 </DialogHeader>
 
-                <Tabs defaultValue={variants[0].number}>
+                <Tabs defaultValue={variants[0].number} className="flex-1 flex flex-col min-h-0">
                   {variants.length > 1 && (
-                    <TabsList className="w-full flex-wrap h-auto gap-1">
+                    <TabsList className="w-full flex-wrap h-auto gap-1 shrink-0">
                       {variants.map((u) => (
                         <TabsTrigger key={u.id} value={u.number}>
                           {u.number}
@@ -351,72 +351,77 @@ export default function UnitsTab() {
                     const notes = lang === 'RU' && u.notes_ru ? u.notes_ru : u.notes_en;
 
                     return (
-                      <TabsContent key={u.id} value={u.number} className="space-y-3">
-                        {imgSrc ? (
-                          <div className="relative w-full max-h-48 bg-muted rounded-lg overflow-hidden">
-                            <img
-                              src={imgSrc}
-                              alt={u.name_en}
-                              className="w-full max-h-48 object-contain"
-                              onError={(e) => {
-                                const target = e.currentTarget;
-                                target.style.display = 'none';
-                                const fallback = target.nextElementSibling as HTMLElement;
-                                if (fallback) fallback.style.display = 'flex';
-                              }}
-                            />
-                            <div className="hidden items-center justify-center h-48 text-muted-foreground text-sm">
+                      <TabsContent key={u.id} value={u.number} className="flex-1 flex flex-col min-h-0 mt-0 data-[state=active]:flex">
+                        {/* Fixed image */}
+                        <div className="shrink-0 py-3">
+                          {imgSrc ? (
+                            <div className="relative w-full max-w-[280px] mx-auto bg-muted rounded-lg overflow-hidden">
+                              <img
+                                src={imgSrc}
+                                alt={u.name_en}
+                                className="w-full max-w-[280px] mx-auto aspect-[2/3] object-contain"
+                                onError={(e) => {
+                                  const target = e.currentTarget;
+                                  target.style.display = 'none';
+                                  const fallback = target.nextElementSibling as HTMLElement;
+                                  if (fallback) fallback.style.display = 'flex';
+                                }}
+                              />
+                              <div className="hidden items-center justify-center aspect-[2/3] text-muted-foreground text-sm">
+                                {lang === 'RU' && u.name_ru ? u.name_ru : u.name_en}
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="flex items-center justify-center w-full max-w-[280px] mx-auto aspect-[2/3] rounded-lg bg-muted text-muted-foreground text-sm">
                               {lang === 'RU' && u.name_ru ? u.name_ru : u.name_en}
                             </div>
-                          </div>
-                        ) : (
-                          <div className="flex items-center justify-center h-48 rounded-lg bg-muted text-muted-foreground text-sm">
-                            {lang === 'RU' && u.name_ru ? u.name_ru : u.name_en}
-                          </div>
-                        )}
-
-                        {/* Stat cards with glyph icons */}
-                        <div className="grid grid-cols-4 gap-2 text-center">
-                          {([
-                            ['attack', u.attack],
-                            ['defense', u.defense],
-                            ['health_points', u.health_points],
-                            ['initiative', u.initiative],
-                          ] as [string, number][]).map(([stat, val]) => (
-                            <div key={stat} className="rounded-lg bg-muted p-2">
-                              <div className="flex justify-center">
-                                <StatIcon stat={stat} />
-                              </div>
-                              <p className="text-lg font-bold">{val}</p>
-                            </div>
-                          ))}
+                          )}
                         </div>
 
-                        {u.cost && (
-                          <div className="text-sm">
-                            <span className="font-semibold">
-                              {lang === 'RU' ? 'Стоимость' : 'Cost'}
-                            </span>{' '}
-                            <GlyphText text={u.cost} />
+                        {/* Scrollable stats + text */}
+                        <div className="flex-1 overflow-y-auto space-y-3 pr-1">
+                          <div className="grid grid-cols-4 gap-2 text-center">
+                            {([
+                              ['attack', u.attack],
+                              ['defense', u.defense],
+                              ['health_points', u.health_points],
+                              ['initiative', u.initiative],
+                            ] as [string, number][]).map(([stat, val]) => (
+                              <div key={stat} className="rounded-lg bg-muted p-2">
+                                <div className="flex justify-center">
+                                  <StatIcon stat={stat} />
+                                </div>
+                                <p className="text-lg font-bold">{val}</p>
+                              </div>
+                            ))}
                           </div>
-                        )}
 
-                        {abilities && (
-                          <div className="text-sm space-y-1">
-                            <p className="font-semibold">
-                              {lang === 'RU' ? 'Способности' : 'Abilities'}
-                            </p>
-                            <GlyphText text={abilities} />
-                          </div>
-                        )}
+                          {u.cost && (
+                            <div className="text-sm">
+                              <span className="font-semibold">
+                                {lang === 'RU' ? 'Стоимость' : 'Cost'}
+                              </span>{' '}
+                              <GlyphText text={u.cost} />
+                            </div>
+                          )}
 
-                        {notes && (
-                          <div className="text-sm text-muted-foreground">
-                            <GlyphText text={notes} />
-                          </div>
-                        )}
+                          {abilities && (
+                            <div className="text-sm space-y-1">
+                              <p className="font-semibold">
+                                {lang === 'RU' ? 'Способности' : 'Abilities'}
+                              </p>
+                              <GlyphText text={abilities} />
+                            </div>
+                          )}
 
-                        {u.content && <Badge variant="outline">{u.content}</Badge>}
+                          {notes && (
+                            <div className="text-sm text-muted-foreground">
+                              <GlyphText text={notes} />
+                            </div>
+                          )}
+
+                          {u.content && <Badge variant="outline">{u.content}</Badge>}
+                        </div>
                       </TabsContent>
                     );
                   })}
