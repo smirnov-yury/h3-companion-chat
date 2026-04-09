@@ -45,10 +45,10 @@ const TIER_COLOR: Record<string, string> = {
   azure: 'bg-sky-500 text-white',
 };
 
-const TYPE_ICON: Record<string, string> = {
-  unit_ground: '🛡️',
-  unit_ranged: '🏹',
-  unit_flying: '🦅',
+const TYPE_BADGE: Record<string, { label: string; color: string }> = {
+  unit_ground: { label: 'Ground', color: 'bg-gray-600/80' },
+  unit_ranged: { label: 'Ranged', color: 'bg-green-700/80' },
+  unit_flying: { label: 'Flying', color: 'bg-blue-700/80' },
 };
 
 const STAT_GLYPH: Record<string, { token: string; fallback: string }> = {
@@ -296,12 +296,16 @@ export default function UnitsTab() {
                     >
                       {lang === 'RU' && unit.name_ru ? unit.name_ru : unit.name_en}
                     </div>
+                    {unit.type && TYPE_BADGE[unit.type] && (
+                      <span className={`absolute bottom-1 left-1 rounded-sm text-[10px] font-semibold uppercase tracking-wide text-white px-1.5 py-0.5 ${TYPE_BADGE[unit.type].color}`}>
+                        {TYPE_BADGE[unit.type].label}
+                      </span>
+                    )}
                     <Badge
-                      className={`absolute top-1 left-1 text-[10px] ${TIER_COLOR[unit.tier] ?? 'bg-muted text-foreground'}`}
+                      className={`absolute bottom-1 right-1 text-[10px] ${TIER_COLOR[unit.tier] ?? 'bg-muted text-foreground'}`}
                     >
                       {capitalize(unit.tier)}
                     </Badge>
-                    <span className="absolute top-1 right-1 text-sm">{TYPE_ICON[unit.type] ?? ''}</span>
                   </div>
                   <div className="p-2">
                     <p className="text-xs font-semibold truncate">
