@@ -6,6 +6,6 @@ export function renderGlyphs(text: string | null | undefined, glyphs: GlyphMap):
     const glyph = glyphs[token];
     if (!glyph) return match;
     const src = `${SUPABASE_URL}/storage/v1/object/public/component-media/glyphs/${glyph.image}`;
-    return `<img src="${src}" alt="${glyph.description}" title="${glyph.description}" class="glyph-icon" style="display:inline-block;width:18px;height:18px;vertical-align:middle;margin:0 1px;object-fit:contain;" loading="lazy" />`;
+    return `<img src="${src}" alt="${glyph.description}" title="${glyph.description}" class="glyph-icon" style="display:inline-block;width:18px;height:18px;vertical-align:middle;margin:0 1px;object-fit:contain;filter:brightness(0) saturate(100%) invert(78%) sepia(44%) saturate(600%) hue-rotate(2deg) brightness(98%);" loading="lazy" />`;
   });
 }
