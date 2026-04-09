@@ -250,7 +250,7 @@ export default function UnitsTab() {
               label={
                 t === 'all'
                   ? lang === 'RU' ? 'Все' : 'All'
-                  : `${TYPE_ICON[t] ?? ''} ${t.replace('unit_', '')}`
+                  : capitalize(t.replace('unit_', ''))
               }
               active={filterType === t}
               onClick={() => setFilterType(t)}
