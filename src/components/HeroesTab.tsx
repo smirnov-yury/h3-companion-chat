@@ -115,12 +115,12 @@ export default function HeroesTab() {
       <div className="px-3 pb-3 flex-1">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           {filtered.map(h => (
-            <button key={h.id} onClick={() => { setSelected(h); setSpecialtyTab(0); }} className="bg-muted rounded-lg overflow-hidden text-left">
-              <div className="relative">
+            <button key={h.id} onClick={() => { setSelected(h); setSpecialtyTab(0); }} className="flex flex-col rounded-xl border border-border bg-card overflow-hidden text-left hover:border-primary transition-colors">
+              <div className="relative aspect-square bg-muted">
                 {hasPortrait(h.image) ? (
-                  <img src={`${STORAGE}/heroes/${h.image}`} alt={name(h)} className="w-full aspect-[3/4] object-cover object-left" />
+                  <img src={`${STORAGE}/heroes/${h.image}`} alt={name(h)} className="w-full h-full object-cover object-left" />
                 ) : (
-                  <div className="w-full aspect-[3/4] bg-muted-foreground/10 flex items-center justify-center">
+                  <div className="w-full h-full flex items-center justify-center">
                     <span className="text-2xl font-bold text-muted-foreground/40">{heroInitials(h.name_en)}</span>
                   </div>
                 )}
@@ -130,10 +130,10 @@ export default function HeroesTab() {
                   const heroClass = h.class_en.replace(/<magic>|<might>/g, '').trim();
                   return (
                     <div className="absolute top-1.5 left-1.5 flex flex-col gap-1">
-                      <span className={`text-xs font-semibold px-1.5 py-0.5 rounded backdrop-blur-sm text-white ${isMagic ? 'bg-blue-600/80' : 'bg-red-700/80'}`}>
+                      <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-full backdrop-blur-sm text-white ${isMagic ? 'bg-blue-600/80' : 'bg-red-700/80'}`}>
                         {heroType}
                       </span>
-                      <span className="text-xs px-1.5 py-0.5 rounded backdrop-blur-sm bg-black/50 text-white">
+                      <span className="text-[9px] px-1.5 py-0.5 rounded-full backdrop-blur-sm bg-black/50 text-white">
                         {heroClass}
                       </span>
                     </div>
@@ -141,16 +141,8 @@ export default function HeroesTab() {
                 })()}
               </div>
               <div className="p-2">
-                <p className="text-sm font-medium text-foreground truncate">{name(h)}</p>
-                {h.town && <p className="text-xs text-muted-foreground capitalize">{h.town}</p>}
-                <div className="grid grid-cols-4 gap-1 mt-1">
-                  {stats(h).map(s => (
-                    <div key={s.label} className="bg-background rounded text-center text-xs py-0.5">
-                      <span className="text-muted-foreground">{s.label}</span>{" "}
-                      <span className="font-bold text-foreground">{s.value ?? "–"}</span>
-                    </div>
-                  ))}
-                </div>
+                <p className="text-xs font-semibold text-foreground truncate">{name(h)}</p>
+                {h.town && <p className="text-[10px] text-muted-foreground capitalize">{h.town}</p>}
               </div>
             </button>
           ))}
