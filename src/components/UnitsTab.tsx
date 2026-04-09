@@ -106,6 +106,11 @@ export default function UnitsTab() {
       });
   }, []);
 
+  // Reset active variant when selected unit changes
+  useEffect(() => {
+    setActiveVariant('');
+  }, [selectedKey]);
+
   // Separate faction units (grouped by slug) and neutral units (standalone)
   const { factionGroups, neutralUnits } = useMemo(() => {
     const fGroups: Record<string, UnitStat[]> = {};
