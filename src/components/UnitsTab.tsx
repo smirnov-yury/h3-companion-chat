@@ -1,11 +1,9 @@
-import { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useGlyphs } from '@/context/GlyphsContext';
 import { useLang } from '@/context/LanguageContext';
 import { renderGlyphs } from '@/utils/renderGlyphs';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Swords, Shield, Heart, Zap } from 'lucide-react';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
@@ -41,15 +39,15 @@ const FACTION_VARIANT_ORDER = ['Few', 'Pack', 'Few (Alternate)', 'Pack (Alternat
 
 const TIER_COLOR: Record<string, string> = {
   bronze: 'bg-amber-700 text-white',
-  silver: 'bg-slate-400 text-white',
+  silver: 'bg-slate-500 text-white',
   golden: 'bg-yellow-500 text-black',
-  azure: 'bg-sky-500 text-white',
+  azure: 'bg-cyan-600 text-white',
 };
 
 const TYPE_BADGE: Record<string, { label: string; color: string }> = {
-  unit_ground: { label: 'Ground', color: 'bg-gray-600/80' },
-  unit_ranged: { label: 'Ranged', color: 'bg-green-700/80' },
-  unit_flying: { label: 'Flying', color: 'bg-blue-700/80' },
+  unit_ground: { label: 'Ground', color: 'bg-amber-800' },
+  unit_ranged: { label: 'Ranged', color: 'bg-emerald-700' },
+  unit_flying: { label: 'Flying', color: 'bg-indigo-700' },
 };
 
 const STAT_CONFIG: Record<string, { icon: React.ElementType; color: string; label: string }> = {
@@ -286,15 +284,15 @@ export default function UnitsTab() {
                       {lang === 'RU' && unit.name_ru ? unit.name_ru : unit.name_en}
                     </div>
                     {unit.type && TYPE_BADGE[unit.type] && (
-                      <span className={`absolute bottom-1 left-1 rounded-sm text-[10px] font-semibold uppercase tracking-wide text-white px-1.5 py-0.5 ${TYPE_BADGE[unit.type].color}`}>
+                      <span className={`absolute top-1 left-1 rounded text-[10px] font-medium text-white px-1.5 py-0.5 ${TYPE_BADGE[unit.type].color}`}>
                         {TYPE_BADGE[unit.type].label}
                       </span>
                     )}
-                    <Badge
-                      className={`absolute bottom-1 right-1 text-[10px] ${TIER_COLOR[unit.tier] ?? 'bg-muted text-foreground'}`}
+                    <span
+                      className={`absolute bottom-1 right-1 rounded text-[10px] font-medium px-1.5 py-0.5 ${TIER_COLOR[unit.tier] ?? 'bg-muted text-foreground'}`}
                     >
                       {capitalize(unit.tier)}
-                    </Badge>
+                    </span>
                   </div>
                   <div className="p-2">
                     <p className="text-xs font-semibold truncate">
@@ -311,108 +309,106 @@ export default function UnitsTab() {
 
       {/* Detail modal */}
       <Dialog open={!!selectedKey} onOpenChange={(o) => !o && setSelectedKey(null)}>
-        <DialogContent className="max-w-md max-h-[80dvh] flex flex-col">
+        <DialogContent className="max-h-[90dvh] w-[95vw] max-w-md flex flex-col overflow-hidden p-0">
           {selectedItem && (() => {
             const { variants } = selectedItem;
-            const base = variants[0];
+            const [activeVariant, setActiveVariant] = React.useState(variants[0].number);
+            const u = variants.find((v) => v.number === activeVariant) ?? variants[0];
+            const imgSrc = u.image ? `${STORAGE}/units/${u.image}` : null;
+            const abilities = lang === 'RU' && u.abilities_ru ? u.abilities_ru : u.abilities_en;
+            const notes = lang === 'RU' && u.notes_ru ? u.notes_ru : u.notes_en;
+
             return (
               <>
-                <DialogHeader className="shrink-0">
-                  <DialogTitle>
-                    {lang === 'RU' && base.name_ru ? base.name_ru : base.name_en}
-                  </DialogTitle>
-                </DialogHeader>
+                {/* Section 1: Header (fixed) */}
+                <div className="flex flex-row gap-3 p-4 pb-3 items-start shrink-0">
+                  {imgSrc ? (
+                    <img
+                      src={imgSrc}
+                      alt={u.name_en}
+                      className="w-[90px] h-[126px] object-contain rounded-md bg-muted shrink-0"
+                      onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                    />
+                  ) : (
+                    <div className="w-[90px] h-[126px] rounded-md bg-muted shrink-0 flex items-center justify-center text-muted-foreground text-xs text-center p-1">
+                      {lang === 'RU' && u.name_ru ? u.name_ru : u.name_en}
+                    </div>
+                  )}
+                  <div className="flex flex-col gap-1.5 flex-1 min-w-0">
+                    <h2 className="text-lg font-bold leading-tight">
+                      {lang === 'RU' && u.name_ru ? u.name_ru : u.name_en}
+                    </h2>
+                    {variants.length > 1 && (
+                      <div className="flex gap-1">
+                        {variants.map((v) => (
+                          <button
+                            key={v.id}
+                            onClick={() => setActiveVariant(v.number)}
+                            className={`px-2 py-0.5 text-xs rounded-full border transition-colors ${
+                              activeVariant === v.number
+                                ? 'bg-primary text-primary-foreground border-primary'
+                                : 'bg-transparent text-muted-foreground border-border hover:border-primary/50'
+                            }`}
+                          >
+                            {v.number}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                    <div className="flex gap-1.5 flex-wrap">
+                      <span className={`text-[11px] font-medium px-1.5 py-0.5 rounded text-white ${TIER_COLOR[u.tier] ?? 'bg-muted'}`}>
+                        {capitalize(u.tier)}
+                      </span>
+                      {u.type && TYPE_BADGE[u.type] && (
+                        <span className={`text-[11px] font-medium px-1.5 py-0.5 rounded text-white ${TYPE_BADGE[u.type].color}`}>
+                          {TYPE_BADGE[u.type].label}
+                        </span>
+                      )}
+                      {u.content && (
+                        <span className="text-[11px] font-medium px-1.5 py-0.5 rounded border border-border text-muted-foreground">
+                          {u.content}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
 
-                <Tabs defaultValue={variants[0].number} className="flex-1 flex flex-col min-h-0">
-                  {variants.length > 1 && (
-                    <TabsList className="w-full flex-wrap h-auto gap-1 shrink-0">
-                      {variants.map((u) => (
-                        <TabsTrigger key={u.id} value={u.number}>
-                          {u.number}
-                        </TabsTrigger>
-                      ))}
-                    </TabsList>
+                {/* Section 2: Scrollable content */}
+                <div className="flex-1 overflow-y-auto px-4 pb-4 pt-1">
+                  <div className="grid grid-cols-4 gap-2 mb-3 text-center">
+                    {(['attack', 'defense', 'health_points', 'initiative'] as const).map((stat) => {
+                      const cfg = STAT_CONFIG[stat];
+                      const Icon = cfg.icon;
+                      return (
+                        <div key={stat} className="rounded-lg bg-muted/50 p-2 flex flex-col items-center">
+                          <Icon size={18} className={cfg.color} />
+                          <p className="text-lg font-bold">{u[stat]}</p>
+                          <p className="text-[10px] text-muted-foreground">{cfg.label}</p>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {u.cost && (
+                    <div className="text-sm mb-3">
+                      <span className="font-semibold">{lang === 'RU' ? 'Стоимость' : 'Cost'}:</span>{' '}
+                      <GlyphText text={u.cost} />
+                    </div>
                   )}
 
-                  {variants.map((u) => {
-                    const imgSrc = u.image ? `${STORAGE}/units/${u.image}` : null;
-                    const abilities = lang === 'RU' && u.abilities_ru ? u.abilities_ru : u.abilities_en;
-                    const notes = lang === 'RU' && u.notes_ru ? u.notes_ru : u.notes_en;
+                  {abilities && (
+                    <div className="text-sm leading-relaxed mb-3">
+                      <p className="font-semibold mb-1">{lang === 'RU' ? 'Способности' : 'Abilities'}</p>
+                      <GlyphText text={abilities} />
+                    </div>
+                  )}
 
-                    return (
-                      <TabsContent key={u.id} value={u.number} className="flex-1 flex flex-col min-h-0 mt-0 data-[state=active]:flex">
-                        {/* Fixed image */}
-                        <div className="shrink-0 py-3">
-                          {imgSrc ? (
-                            <div className="relative w-full max-w-[280px] mx-auto bg-muted rounded-lg overflow-hidden">
-                              <img
-                                src={imgSrc}
-                                alt={u.name_en}
-                                className="w-full max-w-[280px] mx-auto aspect-[2/3] object-contain"
-                                onError={(e) => {
-                                  const target = e.currentTarget;
-                                  target.style.display = 'none';
-                                  const fallback = target.nextElementSibling as HTMLElement;
-                                  if (fallback) fallback.style.display = 'flex';
-                                }}
-                              />
-                              <div className="hidden items-center justify-center aspect-[2/3] text-muted-foreground text-sm">
-                                {lang === 'RU' && u.name_ru ? u.name_ru : u.name_en}
-                              </div>
-                            </div>
-                          ) : (
-                            <div className="flex items-center justify-center w-full max-w-[280px] mx-auto aspect-[2/3] rounded-lg bg-muted text-muted-foreground text-sm">
-                              {lang === 'RU' && u.name_ru ? u.name_ru : u.name_en}
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Scrollable stats + text */}
-                        <div className="flex-1 overflow-y-auto space-y-3 pr-1">
-                          <div className="grid grid-cols-4 gap-2 text-center">
-                            {(['attack', 'defense', 'health_points', 'initiative'] as const).map((stat) => {
-                              const cfg = STAT_CONFIG[stat];
-                              const Icon = cfg.icon;
-                              return (
-                                <div key={stat} className="rounded-lg bg-muted/50 p-2 flex flex-col items-center">
-                                  <Icon size={18} className={cfg.color} />
-                                  <p className="text-lg font-bold">{u[stat]}</p>
-                                  <p className="text-[10px] text-muted-foreground">{cfg.label}</p>
-                                </div>
-                              );
-                            })}
-                          </div>
-
-                          {u.cost && (
-                            <div className="text-sm">
-                              <span className="font-semibold">
-                                {lang === 'RU' ? 'Стоимость' : 'Cost'}
-                              </span>{' '}
-                              <GlyphText text={u.cost} />
-                            </div>
-                          )}
-
-                          {abilities && (
-                            <div className="text-sm space-y-1">
-                              <p className="font-semibold">
-                                {lang === 'RU' ? 'Способности' : 'Abilities'}
-                              </p>
-                              <GlyphText text={abilities} />
-                            </div>
-                          )}
-
-                          {notes && (
-                            <div className="text-sm text-muted-foreground">
-                              <GlyphText text={notes} />
-                            </div>
-                          )}
-
-                          {u.content && <Badge variant="outline">{u.content}</Badge>}
-                        </div>
-                      </TabsContent>
-                    );
-                  })}
-                </Tabs>
+                  {notes && (
+                    <div className="text-sm text-muted-foreground leading-relaxed">
+                      <GlyphText text={notes} />
+                    </div>
+                  )}
+                </div>
               </>
             );
           })()}
