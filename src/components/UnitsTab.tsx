@@ -6,6 +6,7 @@ import { renderGlyphs } from '@/utils/renderGlyphs';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
+import { Swords, Shield, Heart, Zap } from 'lucide-react';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 const STORAGE = `${SUPABASE_URL}/storage/v1/object/public/component-media`;
@@ -51,24 +52,12 @@ const TYPE_BADGE: Record<string, { label: string; color: string }> = {
   unit_flying: { label: 'Flying', color: 'bg-blue-700/80' },
 };
 
-const STAT_GLYPH: Record<string, { token: string; fallback: string }> = {
-  attack: { token: 'attack', fallback: 'ATK' },
-  defense: { token: 'defense', fallback: 'DEF' },
-  health_points: { token: 'health_points', fallback: 'HP' },
-  initiative: { token: 'initiative', fallback: 'INI' },
+const STAT_CONFIG: Record<string, { icon: React.ElementType; color: string; label: string }> = {
+  attack: { icon: Swords, color: 'text-red-400', label: 'ATK' },
+  defense: { icon: Shield, color: 'text-blue-400', label: 'DEF' },
+  health_points: { icon: Heart, color: 'text-green-400', label: 'HP' },
+  initiative: { icon: Zap, color: 'text-yellow-400', label: 'INI' },
 };
-
-function StatIcon({ stat }: { stat: string }) {
-  const { glyphs } = useGlyphs();
-  const cfg = STAT_GLYPH[stat];
-  if (!cfg) return null;
-  const html = renderGlyphs(`<${cfg.token}>`, glyphs);
-  // If renderGlyphs returned unchanged (no glyph found), show fallback
-  if (html === `<${cfg.token}>`) {
-    return <span className="text-[10px] text-muted-foreground">{cfg.fallback}</span>;
-  }
-  return <span dangerouslySetInnerHTML={{ __html: html }} />;
-}
 
 function GlyphText({ text }: { text: string | null | undefined }) {
   const { glyphs } = useGlyphs();
@@ -381,19 +370,17 @@ export default function UnitsTab() {
                         {/* Scrollable stats + text */}
                         <div className="flex-1 overflow-y-auto space-y-3 pr-1">
                           <div className="grid grid-cols-4 gap-2 text-center">
-                            {([
-                              ['attack', u.attack],
-                              ['defense', u.defense],
-                              ['health_points', u.health_points],
-                              ['initiative', u.initiative],
-                            ] as [string, number][]).map(([stat, val]) => (
-                              <div key={stat} className="rounded-lg bg-muted p-2">
-                                <div className="flex justify-center">
-                                  <StatIcon stat={stat} />
+                            {(['attack', 'defense', 'health_points', 'initiative'] as const).map((stat) => {
+                              const cfg = STAT_CONFIG[stat];
+                              const Icon = cfg.icon;
+                              return (
+                                <div key={stat} className="rounded-lg bg-muted/50 p-2 flex flex-col items-center">
+                                  <Icon size={18} className={cfg.color} />
+                                  <p className="text-lg font-bold">{u[stat]}</p>
+                                  <p className="text-[10px] text-muted-foreground">{cfg.label}</p>
                                 </div>
-                                <p className="text-lg font-bold">{val}</p>
-                              </div>
-                            ))}
+                              );
+                            })}
                           </div>
 
                           {u.cost && (
