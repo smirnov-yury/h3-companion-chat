@@ -69,3 +69,7 @@
 .dot-1 { animation: pulse-dots 1.4s infinite 0s; }
 .dot-2 { animation: pulse-dots 1.4s infinite 0.2s; }
 .dot-3 { animation: pulse-dots 1.4s infinite 0.4s; }
+
+.glyph-icon {
+  filter: brightness(0) saturate(100%) invert(78%) sepia(44%) saturate(600%) hue-rotate(2deg) brightness(98%);
+}
