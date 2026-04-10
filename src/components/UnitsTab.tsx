@@ -315,7 +315,7 @@ export default function UnitsTab() {
 
       {/* Detail modal */}
       <Dialog open={!!selectedKey} onOpenChange={(o) => !o && setSelectedKey(null)}>
-        <DialogContent className="max-h-[90dvh] w-[95vw] max-w-md flex flex-col overflow-hidden p-0">
+        <DialogContent className="max-h-[90dvh] w-[95vw] max-w-sm flex flex-col overflow-hidden p-0 rounded-xl">
           {selectedItem && (() => {
             const { variants } = selectedItem;
             const currentVariant = variants.find((v) => v.number === activeVariant) ? activeVariant : variants[0].number;
@@ -326,61 +326,58 @@ export default function UnitsTab() {
 
             return (
               <>
-                {/* Section 1: Header (fixed) */}
-                <div className="flex flex-row gap-3 p-4 pb-3 items-start shrink-0">
+                {/* TOP: Image section */}
+                <div className="relative flex justify-center pt-4 px-4 shrink-0">
                   {imgSrc ? (
                     <img
                       src={imgSrc}
                       alt={u.name_en}
-                      className="w-[90px] h-[126px] object-contain rounded-md bg-muted shrink-0"
+                      className="w-[200px] h-[280px] object-contain rounded-lg shadow-lg"
                       onError={(e) => { e.currentTarget.style.display = 'none'; }}
                     />
                   ) : (
-                    <div className="w-[90px] h-[126px] rounded-md bg-muted shrink-0 flex items-center justify-center text-muted-foreground text-xs text-center p-1">
+                    <div className="w-[200px] h-[280px] rounded-lg bg-muted flex items-center justify-center text-muted-foreground text-sm text-center p-2">
                       {lang === 'RU' && u.name_ru ? u.name_ru : u.name_en}
                     </div>
                   )}
-                  <div className="flex flex-col gap-1.5 flex-1 min-w-0">
-                    <h2 className="text-lg font-bold leading-tight">
-                      {lang === 'RU' && u.name_ru ? u.name_ru : u.name_en}
-                    </h2>
-                    {variants.length > 1 && (
-                      <div className="flex gap-1">
-                        {variants.map((v) => (
-                          <button
-                            key={v.id}
-                            onClick={() => setActiveVariant(v.number)}
-                            className={`px-2 py-0.5 text-xs rounded-full border transition-colors ${
-                              activeVariant === v.number
-                                ? 'bg-primary text-primary-foreground border-primary'
-                                : 'bg-transparent text-muted-foreground border-border hover:border-primary/50'
-                            }`}
-                          >
-                            {v.number}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                    <div className="flex gap-1.5 flex-wrap">
-                      <span className={`text-[11px] font-medium px-1.5 py-0.5 rounded text-white ${TIER_COLOR[u.tier] ?? 'bg-muted'}`}>
-                        {capitalize(u.tier)}
-                      </span>
-                      {u.type && TYPE_BADGE[u.type] && (
-                        <span className={`text-[11px] font-medium px-1.5 py-0.5 rounded text-white ${TYPE_BADGE[u.type].color}`}>
-                          {TYPE_BADGE[u.type].label}
-                        </span>
-                      )}
-                      {u.content && (
-                        <span className="text-[11px] font-medium px-1.5 py-0.5 rounded border border-border text-muted-foreground">
-                          {u.content}
-                        </span>
-                      )}
+                </div>
+
+                {/* MIDDLE: Info header */}
+                <div className="px-4 pt-3 pb-2 shrink-0">
+                  <h2 className="text-xl font-bold mb-1">
+                    {lang === 'RU' && u.name_ru ? u.name_ru : u.name_en}
+                  </h2>
+                  {variants.length > 1 && (
+                    <div className="flex items-center gap-2 flex-wrap mb-2">
+                      {variants.map((v) => (
+                        <button
+                          key={v.id}
+                          onClick={() => setActiveVariant(v.number)}
+                          className={`px-2 py-0.5 text-xs rounded-full border transition-colors ${
+                            (currentVariant === v.number)
+                              ? 'bg-primary text-primary-foreground border-primary'
+                              : 'bg-transparent text-muted-foreground border-border hover:border-primary/50'
+                          }`}
+                        >
+                          {v.number}
+                        </button>
+                      ))}
                     </div>
+                  )}
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className={`text-[11px] font-medium px-2 py-0.5 rounded text-white ${TIER_COLOR[u.tier] ?? 'bg-muted'}`}>
+                      {capitalize(u.tier)}
+                    </span>
+                    {u.type && TYPE_BADGE[u.type] && (
+                      <span className={`text-[11px] font-medium px-2 py-0.5 rounded text-white ${TYPE_BADGE[u.type].color}`}>
+                        {TYPE_BADGE[u.type].label}
+                      </span>
+                    )}
                   </div>
                 </div>
 
-                {/* Section 2: Scrollable content */}
-                <div className="flex-1 overflow-y-auto px-4 pb-4 pt-1">
+                {/* BOTTOM: Scrollable content */}
+                <div className="flex-1 overflow-y-auto px-4 pb-4">
                   <div className="grid grid-cols-4 gap-2 mb-3 text-center">
                     {(['attack', 'defense', 'health_points', 'initiative'] as const).map((stat) => {
                       const cfg = STAT_CONFIG[stat];
@@ -396,21 +393,21 @@ export default function UnitsTab() {
                   </div>
 
                   {u.cost && (
-                    <div className="text-sm mb-3">
+                    <div className="text-sm font-medium mb-2">
                       <span className="font-semibold">{lang === 'RU' ? 'Стоимость' : 'Cost'}:</span>{' '}
                       <GlyphText text={u.cost} />
                     </div>
                   )}
 
                   {abilities && (
-                    <div className="text-sm leading-relaxed mb-3">
+                    <div className="text-sm leading-relaxed">
                       <p className="font-semibold mb-1">{lang === 'RU' ? 'Способности' : 'Abilities'}</p>
                       <GlyphText text={abilities} />
                     </div>
                   )}
 
                   {notes && (
-                    <div className="text-sm text-muted-foreground leading-relaxed">
+                    <div className="text-sm text-muted-foreground leading-relaxed mt-2">
                       <GlyphText text={notes} />
                     </div>
                   )}
