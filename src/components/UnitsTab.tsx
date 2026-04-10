@@ -332,11 +332,11 @@ export default function UnitsTab() {
                     <img
                       src={imgSrc}
                       alt={u.name_en}
-                      className="w-[200px] h-[280px] object-contain rounded-lg shadow-lg"
+                      className="w-[220px] h-[308px] object-contain rounded-lg shadow-lg"
                       onError={(e) => { e.currentTarget.style.display = 'none'; }}
                     />
                   ) : (
-                    <div className="w-[200px] h-[280px] rounded-lg bg-muted flex items-center justify-center text-muted-foreground text-sm text-center p-2">
+                    <div className="w-[220px] h-[308px] rounded-lg bg-muted flex items-center justify-center text-muted-foreground text-sm text-center p-2">
                       {lang === 'RU' && u.name_ru ? u.name_ru : u.name_en}
                     </div>
                   )}
@@ -374,31 +374,22 @@ export default function UnitsTab() {
                       </span>
                     )}
                   </div>
+                  {/* Compact stats row */}
+                  <div className="flex items-center gap-3 text-sm font-medium mt-2 flex-wrap">
+                    <span className="flex items-center gap-1"><Swords className="w-4 h-4 text-red-400" />{u.attack}</span>
+                    <span className="flex items-center gap-1"><Shield className="w-4 h-4 text-blue-400" />{u.defense}</span>
+                    <span className="flex items-center gap-1"><Heart className="w-4 h-4 text-green-400" />{u.health_points}</span>
+                    <span className="flex items-center gap-1"><Zap className="w-4 h-4 text-yellow-400" />{u.initiative}</span>
+                    {u.cost && (
+                      <span className="flex items-center gap-1 ml-auto text-muted-foreground">
+                        <GlyphText text={`${lang === 'RU' ? 'Стоимость' : 'Cost'}: ${u.cost}`} />
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 {/* BOTTOM: Scrollable content */}
                 <div className="flex-1 overflow-y-auto px-4 pb-4">
-                  <div className="grid grid-cols-4 gap-2 mb-3 text-center">
-                    {(['attack', 'defense', 'health_points', 'initiative'] as const).map((stat) => {
-                      const cfg = STAT_CONFIG[stat];
-                      const Icon = cfg.icon;
-                      return (
-                        <div key={stat} className="rounded-lg bg-muted/50 p-2 flex flex-col items-center">
-                          <Icon size={18} className={cfg.color} />
-                          <p className="text-lg font-bold">{u[stat]}</p>
-                          <p className="text-[10px] text-muted-foreground">{cfg.label}</p>
-                        </div>
-                      );
-                    })}
-                  </div>
-
-                  {u.cost && (
-                    <div className="text-sm font-medium mb-2">
-                      <span className="font-semibold">{lang === 'RU' ? 'Стоимость' : 'Cost'}:</span>{' '}
-                      <GlyphText text={u.cost} />
-                    </div>
-                  )}
-
                   {abilities && (
                     <div className="text-sm leading-relaxed">
                       <p className="font-semibold mb-1">{lang === 'RU' ? 'Способности' : 'Abilities'}</p>
