@@ -93,9 +93,9 @@ export default function StatisticsTab({ searchQuery = "" }: Props) {
                 const imgSrc = item.image ? `${STORAGE}/statistics/${item.image}` : null;
                 return (
                   <div key={item.id} onClick={() => setSelected(item)}
-                    className="relative aspect-[2/3] bg-muted rounded-lg overflow-hidden cursor-pointer hover:opacity-80 transition-opacity">
+                    className="relative aspect-[5/7] bg-muted rounded-lg overflow-hidden cursor-pointer hover:opacity-80 transition-opacity">
                     {imgSrc
-                      ? <img src={imgSrc} alt={item.name_en || ""} className="absolute inset-0 w-full h-full object-cover" />
+                      ? <img src={imgSrc} alt={item.name_en || ""} className="absolute inset-0 w-full h-full object-cover rounded-lg" />
                       : <div className="absolute inset-0 flex items-center justify-center"><p className="text-[10px] text-muted-foreground text-center px-1">{item.name_en}</p></div>
                     }
                     {item.stat_type && (
