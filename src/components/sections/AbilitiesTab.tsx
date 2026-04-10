@@ -69,9 +69,9 @@ export default function AbilitiesTab({ searchQuery = "" }: Props) {
               return (
                 <button key={item.id} onClick={() => setSelected(item)}
                   className="flex flex-col rounded-xl border border-border bg-card overflow-hidden text-left hover:border-primary transition-colors">
-                  <div className="aspect-square w-full bg-muted flex items-center justify-center overflow-hidden relative">
+                  <div className="aspect-[5/7] w-full bg-muted flex items-center justify-center overflow-hidden relative rounded-lg">
                     {imgSrc
-                      ? <img src={imgSrc} alt={item.name_en} className="w-full h-full object-contain" />
+                      ? <img src={imgSrc} alt={item.name_en} className="w-full h-full object-cover rounded-lg" />
                       : <p className="text-[10px] text-muted-foreground text-center px-1">{item.name_en}</p>
                     }
                   </div>
