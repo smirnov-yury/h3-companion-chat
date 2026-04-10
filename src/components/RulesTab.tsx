@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from "react";
-import { Search, ChevronDown, ChevronUp, Swords, HelpCircle, Gauge, ArrowLeftRight } from "lucide-react";
+import { Search, Swords, HelpCircle, Gauge, ArrowLeftRight } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useRules, Rule } from "@/context/RulesContext";
@@ -7,6 +7,7 @@ import { useLang } from "@/context/LanguageContext";
 import { useGlyphs } from "@/context/GlyphsContext";
 import { renderGlyphs } from "@/utils/renderGlyphs";
 import { Badge } from "@/components/ui/badge";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 function useDebounce(value: string, delay: number) {
   const [debounced, setDebounced] = useState(value);
@@ -143,7 +144,7 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled }: RulesTabPr
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useDebounce("", 300);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [openItem, setOpenItem] = useState<string | undefined>(undefined);
   const listRef = useRef<HTMLDivElement>(null);
 
   const mdComponents = useMemo(() => makeMarkdownComponents(glyphs), [glyphs]);
@@ -153,7 +154,7 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled }: RulesTabPr
       setSelectedCategory(null);
       setSearch("");
       setDebouncedSearch("");
-      setExpandedId(scrollToRuleId);
+      setOpenItem(scrollToRuleId);
       onScrollHandled?.();
       requestAnimationFrame(() => {
         const el = document.getElementById(`rule-${scrollToRuleId}`);
@@ -194,6 +195,20 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled }: RulesTabPr
     return list;
   }, [rules, selectedCategory, debouncedSearch, lang]);
 
+  // Auto-open single search result
+  const autoOpenValue = useMemo(() => {
+    if (debouncedSearch.length >= 2 && filtered.length === 1) {
+      return filtered[0].id;
+    }
+    return undefined;
+  }, [debouncedSearch, filtered]);
+
+  useEffect(() => {
+    if (autoOpenValue) {
+      setOpenItem(autoOpenValue);
+    }
+  }, [autoOpenValue]);
+
   const { coreRules, battlefieldRules, faqRules, difficultiesRules, tradingRules } = useMemo(() => {
     const core: Rule[] = [];
     const bf: Rule[] = [];
@@ -217,41 +232,37 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled }: RulesTabPr
 
   const hasMarkdownTable = (text: string) => /\|.+\|/.test(text);
 
-  const renderRuleCard = (rule: Rule) => {
-    const isOpen = expandedId === rule.id;
-    const title = lang === "RU" ? (rule.title_ru || rule.title_en) : (rule.title_en || rule.title_ru);
+  const renderRuleContent = (rule: Rule) => {
     const text = lang === "RU" ? (rule.text_ru || rule.text_en) : (rule.text_en || rule.text_ru);
     const useMarkdown = hasMarkdownTable(text || "");
-
-    return (
-      <div key={rule.id} id={`rule-${rule.id}`} className="rounded-xl bg-card border border-border overflow-hidden">
-        <button
-          onClick={() => setExpandedId(isOpen ? null : rule.id)}
-          className="w-full flex items-center justify-between px-4 py-3 text-left"
-        >
-          <span className="text-sm font-medium text-card-foreground leading-snug pr-2">
-            {title}
-          </span>
-          {isOpen ? (
-            <ChevronUp className="w-4 h-4 shrink-0 text-muted-foreground" />
-          ) : (
-            <ChevronDown className="w-4 h-4 shrink-0 text-muted-foreground" />
-          )}
-        </button>
-        {isOpen && (
-          <div className="px-4 pb-3 text-sm text-muted-foreground leading-relaxed">
-            {useMarkdown ? (
-              <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
-                {text || ""}
-              </ReactMarkdown>
-            ) : (
-              <div className="whitespace-pre-line">{renderTextWithBadges(text || "")}</div>
-            )}
-          </div>
-        )}
-      </div>
+    return useMarkdown ? (
+      <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
+        {text || ""}
+      </ReactMarkdown>
+    ) : (
+      <div className="whitespace-pre-line">{renderTextWithBadges(text || "")}</div>
     );
   };
+
+  const renderAccordionItems = (sectionRules: Rule[]) =>
+    sectionRules.map((rule) => {
+      const title = lang === "RU" ? (rule.title_ru || rule.title_en) : (rule.title_en || rule.title_ru);
+      return (
+        <AccordionItem
+          key={rule.id}
+          value={rule.id}
+          id={`rule-${rule.id}`}
+          className="border border-border/50 rounded-lg px-4 data-[state=open]:border-primary/40"
+        >
+          <AccordionTrigger className="text-sm font-medium py-3 hover:no-underline">
+            {title}
+          </AccordionTrigger>
+          <AccordionContent className="text-sm text-muted-foreground pb-3 leading-relaxed">
+            {renderRuleContent(rule)}
+          </AccordionContent>
+        </AccordionItem>
+      );
+    });
 
   if (!loaded) {
     return (
@@ -260,29 +271,6 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled }: RulesTabPr
       </div>
     );
   }
-
-  const renderRuleCardExpanded = (rule: Rule) => {
-    const title = lang === "RU" ? (rule.title_ru || rule.title_en) : (rule.title_en || rule.title_ru);
-    const text = lang === "RU" ? (rule.text_ru || rule.text_en) : (rule.text_en || rule.text_ru);
-    const useMarkdown = hasMarkdownTable(text || "");
-
-    return (
-      <div key={rule.id} id={`rule-${rule.id}`} className="rounded-xl bg-card border border-border overflow-hidden">
-        <div className="px-4 py-3">
-          <span className="text-sm font-medium text-card-foreground leading-snug">{title}</span>
-        </div>
-        <div className="px-4 pb-3 text-sm text-muted-foreground leading-relaxed">
-          {useMarkdown ? (
-            <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
-              {text || ""}
-            </ReactMarkdown>
-          ) : (
-            <div className="whitespace-pre-line">{renderTextWithBadges(text || "")}</div>
-          )}
-        </div>
-      </div>
-    );
-  };
 
   const renderSection = (
     sectionRules: Rule[],
@@ -299,9 +287,7 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled }: RulesTabPr
           </span>
           <div className="flex-1 h-px bg-border" />
         </div>
-        {sectionRules.map((rule) =>
-          sectionRules.length === 1 ? renderRuleCardExpanded(rule) : renderRuleCard(rule)
-        )}
+        {renderAccordionItems(sectionRules)}
       </>
     );
 
@@ -347,42 +333,50 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled }: RulesTabPr
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-3 pb-3 space-y-1.5">
+      <div className="flex-1 overflow-y-auto px-3 pb-3">
         {filtered.length === 0 && (
           <p className="text-muted-foreground text-sm text-center py-8">
             {lang === "RU" ? "Ничего не найдено" : "Nothing found"}
           </p>
         )}
 
-        {coreRules.map((rule) => renderRuleCard(rule))}
+        <Accordion
+          type="single"
+          collapsible
+          value={openItem}
+          onValueChange={(v) => setOpenItem(v)}
+          className="space-y-1"
+        >
+          {renderAccordionItems(coreRules)}
 
-        {renderSection(
-          battlefieldRules,
-          <Swords className="w-4 h-4 text-primary" />,
-          lang === "RU" ? "Поле битвы" : "Battlefield",
-          "text-primary",
-        )}
+          {renderSection(
+            battlefieldRules,
+            <Swords className="w-4 h-4 text-primary" />,
+            lang === "RU" ? "Поле битвы" : "Battlefield",
+            "text-primary",
+          )}
 
-        {renderSection(
-          difficultiesRules,
-          <Gauge className="w-4 h-4 text-orange-500" />,
-          lang === "RU" ? "Сложность" : "Difficulties",
-          "text-orange-500",
-        )}
+          {renderSection(
+            difficultiesRules,
+            <Gauge className="w-4 h-4 text-orange-500" />,
+            lang === "RU" ? "Сложность" : "Difficulties",
+            "text-orange-500",
+          )}
 
-        {renderSection(
-          tradingRules,
-          <ArrowLeftRight className="w-4 h-4 text-emerald-500" />,
-          lang === "RU" ? "Торговля" : "Trading",
-          "text-emerald-500",
-        )}
+          {renderSection(
+            tradingRules,
+            <ArrowLeftRight className="w-4 h-4 text-emerald-500" />,
+            lang === "RU" ? "Торговля" : "Trading",
+            "text-emerald-500",
+          )}
 
-        {renderSection(
-          faqRules,
-          <HelpCircle className="w-4 h-4 text-muted-foreground" />,
-          "FAQ",
-          "text-muted-foreground",
-        )}
+          {renderSection(
+            faqRules,
+            <HelpCircle className="w-4 h-4 text-muted-foreground" />,
+            "FAQ",
+            "text-muted-foreground",
+          )}
+        </Accordion>
       </div>
     </div>
   );
