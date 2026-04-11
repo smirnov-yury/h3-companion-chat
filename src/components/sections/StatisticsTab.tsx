@@ -98,18 +98,18 @@ export default function StatisticsTab({ searchQuery = "" }: Props) {
                       ? <img src={imgSrc} alt={item.name_en || ""} className="absolute inset-0 w-full h-full object-cover rounded-lg" />
                       : <div className="absolute inset-0 flex items-center justify-center"><p className="text-[10px] text-muted-foreground text-center px-1">{item.name_en}</p></div>
                     }
-                    {item.stat_type && (
-                      <div className="absolute top-1 left-1">
-                        <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-medium ${STAT_COLORS[item.stat_type] || "bg-muted text-muted-foreground"}`}>
-                          {item.stat_type.charAt(0).toUpperCase() + item.stat_type.slice(1)}
-                        </span>
-                      </div>
-                    )}
-                    {item.card_type && (
-                      <div className="absolute top-1 right-1">
-                        <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-medium ${CARD_TYPE_BADGE[item.card_type] || "bg-muted text-muted-foreground"}`}>
-                          {cardTypeLabel(item.card_type)}
-                        </span>
+                    {(item.stat_type || item.card_type) && (
+                      <div className="absolute top-2 left-2 flex flex-col gap-1">
+                        {item.stat_type && (
+                          <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-medium ${STAT_COLORS[item.stat_type] || "bg-muted text-muted-foreground"}`}>
+                            {item.stat_type.charAt(0).toUpperCase() + item.stat_type.slice(1)}
+                          </span>
+                        )}
+                        {item.card_type && (
+                          <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-medium ${CARD_TYPE_BADGE[item.card_type] || "bg-muted text-muted-foreground"}`}>
+                            {cardTypeLabel(item.card_type)}
+                          </span>
+                        )}
                       </div>
                     )}
                   </div>
