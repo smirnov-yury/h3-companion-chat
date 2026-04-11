@@ -3,8 +3,9 @@ const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 
 // Tier star tokens get their own color class instead of yellow
 const TIER_TOKENS = new Set(['bronze', 'silver', 'golden', 'azure']);
-// Resource tokens render in natural colors (no filter)
-const NATURAL_TOKENS = new Set(['gold', 'buildingmaterials', 'valuables']);
+// Resource tokens with special color handling
+const NATURAL_TOKENS = new Set(['gold', 'valuables']);
+const DARK_TOKENS = new Set(['buildingmaterials']);
 
 export function renderGlyphs(text: string | null | undefined, glyphs: GlyphMap): string {
   if (!text) return '';
@@ -17,6 +18,8 @@ export function renderGlyphs(text: string | null | undefined, glyphs: GlyphMap):
     let cssClass = 'glyph-icon';
     if (TIER_TOKENS.has(lowerToken)) {
       cssClass = `glyph-icon glyph-tier-${lowerToken}`;
+    } else if (DARK_TOKENS.has(lowerToken)) {
+      cssClass = 'glyph-icon glyph-dark';
     } else if (NATURAL_TOKENS.has(lowerToken)) {
       cssClass = 'glyph-icon glyph-natural';
     }

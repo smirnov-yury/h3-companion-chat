@@ -75,21 +75,26 @@
   filter: brightness(0) saturate(100%) invert(78%) sepia(44%) saturate(600%) hue-rotate(2deg) brightness(98%);
 }
 
-/* Tier star overrides */
+/* Tier star overrides — match unit badge colors exactly */
 .glyph-tier-bronze {
-  filter: brightness(0) saturate(100%) invert(30%) sepia(90%) saturate(1500%) hue-rotate(20deg) brightness(95%) !important;
+  filter: brightness(0) saturate(100%) invert(30%) sepia(95%) saturate(1800%) hue-rotate(25deg) brightness(88%) !important;
 }
 .glyph-tier-silver {
-  filter: brightness(0) saturate(100%) invert(70%) sepia(10%) saturate(400%) hue-rotate(185deg) brightness(95%) !important;
+  filter: brightness(0) saturate(100%) invert(47%) sepia(10%) saturate(500%) hue-rotate(180deg) brightness(95%) !important;
 }
 .glyph-tier-golden {
   filter: brightness(0) saturate(100%) invert(78%) sepia(44%) saturate(600%) hue-rotate(2deg) brightness(98%) !important;
 }
 .glyph-tier-azure {
-  filter: brightness(0) saturate(100%) invert(80%) sepia(50%) saturate(1000%) hue-rotate(155deg) brightness(100%) !important;
+  filter: brightness(0) saturate(100%) invert(40%) sepia(90%) saturate(1200%) hue-rotate(155deg) brightness(95%) !important;
 }
 
-/* Resource icons: render in natural/original colors */
+/* Resource icons: natural/original colors */
 .glyph-natural {
   filter: none !important;
+}
+
+/* Building materials: dark gray (#4b5563) */
+.glyph-dark {
+  filter: brightness(0) saturate(100%) invert(32%) sepia(10%) saturate(400%) hue-rotate(180deg) brightness(95%) !important;
 }
