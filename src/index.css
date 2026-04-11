@@ -70,6 +70,26 @@
 .dot-2 { animation: pulse-dots 1.4s infinite 0.2s; }
 .dot-3 { animation: pulse-dots 1.4s infinite 0.4s; }
 
+/* Default yellow filter for most glyphs */
 .glyph-icon {
   filter: brightness(0) saturate(100%) invert(78%) sepia(44%) saturate(600%) hue-rotate(2deg) brightness(98%);
+}
+
+/* Tier star overrides */
+.glyph-tier-bronze {
+  filter: brightness(0) saturate(100%) invert(35%) sepia(80%) saturate(600%) hue-rotate(15deg) brightness(90%) !important;
+}
+.glyph-tier-silver {
+  filter: brightness(0) saturate(100%) invert(75%) sepia(10%) saturate(300%) hue-rotate(180deg) brightness(100%) !important;
+}
+.glyph-tier-golden {
+  filter: brightness(0) saturate(100%) invert(78%) sepia(44%) saturate(600%) hue-rotate(2deg) brightness(98%) !important;
+}
+.glyph-tier-azure {
+  filter: brightness(0) saturate(100%) invert(75%) sepia(50%) saturate(500%) hue-rotate(150deg) brightness(105%) !important;
+}
+
+/* Resource icons: render in natural/original colors */
+.glyph-natural {
+  filter: none !important;
 }
