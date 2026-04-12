@@ -340,31 +340,8 @@ export default function UnitsTab() {
                       {lang === 'RU' && u.name_ru ? u.name_ru : u.name_en}
                     </div>
                   )}
-                </div>
-
-                {/* MIDDLE: Info header */}
-                <div className="px-4 pt-3 pb-2 shrink-0">
-                  <h2 className="text-xl font-bold mb-1">
-                    {lang === 'RU' && u.name_ru ? u.name_ru : u.name_en}
-                  </h2>
-                  {variants.length > 1 && (
-                    <div className="flex items-center gap-2 flex-wrap mb-2">
-                      {variants.map((v) => (
-                        <button
-                          key={v.id}
-                          onClick={() => setActiveVariant(v.number)}
-                          className={`px-2 py-0.5 text-xs rounded-full border transition-colors ${
-                            (currentVariant === v.number)
-                              ? 'bg-primary text-primary-foreground border-primary'
-                              : 'bg-transparent text-muted-foreground border-border hover:border-primary/50'
-                          }`}
-                        >
-                          {v.number}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                  <div className="flex items-center gap-1.5 flex-wrap">
+                  {/* Badges on image top-left */}
+                  <div className="absolute top-5 left-5 flex flex-col gap-1">
                     <span className={`text-[11px] font-medium px-2 py-0.5 rounded text-white ${TIER_COLOR[u.tier] ?? 'bg-muted'}`}>
                       {capitalize(u.tier)}
                     </span>
@@ -374,6 +351,34 @@ export default function UnitsTab() {
                       </span>
                     )}
                   </div>
+                </div>
+
+                {/* MIDDLE: Info header */}
+                <div className="px-4 pt-1 pb-2 shrink-0">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h2 className="text-xl font-bold">
+                        {lang === 'RU' && u.name_ru ? u.name_ru : u.name_en}
+                      </h2>
+                      {variants.length > 1 && (
+                        <div className="flex items-center gap-2 flex-wrap mt-1">
+                          {variants.map((v) => (
+                            <button
+                              key={v.id}
+                              onClick={() => setActiveVariant(v.number)}
+                              className={`px-2 py-0.5 text-xs rounded-full border transition-colors ${
+                                (currentVariant === v.number)
+                                  ? 'bg-primary text-primary-foreground border-primary'
+                                  : 'bg-transparent text-muted-foreground border-border hover:border-primary/50'
+                              }`}
+                            >
+                              {v.number}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
                   {/* Compact stats row */}
                   <div className="flex items-center gap-3 text-sm font-medium mt-2 flex-wrap">
                     <span className="flex items-center gap-1"><Swords className="w-4 h-4 text-red-400" />{u.attack}</span>
@@ -382,7 +387,7 @@ export default function UnitsTab() {
                     <span className="flex items-center gap-1"><Zap className="w-4 h-4 text-yellow-400" />{u.initiative}</span>
                     {u.cost && (
                       <span className="flex items-center gap-1 ml-auto text-muted-foreground">
-                        <GlyphText text={`${lang === 'RU' ? 'Стоимость' : 'Cost'}: ${u.cost}`} />
+                        <GlyphText text={`${lang === 'RU' ? 'Цена' : 'Price'}: ${u.cost}`} />
                       </span>
                     )}
                   </div>
@@ -392,7 +397,11 @@ export default function UnitsTab() {
                 <div className="flex-1 overflow-y-auto px-4 pb-4">
                   {abilities && (
                     <div className="text-sm leading-relaxed">
-                      <p className="font-semibold mb-1">{lang === 'RU' ? 'Способности' : 'Abilities'}</p>
+                      {/* Decorative divider */}
+                      <div className="relative my-2">
+                        <div className="border-t border-muted" />
+                        <span className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 bg-background px-2 text-xs text-muted-foreground">✦</span>
+                      </div>
                       <GlyphText text={abilities} />
                     </div>
                   )}
