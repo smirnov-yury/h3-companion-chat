@@ -332,11 +332,11 @@ export default function UnitsTab() {
                     <img
                       src={imgSrc}
                       alt={u.name_en}
-                      className="w-[220px] h-[308px] object-contain rounded-lg shadow-lg"
+                      className="w-[200px] h-[280px] object-contain rounded-lg shadow-lg"
                       onError={(e) => { e.currentTarget.style.display = 'none'; }}
                     />
                   ) : (
-                    <div className="w-[220px] h-[308px] rounded-lg bg-muted flex items-center justify-center text-muted-foreground text-sm text-center p-2">
+                    <div className="w-[200px] h-[280px] rounded-lg bg-muted flex items-center justify-center text-muted-foreground text-sm text-center p-2">
                       {lang === 'RU' && u.name_ru ? u.name_ru : u.name_en}
                     </div>
                   )}
@@ -374,22 +374,42 @@ export default function UnitsTab() {
                       </span>
                     )}
                   </div>
-                  {/* Compact stats row */}
-                  <div className="flex items-center gap-3 text-sm font-medium mt-2 flex-wrap">
-                    <span className="flex items-center gap-1"><Swords className="w-4 h-4 text-red-400" />{u.attack}</span>
-                    <span className="flex items-center gap-1"><Shield className="w-4 h-4 text-blue-400" />{u.defense}</span>
-                    <span className="flex items-center gap-1"><Heart className="w-4 h-4 text-green-400" />{u.health_points}</span>
-                    <span className="flex items-center gap-1"><Zap className="w-4 h-4 text-yellow-400" />{u.initiative}</span>
-                    {u.cost && (
-                      <span className="flex items-center gap-1 ml-auto text-muted-foreground">
-                        <GlyphText text={`${lang === 'RU' ? 'Стоимость' : 'Cost'}: ${u.cost}`} />
-                      </span>
-                    )}
-                  </div>
                 </div>
 
                 {/* BOTTOM: Scrollable content */}
                 <div className="flex-1 overflow-y-auto px-4 pb-4">
+                  {/* 4-stat grid */}
+                  <div className="grid grid-cols-4 gap-2 mb-3">
+                    <div className="bg-muted/50 rounded-lg p-2 text-center">
+                      <Swords className="w-4 h-4 text-red-400 mx-auto mb-1" />
+                      <p className="text-xs text-muted-foreground">ATK</p>
+                      <p className="text-sm font-semibold">{u.attack}</p>
+                    </div>
+                    <div className="bg-muted/50 rounded-lg p-2 text-center">
+                      <Shield className="w-4 h-4 text-blue-400 mx-auto mb-1" />
+                      <p className="text-xs text-muted-foreground">DEF</p>
+                      <p className="text-sm font-semibold">{u.defense}</p>
+                    </div>
+                    <div className="bg-muted/50 rounded-lg p-2 text-center">
+                      <Heart className="w-4 h-4 text-green-400 mx-auto mb-1" />
+                      <p className="text-xs text-muted-foreground">HP</p>
+                      <p className="text-sm font-semibold">{u.health_points}</p>
+                    </div>
+                    <div className="bg-muted/50 rounded-lg p-2 text-center">
+                      <Zap className="w-4 h-4 text-yellow-400 mx-auto mb-1" />
+                      <p className="text-xs text-muted-foreground">INI</p>
+                      <p className="text-sm font-semibold">{u.initiative}</p>
+                    </div>
+                  </div>
+
+                  {/* Cost */}
+                  {u.cost && (
+                    <p className="text-sm font-medium mb-2">
+                      <GlyphText text={`${lang === 'RU' ? 'Стоимость' : 'Cost'}: ${u.cost}`} />
+                    </p>
+                  )}
+
+                  {/* Abilities */}
                   {abilities && (
                     <div className="text-sm leading-relaxed">
                       <p className="font-semibold mb-1">{lang === 'RU' ? 'Способности' : 'Abilities'}</p>
@@ -397,6 +417,7 @@ export default function UnitsTab() {
                     </div>
                   )}
 
+                  {/* Notes */}
                   {notes && (
                     <div className="text-sm text-muted-foreground leading-relaxed mt-2">
                       <GlyphText text={notes} />
