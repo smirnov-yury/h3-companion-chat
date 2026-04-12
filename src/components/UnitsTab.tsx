@@ -327,7 +327,7 @@ export default function UnitsTab() {
             return (
               <>
                 {/* TOP: Image section */}
-                <div className="relative flex justify-center pt-4 px-4 shrink-0">
+                <div className="flex justify-center pt-4 px-4 shrink-0">
                   {imgSrc ? (
                     <img
                       src={imgSrc}
@@ -340,42 +340,37 @@ export default function UnitsTab() {
                       {lang === 'RU' && u.name_ru ? u.name_ru : u.name_en}
                     </div>
                   )}
-                  {/* Badges on image top-left */}
-                  <div className="absolute top-5 left-5 flex flex-col gap-1">
-                    <span className={`text-[11px] font-medium px-2 py-0.5 rounded text-white ${TIER_COLOR[u.tier] ?? 'bg-muted'}`}>
-                      {capitalize(u.tier)}
-                    </span>
-                    {u.type && TYPE_BADGE[u.type] && (
-                      <span className={`text-[11px] font-medium px-2 py-0.5 rounded text-white ${TYPE_BADGE[u.type].color}`}>
-                        {TYPE_BADGE[u.type].label}
-                      </span>
-                    )}
-                  </div>
                 </div>
 
                 {/* MIDDLE: Info header */}
                 <div className="px-4 pt-1 pb-2 shrink-0">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h2 className="text-xl font-bold">
-                        {lang === 'RU' && u.name_ru ? u.name_ru : u.name_en}
-                      </h2>
-                      {variants.length > 1 && (
-                        <div className="flex items-center gap-2 flex-wrap mt-1">
-                          {variants.map((v) => (
-                            <button
-                              key={v.id}
-                              onClick={() => setActiveVariant(v.number)}
-                              className={`px-2 py-0.5 text-xs rounded-full border transition-colors ${
-                                (currentVariant === v.number)
-                                  ? 'bg-primary text-primary-foreground border-primary'
-                                  : 'bg-transparent text-muted-foreground border-border hover:border-primary/50'
-                              }`}
-                            >
-                              {v.number}
-                            </button>
-                          ))}
-                        </div>
+                  <h2 className="text-xl font-bold">
+                    {lang === 'RU' && u.name_ru ? u.name_ru : u.name_en}
+                  </h2>
+                  <div className="flex justify-between items-start mt-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      {variants.length > 1 && variants.map((v) => (
+                        <button
+                          key={v.id}
+                          onClick={() => setActiveVariant(v.number)}
+                          className={`px-2 py-0.5 text-xs rounded-full border transition-colors ${
+                            (currentVariant === v.number)
+                              ? 'bg-primary text-primary-foreground border-primary'
+                              : 'bg-transparent text-muted-foreground border-border hover:border-primary/50'
+                          }`}
+                        >
+                          {v.number}
+                        </button>
+                      ))}
+                    </div>
+                    <div className="flex flex-col gap-1 items-end">
+                      <span className={`text-[11px] font-medium px-2 py-0.5 rounded text-white ${TIER_COLOR[u.tier] ?? 'bg-muted'}`}>
+                        {capitalize(u.tier)}
+                      </span>
+                      {u.type && TYPE_BADGE[u.type] && (
+                        <span className={`text-[11px] font-medium px-2 py-0.5 rounded text-white ${TYPE_BADGE[u.type].color}`}>
+                          {TYPE_BADGE[u.type].label}
+                        </span>
                       )}
                     </div>
                   </div>
