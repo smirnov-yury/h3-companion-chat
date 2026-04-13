@@ -327,16 +327,16 @@ export default function UnitsTab() {
             return (
               <>
                 {/* TOP: Image section */}
-                <div className="relative flex justify-center pt-4 px-4 shrink-0">
+                <div className="relative w-[85%] mx-auto pt-4 shrink-0">
                   {imgSrc ? (
                     <img
                       src={imgSrc}
                       alt={u.name_en}
-                      className="w-[220px] h-[308px] object-contain rounded-lg shadow-lg"
+                      className="w-full aspect-[5/7] object-contain rounded-lg shadow-lg"
                       onError={(e) => { e.currentTarget.style.display = 'none'; }}
                     />
                   ) : (
-                    <div className="w-[220px] h-[308px] rounded-lg bg-muted flex items-center justify-center text-muted-foreground text-sm text-center p-2">
+                    <div className="w-full aspect-[5/7] rounded-lg bg-muted flex items-center justify-center text-muted-foreground text-sm text-center p-2">
                       {lang === 'RU' && u.name_ru ? u.name_ru : u.name_en}
                     </div>
                   )}
