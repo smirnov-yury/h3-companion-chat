@@ -1,8 +1,9 @@
 import { useState, useEffect, useMemo } from "react";
-import { Search, Map as MapIcon, BookOpen, Users, Clock, Gauge, Swords, Heart, Crown, Shield, User } from "lucide-react";
+import { Search, Map as MapIcon, BookOpen, Users, Clock, Gauge, Swords, Heart, Crown, Shield, User, SlidersHorizontal } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/context/LanguageContext";
 import ScenarioDetail from "@/components/ScenarioDetail";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 interface Scenario {
   id: string;
@@ -31,11 +32,7 @@ interface Scenario {
   book_title_ru?: string | null;
 }
 
-interface Book {
-  id: string;
-  title_en: string;
-  title_ru: string | null;
-}
+interface Book { id: string; title_en: string; title_ru: string | null; }
 
 const MODE_COLORS: Record<string, string> = {
   clash: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300",
@@ -45,14 +42,10 @@ const MODE_COLORS: Record<string, string> = {
   solo: "bg-slate-100 text-slate-700 dark:bg-slate-900/40 dark:text-slate-300",
 };
 
-const MODE_LABELS_EN: Record<string, string> = { clash: "Clash", cooperative: "Cooperative", campaign: "Campaign", alliance: "Alliance", solo: "Solo" };
+const MODE_LABELS_EN: Record<string, string> = { clash: "Clash", cooperative: "Coop", campaign: "Campaign", alliance: "Alliance", solo: "Solo" };
 const MODE_LABELS_RU: Record<string, string> = { clash: "Столкновение", cooperative: "Кооператив", campaign: "Кампания", alliance: "Альянс", solo: "Соло" };
 const MODE_ICONS: Record<string, typeof Swords> = { clash: Swords, cooperative: Heart, campaign: Crown, alliance: Shield, solo: User };
 const MODE_ORDER = ["clash", "cooperative", "campaign", "alliance", "solo"];
-
-const PILL_ACTIVE = "bg-primary text-primary-foreground";
-const PILL_INACTIVE = "bg-muted text-muted-foreground";
-const PILL_CLASS = "shrink-0 px-2.5 py-1 rounded-full text-[11px] font-medium transition-colors";
 
 interface Props { searchQuery?: string; }
 
@@ -62,9 +55,17 @@ export default function ScenariosTab({ searchQuery = "" }: Props) {
   const [books, setBooks] = useState<Book[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [selected, setSelected] = useState<Scenario | null>(null);
+  const [sheetOpen, setSheetOpen] = useState(false);
+
+  // Applied filters
   const [filterMode, setFilterMode] = useState("all");
   const [filterPlayers, setFilterPlayers] = useState("all");
   const [filterBook, setFilterBook] = useState("all");
+
+  // Draft filters (inside sheet)
+  const [draftMode, setDraftMode] = useState("all");
+  const [draftPlayers, setDraftPlayers] = useState("all");
+  const [draftBook, setDraftBook] = useState("all");
 
   useEffect(() => {
     (async () => {
@@ -83,8 +84,9 @@ export default function ScenariosTab({ searchQuery = "" }: Props) {
     })();
   }, []);
 
-  const q = searchQuery.toLowerCase();
+  const activeCount = [filterMode, filterPlayers, filterBook].filter(f => f !== "all").length;
 
+  const q = searchQuery.toLowerCase();
   const filtered = useMemo(() => {
     let result = scenarios;
     if (filterMode !== "all") result = result.filter(s => s.mode === filterMode);
@@ -122,45 +124,43 @@ export default function ScenariosTab({ searchQuery = "" }: Props) {
     .map(mode => ({ mode, items: filtered.filter(s => s.mode === mode) }))
     .filter(g => g.items.length > 0);
 
-  if (!loaded) return <div className="flex items-center justify-center h-full"><p className="text-muted-foreground text-sm">{lang === "RU" ? "Загрузка…" : "Loading…"}</p></div>;
+  const openSheet = () => {
+    setDraftMode(filterMode);
+    setDraftPlayers(filterPlayers);
+    setDraftBook(filterBook);
+    setSheetOpen(true);
+  };
+
+  const applyFilters = () => {
+    setFilterMode(draftMode);
+    setFilterPlayers(draftPlayers);
+    setFilterBook(draftBook);
+    setSheetOpen(false);
+  };
+
+  const resetDraft = () => {
+    setDraftMode("all");
+    setDraftPlayers("all");
+    setDraftBook("all");
+  };
 
   const allLabel = lang === "RU" ? "Все" : "All";
+  const PILL = "px-3 py-1.5 rounded-full text-xs font-medium transition-colors text-center";
+  const PILL_ON = "bg-primary text-primary-foreground";
+  const PILL_OFF = "bg-muted text-muted-foreground";
+
+  if (!loaded) return <div className="flex items-center justify-center h-full"><p className="text-muted-foreground text-sm">{lang === "RU" ? "Загрузка…" : "Loading…"}</p></div>;
 
   return (
     <>
       <div className="flex flex-col h-full">
-        {/* Filter Row 1: Mode */}
-        <div className="flex gap-1.5 overflow-x-auto px-3 pt-3 pb-1 scrollbar-none shrink-0">
-          {["all", ...MODE_ORDER].map(m => (
-            <button key={m} onClick={() => setFilterMode(m)}
-              className={`${PILL_CLASS} ${filterMode === m ? PILL_ACTIVE : PILL_INACTIVE}`}>
-              {m === "all" ? allLabel : modeLabel(m)}
-            </button>
-          ))}
-        </div>
-
-        {/* Filter Row 2: Players */}
-        <div className="flex gap-1.5 overflow-x-auto px-3 pb-1 scrollbar-none shrink-0">
-          {["all", "1", "2", "3", "4"].map(p => (
-            <button key={p} onClick={() => setFilterPlayers(p)}
-              className={`${PILL_CLASS} ${filterPlayers === p ? PILL_ACTIVE : PILL_INACTIVE}`}>
-              {p === "all" ? allLabel : `${p}P`}
-            </button>
-          ))}
-        </div>
-
-        {/* Filter Row 3: Book */}
-        <div className="flex gap-1.5 overflow-x-auto px-3 pb-2 scrollbar-none shrink-0">
-          <button onClick={() => setFilterBook("all")}
-            className={`${PILL_CLASS} ${filterBook === "all" ? PILL_ACTIVE : PILL_INACTIVE}`}>
-            {allLabel}
+        {/* Filter button */}
+        <div className="px-3 pt-3 pb-2 shrink-0">
+          <button onClick={openSheet}
+            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors ${activeCount > 0 ? "border-primary bg-primary/10 text-primary" : "border-border bg-card text-muted-foreground"}`}>
+            <SlidersHorizontal size={14} />
+            {lang === "RU" ? "Фильтры" : "Filters"}{activeCount > 0 && ` · ${activeCount}`}
           </button>
-          {books.map(b => (
-            <button key={b.id} onClick={() => setFilterBook(b.id)}
-              className={`${PILL_CLASS} ${filterBook === b.id ? PILL_ACTIVE : PILL_INACTIVE}`}>
-              {bookLabel(b)}
-            </button>
-          ))}
         </div>
 
         <div className="p-3 pt-0 overflow-y-auto flex-1">
@@ -213,6 +213,72 @@ export default function ScenariosTab({ searchQuery = "" }: Props) {
           )}
         </div>
       </div>
+
+      {/* Filter Bottom Sheet */}
+      <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+        <SheetContent side="bottom" className="h-[70dvh] rounded-t-2xl flex flex-col">
+          <SheetHeader className="shrink-0">
+            <SheetTitle>{lang === "RU" ? "Фильтры" : "Filters"}</SheetTitle>
+          </SheetHeader>
+
+          <div className="flex-1 overflow-y-auto space-y-5 py-4">
+            {/* Mode */}
+            <div>
+              <p className="text-xs font-semibold text-muted-foreground mb-2">{lang === "RU" ? "Режим" : "Mode"}</p>
+              <div className="grid grid-cols-3 gap-1.5">
+                {["all", ...MODE_ORDER].map(m => (
+                  <button key={m} onClick={() => setDraftMode(m)}
+                    className={`${PILL} ${draftMode === m ? PILL_ON : PILL_OFF}`}>
+                    {m === "all" ? allLabel : modeLabel(m)}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Players */}
+            <div>
+              <p className="text-xs font-semibold text-muted-foreground mb-2">{lang === "RU" ? "Игроки" : "Players"}</p>
+              <div className="grid grid-cols-5 gap-1.5">
+                {["all", "1", "2", "3", "4"].map(p => (
+                  <button key={p} onClick={() => setDraftPlayers(p)}
+                    className={`${PILL} ${draftPlayers === p ? PILL_ON : PILL_OFF}`}>
+                    {p === "all" ? allLabel : p}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Book */}
+            <div>
+              <p className="text-xs font-semibold text-muted-foreground mb-2">{lang === "RU" ? "Книга" : "Book"}</p>
+              <div className="grid grid-cols-2 gap-1.5">
+                <button onClick={() => setDraftBook("all")}
+                  className={`${PILL} ${draftBook === "all" ? PILL_ON : PILL_OFF}`}>
+                  {allLabel}
+                </button>
+                {books.map(b => (
+                  <button key={b.id} onClick={() => setDraftBook(b.id)}
+                    className={`${PILL} ${draftBook === b.id ? PILL_ON : PILL_OFF}`}>
+                    {bookLabel(b)}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom actions */}
+          <div className="flex gap-3 pt-3 pb-2 border-t border-border shrink-0">
+            <button onClick={resetDraft}
+              className="flex-1 py-2.5 rounded-xl text-sm font-medium border border-border text-muted-foreground hover:bg-muted transition-colors">
+              {lang === "RU" ? "Сбросить" : "Reset"}
+            </button>
+            <button onClick={applyFilters}
+              className="flex-1 py-2.5 rounded-xl text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition-colors">
+              {lang === "RU" ? "Применить" : "Apply"}
+            </button>
+          </div>
+        </SheetContent>
+      </Sheet>
 
       {selected && (
         <ScenarioDetail scenario={selected} onClose={() => setSelected(null)} />
