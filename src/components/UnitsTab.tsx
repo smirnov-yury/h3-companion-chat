@@ -355,29 +355,27 @@ export default function UnitsTab() {
 
                 {/* MIDDLE: Info header */}
                 <div className="px-4 pt-1 pb-2 shrink-0">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <h2 className="text-xl font-bold">
-                        {lang === 'RU' && u.name_ru ? u.name_ru : u.name_en}
-                      </h2>
-                      {variants.length > 1 && (
-                        <div className="flex items-center gap-2 flex-wrap mt-1">
-                          {variants.map((v) => (
-                            <button
-                              key={v.id}
-                              onClick={() => setActiveVariant(v.number)}
-                              className={`px-2 py-0.5 text-xs rounded-full border transition-colors ${
-                                (currentVariant === v.number)
-                                  ? 'bg-primary text-primary-foreground border-primary'
-                                  : 'bg-transparent text-muted-foreground border-border hover:border-primary/50'
-                              }`}
-                            >
-                              {v.number}
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                    </div>
+                  <div className="flex items-center justify-between gap-2 mt-1">
+                    <h2 className="text-xl font-bold truncate">
+                      {lang === 'RU' && u.name_ru ? u.name_ru : u.name_en}
+                    </h2>
+                    {variants.length > 1 && (
+                      <div className="flex gap-1 shrink-0">
+                        {variants.map((v) => (
+                          <button
+                            key={v.id}
+                            onClick={() => setActiveVariant(v.number)}
+                            className={`px-2 py-0.5 text-xs rounded-full border transition-colors ${
+                              (currentVariant === v.number)
+                                ? 'bg-primary text-primary-foreground border-primary'
+                                : 'bg-transparent text-muted-foreground border-border hover:border-primary/50'
+                            }`}
+                          >
+                            {v.number}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
                   {/* Compact stats row */}
                   <div className="flex items-center gap-3 text-sm font-medium mt-2 flex-wrap">
