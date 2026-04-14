@@ -88,7 +88,7 @@ export default function StatisticsTab({ searchQuery = "" }: Props) {
               <p className="text-sm">{lang === "RU" ? "Ничего не найдено" : "Nothing found"}</p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            <div className="grid <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3"> gap-3">
               {filtered.map((item) => {
                 const imgSrc = item.image ? `${STORAGE}/statistics/${item.image}` : null;
                 return (
