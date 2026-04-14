@@ -259,7 +259,7 @@ export default function UnitsTab() {
             {lang === 'RU' ? 'Юниты не найдены' : 'No units found'}
           </div>
         ) : (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
             {displayItems.map((item) => {
               const unit = item.unit;
               const imgSrc = unit.image ? `${STORAGE}/units/${unit.image}` : null;
