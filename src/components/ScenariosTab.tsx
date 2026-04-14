@@ -145,7 +145,7 @@ export default function ScenariosTab({ searchQuery = "" }: Props) {
   };
 
   const allLabel = lang === "RU" ? "Все" : "All";
-  const PILL = "px-3 py-1.5 rounded-full text-xs font-medium transition-colors text-center";
+  const PILL = "px-3 py-1.5 lg:px-4 lg:py-2 rounded-full text-xs font-medium transition-colors text-center w-auto";
   const PILL_ON = "bg-primary text-primary-foreground";
   const PILL_OFF = "bg-muted text-muted-foreground";
 
