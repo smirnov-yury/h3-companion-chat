@@ -327,7 +327,7 @@ export default function UnitsTab() {
             return (
               <>
                 {/* TOP: Image section */}
-                <div className="relative w-[85%] mx-auto pt-4 shrink-0">
+                <div className="relative w-[85%] mx-auto pt-4 mb-0 shrink-0">
                   {imgSrc ? (
                     <img
                       src={imgSrc}
@@ -354,7 +354,7 @@ export default function UnitsTab() {
                 </div>
 
                 {/* MIDDLE: Info header */}
-                <div className="px-4 pt-1 pb-2 shrink-0">
+                <div className="px-4 pt-0 pb-0 shrink-0">
                   <div className="flex items-center justify-between gap-2 mt-1">
                     <h2 className="text-xl font-bold truncate">
                       {lang === 'RU' && u.name_ru ? u.name_ru : u.name_en}
@@ -378,7 +378,7 @@ export default function UnitsTab() {
                     )}
                   </div>
                   {/* Compact stats row */}
-                  <div className="flex items-center gap-3 text-sm font-medium mt-2 flex-wrap">
+                  <div className="flex items-center gap-3 text-sm font-medium mt-1 flex-wrap">
                     <span className="flex items-center gap-1"><Swords className="w-4 h-4 text-red-400" />{u.attack}</span>
                     <span className="flex items-center gap-1"><Shield className="w-4 h-4 text-blue-400" />{u.defense}</span>
                     <span className="flex items-center gap-1"><Heart className="w-4 h-4 text-green-400" />{u.health_points}</span>
@@ -389,17 +389,17 @@ export default function UnitsTab() {
                       </span>
                     )}
                   </div>
+                  {/* Decorative divider */}
+                  <div className="relative my-1">
+                    <div className="border-t border-muted" />
+                    <span className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 bg-background px-2 text-xs text-muted-foreground">✦</span>
+                  </div>
                 </div>
 
                 {/* BOTTOM: Scrollable content */}
                 <div className="flex-1 overflow-y-auto px-4 pb-4">
                   {abilities && (
                     <div className="text-sm leading-relaxed">
-                      {/* Decorative divider */}
-                      <div className="relative my-2">
-                        <div className="border-t border-muted" />
-                        <span className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 bg-background px-2 text-xs text-muted-foreground">✦</span>
-                      </div>
                       <GlyphText text={abilities} />
                     </div>
                   )}
