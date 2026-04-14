@@ -145,7 +145,7 @@ export default function ScenariosTab({ searchQuery = "" }: Props) {
   };
 
   const allLabel = lang === "RU" ? "Все" : "All";
-  const PILL = "px-3 py-1.5 rounded-full text-xs font-medium transition-colors text-center";
+  const PILL = "px-3 py-1.5 lg:px-4 lg:py-2 rounded-full text-xs font-medium transition-colors text-center w-auto";
   const PILL_ON = "bg-primary text-primary-foreground";
   const PILL_OFF = "bg-muted text-muted-foreground";
 
@@ -216,7 +216,7 @@ export default function ScenariosTab({ searchQuery = "" }: Props) {
 
       {/* Filter Bottom Sheet */}
       <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-        <SheetContent side="bottom" className="h-[70dvh] rounded-t-2xl flex flex-col">
+        <SheetContent side="bottom" className="h-[70dvh] rounded-t-2xl flex flex-col max-w-2xl lg:mx-auto">
           <SheetHeader className="shrink-0">
             <SheetTitle>{lang === "RU" ? "Фильтры" : "Filters"}</SheetTitle>
           </SheetHeader>
@@ -225,7 +225,7 @@ export default function ScenariosTab({ searchQuery = "" }: Props) {
             {/* Mode */}
             <div>
               <p className="text-xs font-semibold text-muted-foreground mb-2">{lang === "RU" ? "Режим" : "Mode"}</p>
-              <div className="grid grid-cols-3 gap-1.5">
+              <div className="flex flex-wrap gap-2">
                 {["all", ...MODE_ORDER].map(m => (
                   <button key={m} onClick={() => setDraftMode(m)}
                     className={`${PILL} ${draftMode === m ? PILL_ON : PILL_OFF}`}>
@@ -238,7 +238,7 @@ export default function ScenariosTab({ searchQuery = "" }: Props) {
             {/* Players */}
             <div>
               <p className="text-xs font-semibold text-muted-foreground mb-2">{lang === "RU" ? "Игроки" : "Players"}</p>
-              <div className="grid grid-cols-5 gap-1.5">
+              <div className="flex flex-wrap gap-2">
                 {["all", "1", "2", "3", "4"].map(p => (
                   <button key={p} onClick={() => setDraftPlayers(p)}
                     className={`${PILL} ${draftPlayers === p ? PILL_ON : PILL_OFF}`}>
@@ -251,7 +251,7 @@ export default function ScenariosTab({ searchQuery = "" }: Props) {
             {/* Book */}
             <div>
               <p className="text-xs font-semibold text-muted-foreground mb-2">{lang === "RU" ? "Книга" : "Book"}</p>
-              <div className="grid grid-cols-2 gap-1.5">
+              <div className="flex flex-wrap gap-2">
                 <button onClick={() => setDraftBook("all")}
                   className={`${PILL} ${draftBook === "all" ? PILL_ON : PILL_OFF}`}>
                   {allLabel}
