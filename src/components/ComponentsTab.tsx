@@ -40,19 +40,6 @@ export default function ComponentsTab({ onNavigateToRule }: ComponentsTabProps) 
   return (
     <div className="flex flex-col h-full">
       <div className="px-3 pt-3 pb-2 shrink-0 space-y-2">
-        <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
-          {SECTIONS.map((s) => (
-            <button
-              key={s.id}
-              onClick={() => handleSectionChange(s.id)}
-              className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-colors whitespace-nowrap ${
-                active === s.id ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-muted/70"
-              }`}
-            >
-              {lang === "RU" ? s.labelRU : s.labelEN}
-            </button>
-          ))}
-        </div>
         <div className="relative">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" size={14} />
           <input
@@ -68,6 +55,19 @@ export default function ComponentsTab({ onNavigateToRule }: ComponentsTabProps) 
               <X size={14} />
             </button>
           )}
+        </div>
+        <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+          {SECTIONS.map((s) => (
+            <button
+              key={s.id}
+              onClick={() => handleSectionChange(s.id)}
+              className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-colors whitespace-nowrap ${
+                active === s.id ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-muted/70"
+              }`}
+            >
+              {lang === "RU" ? s.labelRU : s.labelEN}
+            </button>
+          ))}
         </div>
       </div>
       <div className="flex-1 overflow-hidden">
