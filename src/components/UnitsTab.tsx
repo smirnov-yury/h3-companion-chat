@@ -397,9 +397,9 @@ export default function UnitsTab() {
                 </div>
 
                 {/* BOTTOM: Scrollable content */}
-                <div className="flex-1 overflow-y-auto px-4 pb-4">
+                <div className="flex-1 overflow-y-auto px-4 pb-4 pt-0">
                   {abilities && (
-                    <div className="text-sm leading-relaxed">
+                    <div className="text-sm leading-relaxed mt-0">
                       <GlyphText text={abilities} />
                     </div>
                   )}
