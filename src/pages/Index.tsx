@@ -38,7 +38,7 @@ export default function Index() {
     <div className="flex flex-col h-dvh">
       <TopAppBar title={title} onMenuClick={() => setDrawerOpen(true)} />
       <NavDrawer open={drawerOpen} onOpenChange={setDrawerOpen} active={tab} onChange={setTab} />
-      <div className="flex-1 flex flex-col overflow-hidden pt-14">
+      <div className="flex-1 flex flex-col overflow-hidden pt-14 lg:ml-56">
         {tab === "ai" ? (
           <ChatScreen />
         ) : tab === "rules" ? (
