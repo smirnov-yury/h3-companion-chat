@@ -108,12 +108,12 @@ export default function SpellsTab({ searchQuery = "" }: Props) {
                       {(item.school || item.level) && (
                         <div className="absolute top-2 left-2 flex flex-col gap-1">
                           {item.school && (
-                            <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-medium ${SCHOOL_COLORS[item.school] || "bg-muted text-muted-foreground"}`}>
+                            <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${SCHOOL_COLORS[item.school] || "bg-muted text-muted-foreground"}`}>
                               {item.school.charAt(0).toUpperCase() + item.school.slice(1)}
                             </span>
                           )}
                           {item.level && (
-                            <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-medium ${levelStyle(item.level)}`}>
+                            <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${levelStyle(item.level)}`}>
                               {formatLevel(item.level)}
                             </span>
                           )}

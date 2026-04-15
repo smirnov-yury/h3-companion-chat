@@ -96,7 +96,7 @@ export default function ArtifactsTab({ searchQuery = "" }: Props) {
                         : <p className="text-[10px] text-muted-foreground text-center px-1">{item.name_en}</p>
                       }
                       {item.quality && (
-                        <span className={`absolute top-1 left-1 text-[9px] px-1.5 py-0.5 rounded-full font-medium ${QUALITY_COLORS[item.quality] || "bg-muted text-muted-foreground"}`}>
+                      <span className={`absolute top-1 left-1 text-xs px-2 py-0.5 rounded-full font-medium ${QUALITY_COLORS[item.quality] || "bg-muted text-muted-foreground"}`}>
                           {QUALITY_LABELS[item.quality] || item.quality}
                         </span>
                       )}
