@@ -101,12 +101,12 @@ export default function StatisticsTab({ searchQuery = "" }: Props) {
                     {(item.stat_type || item.card_type) && (
                       <div className="absolute top-2 left-2 flex flex-col gap-1">
                         {item.stat_type && (
-                          <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-medium ${STAT_COLORS[item.stat_type] || "bg-muted text-muted-foreground"}`}>
+                          <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${STAT_COLORS[item.stat_type] || "bg-muted text-muted-foreground"}`}>
                             {item.stat_type.charAt(0).toUpperCase() + item.stat_type.slice(1)}
                           </span>
                         )}
                         {item.card_type && (
-                          <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-medium ${CARD_TYPE_BADGE[item.card_type] || "bg-muted text-muted-foreground"}`}>
+                          <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${CARD_TYPE_BADGE[item.card_type] || "bg-muted text-muted-foreground"}`}>
                             {cardTypeLabel(item.card_type)}
                           </span>
                         )}
