@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Search, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/context/LanguageContext";
 import { useGlyphs } from "@/context/GlyphsContext";
@@ -49,6 +50,7 @@ export default function HeroesTab() {
   const [heroes, setHeroes] = useState<Hero[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [faction, setFaction] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
   const [selected, setSelected] = useState<Hero | null>(null);
   const [specialtyTab, setSpecialtyTab] = useState(0);
 
@@ -66,7 +68,15 @@ export default function HeroesTab() {
   );
 
   const towns = Array.from(new Set(heroes.map(h => h.town).filter(Boolean) as string[])).sort();
-  const filtered = faction === "all" ? heroes : heroes.filter(h => h.town === faction);
+  const q = searchQuery.toLowerCase();
+  const filtered = heroes.filter(h => {
+    if (faction !== "all" && h.town !== faction) return false;
+    if (q) {
+      const n = lang === "RU" ? (h.name_ru || h.name_en) : h.name_en;
+      if (!n.toLowerCase().includes(q)) return false;
+    }
+    return true;
+  });
 
   const name = (h: Hero) => lang === "RU" && h.name_ru ? h.name_ru : h.name_en;
   const cls = (h: Hero) => lang === "RU" && h.class_ru ? h.class_ru : h.class_en;
@@ -88,7 +98,22 @@ export default function HeroesTab() {
 
   return (
     <div className="flex flex-col h-full overflow-y-auto">
-      <div className="px-3 pt-3 pb-2 shrink-0">
+      <div className="px-3 pt-3 pb-2 shrink-0 space-y-2">
+        <div className="relative">
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" size={14} />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder={lang === "RU" ? "Поиск героев…" : "Search heroes…"}
+            className="w-full bg-muted rounded-lg pl-8 pr-8 py-1.5 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-1 focus:ring-primary transition-all"
+          />
+          {searchQuery && (
+            <button onClick={() => setSearchQuery("")} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+              <X size={14} />
+            </button>
+          )}
+        </div>
         <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
           <button
             onClick={() => setFaction("all")}

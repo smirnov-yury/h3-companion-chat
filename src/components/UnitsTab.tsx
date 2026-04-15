@@ -4,7 +4,7 @@ import { useGlyphs } from '@/context/GlyphsContext';
 import { useLang } from '@/context/LanguageContext';
 import { renderGlyphs } from '@/utils/renderGlyphs';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { Swords, Shield, Heart, Zap } from 'lucide-react';
+import { Swords, Shield, Heart, Zap, Search, X } from 'lucide-react';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 const STORAGE = `${SUPABASE_URL}/storage/v1/object/public/component-media`;
@@ -140,9 +140,12 @@ export default function UnitsTab() {
   const tiers = ['all', 'bronze', 'silver', 'golden', 'azure'];
   const types = ['all', 'unit_ground', 'unit_ranged', 'unit_flying'];
 
+  const [searchQuery, setSearchQuery] = useState('');
+
   // Build display items based on filters
   const displayItems = useMemo(() => {
     const items: DisplayItem[] = [];
+    const q = searchQuery.toLowerCase();
 
     // Add faction groups (when mode is 'all' or 'standard')
     if (mode !== 'neutral') {
@@ -156,6 +159,11 @@ export default function UnitsTab() {
           variants.find((u) => u.number === 'Few') ||
           variants.find((u) => u.number === 'Pack') ||
           variants[0];
+
+        if (q && !variants.some((u) => {
+          const n = lang === 'RU' ? (u.name_ru || u.name_en) : u.name_en;
+          return n.toLowerCase().includes(q);
+        })) continue;
 
         // Sort variants by FACTION_VARIANT_ORDER
         const sorted = [...variants].sort(
@@ -171,12 +179,16 @@ export default function UnitsTab() {
       for (const u of neutralUnits) {
         if (filterTier !== 'all' && u.tier !== filterTier) continue;
         if (filterType !== 'all' && u.type !== filterType) continue;
+        if (q) {
+          const n = lang === 'RU' ? (u.name_ru || u.name_en) : u.name_en;
+          if (!n.toLowerCase().includes(q)) continue;
+        }
         items.push({ key: `neutral-${u.id}`, unit: u, variants: [u], isNeutral: true });
       }
     }
 
     return items;
-  }, [factionGroups, neutralUnits, mode, filterFaction, filterTier, filterType]);
+  }, [factionGroups, neutralUnits, mode, filterFaction, filterTier, filterType, searchQuery, lang]);
 
   // Find selected item for modal
   const selectedItem = useMemo(() => {
@@ -203,8 +215,24 @@ export default function UnitsTab() {
 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
-      {/* Filters */}
+      {/* Search + Filters */}
       <div className="shrink-0 p-3 space-y-2 border-b border-border bg-background">
+        {/* Search */}
+        <div className="relative">
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" size={14} />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder={lang === 'RU' ? 'Поиск юнитов…' : 'Search units…'}
+            className="w-full bg-muted rounded-lg pl-8 pr-8 py-1.5 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-1 focus:ring-primary transition-all"
+          />
+          {searchQuery && (
+            <button onClick={() => setSearchQuery('')} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+              <X size={14} />
+            </button>
+          )}
+        </div>
         {/* Row 1: Mode switch */}
         <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
           {(['all', 'standard', 'neutral'] as ModeFilter[]).map((m) => (
