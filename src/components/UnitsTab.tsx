@@ -4,7 +4,7 @@ import { useGlyphs } from '@/context/GlyphsContext';
 import { useLang } from '@/context/LanguageContext';
 import { renderGlyphs } from '@/utils/renderGlyphs';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { Swords, Shield, Heart, Zap, Search, X, ChevronDown, ChevronUp } from 'lucide-react';
+import { Swords, Shield, Heart, Zap, Search, X, ChevronDown, SlidersHorizontal } from 'lucide-react';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 const STORAGE = `${SUPABASE_URL}/storage/v1/object/public/component-media`;
