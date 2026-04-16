@@ -98,25 +98,25 @@ export default function AbilitiesTab({ searchQuery = "" }: Props) {
               {selected.effect_en && (
                 <div>
                   <p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Эффект" : "Effect"}</p>
-                  <p className="text-xs text-muted-foreground" dangerouslySetInnerHTML={{ __html: renderGlyphs(selected.effect_en, glyphs) }} />
+                  <p className="text-xs text-muted-foreground whitespace-pre-line" dangerouslySetInnerHTML={{ __html: renderGlyphs(selected.effect_en, glyphs) }} />
                 </div>
               )}
               {selected.effect_expert_en && (
                 <div>
                   <p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Эксперт" : "Expert"}</p>
-                  <p className="text-xs text-muted-foreground" dangerouslySetInnerHTML={{ __html: renderGlyphs(selected.effect_expert_en, glyphs) }} />
+                  <p className="text-xs text-muted-foreground whitespace-pre-line" dangerouslySetInnerHTML={{ __html: renderGlyphs(selected.effect_expert_en, glyphs) }} />
                 </div>
               )}
               {selected.effect_empowered_en && (
                 <div>
                   <p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Усиленный" : "Empowered"}</p>
-                  <p className="text-xs text-muted-foreground" dangerouslySetInnerHTML={{ __html: renderGlyphs(selected.effect_empowered_en, glyphs) }} />
+                  <p className="text-xs text-muted-foreground whitespace-pre-line" dangerouslySetInnerHTML={{ __html: renderGlyphs(selected.effect_empowered_en, glyphs) }} />
                 </div>
               )}
               {(lang === "RU" ? selected.notes_ru : selected.notes_en) && (
                 <div>
                   <p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Заметки" : "Notes"}</p>
-                  <p className="text-xs text-muted-foreground" dangerouslySetInnerHTML={{ __html: renderGlyphs(lang === "RU" ? selected.notes_ru : selected.notes_en, glyphs) }} />
+                  <p className="text-xs text-muted-foreground whitespace-pre-line" dangerouslySetInnerHTML={{ __html: renderGlyphs(lang === "RU" ? selected.notes_ru : selected.notes_en, glyphs) }} />
                 </div>
               )}
             </div>

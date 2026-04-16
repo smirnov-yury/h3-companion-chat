@@ -121,8 +121,8 @@ export default function ArtifactsTab({ searchQuery = "" }: Props) {
             <div className="overflow-y-auto flex-1 pr-1 space-y-3">
               {selected.image && <img src={`${STORAGE}/artifacts/${selected.image}`} alt={selected.name_en} className="max-h-[40vh] w-auto mx-auto rounded-lg object-contain" />}
               {selected.quality && <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${QUALITY_COLORS[selected.quality] || "bg-muted text-muted-foreground"}`}>{QUALITY_LABELS[selected.quality] || selected.quality}</span>}
-              {selected.effect_en && <div><p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Эффект" : "Effect"}</p><p className="text-xs text-muted-foreground" dangerouslySetInnerHTML={{ __html: renderGlyphs(lang === "RU" ? (selected.effect_ru || selected.effect_en) : selected.effect_en, glyphs) }} /></div>}
-              {selected.description_en && <div><p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Описание" : "Description"}</p><p className="text-xs text-muted-foreground" dangerouslySetInnerHTML={{ __html: renderGlyphs(lang === "RU" ? (selected.description_ru || selected.description_en) : selected.description_en, glyphs) }} /></div>}
+              {selected.effect_en && <div><p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Эффект" : "Effect"}</p><p className="text-xs text-muted-foreground whitespace-pre-line" dangerouslySetInnerHTML={{ __html: renderGlyphs(lang === "RU" ? (selected.effect_ru || selected.effect_en) : selected.effect_en, glyphs) }} /></div>}
+              {selected.description_en && <div><p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Описание" : "Description"}</p><p className="text-xs text-muted-foreground whitespace-pre-line" dangerouslySetInnerHTML={{ __html: renderGlyphs(lang === "RU" ? (selected.description_ru || selected.description_en) : selected.description_en, glyphs) }} /></div>}
             </div>
           )}
         </DialogContent>
