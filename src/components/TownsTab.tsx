@@ -159,7 +159,7 @@ export default function TownsTab() {
         {/* Notes */}
         {notes && (
           <div
-            className="text-xs text-muted-foreground"
+            className="text-xs text-muted-foreground whitespace-pre-line"
             dangerouslySetInnerHTML={{ __html: renderGlyphs(notes, glyphs) }}
           />
         )}
@@ -182,14 +182,14 @@ export default function TownsTab() {
                     />
                     {b.cost && (
                       <span
-                        className="text-xs text-muted-foreground shrink-0"
+                        className="text-xs text-muted-foreground shrink-0 whitespace-pre-line"
                         dangerouslySetInnerHTML={{ __html: renderGlyphs(b.cost, glyphs) }}
                       />
                     )}
                   </div>
                   {bEffect && (
                     <div
-                      className="text-xs text-muted-foreground mt-1"
+                      className="text-xs text-muted-foreground mt-1 whitespace-pre-line"
                       dangerouslySetInnerHTML={{ __html: renderGlyphs(bEffect, glyphs) }}
                     />
                   )}
