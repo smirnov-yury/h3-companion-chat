@@ -94,6 +94,7 @@ export default function UnitsTab() {
   const [filterTier, setFilterTier] = useState('all');
   const [filterType, setFilterType] = useState('all');
   const [mode, setMode] = useState<ModeFilter>('all');
+  const [filtersOpen, setFiltersOpen] = useState(false);
 
   useEffect(() => {
     supabase
