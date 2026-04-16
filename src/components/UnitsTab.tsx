@@ -4,7 +4,7 @@ import { useGlyphs } from '@/context/GlyphsContext';
 import { useLang } from '@/context/LanguageContext';
 import { renderGlyphs } from '@/utils/renderGlyphs';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { Swords, Shield, Heart, Zap, Search, X, ChevronDown, ChevronUp } from 'lucide-react';
+import { Swords, Shield, Heart, Zap, Search, X, ChevronDown, SlidersHorizontal } from 'lucide-react';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 const STORAGE = `${SUPABASE_URL}/storage/v1/object/public/component-media`;
@@ -218,71 +218,77 @@ export default function UnitsTab() {
     <div className="flex-1 flex flex-col overflow-hidden">
       {/* Search + Filters */}
       <div className="shrink-0 p-3 space-y-2 border-b border-border bg-background">
-        {/* Search */}
-        <div className="relative">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" size={14} />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder={lang === 'RU' ? 'Поиск юнитов…' : 'Search units…'}
-            className="w-full bg-muted rounded-lg pl-8 pr-8 py-1.5 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-1 focus:ring-primary transition-all"
-          />
-          {searchQuery && (
-            <button onClick={() => setSearchQuery('')} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
-              <X size={14} />
-            </button>
-          )}
-        </div>
-
-        {/* MOBILE: collapsible filter summary */}
+        {/* MOBILE: Search + Filters button side by side */}
         {(() => {
-          const hasActiveFilters = mode !== 'all' || filterFaction !== 'all' || filterTier !== 'all' || filterType !== 'all';
           const activeChips: { label: string; onRemove: () => void }[] = [];
           if (mode !== 'all') activeChips.push({ label: modeLabels[mode], onRemove: () => setMode('all') });
           if (filterFaction !== 'all') activeChips.push({ label: filterFaction, onRemove: () => setFilterFaction('all') });
           if (filterTier !== 'all') activeChips.push({ label: capitalize(filterTier), onRemove: () => setFilterTier('all') });
           if (filterType !== 'all') activeChips.push({ label: capitalize(filterType.replace('unit_', '')), onRemove: () => setFilterType('all') });
+          const filterCount = activeChips.length;
 
           return (
-            <div className="lg:hidden">
-              <button
-                onClick={() => setFiltersOpen(!filtersOpen)}
-                className={`w-full flex items-center gap-2 py-1 rounded-lg transition-colors ${hasActiveFilters ? 'bg-primary/10' : ''}`}
-              >
-                <div className="flex-1 flex items-center gap-1.5 overflow-x-auto scrollbar-none min-w-0">
-                  {activeChips.length > 0 ? (
-                    activeChips.map((chip, i) => (
-                      <span
-                        key={i}
-                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-primary text-primary-foreground whitespace-nowrap shrink-0"
-                      >
-                        {chip.label}
-                        <span
-                          role="button"
-                          onClick={(e) => { e.stopPropagation(); chip.onRemove(); }}
-                          className="hover:text-primary-foreground/70 cursor-pointer"
-                        >
-                          <X size={10} />
-                        </span>
-                      </span>
-                    ))
-                  ) : (
-                    <span className="text-xs text-muted-foreground">{lang === 'RU' ? 'Фильтры' : 'Filters'}</span>
+            <div className="lg:hidden space-y-2">
+              {/* Row: Search + Filter button */}
+              <div className="flex gap-2 items-center">
+                <div className="relative flex-1">
+                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" size={14} />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder={lang === 'RU' ? 'Поиск юнитов…' : 'Search units…'}
+                    className="w-full bg-muted rounded-lg pl-8 pr-8 py-2 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-1 focus:ring-primary transition-all"
+                  />
+                  {searchQuery && (
+                    <button onClick={() => setSearchQuery('')} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                      <X size={14} />
+                    </button>
                   )}
                 </div>
-                {filtersOpen ? <ChevronUp size={14} className="text-muted-foreground shrink-0" /> : <ChevronDown size={14} className="text-muted-foreground shrink-0" />}
-              </button>
+                <button
+                  onClick={() => setFiltersOpen(!filtersOpen)}
+                  className={`shrink-0 flex items-center rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                    filterCount > 0
+                      ? 'bg-accent text-accent-foreground border border-accent'
+                      : 'bg-background text-muted-foreground border border-muted hover:border-border'
+                  }`}
+                >
+                  <SlidersHorizontal size={14} className="mr-1.5" />
+                  <span>{lang === 'RU' ? 'Фильтры' : 'Filters'}{filterCount > 0 ? ` · ${filterCount}` : ''}</span>
+                  <ChevronDown size={14} className={`ml-1.5 transition-transform duration-200 ${filtersOpen ? 'rotate-180' : ''}`} />
+                </button>
+              </div>
 
+              {/* Collapsed: active filter chips */}
+              {!filtersOpen && filterCount > 0 && (
+                <div className="flex gap-1.5 overflow-x-auto scrollbar-none">
+                  {activeChips.map((chip, i) => (
+                    <span
+                      key={i}
+                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-primary text-primary-foreground whitespace-nowrap shrink-0"
+                    >
+                      {chip.label}
+                      <span
+                        role="button"
+                        onClick={chip.onRemove}
+                        className="hover:text-primary-foreground/70 cursor-pointer"
+                      >
+                        <X size={10} />
+                      </span>
+                    </span>
+                  ))}
+                </div>
+              )}
+
+              {/* Expanded: filter rows */}
               {filtersOpen && (
-                <div className="space-y-2 pt-2">
-                  {/* Mode */}
+                <div className="space-y-2 animate-in slide-in-from-top-2 duration-200">
                   <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
                     {(['all', 'standard', 'neutral'] as ModeFilter[]).map((m) => (
                       <FilterChip key={m} label={modeLabels[m]} active={mode === m} onClick={() => setMode(m)} />
                     ))}
                   </div>
-                  {/* Faction */}
                   {mode !== 'neutral' && (
                     <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
                       {factions.map((f) => (
@@ -290,7 +296,6 @@ export default function UnitsTab() {
                       ))}
                     </div>
                   )}
-                  {/* Tier + Type */}
                   <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
                     {tiers.map((t) => (
                       <FilterChip key={t} label={t === 'all' ? (lang === 'RU' ? 'Все' : 'All') : capitalize(t)} active={filterTier === t} onClick={() => setFilterTier(t)} />
@@ -306,8 +311,23 @@ export default function UnitsTab() {
           );
         })()}
 
-        {/* DESKTOP: always-visible filters */}
+        {/* DESKTOP: search + always-visible filters */}
         <div className="hidden lg:block space-y-2">
+          <div className="relative">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" size={14} />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder={lang === 'RU' ? 'Поиск юнитов…' : 'Search units…'}
+              className="w-full bg-muted rounded-lg pl-8 pr-8 py-1.5 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-1 focus:ring-primary transition-all"
+            />
+            {searchQuery && (
+              <button onClick={() => setSearchQuery('')} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                <X size={14} />
+              </button>
+            )}
+          </div>
           <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
             {(['all', 'standard', 'neutral'] as ModeFilter[]).map((m) => (
               <FilterChip key={m} label={modeLabels[m]} active={mode === m} onClick={() => setMode(m)} />
