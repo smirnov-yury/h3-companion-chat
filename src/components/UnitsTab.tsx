@@ -234,50 +234,101 @@ export default function UnitsTab() {
             </button>
           )}
         </div>
-        {/* Row 1: Mode switch */}
-        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
-          {(['all', 'standard', 'neutral'] as ModeFilter[]).map((m) => (
-            <FilterChip key={m} label={modeLabels[m]} active={mode === m} onClick={() => setMode(m)} />
-          ))}
-        </div>
 
-        {/* Row 2: Faction chips (only for All / Standard) */}
-        {mode !== 'neutral' && (
+        {/* MOBILE: collapsible filter summary */}
+        {(() => {
+          const hasActiveFilters = mode !== 'all' || filterFaction !== 'all' || filterTier !== 'all' || filterType !== 'all';
+          const activeChips: { label: string; onRemove: () => void }[] = [];
+          if (mode !== 'all') activeChips.push({ label: modeLabels[mode], onRemove: () => setMode('all') });
+          if (filterFaction !== 'all') activeChips.push({ label: filterFaction, onRemove: () => setFilterFaction('all') });
+          if (filterTier !== 'all') activeChips.push({ label: capitalize(filterTier), onRemove: () => setFilterTier('all') });
+          if (filterType !== 'all') activeChips.push({ label: capitalize(filterType.replace('unit_', '')), onRemove: () => setFilterType('all') });
+
+          return (
+            <div className="lg:hidden">
+              <button
+                onClick={() => setFiltersOpen(!filtersOpen)}
+                className={`w-full flex items-center gap-2 py-1 rounded-lg transition-colors ${hasActiveFilters ? 'bg-primary/10' : ''}`}
+              >
+                <div className="flex-1 flex items-center gap-1.5 overflow-x-auto scrollbar-none min-w-0">
+                  {activeChips.length > 0 ? (
+                    activeChips.map((chip, i) => (
+                      <span
+                        key={i}
+                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-primary text-primary-foreground whitespace-nowrap shrink-0"
+                      >
+                        {chip.label}
+                        <span
+                          role="button"
+                          onClick={(e) => { e.stopPropagation(); chip.onRemove(); }}
+                          className="hover:text-primary-foreground/70 cursor-pointer"
+                        >
+                          <X size={10} />
+                        </span>
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-xs text-muted-foreground">{lang === 'RU' ? 'Фильтры' : 'Filters'}</span>
+                  )}
+                </div>
+                {filtersOpen ? <ChevronUp size={14} className="text-muted-foreground shrink-0" /> : <ChevronDown size={14} className="text-muted-foreground shrink-0" />}
+              </button>
+
+              {filtersOpen && (
+                <div className="space-y-2 pt-2">
+                  {/* Mode */}
+                  <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+                    {(['all', 'standard', 'neutral'] as ModeFilter[]).map((m) => (
+                      <FilterChip key={m} label={modeLabels[m]} active={mode === m} onClick={() => setMode(m)} />
+                    ))}
+                  </div>
+                  {/* Faction */}
+                  {mode !== 'neutral' && (
+                    <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+                      {factions.map((f) => (
+                        <FilterChip key={f} label={f === 'all' ? (lang === 'RU' ? 'Все' : 'All') : f} active={filterFaction === f} onClick={() => setFilterFaction(f)} />
+                      ))}
+                    </div>
+                  )}
+                  {/* Tier + Type */}
+                  <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+                    {tiers.map((t) => (
+                      <FilterChip key={t} label={t === 'all' ? (lang === 'RU' ? 'Все' : 'All') : capitalize(t)} active={filterTier === t} onClick={() => setFilterTier(t)} />
+                    ))}
+                    <div className="w-px bg-border mx-1 shrink-0" />
+                    {types.map((t) => (
+                      <FilterChip key={t} label={t === 'all' ? (lang === 'RU' ? 'Все' : 'All') : capitalize(t.replace('unit_', ''))} active={filterType === t} onClick={() => setFilterType(t)} />
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })()}
+
+        {/* DESKTOP: always-visible filters */}
+        <div className="hidden lg:block space-y-2">
           <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
-            {factions.map((f) => (
-              <FilterChip
-                key={f}
-                label={f === 'all' ? (lang === 'RU' ? 'Все' : 'All') : f}
-                active={filterFaction === f}
-                onClick={() => setFilterFaction(f)}
-              />
+            {(['all', 'standard', 'neutral'] as ModeFilter[]).map((m) => (
+              <FilterChip key={m} label={modeLabels[m]} active={mode === m} onClick={() => setMode(m)} />
             ))}
           </div>
-        )}
-
-        {/* Row 3: Tier + Type */}
-        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
-          {tiers.map((t) => (
-            <FilterChip
-              key={t}
-              label={t === 'all' ? (lang === 'RU' ? 'Все' : 'All') : capitalize(t)}
-              active={filterTier === t}
-              onClick={() => setFilterTier(t)}
-            />
-          ))}
-          <div className="w-px bg-border mx-1 shrink-0" />
-          {types.map((t) => (
-            <FilterChip
-              key={t}
-              label={
-                t === 'all'
-                  ? lang === 'RU' ? 'Все' : 'All'
-                  : capitalize(t.replace('unit_', ''))
-              }
-              active={filterType === t}
-              onClick={() => setFilterType(t)}
-            />
-          ))}
+          {mode !== 'neutral' && (
+            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+              {factions.map((f) => (
+                <FilterChip key={f} label={f === 'all' ? (lang === 'RU' ? 'Все' : 'All') : f} active={filterFaction === f} onClick={() => setFilterFaction(f)} />
+              ))}
+            </div>
+          )}
+          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+            {tiers.map((t) => (
+              <FilterChip key={t} label={t === 'all' ? (lang === 'RU' ? 'Все' : 'All') : capitalize(t)} active={filterTier === t} onClick={() => setFilterTier(t)} />
+            ))}
+            <div className="w-px bg-border mx-1 shrink-0" />
+            {types.map((t) => (
+              <FilterChip key={t} label={t === 'all' ? (lang === 'RU' ? 'Все' : 'All') : capitalize(t.replace('unit_', ''))} active={filterType === t} onClick={() => setFilterType(t)} />
+            ))}
+          </div>
         </div>
       </div>
 
