@@ -13,6 +13,9 @@ export function renderGlyphs(text: string | null | undefined, glyphs: GlyphMap):
   if (!text) return '';
   return text.replace(/<([a-z_0-9]+)>/gi, (match, token) => {
     const lowerToken = token.toLowerCase();
+    if (GLYPH_SVGS[token]) {
+      return `<span class="glyph-svg">${GLYPH_SVGS[token]}</span>`;
+    }
     const glyph = glyphs[token] || glyphs[lowerToken];
     if (!glyph) return match;
     const src = `${SUPABASE_URL}/storage/v1/object/public/component-media/glyphs/${glyph.image}`;
