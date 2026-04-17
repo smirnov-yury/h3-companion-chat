@@ -65,16 +65,14 @@ export default function FieldsTab({ searchQuery = "" }: Props) {
               const imgSrc = item.image ? `${STORAGE}/fields/${item.image}` : null;
               return (
                 <button key={item.id} onClick={() => setSelected(item)}
-                  className="flex flex-col rounded-xl border border-border bg-card overflow-hidden text-left hover:border-primary transition-colors">
-                  <div className="aspect-square w-full bg-muted flex items-center justify-center overflow-hidden relative">
+                  className="flex flex-col w-full overflow-hidden rounded-lg bg-muted text-left cursor-pointer hover:ring-2 hover:ring-primary transition-all">
+                  <div className="aspect-[4/3] w-full bg-muted overflow-hidden">
                     {imgSrc
-                      ? <img src={imgSrc} alt={item.name_en} className="w-full h-full object-contain" />
-                      : <p className="text-[10px] text-muted-foreground text-center px-1">{item.name_en}</p>
+                      ? <img src={imgSrc} alt={item.name_en} className="w-full h-full object-cover rounded-t-lg" />
+                      : <div className="w-full h-full flex items-center justify-center"><p className="text-[10px] text-muted-foreground text-center px-1">{item.name_en}</p></div>
                     }
                   </div>
-                  <div className="p-2">
-                    <p className="text-xs font-semibold text-foreground truncate">{name(item)}</p>
-                  </div>
+                  <p className="w-full text-sm font-medium p-2 truncate text-foreground">{name(item)}</p>
                 </button>
               );
             })}

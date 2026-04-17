@@ -60,21 +60,19 @@ export default function AstrologersTab({ searchQuery = "" }: Props) {
             <p className="text-sm">{lang === "RU" ? "Ничего не найдено" : "Nothing found"}</p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
             {filtered.map((item) => {
               const imgSrc = item.image ? `${STORAGE}/astrologers_proclaim/${item.image}` : null;
               return (
                 <button key={item.id} onClick={() => setSelected(item)}
-                  className="flex flex-col rounded-xl border border-border bg-card overflow-hidden text-left hover:border-primary transition-colors">
-                  <div className="aspect-square w-full bg-muted flex items-center justify-center overflow-hidden relative">
+                  className="flex flex-col w-full overflow-hidden rounded-lg bg-muted text-left cursor-pointer hover:ring-2 hover:ring-primary transition-all">
+                  <div className="aspect-[3/4] w-full bg-muted overflow-hidden">
                     {imgSrc
-                      ? <img src={imgSrc} alt={item.name_en} className="w-full h-full object-contain" />
-                      : <p className="text-[10px] text-muted-foreground text-center px-1">{item.name_en}</p>
+                      ? <img src={imgSrc} alt={item.name_en} className="w-full h-full object-cover rounded-t-lg" />
+                      : <div className="w-full h-full flex items-center justify-center"><p className="text-[10px] text-muted-foreground text-center px-1">{item.name_en}</p></div>
                     }
                   </div>
-                  <div className="p-2">
-                    <p className="text-xs font-semibold text-foreground truncate">{name(item)}</p>
-                  </div>
+                  <p className="w-full text-sm font-medium p-2 truncate text-foreground">{name(item)}</p>
                 </button>
               );
             })}
