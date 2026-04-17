@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/context/LanguageContext";
 import { useGlyphs } from "@/context/GlyphsContext";
 import { renderGlyphs } from "@/utils/renderGlyphs";
+import { SkeletonList } from "@/components/ui/empty-state";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 const STORAGE = `${SUPABASE_URL}/storage/v1/object/public/component-media`;
@@ -82,8 +83,8 @@ export default function TownsTab() {
   };
 
   if (!loaded) return (
-    <div className="flex items-center justify-center h-full">
-      <p className="text-muted-foreground text-sm">{lang === "RU" ? "Загрузка…" : "Loading…"}</p>
+    <div className="p-3 h-full overflow-y-auto">
+      <SkeletonList />
     </div>
   );
 

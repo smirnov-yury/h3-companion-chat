@@ -1,9 +1,10 @@
 import { useState, useEffect, useMemo } from "react";
-import { Search, Map as MapIcon, BookOpen, Users, Clock, Gauge, Swords, Heart, Crown, Shield, User, SlidersHorizontal } from "lucide-react";
+import { Map as MapIcon, BookOpen, Users, Clock, Gauge, Swords, Heart, Crown, Shield, User, SlidersHorizontal } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/context/LanguageContext";
 import ScenarioDetail from "@/components/ScenarioDetail";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { EmptyState, SkeletonList } from "@/components/ui/empty-state";
 
 interface Scenario {
   id: string;
@@ -149,7 +150,10 @@ export default function ScenariosTab({ searchQuery = "" }: Props) {
   const PILL_ON = "bg-primary text-primary-foreground";
   const PILL_OFF = "bg-muted text-muted-foreground";
 
-  if (!loaded) return <div className="flex items-center justify-center h-full"><p className="text-muted-foreground text-sm">{lang === "RU" ? "Загрузка…" : "Loading…"}</p></div>;
+  const resetAllFilters = () => { setFilterMode("all"); setFilterPlayers("all"); setFilterBook("all"); };
+  const hasAnyFilter = activeCount > 0 || !!searchQuery;
+
+  if (!loaded) return <div className="p-3 h-full overflow-y-auto"><SkeletonList /></div>;
 
   return (
     <>
@@ -165,10 +169,7 @@ export default function ScenariosTab({ searchQuery = "" }: Props) {
 
         <div className="p-3 pt-0 overflow-y-auto flex-1">
           {filtered.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full gap-2 text-muted-foreground">
-              <Search size={32} />
-              <p className="text-sm">{lang === "RU" ? "Ничего не найдено" : "Nothing found"}</p>
-            </div>
+            <EmptyState onReset={hasAnyFilter ? resetAllFilters : undefined} />
           ) : (
             <div className="space-y-4">
               {grouped.map(({ mode, items }) => {

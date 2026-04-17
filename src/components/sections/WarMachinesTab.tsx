@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
-import { Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/context/LanguageContext";
 import { useGlyphs } from "@/context/GlyphsContext";
 import { renderGlyphs } from "@/utils/renderGlyphs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { EmptyState, SkeletonGrid } from "@/components/ui/empty-state";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 const STORAGE = `${SUPABASE_URL}/storage/v1/object/public/component-media`;
@@ -39,8 +39,6 @@ export default function WarMachinesTab({ searchQuery = "" }: Props) {
     });
   }, []);
 
-  if (!loaded) return <div className="flex items-center justify-center h-full"><p className="text-muted-foreground text-sm">{lang === "RU" ? "Загрузка…" : "Loading…"}</p></div>;
-
   const name = (i: WarMachine) => lang === "RU" ? (i.name_ru || i.name_en) : i.name_en;
 
   const q = searchQuery.toLowerCase();
@@ -54,18 +52,17 @@ export default function WarMachinesTab({ searchQuery = "" }: Props) {
   return (
     <>
       <div className="p-3 overflow-y-auto h-full">
-        {filtered.length === 0 && searchQuery ? (
-          <div className="flex flex-col items-center justify-center h-full gap-2 text-muted-foreground">
-            <Search size={32} />
-            <p className="text-sm">{lang === "RU" ? "Ничего не найдено" : "Nothing found"}</p>
-          </div>
+        {!loaded ? (
+          <SkeletonGrid />
+        ) : filtered.length === 0 ? (
+          <EmptyState onReset={searchQuery ? () => undefined : undefined} />
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
             {filtered.map((item) => {
               const imgSrc = item.image ? `${STORAGE}/war_machines/${item.image}` : null;
               return (
                 <button key={item.id} onClick={() => setSelected(item)}
-                  className="flex flex-col rounded-xl border border-border bg-card overflow-hidden text-left hover:border-primary transition-colors">
+                  className="flex flex-col rounded-xl border border-border bg-card overflow-hidden text-left hover:border-primary transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg cursor-pointer">
                   <div className="aspect-[5/7] w-full bg-muted flex items-center justify-center overflow-hidden relative rounded-lg">
                     {imgSrc
                       ? <img src={imgSrc} alt={item.name_en} className="w-full h-full object-cover rounded-lg" />
