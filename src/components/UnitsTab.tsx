@@ -282,8 +282,8 @@ export default function UnitsTab() {
               )}
 
               {/* Expanded: filter rows */}
-              {filtersOpen && (
-                <div className="space-y-2 animate-in slide-in-from-top-2 duration-200">
+              <div className={`overflow-hidden transition-all duration-300 ease-in-out ${filtersOpen ? 'max-h-96' : 'max-h-0'}`}>
+                <div className="space-y-2 pt-1">
                   <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
                     {(['all', 'standard', 'neutral'] as ModeFilter[]).map((m) => (
                       <FilterChip key={m} label={modeLabels[m]} active={mode === m} onClick={() => setMode(m)} />
@@ -306,7 +306,7 @@ export default function UnitsTab() {
                     ))}
                   </div>
                 </div>
-              )}
+              </div>
             </div>
           );
         })()}
