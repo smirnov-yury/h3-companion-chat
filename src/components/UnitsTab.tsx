@@ -256,7 +256,7 @@ export default function UnitsTab() {
                 >
                   <SlidersHorizontal size={14} className="mr-1.5" />
                   <span>{lang === 'RU' ? 'Фильтры' : 'Filters'}{filterCount > 0 ? ` · ${filterCount}` : ''}</span>
-                  <ChevronDown size={14} className={`ml-1.5 transition-transform duration-200 ${filtersOpen ? 'rotate-180' : ''}`} />
+                  <ChevronDown size={14} className={`ml-1.5 transition-transform duration-300 ${filtersOpen ? 'rotate-180' : 'rotate-0'}`} />
                 </button>
               </div>
 
