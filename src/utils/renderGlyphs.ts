@@ -1,6 +1,70 @@
-// Auto-generated from k-adam.github.io/Homm3_hero_creator icons
-// DO NOT EDIT MANUALLY - regenerate from gen_glyphs.py
+// Glyph rendering: replaces <token> placeholders in text with inline SVG
+// (preferred) or PNG icons fetched from Supabase storage.
 
+export interface GlyphInfo {
+  description: string;
+  image: string;
+}
+export type GlyphMap = Record<string, GlyphInfo>;
+
+const SUPABASE_URL = (import.meta.env.VITE_SUPABASE_URL as string) ?? "";
+const GLYPH_STORAGE = `${SUPABASE_URL}/storage/v1/object/public/component-media/glyphs`;
+
+// Tokens that should keep their natural color (no yellow filter)
+const NATURAL_TOKENS = new Set<string>([
+  "gold",
+  "wood",
+  "ore",
+  "mercury",
+  "sulfur",
+  "crystal",
+  "gems",
+]);
+
+// Tokens whose PNG should render dark gray
+const DARK_TOKENS = new Set<string>([
+  "building_materials",
+]);
+
+// Tier star color overrides
+const TIER_CLASSES: Record<string, string> = {
+  bronze: "glyph-tier-bronze",
+  silver: "glyph-tier-silver",
+  golden: "glyph-tier-golden",
+  azure: "glyph-tier-azure",
+};
+
+export function renderGlyphs(text: string | null | undefined, glyphs: GlyphMap): string {
+  if (!text) return "";
+  // Escape HTML first to prevent injection from DB content
+  const escaped = text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+  // Match tokens of the form &lt;name&gt; (after escaping)
+  return escaped.replace(/&lt;([a-zA-Z0-9_]+)&gt;/g, (match, token: string) => {
+    const key = token.toLowerCase();
+    // 1. Inline SVG (crisp, scales with font-size)
+    if (GLYPH_SVGS[key]) {
+      return `<span class="glyph-svg" aria-label="${key}">${GLYPH_SVGS[key]}</span>`;
+    }
+    // 2. PNG fallback from Supabase storage
+    const info = glyphs[key];
+    if (!info) return match;
+    const tierClass = TIER_CLASSES[key];
+    const extra = tierClass
+      ? tierClass
+      : NATURAL_TOKENS.has(key)
+        ? "glyph-natural"
+        : DARK_TOKENS.has(key)
+          ? "glyph-dark"
+          : "";
+    const cls = `glyph-icon inline-block align-text-bottom h-[1em] w-auto ${extra}`.trim();
+    return `<img src="${GLYPH_STORAGE}/${info.image}" alt="${info.description}" class="${cls}" />`;
+  });
+}
+
+// Inline SVG registry — keyed by token name. Auto-generated from k-adam.github.io/Homm3_hero_creator icons.
 export const GLYPH_SVGS: Record<string, string> = {
   activation: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-10 0 1589 1548"><path fill="#E1BB3A" d="m1579 774-839 774v-453H-10V453h750V0ZM66 1019h750v356l651-601-651-602v356H66Zm825 183V943H141V604h750V345l465 429z"></path></svg>`,
   attack: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-112 0 1489.26 1389.524"><path fill="#E1BB3A" d="M1353.736 30.524h1q17 16 21 39.5t-2.5 43-18.5 32.5q-8 9-21 15-21 11-45 9-49 63-102 119-22 23-46 48-14 13-21 20-5 5-18 17 31 29 56 60 31 40 45 74 14 37 9 67-8 41-34 56-16 10-37 8t-35-15q-23-20-19-47 3-24 23-35 10-5 21-5-19-33-46-59-17-17-36-29-65 63-127 126-77 78-180 178 393 407 447 461 35 34 57 74 24 45 32 99v3l-1-1h-1q-54-8-99-32-41-22-74-56-55-55-464-449-79 77-191.5 184t-180.5 172-92 90q-34 34-74 56-46 24-99 32h-3l1-1v-1q8-54 32-99 22-40 56-74 24-24 89-92t171-179.5 183-191.5q-113-108-197-189l15-15q-36-35-60-56.5t-61-57.5q-22 15-48 40-27 26-46 59 12 1 21 6 20 11 24 34 4 27-19 47-15 14-36 15.5t-37-7.5q-26-15-33-56-5-30 9-67 13-34 45-75 26-32 56-59-6-6-18-17-7-7-21-20-25-25-46-48-54-58-102-120-24 3-46-9-12-6-20-14-20-22-22.5-54.5t21.5-61.5q17-17 40-21t43 2.5 33 19.5q9 9 15 20 11 22 9 46 63 49 120 102 22 21 47 46 14 13 20 20 7 7 18 19 27-31 59-56 40-32 74-45 37-14 67-9 42 7 56 33 10 16 8 37t-15 36q-20 23-47 19-23-4-34-24-6-10-6-21-33 19-59 46-31 32-41 48 36 36 57.5 60t57.5 61l14-15q30 31 94 97.5t94 97.5q102-105 176-178 58-57 126-127-12-19-28-36-26-27-60-47 0 12-6 21-11 20-34 24-27 4-47-19-14-15-15.5-36t7.5-37q15-26 57-33 29-6 67 9 33 13 74 45 31 25 59 56 6-7 18-18 6-7 20-21 21-22 47-46 57-53 120-102-2-24 9-46 6-12 15-20 21-20 53.5-22.5t61.5 22.5"></path></svg>`,
