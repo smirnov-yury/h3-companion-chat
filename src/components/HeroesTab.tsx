@@ -5,6 +5,7 @@ import { useLang } from "@/context/LanguageContext";
 import { useGlyphs } from "@/context/GlyphsContext";
 import { renderGlyphs } from "@/utils/renderGlyphs";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { EmptyState, SkeletonGrid } from "@/components/ui/empty-state";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 const STORAGE = `${SUPABASE_URL}/storage/v1/object/public/component-media`;
@@ -61,11 +62,8 @@ export default function HeroesTab() {
     });
   }, []);
 
-  if (!loaded) return (
-    <div className="flex items-center justify-center h-full">
-      <p className="text-muted-foreground text-sm">{lang === "RU" ? "Загрузка…" : "Loading…"}</p>
-    </div>
-  );
+  const hasFilters = faction !== "all" || !!searchQuery;
+  const resetFilters = () => { setFaction("all"); setSearchQuery(""); };
 
   const towns = Array.from(new Set(heroes.map(h => h.town).filter(Boolean) as string[])).sort();
   const q = searchQuery.toLowerCase();
@@ -138,40 +136,46 @@ export default function HeroesTab() {
       </div>
 
       <div className="px-3 pb-3 flex-1">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-          {filtered.map(h => (
-            <button key={h.id} onClick={() => { setSelected(h); setSpecialtyTab(0); }} className="flex flex-col rounded-xl border border-border bg-card overflow-hidden text-left hover:border-primary transition-colors">
-              <div className="relative aspect-square bg-muted">
-                {hasPortrait(h.image) ? (
-                  <img src={`${STORAGE}/heroes/${h.image}`} alt={name(h)} className="w-full h-full object-cover object-left" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <span className="text-2xl font-bold text-muted-foreground/40">{heroInitials(h.name_en)}</span>
-                  </div>
-                )}
-                {h.class_en && (() => {
-                  const isMagic = h.class_en.includes('<magic>');
-                  const heroType = isMagic ? 'Magic' : 'Might';
-                  const heroClass = h.class_en.replace(/<magic>|<might>/g, '').trim();
-                  return (
-                    <div className="absolute top-1.5 left-1.5 flex flex-col gap-1">
-                      <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-full backdrop-blur-sm text-white ${isMagic ? 'bg-blue-600/80' : 'bg-red-700/80'}`}>
-                        {heroType}
-                      </span>
-                      <span className="text-[9px] px-1.5 py-0.5 rounded-full backdrop-blur-sm bg-black/50 text-white">
-                        {heroClass}
-                      </span>
+        {!loaded ? (
+          <SkeletonGrid className="grid grid-cols-2 lg:grid-cols-4 gap-3" />
+        ) : filtered.length === 0 ? (
+          <EmptyState onReset={hasFilters ? resetFilters : undefined} />
+        ) : (
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            {filtered.map(h => (
+              <button key={h.id} onClick={() => { setSelected(h); setSpecialtyTab(0); }} className="flex flex-col rounded-xl border border-border bg-card overflow-hidden text-left hover:border-primary transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg cursor-pointer">
+                <div className="relative aspect-square bg-muted">
+                  {hasPortrait(h.image) ? (
+                    <img src={`${STORAGE}/heroes/${h.image}`} alt={name(h)} className="w-full h-full object-cover object-left" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <span className="text-2xl font-bold text-muted-foreground/40">{heroInitials(h.name_en)}</span>
                     </div>
-                  );
-                })()}
-              </div>
-              <div className="p-2">
-                <p className="text-xs font-semibold text-foreground truncate">{name(h)}</p>
-                {h.town && <p className="text-[10px] text-muted-foreground capitalize">{h.town}</p>}
-              </div>
-            </button>
-          ))}
-        </div>
+                  )}
+                  {h.class_en && (() => {
+                    const isMagic = h.class_en.includes('<magic>');
+                    const heroType = isMagic ? 'Magic' : 'Might';
+                    const heroClass = h.class_en.replace(/<magic>|<might>/g, '').trim();
+                    return (
+                      <div className="absolute top-1.5 left-1.5 flex flex-col gap-1">
+                        <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-full backdrop-blur-sm text-white ${isMagic ? 'bg-blue-600/80' : 'bg-red-700/80'}`}>
+                          {heroType}
+                        </span>
+                        <span className="text-[9px] px-1.5 py-0.5 rounded-full backdrop-blur-sm bg-black/50 text-white">
+                          {heroClass}
+                        </span>
+                      </div>
+                    );
+                  })()}
+                </div>
+                <div className="p-2">
+                  <p className="text-xs font-semibold text-foreground truncate">{name(h)}</p>
+                  {h.town && <p className="text-[10px] text-muted-foreground capitalize">{h.town}</p>}
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       <Dialog open={!!selected} onOpenChange={open => { if (!open) setSelected(null); }} >
