@@ -1,3 +1,5 @@
+import { GLYPH_SVGS } from './glyphSvgs';
+
 export type GlyphMap = Record<string, { description: string; image: string }>;
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 
