@@ -17,8 +17,10 @@ export type Database = {
       abilities: {
         Row: {
           effect_empowered_en: string | null
+          effect_empowered_ru: string | null
           effect_en: string | null
           effect_expert_en: string | null
+          effect_expert_ru: string | null
           id: string
           image_regular: string | null
           name_en: string
@@ -29,8 +31,10 @@ export type Database = {
         }
         Insert: {
           effect_empowered_en?: string | null
+          effect_empowered_ru?: string | null
           effect_en?: string | null
           effect_expert_en?: string | null
+          effect_expert_ru?: string | null
           id: string
           image_regular?: string | null
           name_en: string
@@ -41,8 +45,10 @@ export type Database = {
         }
         Update: {
           effect_empowered_en?: string | null
+          effect_empowered_ru?: string | null
           effect_en?: string | null
           effect_expert_en?: string | null
+          effect_expert_ru?: string | null
           id?: string
           image_regular?: string | null
           name_en?: string

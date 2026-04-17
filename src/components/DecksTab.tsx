@@ -1,38 +1,28 @@
 import { useState } from "react";
 import { Search, X } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
-import WarMachinesTab from "@/components/sections/WarMachinesTab";
-import EventsTab from "@/components/sections/EventsTab";
-import SpellsTab from "@/components/sections/SpellsTab";
 import ArtifactsTab from "@/components/sections/ArtifactsTab";
+import SpellsTab from "@/components/sections/SpellsTab";
 import AbilitiesTab from "@/components/sections/AbilitiesTab";
-import AstrologersTab from "@/components/sections/AstrologersTab";
-import FieldsTab from "@/components/sections/FieldsTab";
 import StatisticsTab from "@/components/sections/StatisticsTab";
+import WarMachinesTab from "@/components/sections/WarMachinesTab";
 
-type ComponentSection = "war_machines" | "events" | "spells" | "artifacts" | "abilities" | "astrologers" | "fields" | "statistics";
+type DeckSection = "artifacts" | "spells" | "abilities" | "attributes" | "war_machines";
 
-const SECTIONS: { id: ComponentSection; labelRU: string; labelEN: string }[] = [
+const SECTIONS: { id: DeckSection; labelRU: string; labelEN: string }[] = [
+  { id: "artifacts",    labelRU: "Артефакты",    labelEN: "Artifacts"    },
+  { id: "spells",       labelRU: "Заклинания",   labelEN: "Spells"       },
+  { id: "abilities",    labelRU: "Умения",       labelEN: "Abilities"    },
+  { id: "attributes",   labelRU: "Атрибуты",     labelEN: "Attributes"   },
   { id: "war_machines", labelRU: "Боевые машины", labelEN: "War Machines" },
-  { id: "events",       labelRU: "События",       labelEN: "Events"       },
-  { id: "spells",       labelRU: "Заклинания",    labelEN: "Spells"       },
-  { id: "artifacts",    labelRU: "Артефакты",     labelEN: "Artifacts"    },
-  { id: "abilities",    labelRU: "Умения",        labelEN: "Abilities"    },
-  { id: "astrologers",  labelRU: "Астрологи",     labelEN: "Astrologers"  },
-  { id: "fields",       labelRU: "Поля",          labelEN: "Fields"       },
-  { id: "statistics",   labelRU: "Статистики",    labelEN: "Statistics"   },
 ];
 
-interface ComponentsTabProps {
-  onNavigateToRule?: (ruleId: string) => void;
-}
-
-export default function ComponentsTab({ onNavigateToRule }: ComponentsTabProps) {
+export default function DecksTab() {
   const { lang } = useLang();
-  const [active, setActive] = useState<ComponentSection>("war_machines");
+  const [active, setActive] = useState<DeckSection>("artifacts");
   const [searchQuery, setSearchQuery] = useState("");
 
-  const handleSectionChange = (id: ComponentSection) => {
+  const handleSectionChange = (id: DeckSection) => {
     setActive(id);
     setSearchQuery("");
   };
@@ -71,14 +61,11 @@ export default function ComponentsTab({ onNavigateToRule }: ComponentsTabProps) 
         </div>
       </div>
       <div className="flex-1 overflow-hidden">
-        {active === "war_machines" ? <WarMachinesTab searchQuery={searchQuery} /> :
-         active === "events"       ? <EventsTab searchQuery={searchQuery} /> :
+        {active === "artifacts"    ? <ArtifactsTab searchQuery={searchQuery} /> :
          active === "spells"       ? <SpellsTab searchQuery={searchQuery} /> :
-         active === "artifacts"    ? <ArtifactsTab searchQuery={searchQuery} /> :
          active === "abilities"    ? <AbilitiesTab searchQuery={searchQuery} /> :
-         active === "astrologers"  ? <AstrologersTab searchQuery={searchQuery} /> :
-         active === "fields"       ? <FieldsTab searchQuery={searchQuery} /> :
-         active === "statistics"  ? <StatisticsTab searchQuery={searchQuery} /> : null}
+         active === "attributes"   ? <StatisticsTab searchQuery={searchQuery} /> :
+         active === "war_machines" ? <WarMachinesTab searchQuery={searchQuery} /> : null}
       </div>
     </div>
   );

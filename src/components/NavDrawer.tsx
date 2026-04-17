@@ -1,4 +1,4 @@
-import { BookOpen, LayoutGrid, Map, Swords, Castle, User, MessageCircle } from "lucide-react";
+import { BookOpen, Map, MapPin, CalendarDays, Layers, Swords, User, Castle, MessageCircle, type LucideIcon } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
 import {
   Sheet,
@@ -7,16 +7,18 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 
-export type TabId = "rules" | "components" | "scenarios" | "units" | "towns" | "heroes" | "ai";
+export type TabId = "rules" | "scenarios" | "map_elements" | "global_events" | "decks" | "units" | "heroes" | "towns" | "ai";
 
-const navItems: { id: TabId; labelRU: string; labelEN: string; icon: typeof BookOpen }[] = [
-  { id: "rules",      labelRU: "Правила",       labelEN: "Rules",          icon: BookOpen },
-  { id: "components", labelRU: "Компоненты",     labelEN: "Components",     icon: LayoutGrid },
-  { id: "scenarios",  labelRU: "Сценарии",       labelEN: "Scenarios",      icon: Map },
-  { id: "units",      labelRU: "Юниты",          labelEN: "Units",          icon: Swords },
-  { id: "towns",      labelRU: "Города",         labelEN: "Towns",          icon: Castle },
-  { id: "heroes",     labelRU: "Герои",          labelEN: "Heroes",         icon: User },
-  { id: "ai",         labelRU: "ИИ Мастер Игры", labelEN: "AI Game Master", icon: MessageCircle },
+export const navItems: { id: TabId; labelRU: string; labelEN: string; icon: LucideIcon }[] = [
+  { id: "rules",         labelRU: "Правила",            labelEN: "Rules",           icon: BookOpen },
+  { id: "scenarios",     labelRU: "Сценарии",           labelEN: "Scenarios",       icon: Map },
+  { id: "map_elements",  labelRU: "Элементы карты",     labelEN: "Map Elements",    icon: MapPin },
+  { id: "global_events", labelRU: "Глобальные события", labelEN: "Global Events",   icon: CalendarDays },
+  { id: "decks",         labelRU: "Колоды",             labelEN: "Decks",           icon: Layers },
+  { id: "units",         labelRU: "Юниты",              labelEN: "Units",           icon: Swords },
+  { id: "heroes",        labelRU: "Герои",              labelEN: "Heroes",          icon: User },
+  { id: "towns",         labelRU: "Города",             labelEN: "Towns",           icon: Castle },
+  { id: "ai",            labelRU: "ИИ Мастер игры",     labelEN: "AI Game Master",  icon: MessageCircle },
 ];
 
 interface NavDrawerProps {
