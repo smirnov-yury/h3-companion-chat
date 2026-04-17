@@ -1,25 +1,17 @@
 import { useState, useCallback } from "react";
 import TopAppBar from "@/components/TopAppBar";
-import NavDrawer, { type TabId } from "@/components/NavDrawer";
+import NavDrawer, { type TabId, navItems } from "@/components/NavDrawer";
 import ChatScreen from "@/components/ChatScreen";
 import RulesTab from "@/components/RulesTab";
-import ComponentsTab from "@/components/ComponentsTab";
+import DecksTab from "@/components/DecksTab";
 import ScenariosTab from "@/components/ScenariosTab";
 import UnitsTab from "@/components/UnitsTab";
 import TownsTab from "@/components/TownsTab";
 import HeroesTab from "@/components/HeroesTab";
+import GlobalEventsTab from "@/components/GlobalEventsTab";
+import MapElementsTab from "@/components/MapElementsTab";
 import BackToTop from "@/components/BackToTop";
 import { useLang } from "@/context/LanguageContext";
-
-const tabTitles: Record<TabId, { ru: string; en: string }> = {
-  rules:      { ru: "Правила",       en: "Rules" },
-  components: { ru: "Компоненты",    en: "Components" },
-  scenarios:  { ru: "Сценарии",      en: "Scenarios" },
-  units:      { ru: "Юниты",         en: "Units" },
-  towns:      { ru: "Города",        en: "Towns" },
-  heroes:     { ru: "Герои",         en: "Heroes" },
-  ai:         { ru: "ИИ Мастер Игры", en: "AI Game Master" },
-};
 
 export default function Index() {
   const [tab, setTab] = useState<TabId>("ai");
@@ -32,21 +24,26 @@ export default function Index() {
     setTab("rules");
   }, []);
 
-  const title = lang === "RU" ? tabTitles[tab].ru : tabTitles[tab].en;
+  const current = navItems.find((n) => n.id === tab)!;
+  const title = lang === "RU" ? current.labelRU : current.labelEN;
 
   return (
     <div className="flex flex-col h-dvh">
-      <TopAppBar title={title} onMenuClick={() => setDrawerOpen(true)} />
+      <TopAppBar title={title} icon={current.icon} onMenuClick={() => setDrawerOpen(true)} />
       <NavDrawer open={drawerOpen} onOpenChange={setDrawerOpen} active={tab} onChange={setTab} />
-      <div className="flex-1 flex flex-col overflow-hidden pt-14 lg:ml-56">
+      <div className="flex-1 flex flex-col overflow-hidden pt-11 lg:ml-56">
         {tab === "ai" ? (
           <ChatScreen />
         ) : tab === "rules" ? (
           <RulesTab scrollToRuleId={scrollToRuleId} onScrollHandled={() => setScrollToRuleId(null)} />
-        ) : tab === "components" ? (
-          <ComponentsTab onNavigateToRule={handleNavigateToRule} />
+        ) : tab === "decks" ? (
+          <DecksTab />
         ) : tab === "scenarios" ? (
           <ScenariosTab />
+        ) : tab === "map_elements" ? (
+          <MapElementsTab />
+        ) : tab === "global_events" ? (
+          <GlobalEventsTab />
         ) : tab === "units" ? (
           <UnitsTab />
         ) : tab === "towns" ? (
