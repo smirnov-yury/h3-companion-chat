@@ -8,6 +8,7 @@ import { useGlyphs } from "@/context/GlyphsContext";
 import { renderGlyphs } from "@/utils/renderGlyphs";
 import { Badge } from "@/components/ui/badge";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { EmptyState, SkeletonList } from "@/components/ui/empty-state";
 
 function useDebounce(value: string, delay: number) {
   const [debounced, setDebounced] = useState(value);
@@ -266,8 +267,8 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled }: RulesTabPr
 
   if (!loaded) {
     return (
-      <div className="flex flex-1 items-center justify-center">
-        <p className="text-muted-foreground text-sm">{lang === "RU" ? "Загрузка…" : "Loading…"}</p>
+      <div className="flex-1 overflow-y-auto p-3">
+        <SkeletonList />
       </div>
     );
   }
@@ -335,9 +336,9 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled }: RulesTabPr
 
       <div className="flex-1 overflow-y-auto px-3 pb-3">
         {filtered.length === 0 && (
-          <p className="text-muted-foreground text-sm text-center py-8">
-            {lang === "RU" ? "Ничего не найдено" : "Nothing found"}
-          </p>
+          <EmptyState
+            onReset={selectedCategory || debouncedSearch ? () => { setSelectedCategory(null); setSearch(""); setDebouncedSearch(""); } : undefined}
+          />
         )}
 
         <Accordion

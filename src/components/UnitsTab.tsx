@@ -5,6 +5,7 @@ import { useLang } from '@/context/LanguageContext';
 import { renderGlyphs } from '@/utils/renderGlyphs';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Swords, Shield, Heart, Zap, Search, X, ChevronDown, SlidersHorizontal } from 'lucide-react';
+import { EmptyState, SkeletonGrid } from '@/components/ui/empty-state';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 const STORAGE = `${SUPABASE_URL}/storage/v1/object/public/component-media`;
@@ -202,14 +203,15 @@ export default function UnitsTab() {
       ? { all: 'Все', standard: 'Обычные', neutral: 'Нейтралы' }
       : { all: 'All', standard: 'Standard', neutral: 'Neutral' };
 
+  const hasFilters = mode !== 'all' || filterFaction !== 'all' || filterTier !== 'all' || filterType !== 'all' || !!searchQuery;
+  const resetAllFilters = () => {
+    setMode('all'); setFilterFaction('all'); setFilterTier('all'); setFilterType('all'); setSearchQuery('');
+  };
+
   if (loading) {
     return (
       <div className="flex-1 overflow-auto p-4">
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="h-48 rounded-xl bg-muted animate-pulse" />
-          ))}
-        </div>
+        <SkeletonGrid />
       </div>
     );
   }
@@ -355,9 +357,7 @@ export default function UnitsTab() {
       {/* Grid */}
       <div className="flex-1 overflow-auto p-3">
         {displayItems.length === 0 ? (
-          <div className="text-center text-muted-foreground py-12">
-            {lang === 'RU' ? 'Юниты не найдены' : 'No units found'}
-          </div>
+          <EmptyState onReset={hasFilters ? resetAllFilters : undefined} />
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
             {displayItems.map((item) => {
@@ -367,7 +367,7 @@ export default function UnitsTab() {
                 <button
                   key={item.key}
                   onClick={() => setSelectedKey(item.key)}
-                  className="flex flex-col rounded-xl border border-border bg-card overflow-hidden text-left hover:border-primary transition-colors"
+                  className="flex flex-col rounded-xl border border-border bg-card overflow-hidden text-left hover:border-primary transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg cursor-pointer"
                 >
                   <div className="relative aspect-square bg-muted">
                     {imgSrc ? (
