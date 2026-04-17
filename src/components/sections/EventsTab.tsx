@@ -62,17 +62,15 @@ export default function EventsTab({ searchQuery = "" }: Props) {
             <p className="text-sm">{lang === "RU" ? "Ничего не найдено" : "Nothing found"}</p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 items-start">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             {filtered.map((item) => {
               const imgSrc = item.image ? `${STORAGE}/events/${item.image}` : null;
               return (
                 <button key={item.id} onClick={() => setSelected(item)}
-                  className="flex flex-col w-full self-start overflow-hidden rounded-lg bg-muted text-left cursor-pointer hover:ring-2 hover:ring-primary transition-all">
-                  {imgSrc
-                    ? <img src={imgSrc} alt={item.name_en} className="w-full h-auto block rounded-t-lg"
-                        onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }} />
-                    : <div className="w-full aspect-[3/4] bg-muted rounded-t-lg" />
-                  }
+                  className="flex flex-col w-full overflow-hidden rounded-lg bg-muted text-left cursor-pointer hover:ring-2 hover:ring-primary transition-all">
+                  <div className="w-full aspect-[4/3] overflow-hidden rounded-t-lg bg-muted">
+                    {imgSrc && <img src={imgSrc} alt={item.name_en} className="w-full h-full object-cover" />}
+                  </div>
                   <p className="w-full text-sm font-medium p-2 truncate text-foreground">{name(item)}</p>
                 </button>
               );
