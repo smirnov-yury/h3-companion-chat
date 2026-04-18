@@ -241,8 +241,8 @@ export default function HeroesTab() {
                           onError={e => (e.currentTarget.style.display = "none")}
                         />
                       )}
-                      {lvl.effect_en && (
-                        <div className="text-xs text-muted-foreground mt-1" dangerouslySetInnerHTML={{ __html: renderGlyphs(lvl.effect_en, glyphs) }} />
+                      {(lang === "RU" && lvl.effect_ru ? lvl.effect_ru : lvl.effect_en) && (
+                        <div className="text-xs text-muted-foreground mt-1" dangerouslySetInnerHTML={{ __html: renderGlyphs(lang === "RU" && lvl.effect_ru ? lvl.effect_ru : lvl.effect_en, glyphs) }} />
                       )}
                     </div>
                   );
