@@ -115,5 +115,5 @@ img.glyph-icon[src*="building_materials"] {
 }
 .glyph-or svg {
   width: 8em !important;
-  height: 2em !important;
+  height: auto !important;
 }
