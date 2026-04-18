@@ -76,6 +76,8 @@
 
 /* Default yellow filter for most glyphs */
 .glyph-icon {
+  width: 1.4em;
+  height: 1.4em;
   filter: brightness(0) saturate(100%) invert(78%) sepia(44%) saturate(600%) hue-rotate(2deg) brightness(98%);
 }
 
@@ -105,4 +107,4 @@ img.glyph-icon[src*="building_materials"] {
 }
 
 .glyph-svg { display: inline-flex; align-items: center; vertical-align: middle; }
-.glyph-svg svg { width: 1em; height: 1em; filter: none; }
+.glyph-svg svg { width: 1.4em; height: 1.4em; filter: none; }
