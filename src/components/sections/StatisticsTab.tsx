@@ -3,7 +3,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/context/LanguageContext";
 import { useGlyphs } from "@/context/GlyphsContext";
 import { renderGlyphs } from "@/utils/renderGlyphs";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog } from "@/components/ui/dialog";
+import { CardDialogContent } from "@/components/ui/card-dialog";
 import { EmptyState, SkeletonGrid } from "@/components/ui/empty-state";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
@@ -35,8 +36,20 @@ const CARD_TYPE_BADGE: Record<string, string> = {
   empowered: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
 };
 
-function cardTypeLabel(ct: string) {
-  return ct === "empowered" ? "✦ Empowered" : "Regular";
+function cardTypeLabel(ct: string, lang: "EN" | "RU") {
+  if (ct === "empowered") return lang === "RU" ? "✦ Усиленный" : "✦ Empowered";
+  return lang === "RU" ? "Обычный" : "Regular";
+}
+
+function statTypeLabel(st: string, lang: "EN" | "RU") {
+  if (lang !== "RU") return st.charAt(0).toUpperCase() + st.slice(1);
+  const map: Record<string, string> = {
+    attack: "Атака",
+    defense: "Защита",
+    power: "Сила",
+    knowledge: "Знание",
+  };
+  return map[st] || st;
 }
 
 interface Props { searchQuery?: string; }

@@ -3,7 +3,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/context/LanguageContext";
 import { useGlyphs } from "@/context/GlyphsContext";
 import { renderGlyphs } from "@/utils/renderGlyphs";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog } from "@/components/ui/dialog";
+import { CardDialogContent } from "@/components/ui/card-dialog";
 import { EmptyState, SkeletonGrid } from "@/components/ui/empty-state";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
@@ -80,40 +81,49 @@ export default function WarMachinesTab({ searchQuery = "" }: Props) {
       </div>
 
       <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
-        <DialogContent className="max-w-md max-h-[90dvh] flex flex-col overflow-hidden">
-          <DialogHeader className="flex-shrink-0">
-            <DialogTitle>{selected ? name(selected) : ""}</DialogTitle>
-          </DialogHeader>
-          {selected && (
-            <div className="overflow-y-auto flex-1 pr-1 space-y-3">
-              {selected.image && <img src={`${STORAGE}/war_machines/${selected.image}`} alt={selected.name_en} className="max-h-[40vh] w-auto mx-auto rounded-lg object-contain" />}
-              {selected.ability_en && (
-                <div>
-                  <p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Способность" : "Ability"}</p>
-                  <p className="text-xs text-muted-foreground whitespace-pre-line" dangerouslySetInnerHTML={{ __html: renderGlyphs(lang === "RU" ? (selected.ability_ru || selected.ability_en) : selected.ability_en, glyphs) }} />
+        <CardDialogContent>
+          {selected && (() => {
+            // Replace plain "gold" word in cost strings with the <gold> glyph token.
+            const goldify = (s: string | null) =>
+              s ? s.replace(/\bgold\b/gi, "<gold>") : s;
+            return (
+              <>
+                {selected.image && (
+                  <div className="w-full shrink-0">
+                    <img src={`${STORAGE}/war_machines/${selected.image}`} alt={selected.name_en} className="w-full h-auto object-cover" />
+                  </div>
+                )}
+                <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
+                  <h2 className="text-lg font-semibold leading-tight pr-8">{name(selected)}</h2>
+                  {selected.ability_en && (
+                    <div>
+                      <p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Эффект" : "Effect"}</p>
+                      <p className="text-xs text-muted-foreground whitespace-pre-line" dangerouslySetInnerHTML={{ __html: renderGlyphs(lang === "RU" ? (selected.ability_ru || selected.ability_en) : selected.ability_en, glyphs) }} />
+                    </div>
+                  )}
+                  {selected.cost_blacksmith && (
+                    <div>
+                      <p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Цена (Кузнец)" : "Cost (Blacksmith)"}</p>
+                      <p className="text-xs text-muted-foreground whitespace-pre-line" dangerouslySetInnerHTML={{ __html: renderGlyphs(goldify(selected.cost_blacksmith), glyphs) }} />
+                    </div>
+                  )}
+                  {selected.cost_trade_post && (
+                    <div>
+                      <p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Цена (Торговый пост)" : "Cost (Trade Post)"}</p>
+                      <p className="text-xs text-muted-foreground whitespace-pre-line" dangerouslySetInnerHTML={{ __html: renderGlyphs(goldify(selected.cost_trade_post), glyphs) }} />
+                    </div>
+                  )}
+                  {(lang === "RU" ? selected.notes_ru : selected.notes_en) && (
+                    <div>
+                      <p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Заметки" : "Notes"}</p>
+                      <p className="text-xs text-muted-foreground whitespace-pre-line" dangerouslySetInnerHTML={{ __html: renderGlyphs(lang === "RU" ? selected.notes_ru : selected.notes_en, glyphs) }} />
+                    </div>
+                  )}
                 </div>
-              )}
-              {selected.cost_blacksmith && (
-                <div>
-                  <p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Цена (Кузнец)" : "Cost (Blacksmith)"}</p>
-                  <p className="text-xs text-muted-foreground whitespace-pre-line" dangerouslySetInnerHTML={{ __html: renderGlyphs(selected.cost_blacksmith, glyphs) }} />
-                </div>
-              )}
-              {selected.cost_trade_post && (
-                <div>
-                  <p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Цена (Торговый пост)" : "Cost (Trade Post)"}</p>
-                  <p className="text-xs text-muted-foreground whitespace-pre-line" dangerouslySetInnerHTML={{ __html: renderGlyphs(selected.cost_trade_post, glyphs) }} />
-                </div>
-              )}
-              {(lang === "RU" ? selected.notes_ru : selected.notes_en) && (
-                <div>
-                  <p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Заметки" : "Notes"}</p>
-                  <p className="text-xs text-muted-foreground whitespace-pre-line" dangerouslySetInnerHTML={{ __html: renderGlyphs(lang === "RU" ? selected.notes_ru : selected.notes_en, glyphs) }} />
-                </div>
-              )}
-            </div>
-          )}
-        </DialogContent>
+              </>
+            );
+          })()}
+        </CardDialogContent>
       </Dialog>
     </>
   );
