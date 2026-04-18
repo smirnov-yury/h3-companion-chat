@@ -3,7 +3,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/context/LanguageContext";
 import { useGlyphs } from "@/context/GlyphsContext";
 import { renderGlyphs } from "@/utils/renderGlyphs";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog } from "@/components/ui/dialog";
+import { CardDialogContent } from "@/components/ui/card-dialog";
 import { EmptyState, SkeletonGrid } from "@/components/ui/empty-state";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
@@ -73,30 +74,32 @@ export default function EventsTab({ searchQuery = "" }: Props) {
       </div>
 
       <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
-        <DialogContent className="max-w-md max-h-[90dvh] flex flex-col overflow-hidden">
-          <DialogHeader className="flex-shrink-0">
-            <DialogTitle>{selected ? name(selected) : ""}</DialogTitle>
-          </DialogHeader>
+        <CardDialogContent>
           {selected && (
-            <div className="overflow-y-auto flex-1 pr-1 space-y-3">
+            <>
               {selected.image && (
-                <img src={`${STORAGE}/events/${selected.image}`} alt={selected.name_en} className="max-h-[40vh] w-auto mx-auto rounded-lg object-contain" />
-              )}
-              {selected.effect_en && (
-                <div>
-                  <p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Эффект" : "Effect"}</p>
-                  <p className="text-xs text-muted-foreground whitespace-pre-line" dangerouslySetInnerHTML={{ __html: renderGlyphs(lang === "RU" ? (selected.effect_ru || selected.effect_en) : selected.effect_en, glyphs) }} />
+                <div className="w-full shrink-0">
+                  <img src={`${STORAGE}/events/${selected.image}`} alt={selected.name_en} className="w-full h-auto object-cover" />
                 </div>
               )}
-              {(lang === "RU" ? selected.notes_ru : selected.notes_en) && (
-                <div>
-                  <p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Заметки" : "Notes"}</p>
-                  <p className="text-xs text-muted-foreground whitespace-pre-line" dangerouslySetInnerHTML={{ __html: renderGlyphs(lang === "RU" ? selected.notes_ru : selected.notes_en, glyphs) }} />
-                </div>
-              )}
-            </div>
+              <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
+                <h2 className="text-lg font-semibold leading-tight pr-8">{name(selected)}</h2>
+                {selected.effect_en && (
+                  <div>
+                    <p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Эффект" : "Effect"}</p>
+                    <p className="text-xs text-muted-foreground whitespace-pre-line" dangerouslySetInnerHTML={{ __html: renderGlyphs(lang === "RU" ? (selected.effect_ru || selected.effect_en) : selected.effect_en, glyphs) }} />
+                  </div>
+                )}
+                {(lang === "RU" ? selected.notes_ru : selected.notes_en) && (
+                  <div>
+                    <p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Заметки" : "Notes"}</p>
+                    <p className="text-xs text-muted-foreground whitespace-pre-line" dangerouslySetInnerHTML={{ __html: renderGlyphs(lang === "RU" ? selected.notes_ru : selected.notes_en, glyphs) }} />
+                  </div>
+                )}
+              </div>
+            </>
           )}
-        </DialogContent>
+        </CardDialogContent>
       </Dialog>
     </>
   );
