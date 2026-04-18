@@ -35,6 +35,7 @@ interface SpecialtyLevel {
   level: string;
   image?: string;
   effect_en?: string;
+  effect_ru?: string;
 }
 
 function hasPortrait(image: string | null): boolean {
