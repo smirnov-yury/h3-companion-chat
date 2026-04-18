@@ -117,8 +117,8 @@ export default function ArtifactsTab({ searchQuery = "" }: Props) {
           {selected && (
             <>
               {selected.image && (
-                <div className="relative w-full shrink-0">
-                  <img src={`${STORAGE}/artifacts/${selected.image}`} alt={selected.name_en} className="w-full h-auto object-cover" />
+                <div className="relative w-full shrink-0 flex justify-center bg-muted">
+                  <img src={`${STORAGE}/artifacts/${selected.image}`} alt={selected.name_en} className="w-full max-h-[280px] object-contain" />
                   {selected.quality && (
                     <span className={`absolute top-2 left-2 text-[11px] px-2 py-0.5 rounded-full font-medium ${QUALITY_COLORS[selected.quality] || "bg-muted text-muted-foreground"}`}>
                       {QUALITY_LABELS[selected.quality] || selected.quality}
