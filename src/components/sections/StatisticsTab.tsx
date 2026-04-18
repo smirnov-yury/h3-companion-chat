@@ -114,12 +114,12 @@ export default function StatisticsTab({ searchQuery = "" }: Props) {
                       <div className="absolute top-2 left-2 flex flex-col gap-1">
                         {item.stat_type && (
                           <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${STAT_COLORS[item.stat_type] || "bg-muted text-muted-foreground"}`}>
-                            {item.stat_type.charAt(0).toUpperCase() + item.stat_type.slice(1)}
+                            {statTypeLabel(item.stat_type, lang as "EN" | "RU")}
                           </span>
                         )}
                         {item.card_type && (
                           <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${CARD_TYPE_BADGE[item.card_type] || "bg-muted text-muted-foreground"}`}>
-                            {cardTypeLabel(item.card_type)}
+                            {cardTypeLabel(item.card_type, lang as "EN" | "RU")}
                           </span>
                         )}
                       </div>
@@ -133,40 +133,52 @@ export default function StatisticsTab({ searchQuery = "" }: Props) {
       </div>
 
       <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
-        <DialogContent className="max-w-md max-h-[90dvh] flex flex-col overflow-hidden">
-          <DialogHeader className="flex-shrink-0">
-            <DialogTitle>{selected ? name(selected) : ""}</DialogTitle>
-            {selected && (
-              <div className="flex gap-2 flex-wrap pt-1">
-                {selected.stat_type && <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium capitalize ${STAT_COLORS[selected.stat_type] || "bg-muted text-muted-foreground"}`}>{selected.stat_type}</span>}
-                {selected.card_type && <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${CARD_TYPE_BADGE[selected.card_type] || "bg-muted text-muted-foreground"}`}>{cardTypeLabel(selected.card_type)}</span>}
-              </div>
-            )}
-          </DialogHeader>
+        <CardDialogContent>
           {selected && (
-            <div className="overflow-y-auto flex-1 pr-1 space-y-3">
-              {selected.image && <img src={`${STORAGE}/statistics/${selected.image}`} alt={selected.name_en || ""} className="max-h-[40vh] w-auto mx-auto rounded-lg object-contain" />}
-              {selected.effect_en && (
-                <div>
-                  <p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Эффект" : "Effect"}</p>
-                  <p className="text-xs text-muted-foreground whitespace-pre-line" dangerouslySetInnerHTML={{ __html: renderGlyphs(selected.effect_en, glyphs) }} />
+            <>
+              {selected.image && (
+                <div className="relative w-full shrink-0">
+                  <img src={`${STORAGE}/statistics/${selected.image}`} alt={selected.name_en || ""} className="w-full h-auto object-cover" />
+                  {(selected.stat_type || selected.card_type) && (
+                    <div className="absolute top-2 left-2 flex flex-col gap-1">
+                      {selected.stat_type && (
+                        <span className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${STAT_COLORS[selected.stat_type] || "bg-muted text-muted-foreground"}`}>
+                          {statTypeLabel(selected.stat_type, lang as "EN" | "RU")}
+                        </span>
+                      )}
+                      {selected.card_type && (
+                        <span className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${CARD_TYPE_BADGE[selected.card_type] || "bg-muted text-muted-foreground"}`}>
+                          {cardTypeLabel(selected.card_type, lang as "EN" | "RU")}
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
               )}
-              {selected.effect_en_expert && (
-                <div>
-                  <p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Экспертный эффект" : "Expert Effect"}</p>
-                  <p className="text-xs text-muted-foreground whitespace-pre-line" dangerouslySetInnerHTML={{ __html: renderGlyphs(selected.effect_en_expert, glyphs) }} />
-                </div>
-              )}
-              {(lang === "RU" ? selected.notes_ru : selected.notes_en) && (
-                <div>
-                  <p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Заметки" : "Notes"}</p>
-                  <p className="text-xs text-muted-foreground whitespace-pre-line" dangerouslySetInnerHTML={{ __html: renderGlyphs(lang === "RU" ? selected.notes_ru : selected.notes_en, glyphs) }} />
-                </div>
-              )}
-            </div>
+              <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
+                <h2 className="text-lg font-semibold leading-tight pr-8">{name(selected)}</h2>
+                {selected.effect_en && (
+                  <div>
+                    <p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Эффект" : "Effect"}</p>
+                    <p className="text-xs text-muted-foreground whitespace-pre-line" dangerouslySetInnerHTML={{ __html: renderGlyphs(selected.effect_en, glyphs) }} />
+                  </div>
+                )}
+                {selected.effect_en_expert && (
+                  <div>
+                    <p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Усиленный" : "Empowered"}</p>
+                    <p className="text-xs text-muted-foreground whitespace-pre-line" dangerouslySetInnerHTML={{ __html: renderGlyphs(selected.effect_en_expert, glyphs) }} />
+                  </div>
+                )}
+                {(lang === "RU" ? selected.notes_ru : selected.notes_en) && (
+                  <div>
+                    <p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Заметки" : "Notes"}</p>
+                    <p className="text-xs text-muted-foreground whitespace-pre-line" dangerouslySetInnerHTML={{ __html: renderGlyphs(lang === "RU" ? selected.notes_ru : selected.notes_en, glyphs) }} />
+                  </div>
+                )}
+              </div>
+            </>
           )}
-        </DialogContent>
+        </CardDialogContent>
       </Dialog>
     </>
   );
