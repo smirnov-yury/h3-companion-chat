@@ -14,6 +14,7 @@ interface Ability {
   name_en: string;
   name_ru: string | null;
   effect_en: string | null;
+  effect_ru: string | null;
   effect_expert_en: string | null;
   effect_empowered_en: string | null;
   effect_expert_ru: string | null;
@@ -90,10 +91,10 @@ export default function AbilitiesTab({ searchQuery = "" }: Props) {
               {selected.image_regular && (
                 <img src={`${STORAGE}/abilities/${selected.image_regular}`} alt={selected.name_en} className="max-h-[40vh] w-auto mx-auto rounded-lg object-contain" />
               )}
-              {selected.effect_en && (
+              {(lang === "RU" ? selected.effect_ru : selected.effect_en) && (
                 <div>
                   <p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Эффект" : "Effect"}</p>
-                  <p className="text-xs text-muted-foreground whitespace-pre-line" dangerouslySetInnerHTML={{ __html: renderGlyphs(selected.effect_en, glyphs) }} />
+                  <p className="text-xs text-muted-foreground whitespace-pre-line" dangerouslySetInnerHTML={{ __html: renderGlyphs(lang === "RU" ? selected.effect_ru : selected.effect_en, glyphs) }} />
                 </div>
               )}
               {(lang === "RU" ? selected.effect_empowered_ru : selected.effect_empowered_en) && (
