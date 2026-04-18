@@ -255,7 +255,7 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled }: RulesTabPr
           id={`rule-${rule.id}`}
           className="border border-border/50 rounded-lg px-4 data-[state=open]:border-primary/40"
         >
-          <AccordionTrigger className="text-sm font-medium py-3 hover:no-underline">
+          <AccordionTrigger className="text-sm font-medium py-3 hover:no-underline text-left">
             {title}
           </AccordionTrigger>
           <AccordionContent className="text-sm text-muted-foreground pb-3 leading-relaxed">
