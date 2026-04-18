@@ -137,8 +137,8 @@ export default function StatisticsTab({ searchQuery = "" }: Props) {
           {selected && (
             <>
               {selected.image && (
-                <div className="relative w-full shrink-0">
-                  <img src={`${STORAGE}/statistics/${selected.image}`} alt={selected.name_en || ""} className="w-full h-auto object-cover" />
+                <div className="relative w-full shrink-0 flex justify-center bg-muted">
+                  <img src={`${STORAGE}/statistics/${selected.image}`} alt={selected.name_en || ""} className="w-full max-h-[280px] object-contain" />
                   {(selected.stat_type || selected.card_type) && (
                     <div className="absolute top-2 left-2 flex flex-col gap-1">
                       {selected.stat_type && (

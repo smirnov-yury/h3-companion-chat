@@ -83,8 +83,8 @@ export default function FieldsTab({ searchQuery = "" }: Props) {
           {selected && (
             <>
               {selected.image ? (
-                <div className="relative w-full shrink-0">
-                  <img src={`${STORAGE}/fields/${selected.image}`} alt={selected.name_en} className="w-full h-auto object-cover" />
+                <div className="relative w-full shrink-0 flex justify-center bg-muted">
+                  <img src={`${STORAGE}/fields/${selected.image}`} alt={selected.name_en} className="w-full max-h-[280px] object-contain" />
                   {selected.type_en && (
                     <span className="absolute top-2 left-2 text-[11px] font-medium px-2 py-0.5 rounded bg-background/80 backdrop-blur-sm text-foreground">
                       {lang === "RU" ? (selected.type_ru || selected.type_en) : selected.type_en}

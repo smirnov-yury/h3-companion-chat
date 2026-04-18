@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { Users, Clock, Gauge, Map as MapIcon, BookOpen, Zap, Swords } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import * as DialogPrimitive from "@radix-ui/react-dialog";
+import { X } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/context/LanguageContext";
@@ -80,7 +82,14 @@ export default function ScenarioDetail({ scenario, onClose }: ScenarioDetailProp
 
   return (
     <Dialog open onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="max-w-lg max-h-[90dvh] flex flex-col overflow-hidden">
+      <DialogContent className="w-[95vw] max-w-lg max-h-[90dvh] flex flex-col overflow-hidden [&>button]:hidden">
+        <DialogPrimitive.Close
+          aria-label="Close"
+          className="absolute top-3 right-3 z-20 inline-flex h-8 w-8 items-center justify-center rounded-full border-2 bg-background/80 backdrop-blur-sm transition-colors hover:bg-background focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background"
+          style={{ borderColor: "#E1BB3A", color: "#E1BB3A" }}
+        >
+          <X className="h-4 w-4" strokeWidth={2.5} />
+        </DialogPrimitive.Close>
         <DialogHeader className="flex-shrink-0">
           <DialogTitle className="text-base">{title}</DialogTitle>
           <div className="flex flex-wrap items-center gap-2 mt-1">
