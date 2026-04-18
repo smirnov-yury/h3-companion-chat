@@ -112,7 +112,7 @@ img.glyph-icon[src*="building_materials"] {
   display: block;
   text-align: center;
   margin: 0.4em 0;
-  color: white;
+  color: #E1BB3A;
 }
 .glyph-or svg {
   width: 8em !important;
