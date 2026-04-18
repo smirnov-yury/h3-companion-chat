@@ -82,7 +82,7 @@ export default function ScenarioDetail({ scenario, onClose }: ScenarioDetailProp
 
   return (
     <Dialog open onOpenChange={(o) => !o && onClose()}>
-      <DialogContent className="w-[95vw] max-w-lg max-h-[90dvh] flex flex-col overflow-hidden [&>button]:hidden">
+      <DialogContent className="w-[95vw] max-w-lg max-h-[90dvh] flex flex-col overflow-hidden rounded-xl [&>button]:hidden">
         <DialogPrimitive.Close
           aria-label="Close"
           className="absolute top-3 right-3 z-20 inline-flex h-8 w-8 items-center justify-center rounded-full border-2 bg-background/80 backdrop-blur-sm transition-colors hover:bg-background focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background"
