@@ -192,7 +192,7 @@ export default function HeroesTab() {
             )}
 
             <p className="text-lg font-semibold text-foreground">{name(selected)}</p>
-            {cls(selected) && <p className="text-sm text-muted-foreground -mt-3">{cls(selected)}</p>}
+            {cls(selected) && <p className="text-sm text-muted-foreground -mt-3" dangerouslySetInnerHTML={{ __html: renderGlyphs(cls(selected), glyphs) }} />}
 
             <div className="flex gap-2">
               {stats(selected).map(s => (
