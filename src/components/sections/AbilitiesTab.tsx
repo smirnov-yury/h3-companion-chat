@@ -90,16 +90,10 @@ export default function AbilitiesTab({ searchQuery = "" }: Props) {
               {selected.image_regular && (
                 <img src={`${STORAGE}/abilities/${selected.image_regular}`} alt={selected.name_en} className="max-h-[40vh] w-auto mx-auto rounded-lg object-contain" />
               )}
-              {lang !== "RU" && selected.effect_en && (
+              {selected.effect_en && (
                 <div>
-                  <p className="text-xs font-semibold text-foreground">Effect</p>
+                  <p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Эффект" : "Effect"}</p>
                   <p className="text-xs text-muted-foreground whitespace-pre-line" dangerouslySetInnerHTML={{ __html: renderGlyphs(selected.effect_en, glyphs) }} />
-                </div>
-              )}
-              {(lang === "RU" ? selected.effect_expert_ru : selected.effect_expert_en) && (
-                <div>
-                  <p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Эксперт" : "Expert"}</p>
-                  <p className="text-xs text-muted-foreground whitespace-pre-line" dangerouslySetInnerHTML={{ __html: renderGlyphs(lang === "RU" ? selected.effect_expert_ru : selected.effect_expert_en, glyphs) }} />
                 </div>
               )}
               {(lang === "RU" ? selected.effect_empowered_ru : selected.effect_empowered_en) && (
