@@ -115,12 +115,12 @@ function makeMarkdownComponents(glyphs: ReturnType<typeof useGlyphs>["glyphs"]) 
       </div>
     ),
     th: ({ children, ...props }: any) => (
-      <th className="border border-border px-3 py-2 bg-muted text-left font-medium" {...props}>
+      <th className="border border-border px-3 py-2 bg-muted text-left font-medium whitespace-nowrap align-middle" {...props}>
         <GlyphText>{children}</GlyphText>
       </th>
     ),
     td: ({ children, ...props }: any) => (
-      <td className="border border-border px-3 py-2" {...props}>
+      <td className="border border-border px-3 py-2 whitespace-nowrap align-middle" {...props}>
         <GlyphText>{children}</GlyphText>
       </td>
     ),
