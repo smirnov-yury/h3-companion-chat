@@ -3,7 +3,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useGlyphs } from '@/context/GlyphsContext';
 import { useLang } from '@/context/LanguageContext';
 import { renderGlyphs } from '@/utils/renderGlyphs';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog } from '@/components/ui/dialog';
+import { CardDialogContent } from '@/components/ui/card-dialog';
 import { Swords, Shield, Heart, Zap, Search, X, ChevronDown, SlidersHorizontal } from 'lucide-react';
 import { EmptyState, SkeletonGrid } from '@/components/ui/empty-state';
 
@@ -415,7 +416,7 @@ export default function UnitsTab() {
 
       {/* Detail modal */}
       <Dialog open={!!selectedKey} onOpenChange={(o) => !o && setSelectedKey(null)}>
-        <DialogContent className="max-h-[90dvh] w-[95vw] max-w-sm flex flex-col overflow-hidden p-0 rounded-xl">
+        <CardDialogContent>
           {selectedItem && (() => {
             const { variants } = selectedItem;
             const currentVariant = variants.find((v) => v.number === activeVariant) ? activeVariant : variants[0].number;
@@ -513,7 +514,7 @@ export default function UnitsTab() {
               </>
             );
           })()}
-        </DialogContent>
+        </CardDialogContent>
       </Dialog>
     </div>
   );
