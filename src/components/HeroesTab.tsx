@@ -155,15 +155,16 @@ export default function HeroesTab() {
                   {h.class_en && (() => {
                     const isMagic = h.class_en.includes('<magic>');
                     const heroType = isMagic ? 'Magic' : 'Might';
-                    const heroClass = h.class_en.replace(/<magic>|<might>/g, '').trim();
+                    const rawClass = (lang === "RU" && h.class_ru ? h.class_ru : h.class_en).replace(/<magic>|<might>/g, '').trim();
                     return (
                       <div className="absolute top-1.5 left-1.5 flex flex-col gap-1">
                         <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-full backdrop-blur-sm text-white ${isMagic ? 'bg-blue-600/80' : 'bg-red-700/80'}`}>
                           {heroType}
                         </span>
-                        <span className="text-[9px] px-1.5 py-0.5 rounded-full backdrop-blur-sm bg-black/50 text-white">
-                          {heroClass}
-                        </span>
+                        <span
+                          className="text-[9px] px-1.5 py-0.5 rounded-full backdrop-blur-sm bg-black/50 text-white"
+                          dangerouslySetInnerHTML={{ __html: renderGlyphs(rawClass, glyphs) }}
+                        />
                       </div>
                     );
                   })()}
@@ -191,7 +192,7 @@ export default function HeroesTab() {
             )}
 
             <p className="text-lg font-semibold text-foreground">{name(selected)}</p>
-            {cls(selected) && <p className="text-sm text-muted-foreground -mt-3">{cls(selected)}</p>}
+            {cls(selected) && <p className="text-sm text-muted-foreground -mt-3" dangerouslySetInnerHTML={{ __html: renderGlyphs(cls(selected), glyphs) }} />}
 
             <div className="flex gap-2">
               {stats(selected).map(s => (
