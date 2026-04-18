@@ -14,6 +14,7 @@ interface Ability {
   name_en: string;
   name_ru: string | null;
   effect_en: string | null;
+  effect_ru: string | null;
   effect_expert_en: string | null;
   effect_empowered_en: string | null;
   effect_expert_ru: string | null;

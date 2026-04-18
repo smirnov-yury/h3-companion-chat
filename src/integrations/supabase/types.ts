@@ -21,6 +21,7 @@ export type Database = {
           effect_en: string | null
           effect_expert_en: string | null
           effect_expert_ru: string | null
+          effect_ru: string | null
           id: string
           image_regular: string | null
           name_en: string
@@ -35,6 +36,7 @@ export type Database = {
           effect_en?: string | null
           effect_expert_en?: string | null
           effect_expert_ru?: string | null
+          effect_ru?: string | null
           id: string
           image_regular?: string | null
           name_en: string
@@ -49,6 +51,7 @@ export type Database = {
           effect_en?: string | null
           effect_expert_en?: string | null
           effect_expert_ru?: string | null
+          effect_ru?: string | null
           id?: string
           image_regular?: string | null
           name_en?: string
