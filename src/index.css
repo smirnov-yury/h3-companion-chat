@@ -108,3 +108,4 @@ img.glyph-icon[src*="building_materials"] {
 
 .glyph-svg { display: inline-flex; align-items: center; vertical-align: middle; }
 .glyph-svg svg { width: 1.4em; height: 1.4em; filter: none; }
+.glyph-or svg { width: 3.5em !important; height: 0.875em !important; }
