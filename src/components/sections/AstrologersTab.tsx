@@ -76,7 +76,7 @@ export default function AstrologersTab({ searchQuery = "", initialCardId, onCard
             {filtered.map((item) => {
               const imgSrc = item.image ? `${STORAGE}/astrologers_proclaim/${item.image}` : null;
               return (
-                <button key={item.id} onClick={() => setSelected(item)}
+                <button key={item.id} onClick={() => openCard(item)}
                   className="flex flex-col w-full overflow-hidden rounded-lg bg-muted text-left cursor-pointer transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg hover:ring-2 hover:ring-primary">
                   <div className="w-full aspect-[4/3] overflow-hidden rounded-t-lg bg-muted">
                     {imgSrc && <img src={imgSrc} alt={item.name_en} className="w-full h-full object-cover" />}
@@ -89,7 +89,7 @@ export default function AstrologersTab({ searchQuery = "", initialCardId, onCard
         )}
       </div>
 
-      <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
+      <Dialog open={!!selected} onOpenChange={(o) => !o && closeCard()}>
         <CardDialogContent>
           {selected && (
             <>

@@ -297,7 +297,7 @@ export default function ScenariosTab({ searchQuery = "", initialCardId, onCardOp
       </Sheet>
 
       {selected && (
-        <ScenarioDetail scenario={selected} onClose={() => setSelected(null)} />
+        <ScenarioDetail scenario={selected} onClose={closeCard} />
       )}
     </>
   );
@@ -307,7 +307,7 @@ export default function ScenariosTab({ searchQuery = "", initialCardId, onCardOp
     const rt = roundsText(s);
     const diff = lang === "RU" ? (s.difficulty_text_ru || s.difficulty_text_en) : s.difficulty_text_en;
     return (
-      <button key={s.id} onClick={() => setSelected(s)}
+      <button key={s.id} onClick={() => openCard(s)}
         className="flex flex-col rounded-xl border border-border bg-card p-3 text-left hover:border-primary transition-colors w-full">
         <div className="flex items-start justify-between gap-2">
           <p className="text-sm font-semibold text-foreground flex-1">{title(s)}</p>
