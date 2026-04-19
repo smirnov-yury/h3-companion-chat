@@ -69,12 +69,22 @@ function LangToggle() {
 }
 
 export default function NavDrawer({ open, onOpenChange, active, onChange }: NavDrawerProps) {
+  const navigate = useNavigate();
+  const goHome = () => {
+    navigate("/");
+    onOpenChange(false);
+  };
   return (
     <>
       {/* Desktop permanent sidebar */}
       <aside className="hidden lg:flex fixed left-0 top-0 h-full w-56 flex-col bg-background border-r border-border z-50">
         <div className="p-4 border-b border-border">
-          <span className="text-base font-semibold">Heroes 3 Companion</span>
+          <button
+            onClick={goHome}
+            className="text-base font-semibold cursor-pointer hover:text-primary transition-colors text-left"
+          >
+            Heroes 3 Companion
+          </button>
         </div>
         <nav className="flex-1 overflow-y-auto py-2">
           <NavItemList active={active} onChange={onChange} />
@@ -86,7 +96,11 @@ export default function NavDrawer({ open, onOpenChange, active, onChange }: NavD
       <Sheet open={open} onOpenChange={onOpenChange}>
         <SheetContent side="left" className="w-72 p-0 flex flex-col lg:hidden">
           <SheetHeader className="p-4 border-b border-border">
-            <SheetTitle className="text-base">Heroes 3 Companion</SheetTitle>
+            <SheetTitle className="text-base text-left">
+              <button onClick={goHome} className="cursor-pointer hover:text-primary transition-colors">
+                Heroes 3 Companion
+              </button>
+            </SheetTitle>
           </SheetHeader>
           <nav className="flex-1 overflow-y-auto py-2">
             <NavItemList active={active} onChange={onChange} onSelect={() => onOpenChange(false)} />
