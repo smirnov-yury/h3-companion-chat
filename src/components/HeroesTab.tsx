@@ -50,8 +50,8 @@ interface HeroesTabProps {
   initialFilter?: string;
   initialCardId?: string;
   onFilterChange?: (filterValue: string | null) => void;
-  onCardOpen?: (cardId: string) => void;
-  onCardClose?: () => void;
+  onCardOpen?: (cardId: string, currentFilter?: string | null) => void;
+  onCardClose?: (currentFilter?: string | null) => void;
 }
 
 export default function HeroesTab({ initialFilter, initialCardId, onFilterChange, onCardOpen, onCardClose }: HeroesTabProps = {}) {
@@ -97,8 +97,8 @@ export default function HeroesTab({ initialFilter, initialCardId, onFilterChange
     if (found) { setSelected(found); setSpecialtyTab(0); }
   }, [loaded, initialCardId, heroes]);
 
-  const openCard = (h: Hero) => { setSelected(h); setSpecialtyTab(0); onCardOpen?.(h.id); };
-  const closeCard = () => { setSelected(null); onCardClose?.(); };
+  const openCard = (h: Hero) => { setSelected(h); setSpecialtyTab(0); onCardOpen?.(h.id, faction === "all" ? null : faction); };
+  const closeCard = () => { setSelected(null); onCardClose?.(faction === "all" ? null : faction); };
 
   const hasFilters = faction !== "all" || !!searchQuery;
   const resetFilters = () => { setFactionAndUrl("all"); setSearchQuery(""); };
