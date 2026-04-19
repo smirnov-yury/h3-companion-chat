@@ -245,7 +245,7 @@ async function searchAll(query: string, lang: Lang): Promise<SectionResult[]> {
   }
   // Artifacts
   if (artifacts.data) {
-    const rows = artifacts.data as Array<{ id: string; name_en: string; name_ru: string | null; effect_en: string | null; effect_ru: string | null; description_en: string | null; description_ru: string | null; image: string | null; quality: string | null }>;
+    const rows = sortByNameMatch(artifacts.data as Array<{ id: string; name_en: string; name_ru: string | null; effect_en: string | null; effect_ru: string | null; description_en: string | null; description_ru: string | null; image: string | null; quality: string | null }>, query, lang);
     sections.push({
       key: "artifacts",
       labelEN: "Artifacts",
@@ -265,7 +265,7 @@ async function searchAll(query: string, lang: Lang): Promise<SectionResult[]> {
   }
   // Spells
   if (spells.data) {
-    const rows = spells.data as Array<{ id: string; name_en: string; name_ru: string | null; effect_en: string | null; effect_ru: string | null; notes_en: string | null; notes_ru: string | null; image: string | null; school: string | null }>;
+    const rows = sortByNameMatch(spells.data as Array<{ id: string; name_en: string; name_ru: string | null; effect_en: string | null; effect_ru: string | null; notes_en: string | null; notes_ru: string | null; image: string | null; school: string | null }>, query, lang);
     sections.push({
       key: "spells",
       labelEN: "Spells",
@@ -285,7 +285,7 @@ async function searchAll(query: string, lang: Lang): Promise<SectionResult[]> {
   }
   // Abilities
   if (abilities.data) {
-    const rows = abilities.data as Array<{ id: string; name_en: string; name_ru: string | null; effect_en: string | null; effect_ru: string | null; notes_en: string | null; notes_ru: string | null; image_regular: string | null }>;
+    const rows = sortByNameMatch(abilities.data as Array<{ id: string; name_en: string; name_ru: string | null; effect_en: string | null; effect_ru: string | null; notes_en: string | null; notes_ru: string | null; image_regular: string | null }>, query, lang);
     sections.push({
       key: "abilities",
       labelEN: "Abilities",
@@ -303,7 +303,7 @@ async function searchAll(query: string, lang: Lang): Promise<SectionResult[]> {
   }
   // Rules
   if (rules.data) {
-    const rows = rules.data as Array<{ id: string; title_en: string | null; title_ru: string | null; text_en: string | null; text_ru: string | null; category: string | null }>;
+    const rows = sortByTitleMatch(rules.data as Array<{ id: string; title_en: string | null; title_ru: string | null; text_en: string | null; text_ru: string | null; category: string | null }>, query, lang);
     sections.push({
       key: "rules",
       labelEN: "Rules",
@@ -321,7 +321,7 @@ async function searchAll(query: string, lang: Lang): Promise<SectionResult[]> {
   }
   // Scenarios
   if (scenarios.data) {
-    const rows = scenarios.data as Array<{ id: string; title_en: string | null; title_ru: string | null; summary_en: string | null; summary_ru: string | null }>;
+    const rows = sortByTitleMatch(scenarios.data as Array<{ id: string; title_en: string | null; title_ru: string | null; summary_en: string | null; summary_ru: string | null }>, query, lang);
     sections.push({
       key: "scenarios",
       labelEN: "Scenarios",
@@ -339,7 +339,7 @@ async function searchAll(query: string, lang: Lang): Promise<SectionResult[]> {
   }
   // Map Elements
   if (fields.data) {
-    const rows = fields.data as Array<{ id: string; name_en: string; name_ru: string | null; effect_en: string | null; effect_ru: string | null; image: string | null }>;
+    const rows = sortByNameMatch(fields.data as Array<{ id: string; name_en: string; name_ru: string | null; effect_en: string | null; effect_ru: string | null; image: string | null }>, query, lang);
     sections.push({
       key: "map_elements",
       labelEN: "Map Elements",
@@ -357,7 +357,7 @@ async function searchAll(query: string, lang: Lang): Promise<SectionResult[]> {
   }
   // Events
   if (events.data) {
-    const rows = events.data as Array<{ id: string; name_en: string; name_ru: string | null; effect_en: string | null; effect_ru: string | null; image: string | null }>;
+    const rows = sortByNameMatch(events.data as Array<{ id: string; name_en: string; name_ru: string | null; effect_en: string | null; effect_ru: string | null; image: string | null }>, query, lang);
     sections.push({
       key: "events",
       labelEN: "Events",
@@ -375,7 +375,7 @@ async function searchAll(query: string, lang: Lang): Promise<SectionResult[]> {
   }
   // War Machines
   if (warmachines.data) {
-    const rows = warmachines.data as Array<{ id: string; name_en: string; name_ru: string | null; ability_en: string | null; ability_ru: string | null; image: string | null }>;
+    const rows = sortByNameMatch(warmachines.data as Array<{ id: string; name_en: string; name_ru: string | null; ability_en: string | null; ability_ru: string | null; image: string | null }>, query, lang);
     sections.push({
       key: "warmachines",
       labelEN: "War Machines",
