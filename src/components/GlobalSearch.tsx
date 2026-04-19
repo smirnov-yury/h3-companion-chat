@@ -535,8 +535,8 @@ export default function GlobalSearch({ mode, onClose, initialQuery = "", autoFoc
 
   if (mode === "overlay") {
     return (
-      <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm flex flex-col">
-        <div className="flex items-center gap-2 p-3 border-b border-border">
+      <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm flex flex-col lg:left-56">
+        <div className="flex-shrink-0 flex items-center gap-2 p-3 border-b border-border">
           <div className="flex-1">{inputBlock}</div>
           <button
             onClick={onClose}
