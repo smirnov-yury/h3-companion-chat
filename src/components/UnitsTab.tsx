@@ -89,12 +89,13 @@ interface DisplayItem {
 interface UnitsTabProps {
   initialFilter?: string;
   initialCardId?: string;
+  initialSearch?: string;
   onFilterChange?: (filterValue: string | null) => void;
   onCardOpen?: (cardId: string, currentFilter?: string | null) => void;
   onCardClose?: (currentFilter?: string | null) => void;
 }
 
-export default function UnitsTab({ initialFilter, initialCardId, onFilterChange, onCardOpen, onCardClose }: UnitsTabProps = {}) {
+export default function UnitsTab({ initialFilter, initialCardId, initialSearch, onFilterChange, onCardOpen, onCardClose }: UnitsTabProps = {}) {
   const { lang } = useLang();
   const [units, setUnits] = useState<UnitStat[]>([]);
   const [loading, setLoading] = useState(true);
@@ -192,7 +193,7 @@ export default function UnitsTab({ initialFilter, initialCardId, onFilterChange,
   const tiers = ['all', 'bronze', 'silver', 'golden', 'azure'];
   const types = ['all', 'unit_ground', 'unit_ranged', 'unit_flying'];
 
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(initialSearch ?? '');
 
   // Build display items based on filters
   const displayItems = useMemo(() => {

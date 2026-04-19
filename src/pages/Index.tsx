@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import TopAppBar from "@/components/TopAppBar";
 import NavDrawer, { type TabId, navItems } from "@/components/NavDrawer";
 import ChatScreen from "@/components/ChatScreen";
@@ -23,10 +23,13 @@ import {
 export default function Index() {
   const navigate = useNavigate();
   const params = useParams<{ section?: string; "*"?: string }>();
+  const [searchParams] = useSearchParams();
   const { lang } = useLang();
 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [scrollToRuleId, setScrollToRuleId] = useState<string | null>(null);
+
+  const initialSearch = searchParams.get("q") ?? "";
 
   // Derive active tab from URL. Unknown slug → default section.
   const matched = findSectionBySlug(params.section) ?? findSectionBySlug(DEFAULT_SLUG)!;
@@ -168,6 +171,7 @@ export default function Index() {
             onScrollHandled={() => setScrollToRuleId(null)}
             initialFilter={urlFilter}
             initialCardId={urlCardId}
+            initialSearch={initialSearch}
             onFilterChange={handleFilterChange}
             onCardOpen={handleCardOpen}
             onCardClose={handleCardClose}
@@ -178,6 +182,7 @@ export default function Index() {
             initialFilter={urlDeckFilter}
             initialCardId={urlCardId}
             initialAmbiguous={urlDeckCardAmbiguous}
+            initialSearch={initialSearch}
             onSubtypeChange={handleDecksSubtypeChange}
             onFilterChange={handleDecksFilterChange}
             onCardOpen={handleDecksCardOpen}
@@ -186,6 +191,7 @@ export default function Index() {
         ) : tab === "scenarios" ? (
           <ScenariosTab
             initialCardId={urlCardId}
+            searchQuery={initialSearch}
             onCardOpen={handleCardOpen}
             onCardClose={handleCardClose}
           />
@@ -193,6 +199,7 @@ export default function Index() {
           <MapElementsTab
             initialFilter={urlFilter}
             initialCardId={urlCardId}
+            initialSearch={initialSearch}
             onFilterChange={handleFilterChange}
             onCardOpen={handleCardOpen}
             onCardClose={handleCardClose}
@@ -200,6 +207,7 @@ export default function Index() {
         ) : tab === "global_events" ? (
           <GlobalEventsTab
             initialCardId={urlCardId}
+            initialSearch={initialSearch}
             onCardOpen={handleCardOpen}
             onCardClose={handleCardClose}
           />
@@ -207,6 +215,7 @@ export default function Index() {
           <UnitsTab
             initialFilter={urlFilter}
             initialCardId={urlCardId}
+            initialSearch={initialSearch}
             onFilterChange={handleFilterChange}
             onCardOpen={handleCardOpen}
             onCardClose={handleCardClose}
@@ -221,6 +230,7 @@ export default function Index() {
           <HeroesTab
             initialFilter={urlFilter}
             initialCardId={urlCardId}
+            initialSearch={initialSearch}
             onFilterChange={handleFilterChange}
             onCardOpen={handleCardOpen}
             onCardClose={handleCardClose}
