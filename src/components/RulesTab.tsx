@@ -156,6 +156,7 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled, initialFilte
   const mdComponents = useMemo(() => makeMarkdownComponents(glyphs), [glyphs]);
 
   // Sync URL filter (from parent) → internal state. Rule categories are already lowercase keys.
+  // If initialFilter doesn't match a category but matches a rule id, treat it as ambiguous card id.
   useEffect(() => {
     if (initialFilter) {
       const known = RULE_CATEGORIES.find((c) => c.key === initialFilter);
@@ -164,6 +165,19 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled, initialFilte
       setSelectedCategory(null);
     }
   }, [initialFilter]);
+
+  // Auto-open accordion item from URL (initialCardId may match a rule id).
+  useEffect(() => {
+    if (!loaded || !initialCardId) return;
+    const found = rules.find((r) => r.id === initialCardId);
+    if (found) {
+      setOpenItem(found.id);
+      requestAnimationFrame(() => {
+        const el = document.getElementById(`rule-${found.id}`);
+        el?.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+    }
+  }, [loaded, initialCardId, rules]);
 
   useEffect(() => {
     if (scrollToRuleId && loaded) {
