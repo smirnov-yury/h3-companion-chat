@@ -243,7 +243,7 @@ export default function UnitsTab({ initialFilter, onFilterChange }: UnitsTabProp
         {(() => {
           const activeChips: { label: string; onRemove: () => void }[] = [];
           if (mode !== 'all') activeChips.push({ label: modeLabels[mode], onRemove: () => setMode('all') });
-          if (filterFaction !== 'all') activeChips.push({ label: filterFaction, onRemove: () => setFilterFaction('all') });
+          if (filterFaction !== 'all') activeChips.push({ label: filterFaction, onRemove: () => setFactionAndUrl('all') });
           if (filterTier !== 'all') activeChips.push({ label: capitalize(filterTier), onRemove: () => setFilterTier('all') });
           if (filterType !== 'all') activeChips.push({ label: capitalize(filterType.replace('unit_', '')), onRemove: () => setFilterType('all') });
           const filterCount = activeChips.length;
