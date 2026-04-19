@@ -17,19 +17,25 @@ import {
   DEFAULT_SLUG,
   findSectionBySlug,
   findSectionByTabId,
+  toSlug,
 } from "@/config/sectionRegistry";
 
 export default function Index() {
   const navigate = useNavigate();
-  const { section } = useParams<{ section?: string }>();
+  const params = useParams<{ section?: string; "*"?: string }>();
   const { lang } = useLang();
 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [scrollToRuleId, setScrollToRuleId] = useState<string | null>(null);
 
   // Derive active tab from URL. Unknown slug → default section.
-  const matched = findSectionBySlug(section) ?? findSectionBySlug(DEFAULT_SLUG)!;
+  const matched = findSectionBySlug(params.section) ?? findSectionBySlug(DEFAULT_SLUG)!;
   const tab: TabId = matched.tabId;
+
+  // Parse path segments after section slug: e.g. /heroes/castle/adelaide → ["castle","adelaide"]
+  const restSegments = (params["*"] ?? "").split("/").filter(Boolean);
+  const urlFilter = restSegments[0]; // first sub-segment = filter slug (or subtype for decks)
+  const urlSubFilter = restSegments[1]; // for decks: filter within subtype
 
   const handleTabChange = useCallback(
     (newTab: TabId) => {
@@ -48,6 +54,33 @@ export default function Index() {
     [navigate],
   );
 
+  /** Push /:section/:filterSlug, or /:section if filter cleared. */
+  const handleFilterChange = useCallback(
+    (filterValue: string | null) => {
+      const slug = matched.slug;
+      if (!filterValue) navigate(`/${slug}`);
+      else navigate(`/${slug}/${toSlug(filterValue)}`);
+    },
+    [matched.slug, navigate],
+  );
+
+  /** Decks: subtype change → /decks/:subtype (clears filter). */
+  const handleDecksSubtypeChange = useCallback(
+    (subtype: string) => {
+      navigate(`/decks/${toSlug(subtype)}`);
+    },
+    [navigate],
+  );
+
+  /** Decks: filter change within current subtype. */
+  const handleDecksFilterChange = useCallback(
+    (subtype: string, filterValue: string | null) => {
+      if (!filterValue) navigate(`/decks/${toSlug(subtype)}`);
+      else navigate(`/decks/${toSlug(subtype)}/${toSlug(filterValue)}`);
+    },
+    [navigate],
+  );
+
   const current = navItems.find((n) => n.id === tab)!;
   const title = lang === "RU" ? current.labelRU : current.labelEN;
 
@@ -59,21 +92,31 @@ export default function Index() {
         {tab === "ai" ? (
           <ChatScreen />
         ) : tab === "rules" ? (
-          <RulesTab scrollToRuleId={scrollToRuleId} onScrollHandled={() => setScrollToRuleId(null)} />
+          <RulesTab
+            scrollToRuleId={scrollToRuleId}
+            onScrollHandled={() => setScrollToRuleId(null)}
+            initialFilter={urlFilter}
+            onFilterChange={handleFilterChange}
+          />
         ) : tab === "decks" ? (
-          <DecksTab />
+          <DecksTab
+            initialSubtype={urlFilter}
+            initialFilter={urlSubFilter}
+            onSubtypeChange={handleDecksSubtypeChange}
+            onFilterChange={handleDecksFilterChange}
+          />
         ) : tab === "scenarios" ? (
           <ScenariosTab />
         ) : tab === "map_elements" ? (
-          <MapElementsTab />
+          <MapElementsTab initialFilter={urlFilter} onFilterChange={handleFilterChange} />
         ) : tab === "global_events" ? (
           <GlobalEventsTab />
         ) : tab === "units" ? (
-          <UnitsTab />
+          <UnitsTab initialFilter={urlFilter} onFilterChange={handleFilterChange} />
         ) : tab === "towns" ? (
           <TownsTab />
         ) : tab === "heroes" ? (
-          <HeroesTab />
+          <HeroesTab initialFilter={urlFilter} onFilterChange={handleFilterChange} />
         ) : null}
       </div>
       <BackToTop />
