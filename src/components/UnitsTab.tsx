@@ -117,13 +117,19 @@ export default function UnitsTab({ initialFilter, initialCardId, onFilterChange,
       });
   }, []);
 
-  // Sync URL filter slug → internal town filter (graceful fallback if no match)
+  // Sync URL filter slug → internal town filter (graceful fallback if no match).
+  // Fall back to initialCardId in the ambiguous single-segment case, but only if it
+  // doesn't match a unit id/slug (otherwise it's a card deep link, not a filter).
   useEffect(() => {
-    if (!initialFilter) { setFilterFaction('all'); return; }
     const towns = Array.from(new Set(units.map(u => u.town).filter(Boolean)));
-    const match = towns.find(t => t.toLowerCase().replace(/\s+/g, '-') === initialFilter);
+    let candidate = initialFilter;
+    if (!candidate && initialCardId && !units.some(u => u.id === initialCardId || u.slug === initialCardId)) {
+      candidate = initialCardId;
+    }
+    if (!candidate) { setFilterFaction('all'); return; }
+    const match = towns.find(t => t.toLowerCase().replace(/\s+/g, '-') === candidate);
     setFilterFaction(match ?? 'all');
-  }, [initialFilter, units]);
+  }, [initialFilter, initialCardId, units]);
 
   const setFactionAndUrl = (next: string) => {
     setFilterFaction(next);
