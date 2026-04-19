@@ -87,7 +87,7 @@ export default function ArtifactsTab({ searchQuery = "", initialFilter, onFilter
       <div className="flex flex-col h-full">
         <div className="flex gap-1.5 overflow-x-auto px-3 pt-3 pb-2 scrollbar-none shrink-0">
           {qualities.map(q => (
-            <button key={q} onClick={() => setFilterQuality(q)}
+            <button key={q} onClick={() => setQualityAndUrl(q)}
               className={`shrink-0 px-2.5 py-1 rounded-full text-[11px] font-medium transition-colors ${filterQuality === q ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
               {q === "all" ? (lang === "RU" ? "Все" : "All") : (QUALITY_LABELS[q] || q)}
             </button>
