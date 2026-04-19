@@ -98,6 +98,32 @@ function buildOrFilter(fields: string[], query: string): string {
   return fields.map((f) => `${f}.ilike.%${safe}%`).join(",");
 }
 
+function sortByNameMatch<T extends { name_en?: string | null; name_ru?: string | null }>(
+  rows: T[],
+  query: string,
+  lang: Lang,
+): T[] {
+  const q = query.toLowerCase();
+  return [...rows].sort((a, b) => {
+    const aMatch = pick(a.name_en ?? null, a.name_ru ?? null, lang).toLowerCase().includes(q) ? 1 : 0;
+    const bMatch = pick(b.name_en ?? null, b.name_ru ?? null, lang).toLowerCase().includes(q) ? 1 : 0;
+    return bMatch - aMatch;
+  });
+}
+
+function sortByTitleMatch<T extends { title_en?: string | null; title_ru?: string | null }>(
+  rows: T[],
+  query: string,
+  lang: Lang,
+): T[] {
+  const q = query.toLowerCase();
+  return [...rows].sort((a, b) => {
+    const aMatch = pick(a.title_en ?? null, a.title_ru ?? null, lang).toLowerCase().includes(q) ? 1 : 0;
+    const bMatch = pick(b.title_en ?? null, b.title_ru ?? null, lang).toLowerCase().includes(q) ? 1 : 0;
+    return bMatch - aMatch;
+  });
+}
+
 async function searchAll(query: string, lang: Lang): Promise<SectionResult[]> {
   const queries = [
     // Heroes
@@ -181,7 +207,7 @@ async function searchAll(query: string, lang: Lang): Promise<SectionResult[]> {
 
   // Heroes
   if (heroes.data) {
-    const rows = heroes.data as Array<{ id: string; name_en: string; name_ru: string | null; specialty_en: string | null; specialty_ru: string | null; image: string | null; town: string | null }>;
+    const rows = sortByNameMatch(heroes.data as Array<{ id: string; name_en: string; name_ru: string | null; specialty_en: string | null; specialty_ru: string | null; image: string | null; town: string | null }>, query, lang);
     sections.push({
       key: "heroes",
       labelEN: "Heroes",
@@ -199,7 +225,7 @@ async function searchAll(query: string, lang: Lang): Promise<SectionResult[]> {
   }
   // Units
   if (units.data) {
-    const rows = units.data as Array<{ id: string; slug: string | null; name_en: string; name_ru: string | null; abilities_en: string | null; abilities_ru: string | null; image: string | null; town: string | null }>;
+    const rows = sortByNameMatch(units.data as Array<{ id: string; slug: string | null; name_en: string; name_ru: string | null; abilities_en: string | null; abilities_ru: string | null; image: string | null; town: string | null }>, query, lang);
     sections.push({
       key: "units",
       labelEN: "Units",
@@ -219,7 +245,7 @@ async function searchAll(query: string, lang: Lang): Promise<SectionResult[]> {
   }
   // Artifacts
   if (artifacts.data) {
-    const rows = artifacts.data as Array<{ id: string; name_en: string; name_ru: string | null; effect_en: string | null; effect_ru: string | null; description_en: string | null; description_ru: string | null; image: string | null; quality: string | null }>;
+    const rows = sortByNameMatch(artifacts.data as Array<{ id: string; name_en: string; name_ru: string | null; effect_en: string | null; effect_ru: string | null; description_en: string | null; description_ru: string | null; image: string | null; quality: string | null }>, query, lang);
     sections.push({
       key: "artifacts",
       labelEN: "Artifacts",
@@ -239,7 +265,7 @@ async function searchAll(query: string, lang: Lang): Promise<SectionResult[]> {
   }
   // Spells
   if (spells.data) {
-    const rows = spells.data as Array<{ id: string; name_en: string; name_ru: string | null; effect_en: string | null; effect_ru: string | null; notes_en: string | null; notes_ru: string | null; image: string | null; school: string | null }>;
+    const rows = sortByNameMatch(spells.data as Array<{ id: string; name_en: string; name_ru: string | null; effect_en: string | null; effect_ru: string | null; notes_en: string | null; notes_ru: string | null; image: string | null; school: string | null }>, query, lang);
     sections.push({
       key: "spells",
       labelEN: "Spells",
@@ -259,7 +285,7 @@ async function searchAll(query: string, lang: Lang): Promise<SectionResult[]> {
   }
   // Abilities
   if (abilities.data) {
-    const rows = abilities.data as Array<{ id: string; name_en: string; name_ru: string | null; effect_en: string | null; effect_ru: string | null; notes_en: string | null; notes_ru: string | null; image_regular: string | null }>;
+    const rows = sortByNameMatch(abilities.data as Array<{ id: string; name_en: string; name_ru: string | null; effect_en: string | null; effect_ru: string | null; notes_en: string | null; notes_ru: string | null; image_regular: string | null }>, query, lang);
     sections.push({
       key: "abilities",
       labelEN: "Abilities",
@@ -277,7 +303,7 @@ async function searchAll(query: string, lang: Lang): Promise<SectionResult[]> {
   }
   // Rules
   if (rules.data) {
-    const rows = rules.data as Array<{ id: string; title_en: string | null; title_ru: string | null; text_en: string | null; text_ru: string | null; category: string | null }>;
+    const rows = sortByTitleMatch(rules.data as Array<{ id: string; title_en: string | null; title_ru: string | null; text_en: string | null; text_ru: string | null; category: string | null }>, query, lang);
     sections.push({
       key: "rules",
       labelEN: "Rules",
@@ -295,7 +321,7 @@ async function searchAll(query: string, lang: Lang): Promise<SectionResult[]> {
   }
   // Scenarios
   if (scenarios.data) {
-    const rows = scenarios.data as Array<{ id: string; title_en: string | null; title_ru: string | null; summary_en: string | null; summary_ru: string | null }>;
+    const rows = sortByTitleMatch(scenarios.data as Array<{ id: string; title_en: string | null; title_ru: string | null; summary_en: string | null; summary_ru: string | null }>, query, lang);
     sections.push({
       key: "scenarios",
       labelEN: "Scenarios",
@@ -313,7 +339,7 @@ async function searchAll(query: string, lang: Lang): Promise<SectionResult[]> {
   }
   // Map Elements
   if (fields.data) {
-    const rows = fields.data as Array<{ id: string; name_en: string; name_ru: string | null; effect_en: string | null; effect_ru: string | null; image: string | null }>;
+    const rows = sortByNameMatch(fields.data as Array<{ id: string; name_en: string; name_ru: string | null; effect_en: string | null; effect_ru: string | null; image: string | null }>, query, lang);
     sections.push({
       key: "map_elements",
       labelEN: "Map Elements",
@@ -331,7 +357,7 @@ async function searchAll(query: string, lang: Lang): Promise<SectionResult[]> {
   }
   // Events
   if (events.data) {
-    const rows = events.data as Array<{ id: string; name_en: string; name_ru: string | null; effect_en: string | null; effect_ru: string | null; image: string | null }>;
+    const rows = sortByNameMatch(events.data as Array<{ id: string; name_en: string; name_ru: string | null; effect_en: string | null; effect_ru: string | null; image: string | null }>, query, lang);
     sections.push({
       key: "events",
       labelEN: "Events",
@@ -349,7 +375,7 @@ async function searchAll(query: string, lang: Lang): Promise<SectionResult[]> {
   }
   // War Machines
   if (warmachines.data) {
-    const rows = warmachines.data as Array<{ id: string; name_en: string; name_ru: string | null; ability_en: string | null; ability_ru: string | null; image: string | null }>;
+    const rows = sortByNameMatch(warmachines.data as Array<{ id: string; name_en: string; name_ru: string | null; ability_en: string | null; ability_ru: string | null; image: string | null }>, query, lang);
     sections.push({
       key: "warmachines",
       labelEN: "War Machines",
@@ -535,8 +561,8 @@ export default function GlobalSearch({ mode, onClose, initialQuery = "", autoFoc
 
   if (mode === "overlay") {
     return (
-      <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm flex flex-col">
-        <div className="flex items-center gap-2 p-3 border-b border-border">
+      <div className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm flex flex-col lg:left-56">
+        <div className="flex-shrink-0 flex items-center gap-2 p-3 border-b border-border">
           <div className="flex-1">{inputBlock}</div>
           <button
             onClick={onClose}
