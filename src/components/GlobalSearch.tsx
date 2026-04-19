@@ -225,7 +225,7 @@ async function searchAll(query: string, lang: Lang): Promise<SectionResult[]> {
   }
   // Units
   if (units.data) {
-    const rows = units.data as Array<{ id: string; slug: string | null; name_en: string; name_ru: string | null; abilities_en: string | null; abilities_ru: string | null; image: string | null; town: string | null }>;
+    const rows = sortByNameMatch(units.data as Array<{ id: string; slug: string | null; name_en: string; name_ru: string | null; abilities_en: string | null; abilities_ru: string | null; image: string | null; town: string | null }>, query, lang);
     sections.push({
       key: "units",
       labelEN: "Units",
