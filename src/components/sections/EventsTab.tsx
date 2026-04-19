@@ -22,9 +22,14 @@ interface GameEvent {
   sort_order: number | null;
 }
 
-interface Props { searchQuery?: string; }
+interface Props {
+  searchQuery?: string;
+  initialCardId?: string;
+  onCardOpen?: (cardId: string) => void;
+  onCardClose?: () => void;
+}
 
-export default function EventsTab({ searchQuery = "" }: Props) {
+export default function EventsTab({ searchQuery = "", initialCardId, onCardOpen, onCardClose }: Props) {
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
   const [items, setItems] = useState<GameEvent[]>([]);

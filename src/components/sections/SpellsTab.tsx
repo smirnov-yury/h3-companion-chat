@@ -49,10 +49,13 @@ function levelStyle(level: string): string {
 interface Props {
   searchQuery?: string;
   initialFilter?: string;
+  initialCardId?: string;
   onFilterChange?: (filterValue: string | null) => void;
+  onCardOpen?: (currentFilter: string | null, cardId: string) => void;
+  onCardClose?: (currentFilter: string | null) => void;
 }
 
-export default function SpellsTab({ searchQuery = "", initialFilter, onFilterChange }: Props) {
+export default function SpellsTab({ searchQuery = "", initialFilter, initialCardId, onFilterChange, onCardOpen, onCardClose }: Props) {
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
   const [items, setItems] = useState<Spell[]>([]);

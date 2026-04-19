@@ -38,10 +38,13 @@ const QUALITY_ORDER = ["minor", "major", "relic"];
 interface Props {
   searchQuery?: string;
   initialFilter?: string;
+  initialCardId?: string;
   onFilterChange?: (filterValue: string | null) => void;
+  onCardOpen?: (currentFilter: string | null, cardId: string) => void;
+  onCardClose?: (currentFilter: string | null) => void;
 }
 
-export default function ArtifactsTab({ searchQuery = "", initialFilter, onFilterChange }: Props) {
+export default function ArtifactsTab({ searchQuery = "", initialFilter, initialCardId, onFilterChange, onCardOpen, onCardClose }: Props) {
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
   const [items, setItems] = useState<Artifact[]>([]);

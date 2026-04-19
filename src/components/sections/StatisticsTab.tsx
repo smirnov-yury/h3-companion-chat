@@ -52,9 +52,16 @@ function statTypeLabel(st: string, lang: "EN" | "RU") {
   return map[st] || st;
 }
 
-interface Props { searchQuery?: string; }
+interface Props {
+  searchQuery?: string;
+  initialFilter?: string;
+  initialCardId?: string;
+  onFilterChange?: (filterValue: string | null) => void;
+  onCardOpen?: (currentFilter: string | null, cardId: string) => void;
+  onCardClose?: (currentFilter: string | null) => void;
+}
 
-export default function StatisticsTab({ searchQuery = "" }: Props) {
+export default function StatisticsTab({ searchQuery = "", initialCardId, onCardOpen, onCardClose }: Props) {
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
   const [items, setItems] = useState<Statistic[]>([]);

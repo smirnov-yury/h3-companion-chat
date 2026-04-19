@@ -48,9 +48,14 @@ const MODE_LABELS_RU: Record<string, string> = { clash: "Столкновени�
 const MODE_ICONS: Record<string, typeof Swords> = { clash: Swords, cooperative: Heart, campaign: Crown, alliance: Shield, solo: User };
 const MODE_ORDER = ["clash", "cooperative", "campaign", "alliance", "solo"];
 
-interface Props { searchQuery?: string; }
+interface Props {
+  searchQuery?: string;
+  initialCardId?: string;
+  onCardOpen?: (cardId: string) => void;
+  onCardClose?: () => void;
+}
 
-export default function ScenariosTab({ searchQuery = "" }: Props) {
+export default function ScenariosTab({ searchQuery = "", initialCardId, onCardOpen, onCardClose }: Props) {
   const { lang } = useLang();
   const [scenarios, setScenarios] = useState<Scenario[]>([]);
   const [books, setBooks] = useState<Book[]>([]);

@@ -26,9 +26,14 @@ interface Ability {
   sort_order: number | null;
 }
 
-interface Props { searchQuery?: string; }
+interface Props {
+  searchQuery?: string;
+  initialCardId?: string;
+  onCardOpen?: (cardId: string) => void;
+  onCardClose?: () => void;
+}
 
-export default function AbilitiesTab({ searchQuery = "" }: Props) {
+export default function AbilitiesTab({ searchQuery = "", initialCardId, onCardOpen, onCardClose }: Props) {
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
   const [items, setItems] = useState<Ability[]>([]);

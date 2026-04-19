@@ -24,9 +24,15 @@ interface Field {
   sort_order: number | null;
 }
 
-interface Props { searchQuery?: string; filterSlug?: string; }
+interface Props {
+  searchQuery?: string;
+  filterSlug?: string;
+  initialCardId?: string;
+  onCardOpen?: (cardId: string) => void;
+  onCardClose?: () => void;
+}
 
-export default function FieldsTab({ searchQuery = "", filterSlug }: Props) {
+export default function FieldsTab({ searchQuery = "", filterSlug, initialCardId, onCardOpen, onCardClose }: Props) {
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
   const [items, setItems] = useState<Field[]>([]);
