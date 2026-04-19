@@ -138,17 +138,18 @@ interface RulesTabProps {
   onScrollHandled?: () => void;
   initialFilter?: string;
   initialCardId?: string;
+  initialSearch?: string;
   onFilterChange?: (filterValue: string | null) => void;
   onCardOpen?: (cardId: string) => void;
   onCardClose?: () => void;
 }
 
-export default function RulesTab({ scrollToRuleId, onScrollHandled, initialFilter, initialCardId, onFilterChange, onCardOpen, onCardClose }: RulesTabProps) {
+export default function RulesTab({ scrollToRuleId, onScrollHandled, initialFilter, initialCardId, initialSearch, onFilterChange, onCardOpen, onCardClose }: RulesTabProps) {
   const { rules, loaded } = useRules();
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
-  const [search, setSearch] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useDebounce("", 300);
+  const [search, setSearch] = useState(initialSearch ?? "");
+  const [debouncedSearch, setDebouncedSearch] = useDebounce(initialSearch ?? "", 300);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [openItem, setOpenItem] = useState<string | undefined>(undefined);
   const listRef = useRef<HTMLDivElement>(null);

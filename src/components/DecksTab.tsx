@@ -21,6 +21,7 @@ interface Props {
   initialSubtype?: string;
   initialFilter?: string;
   initialCardId?: string;
+  initialSearch?: string;
   /** Single segment after subtype that could be filter OR card; resolved by inner tab. */
   initialAmbiguous?: string;
   onSubtypeChange?: (subtype: string) => void;
@@ -30,12 +31,12 @@ interface Props {
 }
 
 export default function DecksTab({
-  initialSubtype, initialFilter, initialCardId, initialAmbiguous,
+  initialSubtype, initialFilter, initialCardId, initialAmbiguous, initialSearch,
   onSubtypeChange, onFilterChange, onCardOpen, onCardClose,
 }: Props = {}) {
   const { lang } = useLang();
   const [active, setActive] = useState<DeckSection>("artifacts");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(initialSearch ?? "");
 
   // Sync URL subtype → internal active subtab (graceful fallback)
   useEffect(() => {

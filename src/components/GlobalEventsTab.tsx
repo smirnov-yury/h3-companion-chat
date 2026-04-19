@@ -13,14 +13,15 @@ const SECTIONS: { id: Section; labelRU: string; labelEN: string }[] = [
 
 interface Props {
   initialCardId?: string;
+  initialSearch?: string;
   onCardOpen?: (cardId: string) => void;
   onCardClose?: () => void;
 }
 
-export default function GlobalEventsTab({ initialCardId, onCardOpen, onCardClose }: Props = {}) {
+export default function GlobalEventsTab({ initialCardId, initialSearch, onCardOpen, onCardClose }: Props = {}) {
   const { lang } = useLang();
   const [active, setActive] = useState<Section>("events");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(initialSearch ?? "");
 
   const handleSectionChange = (id: Section) => {
     setActive(id);

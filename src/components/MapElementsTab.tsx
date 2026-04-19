@@ -6,14 +6,15 @@ import FieldsTab from "@/components/sections/FieldsTab";
 interface Props {
   initialFilter?: string;
   initialCardId?: string;
+  initialSearch?: string;
   onFilterChange?: (filterValue: string | null) => void;
   onCardOpen?: (cardId: string) => void;
   onCardClose?: () => void;
 }
 
-export default function MapElementsTab({ initialFilter, initialCardId, onCardOpen, onCardClose }: Props = {}) {
+export default function MapElementsTab({ initialFilter, initialCardId, initialSearch, onCardOpen, onCardClose }: Props = {}) {
   const { lang } = useLang();
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(initialSearch ?? "");
 
   return (
     <div className="flex flex-col h-full">
