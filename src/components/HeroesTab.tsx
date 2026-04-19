@@ -48,10 +48,13 @@ function heroInitials(name: string): string {
 
 interface HeroesTabProps {
   initialFilter?: string;
+  initialCardId?: string;
   onFilterChange?: (filterValue: string | null) => void;
+  onCardOpen?: (cardId: string) => void;
+  onCardClose?: () => void;
 }
 
-export default function HeroesTab({ initialFilter, onFilterChange }: HeroesTabProps = {}) {
+export default function HeroesTab({ initialFilter, initialCardId, onFilterChange, onCardOpen, onCardClose }: HeroesTabProps = {}) {
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
   const [heroes, setHeroes] = useState<Hero[]>([]);
