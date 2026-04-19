@@ -59,8 +59,8 @@ export default function Index() {
     urlCardId = restSegments[0];
   } else if (matched.levels.length >= 2) {
     if (restSegments.length === 1) {
-      // Ambiguous: pass to tab as both initialFilter AND initialCardId; tab resolves.
-      urlFilter = restSegments[0];
+      // Ambiguous: pass only as initialCardId; tab resolves whether it's a filter or card.
+      // urlFilter stays undefined so close/open URL builders don't preserve a non-explicit filter.
       urlCardId = restSegments[0];
     } else if (restSegments.length >= 2) {
       urlFilter = restSegments[0];

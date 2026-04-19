@@ -72,12 +72,18 @@ export default function HeroesTab({ initialFilter, initialCardId, onFilterChange
   }, []);
 
   // Sync URL filter slug → internal faction. Compare against towns lowercased+hyphenated.
+  // Fall back to initialCardId in the ambiguous single-segment case, but only if it
+  // doesn't match a hero id (otherwise it's a card deep link, not a filter).
   useEffect(() => {
-    if (!initialFilter) { setFaction("all"); return; }
     const towns = Array.from(new Set(heroes.map(h => h.town).filter(Boolean) as string[]));
-    const match = towns.find(t => t.toLowerCase().replace(/\s+/g, "-") === initialFilter);
+    let candidate = initialFilter;
+    if (!candidate && initialCardId && !heroes.some(h => h.id === initialCardId)) {
+      candidate = initialCardId;
+    }
+    if (!candidate) { setFaction("all"); return; }
+    const match = towns.find(t => t.toLowerCase().replace(/\s+/g, "-") === candidate);
     setFaction(match ?? "all");
-  }, [initialFilter, heroes]);
+  }, [initialFilter, initialCardId, heroes]);
 
   const setFactionAndUrl = (next: string) => {
     setFaction(next);
