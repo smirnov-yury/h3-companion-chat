@@ -70,6 +70,17 @@ export default function ArtifactsTab({ searchQuery = "", initialFilter, initialC
     onFilterChange?.(next === "all" ? null : next);
   };
 
+  // Auto-open card from URL
+  useEffect(() => {
+    if (!loaded || !initialCardId) return;
+    const found = items.find(i => i.id === initialCardId);
+    if (found) setSelected(found);
+  }, [loaded, initialCardId, items]);
+
+  const currentFilter = filterQuality === "all" ? null : filterQuality;
+  const openCard = (i: Artifact) => { setSelected(i); onCardOpen?.(currentFilter, i.id); };
+  const closeCard = () => { setSelected(null); onCardClose?.(currentFilter); };
+
   const qualitiesSet = new Set(items.map(i => i.quality).filter(Boolean));
   const qualities = ["all", ...QUALITY_ORDER.filter(q => qualitiesSet.has(q)), ...Array.from(qualitiesSet).filter(q => !QUALITY_ORDER.includes(q!))];
   const afterQuality = filterQuality === "all" ? items : items.filter(i => i.quality === filterQuality);

@@ -83,6 +83,17 @@ export default function SpellsTab({ searchQuery = "", initialFilter, initialCard
     onFilterChange?.(next === "all" ? null : next);
   };
 
+  // Auto-open card from URL
+  useEffect(() => {
+    if (!loaded || !initialCardId) return;
+    const found = items.find(i => i.id === initialCardId);
+    if (found) setSelected(found);
+  }, [loaded, initialCardId, items]);
+
+  const currentFilter = filterSchool === "all" ? null : filterSchool;
+  const openCard = (i: Spell) => { setSelected(i); onCardOpen?.(currentFilter, i.id); };
+  const closeCard = () => { setSelected(null); onCardClose?.(currentFilter); };
+
   const schools = ["all", ...Array.from(new Set(items.map(i => i.school).filter(Boolean))) as string[]];
   const afterSchool = filterSchool === "all" ? items : items.filter(i => i.school === filterSchool);
   const q = searchQuery.toLowerCase();

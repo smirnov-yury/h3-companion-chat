@@ -58,12 +58,26 @@ export default function TownsTab({ initialCardId, onCardOpen }: Props = {}) {
   useEffect(() => {
     supabase.from("towns").select("*").order("sort_order").then(({ data }) => {
       if (data && data.length > 0) {
-        setTowns(data as Town[]);
-        setSelectedTown(data[0] as Town);
+        const list = data as Town[];
+        setTowns(list);
+        // If URL has a card id, prefer that; else default to first.
+        const fromUrl = initialCardId ? list.find(t => t.id === initialCardId) : null;
+        setSelectedTown(fromUrl ?? list[0]);
       }
       setLoaded(true);
     });
   }, []);
+
+  // React to URL changes after initial load
+  useEffect(() => {
+    if (!loaded || !initialCardId) return;
+    const found = towns.find(t => t.id === initialCardId);
+    if (found && found.id !== selectedTown?.id) {
+      setSelectedTown(found);
+      setImageTab("empty");
+      setImgError(false);
+    }
+  }, [initialCardId, loaded, towns]);
 
   useEffect(() => {
     if (!selectedTown) return;
@@ -81,6 +95,7 @@ export default function TownsTab({ initialCardId, onCardOpen }: Props = {}) {
     setSelectedTown(town);
     setImageTab("empty");
     setImgError(false);
+    onCardOpen?.(town.id);
   };
 
   const handleImageTabChange = (tab: ImageTab) => {
