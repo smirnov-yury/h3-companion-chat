@@ -313,7 +313,7 @@ export default function UnitsTab({ initialFilter, onFilterChange }: UnitsTabProp
                   {mode !== 'neutral' && (
                     <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
                       {factions.map((f) => (
-                        <FilterChip key={f} label={f === 'all' ? (lang === 'RU' ? 'Все' : 'All') : f} active={filterFaction === f} onClick={() => setFilterFaction(f)} />
+                        <FilterChip key={f} label={f === 'all' ? (lang === 'RU' ? 'Все' : 'All') : f} active={filterFaction === f} onClick={() => setFactionAndUrl(f)} />
                       ))}
                     </div>
                   )}
@@ -357,7 +357,7 @@ export default function UnitsTab({ initialFilter, onFilterChange }: UnitsTabProp
           {mode !== 'neutral' && (
             <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
               {factions.map((f) => (
-                <FilterChip key={f} label={f === 'all' ? (lang === 'RU' ? 'Все' : 'All') : f} active={filterFaction === f} onClick={() => setFilterFaction(f)} />
+                <FilterChip key={f} label={f === 'all' ? (lang === 'RU' ? 'Все' : 'All') : f} active={filterFaction === f} onClick={() => setFactionAndUrl(f)} />
               ))}
             </div>
           )}
