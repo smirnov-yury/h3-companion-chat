@@ -35,9 +35,13 @@ const QUALITY_LABELS: Record<string, string> = {
 };
 const QUALITY_ORDER = ["minor", "major", "relic"];
 
-interface Props { searchQuery?: string; }
+interface Props {
+  searchQuery?: string;
+  initialFilter?: string;
+  onFilterChange?: (filterValue: string | null) => void;
+}
 
-export default function ArtifactsTab({ searchQuery = "" }: Props) {
+export default function ArtifactsTab({ searchQuery = "", initialFilter, onFilterChange }: Props) {
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
   const [items, setItems] = useState<Artifact[]>([]);
@@ -52,6 +56,17 @@ export default function ArtifactsTab({ searchQuery = "" }: Props) {
     });
   }, []);
 
+  // Sync URL filter slug → internal quality (graceful fallback)
+  useEffect(() => {
+    if (!initialFilter) { setFilterQuality("all"); return; }
+    setFilterQuality(QUALITY_ORDER.includes(initialFilter) ? initialFilter : "all");
+  }, [initialFilter]);
+
+  const setQualityAndUrl = (next: string) => {
+    setFilterQuality(next);
+    onFilterChange?.(next === "all" ? null : next);
+  };
+
   const qualitiesSet = new Set(items.map(i => i.quality).filter(Boolean));
   const qualities = ["all", ...QUALITY_ORDER.filter(q => qualitiesSet.has(q)), ...Array.from(qualitiesSet).filter(q => !QUALITY_ORDER.includes(q!))];
   const afterQuality = filterQuality === "all" ? items : items.filter(i => i.quality === filterQuality);
@@ -65,7 +80,7 @@ export default function ArtifactsTab({ searchQuery = "" }: Props) {
 
   const name = (i: Artifact) => lang === "RU" ? (i.name_ru || i.name_en) : i.name_en;
   const hasFilters = filterQuality !== "all" || !!searchQuery;
-  const resetFilters = () => setFilterQuality("all");
+  const resetFilters = () => setQualityAndUrl("all");
 
   return (
     <>
