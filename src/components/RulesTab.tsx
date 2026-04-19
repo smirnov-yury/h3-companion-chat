@@ -321,7 +321,7 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled, initialFilte
       <div className="px-3 pb-2 shrink-0 overflow-x-auto scrollbar-none">
         <div className="flex gap-2 w-max">
           <button
-            onClick={() => setSelectedCategory(null)}
+            onClick={() => { setSelectedCategory(null); onFilterChange?.(null); }}
             className={`px-3 py-1 text-xs font-medium rounded-full whitespace-nowrap transition-colors ${
               !selectedCategory
                 ? "bg-primary text-primary-foreground"
@@ -333,7 +333,11 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled, initialFilte
           {categories.map((cat) => (
             <button
               key={cat.key}
-              onClick={() => setSelectedCategory(cat.key === selectedCategory ? null : cat.key)}
+              onClick={() => {
+                const next = cat.key === selectedCategory ? null : cat.key;
+                setSelectedCategory(next);
+                onFilterChange?.(next);
+              }}
               className={`px-3 py-1 text-xs font-medium rounded-full whitespace-nowrap transition-colors ${
                 selectedCategory === cat.key
                   ? "bg-primary text-primary-foreground"
