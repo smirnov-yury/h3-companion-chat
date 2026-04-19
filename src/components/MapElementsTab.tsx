@@ -5,15 +5,15 @@ import FieldsTab from "@/components/sections/FieldsTab";
 
 interface Props {
   initialFilter?: string;
+  initialCardId?: string;
   onFilterChange?: (filterValue: string | null) => void;
+  onCardOpen?: (cardId: string) => void;
+  onCardClose?: () => void;
 }
 
-export default function MapElementsTab({ initialFilter, onFilterChange: _onFilterChange }: Props = {}) {
+export default function MapElementsTab({ initialFilter, initialCardId, onCardOpen, onCardClose }: Props = {}) {
   const { lang } = useLang();
   const [searchQuery, setSearchQuery] = useState("");
-
-  // initialFilter is propagated to FieldsTab; no UI exists yet to surface filter changes
-  // upward, so onFilterChange is currently unused. Wired for symmetry / future filter UI.
 
   return (
     <div className="flex flex-col h-full">
@@ -36,7 +36,13 @@ export default function MapElementsTab({ initialFilter, onFilterChange: _onFilte
         </div>
       </div>
       <div className="flex-1 overflow-hidden">
-        <FieldsTab searchQuery={searchQuery} filterSlug={initialFilter} />
+        <FieldsTab
+          searchQuery={searchQuery}
+          filterSlug={initialFilter}
+          initialCardId={initialCardId}
+          onCardOpen={onCardOpen}
+          onCardClose={onCardClose}
+        />
       </div>
     </div>
   );

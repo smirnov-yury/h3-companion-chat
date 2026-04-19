@@ -378,7 +378,7 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled, initialFilte
           type="single"
           collapsible
           value={openItem}
-          onValueChange={(v) => setOpenItem(v)}
+          onValueChange={(v) => { setOpenItem(v); if (v) onCardOpen?.(v); else onCardClose?.(); }}
           className="space-y-1"
         >
           {renderAccordionItems(coreRules)}
