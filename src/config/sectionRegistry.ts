@@ -20,7 +20,7 @@ export interface SectionDef {
 export const SECTION_REGISTRY: readonly SectionDef[] = [
   { slug: "rules",        tabId: "rules",         levels: ["category", "id"],         table: "rules",      filterField: "category" },
   { slug: "scenarios",    tabId: "scenarios",     levels: ["id"],                      table: "scenarios" },
-  { slug: "map-elements", tabId: "map_elements",  levels: ["type", "id"],              table: "fields",     filterField: "type_en" },
+  { slug: "map-elements", tabId: "map_elements",  levels: ["id"],                      table: "fields" },
   { slug: "events",       tabId: "global_events", levels: ["id"],                      table: "events" },
   {
     slug: "decks",
