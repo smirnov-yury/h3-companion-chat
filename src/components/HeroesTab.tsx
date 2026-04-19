@@ -49,18 +49,19 @@ function heroInitials(name: string): string {
 interface HeroesTabProps {
   initialFilter?: string;
   initialCardId?: string;
+  initialSearch?: string;
   onFilterChange?: (filterValue: string | null) => void;
   onCardOpen?: (cardId: string, currentFilter?: string | null) => void;
   onCardClose?: (currentFilter?: string | null) => void;
 }
 
-export default function HeroesTab({ initialFilter, initialCardId, onFilterChange, onCardOpen, onCardClose }: HeroesTabProps = {}) {
+export default function HeroesTab({ initialFilter, initialCardId, initialSearch, onFilterChange, onCardOpen, onCardClose }: HeroesTabProps = {}) {
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
   const [heroes, setHeroes] = useState<Hero[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [faction, setFaction] = useState("all");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(initialSearch ?? "");
   const [selected, setSelected] = useState<Hero | null>(null);
   const [specialtyTab, setSpecialtyTab] = useState(0);
 
