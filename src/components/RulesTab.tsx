@@ -137,10 +137,13 @@ interface RulesTabProps {
   scrollToRuleId?: string | null;
   onScrollHandled?: () => void;
   initialFilter?: string;
+  initialCardId?: string;
   onFilterChange?: (filterValue: string | null) => void;
+  onCardOpen?: (cardId: string) => void;
+  onCardClose?: () => void;
 }
 
-export default function RulesTab({ scrollToRuleId, onScrollHandled, initialFilter, onFilterChange }: RulesTabProps) {
+export default function RulesTab({ scrollToRuleId, onScrollHandled, initialFilter, initialCardId, onFilterChange, onCardOpen, onCardClose }: RulesTabProps) {
   const { rules, loaded } = useRules();
   const { lang } = useLang();
   const { glyphs } = useGlyphs();

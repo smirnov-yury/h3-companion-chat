@@ -130,6 +130,28 @@ export default function UnitsTab({ initialFilter, initialCardId, onFilterChange,
     onFilterChange?.(next === 'all' ? null : next);
   };
 
+  // Auto-open card from URL: cardId can be a unit slug or id
+  useEffect(() => {
+    if (!units.length || !initialCardId) return;
+    // Try matching by slug (faction group), then by neutral id
+    const matchSlug = units.find(u => u.slug === initialCardId && u.town !== 'Neutral');
+    if (matchSlug) { setSelectedKey(`faction-${matchSlug.slug}`); return; }
+    const matchNeutral = units.find(u => u.id === initialCardId && u.town === 'Neutral');
+    if (matchNeutral) { setSelectedKey(`neutral-${matchNeutral.id}`); return; }
+    // Fallback: any unit by id
+    const any = units.find(u => u.id === initialCardId);
+    if (any) setSelectedKey(any.town === 'Neutral' ? `neutral-${any.id}` : `faction-${any.slug}`);
+  }, [units, initialCardId]);
+
+  const openCard = (key: string, cardSlug: string) => {
+    setSelectedKey(key);
+    onCardOpen?.(cardSlug);
+  };
+  const closeCard = () => {
+    setSelectedKey(null);
+    onCardClose?.();
+  };
+
   // Reset active variant when selected unit changes
   useEffect(() => {
     setActiveVariant('');
@@ -436,7 +458,7 @@ export default function UnitsTab({ initialFilter, initialCardId, onFilterChange,
       </div>
 
       {/* Detail modal */}
-      <Dialog open={!!selectedKey} onOpenChange={(o) => !o && setSelectedKey(null)}>
+      <Dialog open={!!selectedKey} onOpenChange={(o) => !o && closeCard()}>
         <CardDialogContent>
           {selectedItem && (() => {
             const { variants } = selectedItem;
