@@ -90,6 +90,16 @@ export default function ScenariosTab({ searchQuery = "", initialCardId, onCardOp
     })();
   }, []);
 
+  // Auto-open card from URL
+  useEffect(() => {
+    if (!loaded || !initialCardId) return;
+    const found = scenarios.find(s => s.id === initialCardId || s.slug === initialCardId);
+    if (found) setSelected(found);
+  }, [loaded, initialCardId, scenarios]);
+
+  const openCard = (s: Scenario) => { setSelected(s); onCardOpen?.(s.slug || s.id); };
+  const closeCard = () => { setSelected(null); onCardClose?.(); };
+
   const activeCount = [filterMode, filterPlayers, filterBook].filter(f => f !== "all").length;
 
   const q = searchQuery.toLowerCase();

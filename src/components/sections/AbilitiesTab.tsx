@@ -47,6 +47,15 @@ export default function AbilitiesTab({ searchQuery = "", initialCardId, onCardOp
     });
   }, []);
 
+  useEffect(() => {
+    if (!loaded || !initialCardId) return;
+    const found = items.find(i => i.id === initialCardId);
+    if (found) setSelected(found);
+  }, [loaded, initialCardId, items]);
+
+  const openCard = (i: Ability) => { setSelected(i); onCardOpen?.(i.id); };
+  const closeCard = () => { setSelected(null); onCardClose?.(); };
+
   const name = (i: Ability) => lang === "RU" ? (i.name_ru || i.name_en) : i.name_en;
 
   const q = searchQuery.toLowerCase();

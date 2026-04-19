@@ -46,6 +46,15 @@ export default function FieldsTab({ searchQuery = "", filterSlug, initialCardId,
     });
   }, []);
 
+  useEffect(() => {
+    if (!loaded || !initialCardId) return;
+    const found = items.find(i => i.id === initialCardId);
+    if (found) setSelected(found);
+  }, [loaded, initialCardId, items]);
+
+  const openCard = (i: Field) => { setSelected(i); onCardOpen?.(i.id); };
+  const closeCard = () => { setSelected(null); onCardClose?.(); };
+
   const name = (i: Field) => lang === "RU" ? (i.name_ru || i.name_en) : i.name_en;
 
   const q = searchQuery.toLowerCase();

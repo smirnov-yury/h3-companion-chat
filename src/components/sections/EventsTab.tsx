@@ -43,6 +43,15 @@ export default function EventsTab({ searchQuery = "", initialCardId, onCardOpen,
     });
   }, []);
 
+  useEffect(() => {
+    if (!loaded || !initialCardId) return;
+    const found = items.find(i => i.id === initialCardId);
+    if (found) setSelected(found);
+  }, [loaded, initialCardId, items]);
+
+  const openCard = (i: GameEvent) => { setSelected(i); onCardOpen?.(i.id); };
+  const closeCard = () => { setSelected(null); onCardClose?.(); };
+
   const name = (i: GameEvent) => lang === "RU" ? (i.name_ru || i.name_en) : i.name_en;
 
   const q = searchQuery.toLowerCase();

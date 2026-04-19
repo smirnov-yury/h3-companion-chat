@@ -76,6 +76,16 @@ export default function StatisticsTab({ searchQuery = "", initialCardId, onCardO
     });
   }, []);
 
+  useEffect(() => {
+    if (!loaded || !initialCardId) return;
+    const found = items.find(i => i.id === initialCardId);
+    if (found) setSelected(found);
+  }, [loaded, initialCardId, items]);
+
+  const currentFilter = filterStat === "all" ? null : filterStat;
+  const openCard = (i: Statistic) => { setSelected(i); onCardOpen?.(currentFilter, i.id); };
+  const closeCard = () => { setSelected(null); onCardClose?.(currentFilter); };
+
   const statTypes = ["all", ...Array.from(new Set(items.map(i => i.stat_type).filter(Boolean))) as string[]];
   const afterFilter = filterStat === "all" ? items : items.filter(i => i.stat_type === filterStat);
   const q = searchQuery.toLowerCase();
