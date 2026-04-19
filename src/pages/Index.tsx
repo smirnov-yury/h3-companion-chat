@@ -23,10 +23,13 @@ import {
 export default function Index() {
   const navigate = useNavigate();
   const params = useParams<{ section?: string; "*"?: string }>();
+  const [searchParams] = useSearchParams();
   const { lang } = useLang();
 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [scrollToRuleId, setScrollToRuleId] = useState<string | null>(null);
+
+  const initialSearch = searchParams.get("q") ?? "";
 
   // Derive active tab from URL. Unknown slug → default section.
   const matched = findSectionBySlug(params.section) ?? findSectionBySlug(DEFAULT_SLUG)!;
