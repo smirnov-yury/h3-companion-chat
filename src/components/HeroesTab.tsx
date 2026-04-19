@@ -133,7 +133,7 @@ export default function HeroesTab({ initialFilter, onFilterChange }: HeroesTabPr
         </div>
         <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
           <button
-            onClick={() => setFaction("all")}
+            onClick={() => setFactionAndUrl("all")}
             className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-colors whitespace-nowrap ${
               faction === "all" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-muted/70"
             }`}
@@ -143,7 +143,7 @@ export default function HeroesTab({ initialFilter, onFilterChange }: HeroesTabPr
           {towns.map(t => (
             <button
               key={t}
-              onClick={() => setFaction(t)}
+              onClick={() => setFactionAndUrl(t)}
               className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-colors whitespace-nowrap capitalize ${
                 faction === t ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-muted/70"
               }`}
