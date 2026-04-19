@@ -98,6 +98,32 @@ function buildOrFilter(fields: string[], query: string): string {
   return fields.map((f) => `${f}.ilike.%${safe}%`).join(",");
 }
 
+function sortByNameMatch<T extends { name_en?: string | null; name_ru?: string | null }>(
+  rows: T[],
+  query: string,
+  lang: Lang,
+): T[] {
+  const q = query.toLowerCase();
+  return [...rows].sort((a, b) => {
+    const aMatch = pick(a.name_en ?? null, a.name_ru ?? null, lang).toLowerCase().includes(q) ? 1 : 0;
+    const bMatch = pick(b.name_en ?? null, b.name_ru ?? null, lang).toLowerCase().includes(q) ? 1 : 0;
+    return bMatch - aMatch;
+  });
+}
+
+function sortByTitleMatch<T extends { title_en?: string | null; title_ru?: string | null }>(
+  rows: T[],
+  query: string,
+  lang: Lang,
+): T[] {
+  const q = query.toLowerCase();
+  return [...rows].sort((a, b) => {
+    const aMatch = pick(a.title_en ?? null, a.title_ru ?? null, lang).toLowerCase().includes(q) ? 1 : 0;
+    const bMatch = pick(b.title_en ?? null, b.title_ru ?? null, lang).toLowerCase().includes(q) ? 1 : 0;
+    return bMatch - aMatch;
+  });
+}
+
 async function searchAll(query: string, lang: Lang): Promise<SectionResult[]> {
   const queries = [
     // Heroes
