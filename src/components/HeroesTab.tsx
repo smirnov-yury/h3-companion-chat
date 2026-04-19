@@ -175,7 +175,7 @@ export default function HeroesTab({ initialFilter, initialCardId, onFilterChange
         ) : (
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             {filtered.map(h => (
-              <button key={h.id} onClick={() => { setSelected(h); setSpecialtyTab(0); }} className="flex flex-col rounded-xl border border-border bg-card overflow-hidden text-left hover:border-primary transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg cursor-pointer">
+              <button key={h.id} onClick={() => openCard(h)} className="flex flex-col rounded-xl border border-border bg-card overflow-hidden text-left hover:border-primary transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg cursor-pointer">
                 <div className="relative aspect-square bg-muted">
                   {hasPortrait(h.image) ? (
                     <img src={`${STORAGE}/heroes/${h.image}`} alt={name(h)} className="w-full h-full object-cover object-left" />
@@ -211,7 +211,7 @@ export default function HeroesTab({ initialFilter, initialCardId, onFilterChange
         )}
       </div>
 
-      <Dialog open={!!selected} onOpenChange={open => { if (!open) setSelected(null); }} >
+      <Dialog open={!!selected} onOpenChange={open => { if (!open) closeCard(); }} >
         {selected && (
           <DialogContent className="max-h-[85vh] overflow-y-auto">
             <DialogTitle className="sr-only">{name(selected)}</DialogTitle>
