@@ -86,7 +86,12 @@ interface DisplayItem {
   isNeutral: boolean;
 }
 
-export default function UnitsTab() {
+interface UnitsTabProps {
+  initialFilter?: string;
+  onFilterChange?: (filterValue: string | null) => void;
+}
+
+export default function UnitsTab({ initialFilter, onFilterChange }: UnitsTabProps = {}) {
   const { lang } = useLang();
   const [units, setUnits] = useState<UnitStat[]>([]);
   const [loading, setLoading] = useState(true);
@@ -108,6 +113,19 @@ export default function UnitsTab() {
         setLoading(false);
       });
   }, []);
+
+  // Sync URL filter slug → internal town filter (graceful fallback if no match)
+  useEffect(() => {
+    if (!initialFilter) { setFilterFaction('all'); return; }
+    const towns = Array.from(new Set(units.map(u => u.town).filter(Boolean)));
+    const match = towns.find(t => t.toLowerCase().replace(/\s+/g, '-') === initialFilter);
+    setFilterFaction(match ?? 'all');
+  }, [initialFilter, units]);
+
+  const setFactionAndUrl = (next: string) => {
+    setFilterFaction(next);
+    onFilterChange?.(next === 'all' ? null : next);
+  };
 
   // Reset active variant when selected unit changes
   useEffect(() => {
