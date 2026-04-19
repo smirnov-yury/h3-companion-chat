@@ -207,7 +207,7 @@ async function searchAll(query: string, lang: Lang): Promise<SectionResult[]> {
 
   // Heroes
   if (heroes.data) {
-    const rows = heroes.data as Array<{ id: string; name_en: string; name_ru: string | null; specialty_en: string | null; specialty_ru: string | null; image: string | null; town: string | null }>;
+    const rows = sortByNameMatch(heroes.data as Array<{ id: string; name_en: string; name_ru: string | null; specialty_en: string | null; specialty_ru: string | null; image: string | null; town: string | null }>, query, lang);
     sections.push({
       key: "heroes",
       labelEN: "Heroes",
