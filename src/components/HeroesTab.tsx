@@ -84,6 +84,16 @@ export default function HeroesTab({ initialFilter, initialCardId, onFilterChange
     onFilterChange?.(next === "all" ? null : next);
   };
 
+  // Auto-open card from URL
+  useEffect(() => {
+    if (!loaded || !initialCardId) return;
+    const found = heroes.find(h => h.id === initialCardId);
+    if (found) { setSelected(found); setSpecialtyTab(0); }
+  }, [loaded, initialCardId, heroes]);
+
+  const openCard = (h: Hero) => { setSelected(h); setSpecialtyTab(0); onCardOpen?.(h.id); };
+  const closeCard = () => { setSelected(null); onCardClose?.(); };
+
   const hasFilters = faction !== "all" || !!searchQuery;
   const resetFilters = () => { setFactionAndUrl("all"); setSearchQuery(""); };
 
