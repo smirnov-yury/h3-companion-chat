@@ -136,9 +136,11 @@ function makeMarkdownComponents(glyphs: ReturnType<typeof useGlyphs>["glyphs"]) 
 interface RulesTabProps {
   scrollToRuleId?: string | null;
   onScrollHandled?: () => void;
+  initialFilter?: string;
+  onFilterChange?: (filterValue: string | null) => void;
 }
 
-export default function RulesTab({ scrollToRuleId, onScrollHandled }: RulesTabProps) {
+export default function RulesTab({ scrollToRuleId, onScrollHandled, initialFilter, onFilterChange }: RulesTabProps) {
   const { rules, loaded } = useRules();
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
@@ -149,6 +151,16 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled }: RulesTabPr
   const listRef = useRef<HTMLDivElement>(null);
 
   const mdComponents = useMemo(() => makeMarkdownComponents(glyphs), [glyphs]);
+
+  // Sync URL filter (from parent) → internal state. Rule categories are already lowercase keys.
+  useEffect(() => {
+    if (initialFilter) {
+      const known = RULE_CATEGORIES.find((c) => c.key === initialFilter);
+      setSelectedCategory(known ? known.key : null);
+    } else {
+      setSelectedCategory(null);
+    }
+  }, [initialFilter]);
 
   useEffect(() => {
     if (scrollToRuleId && loaded) {
