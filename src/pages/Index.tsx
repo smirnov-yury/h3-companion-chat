@@ -97,20 +97,23 @@ export default function Index() {
 
   /** Open card → /:section/:filter/:cardId or /:section/:cardId */
   const handleCardOpen = useCallback(
-    (cardId: string) => {
+    (cardId: string, currentFilter?: string | null) => {
       const slug = matched.slug;
-      const filterPart = urlFilter ? `/${urlFilter}` : "";
+      const filterPart = currentFilter ? `/${toSlug(currentFilter)}` : "";
       navigate(`/${slug}${filterPart}/${cardId}`);
     },
-    [matched.slug, urlFilter, navigate],
+    [matched.slug, navigate],
   );
 
   /** Close card → /:section/:filter or /:section */
-  const handleCardClose = useCallback(() => {
-    const slug = matched.slug;
-    const filterPart = urlFilter ? `/${urlFilter}` : "";
-    navigate(`/${slug}${filterPart}`);
-  }, [matched.slug, urlFilter, navigate]);
+  const handleCardClose = useCallback(
+    (currentFilter?: string | null) => {
+      const slug = matched.slug;
+      const filterPart = currentFilter ? `/${toSlug(currentFilter)}` : "";
+      navigate(`/${slug}${filterPart}`);
+    },
+    [matched.slug, navigate],
+  );
 
   /** Decks: subtype change → /decks/:subtype (clears filter+card). */
   const handleDecksSubtypeChange = useCallback(

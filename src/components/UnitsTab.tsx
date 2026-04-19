@@ -90,8 +90,8 @@ interface UnitsTabProps {
   initialFilter?: string;
   initialCardId?: string;
   onFilterChange?: (filterValue: string | null) => void;
-  onCardOpen?: (cardId: string) => void;
-  onCardClose?: () => void;
+  onCardOpen?: (cardId: string, currentFilter?: string | null) => void;
+  onCardClose?: (currentFilter?: string | null) => void;
 }
 
 export default function UnitsTab({ initialFilter, initialCardId, onFilterChange, onCardOpen, onCardClose }: UnitsTabProps = {}) {
@@ -151,11 +151,11 @@ export default function UnitsTab({ initialFilter, initialCardId, onFilterChange,
 
   const openCard = (key: string, cardSlug: string) => {
     setSelectedKey(key);
-    onCardOpen?.(cardSlug);
+    onCardOpen?.(cardSlug, filterFaction === "all" ? null : filterFaction);
   };
   const closeCard = () => {
     setSelectedKey(null);
-    onCardClose?.();
+    onCardClose?.(filterFaction === "all" ? null : filterFaction);
   };
 
   // Reset active variant when selected unit changes
