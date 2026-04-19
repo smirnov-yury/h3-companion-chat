@@ -1,4 +1,5 @@
-import { useState, useCallback } from "react";
+import { useCallback, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import TopAppBar from "@/components/TopAppBar";
 import NavDrawer, { type TabId, navItems } from "@/components/NavDrawer";
 import ChatScreen from "@/components/ChatScreen";
@@ -12,17 +13,40 @@ import GlobalEventsTab from "@/components/GlobalEventsTab";
 import MapElementsTab from "@/components/MapElementsTab";
 import BackToTop from "@/components/BackToTop";
 import { useLang } from "@/context/LanguageContext";
+import {
+  DEFAULT_SLUG,
+  findSectionBySlug,
+  findSectionByTabId,
+} from "@/config/sectionRegistry";
 
 export default function Index() {
-  const [tab, setTab] = useState<TabId>("ai");
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [scrollToRuleId, setScrollToRuleId] = useState<string | null>(null);
+  const navigate = useNavigate();
+  const { section } = useParams<{ section?: string }>();
   const { lang } = useLang();
 
-  const handleNavigateToRule = useCallback((ruleId: string) => {
-    setScrollToRuleId(ruleId);
-    setTab("rules");
-  }, []);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [scrollToRuleId, setScrollToRuleId] = useState<string | null>(null);
+
+  // Derive active tab from URL. Unknown slug → default section.
+  const matched = findSectionBySlug(section) ?? findSectionBySlug(DEFAULT_SLUG)!;
+  const tab: TabId = matched.tabId;
+
+  const handleTabChange = useCallback(
+    (newTab: TabId) => {
+      const def = findSectionByTabId(newTab);
+      if (def) navigate(`/${def.slug}`);
+    },
+    [navigate],
+  );
+
+  const handleNavigateToRule = useCallback(
+    (ruleId: string) => {
+      setScrollToRuleId(ruleId);
+      const rules = findSectionByTabId("rules");
+      if (rules) navigate(`/${rules.slug}`);
+    },
+    [navigate],
+  );
 
   const current = navItems.find((n) => n.id === tab)!;
   const title = lang === "RU" ? current.labelRU : current.labelEN;
@@ -30,7 +54,7 @@ export default function Index() {
   return (
     <div className="flex flex-col h-dvh">
       <TopAppBar title={title} icon={current.icon} onMenuClick={() => setDrawerOpen(true)} />
-      <NavDrawer open={drawerOpen} onOpenChange={setDrawerOpen} active={tab} onChange={setTab} />
+      <NavDrawer open={drawerOpen} onOpenChange={setDrawerOpen} active={tab} onChange={handleTabChange} />
       <div className="flex-1 flex flex-col overflow-hidden pt-11 lg:ml-56">
         {tab === "ai" ? (
           <ChatScreen />
