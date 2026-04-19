@@ -39,7 +39,13 @@ const IMAGE_TABS: { id: ImageTab; labelRU: string; labelEN: string }[] = [
   { id: "back", labelRU: "Обратная", labelEN: "Back" },
 ];
 
-export default function TownsTab() {
+interface Props {
+  initialCardId?: string;
+  onCardOpen?: (cardId: string) => void;
+  onCardClose?: () => void;
+}
+
+export default function TownsTab({ initialCardId, onCardOpen }: Props = {}) {
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
   const [towns, setTowns] = useState<Town[]>([]);
