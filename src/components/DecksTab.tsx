@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, X } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
 import ArtifactsTab from "@/components/sections/ArtifactsTab";
@@ -9,22 +9,43 @@ import WarMachinesTab from "@/components/sections/WarMachinesTab";
 
 type DeckSection = "artifacts" | "spells" | "abilities" | "attributes" | "war_machines";
 
-const SECTIONS: { id: DeckSection; labelRU: string; labelEN: string }[] = [
-  { id: "artifacts",    labelRU: "Артефакты",    labelEN: "Artifacts"    },
-  { id: "spells",       labelRU: "Заклинания",   labelEN: "Spells"       },
-  { id: "abilities",    labelRU: "Умения",       labelEN: "Abilities"    },
-  { id: "attributes",   labelRU: "Атрибуты",     labelEN: "Attributes"   },
-  { id: "war_machines", labelRU: "Боевые машины", labelEN: "War Machines" },
+const SECTIONS: { id: DeckSection; slug: string; labelRU: string; labelEN: string }[] = [
+  { id: "artifacts",    slug: "artifacts",   labelRU: "Артефакты",     labelEN: "Artifacts"    },
+  { id: "spells",       slug: "spells",      labelRU: "Заклинания",    labelEN: "Spells"       },
+  { id: "abilities",    slug: "abilities",   labelRU: "Умения",        labelEN: "Abilities"    },
+  { id: "attributes",   slug: "attributes",  labelRU: "Атрибуты",      labelEN: "Attributes"   },
+  { id: "war_machines", slug: "warmachines", labelRU: "Боевые машины", labelEN: "War Machines" },
 ];
 
-export default function DecksTab() {
+interface Props {
+  initialSubtype?: string;
+  initialFilter?: string;
+  onSubtypeChange?: (subtype: string) => void;
+  onFilterChange?: (subtype: string, filterValue: string | null) => void;
+}
+
+export default function DecksTab({ initialSubtype, initialFilter, onSubtypeChange, onFilterChange }: Props = {}) {
   const { lang } = useLang();
   const [active, setActive] = useState<DeckSection>("artifacts");
   const [searchQuery, setSearchQuery] = useState("");
 
+  // Sync URL subtype → internal active subtab (graceful fallback)
+  useEffect(() => {
+    if (!initialSubtype) { setActive("artifacts"); return; }
+    const match = SECTIONS.find((s) => s.slug === initialSubtype);
+    if (match) setActive(match.id);
+  }, [initialSubtype]);
+
   const handleSectionChange = (id: DeckSection) => {
     setActive(id);
     setSearchQuery("");
+    const def = SECTIONS.find((s) => s.id === id);
+    if (def) onSubtypeChange?.(def.slug);
+  };
+
+  const activeSlug = SECTIONS.find((s) => s.id === active)?.slug ?? "artifacts";
+  const handleInnerFilterChange = (filterValue: string | null) => {
+    onFilterChange?.(activeSlug, filterValue);
   };
 
   return (
@@ -61,11 +82,11 @@ export default function DecksTab() {
         </div>
       </div>
       <div className="flex-1 overflow-hidden">
-        {active === "artifacts"    ? <ArtifactsTab searchQuery={searchQuery} /> :
-         active === "spells"       ? <SpellsTab searchQuery={searchQuery} /> :
-         active === "abilities"    ? <AbilitiesTab searchQuery={searchQuery} /> :
-         active === "attributes"   ? <StatisticsTab searchQuery={searchQuery} /> :
-         active === "war_machines" ? <WarMachinesTab searchQuery={searchQuery} /> : null}
+        {active === "artifacts"    ? <ArtifactsTab    searchQuery={searchQuery} initialFilter={initialFilter} onFilterChange={handleInnerFilterChange} /> :
+         active === "spells"       ? <SpellsTab       searchQuery={searchQuery} initialFilter={initialFilter} onFilterChange={handleInnerFilterChange} /> :
+         active === "abilities"    ? <AbilitiesTab    searchQuery={searchQuery} /> :
+         active === "attributes"   ? <StatisticsTab   searchQuery={searchQuery} /> :
+         active === "war_machines" ? <WarMachinesTab  searchQuery={searchQuery} /> : null}
       </div>
     </div>
   );

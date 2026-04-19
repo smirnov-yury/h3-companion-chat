@@ -46,7 +46,12 @@ function heroInitials(name: string): string {
   return name.split(/\s+/).map(w => w[0]).join("").slice(0, 2).toUpperCase();
 }
 
-export default function HeroesTab() {
+interface HeroesTabProps {
+  initialFilter?: string;
+  onFilterChange?: (filterValue: string | null) => void;
+}
+
+export default function HeroesTab({ initialFilter, onFilterChange }: HeroesTabProps = {}) {
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
   const [heroes, setHeroes] = useState<Hero[]>([]);
@@ -63,8 +68,21 @@ export default function HeroesTab() {
     });
   }, []);
 
+  // Sync URL filter slug → internal faction. Compare against towns lowercased+hyphenated.
+  useEffect(() => {
+    if (!initialFilter) { setFaction("all"); return; }
+    const towns = Array.from(new Set(heroes.map(h => h.town).filter(Boolean) as string[]));
+    const match = towns.find(t => t.toLowerCase().replace(/\s+/g, "-") === initialFilter);
+    setFaction(match ?? "all");
+  }, [initialFilter, heroes]);
+
+  const setFactionAndUrl = (next: string) => {
+    setFaction(next);
+    onFilterChange?.(next === "all" ? null : next);
+  };
+
   const hasFilters = faction !== "all" || !!searchQuery;
-  const resetFilters = () => { setFaction("all"); setSearchQuery(""); };
+  const resetFilters = () => { setFactionAndUrl("all"); setSearchQuery(""); };
 
   const towns = Array.from(new Set(heroes.map(h => h.town).filter(Boolean) as string[])).sort();
   const q = searchQuery.toLowerCase();
@@ -115,7 +133,7 @@ export default function HeroesTab() {
         </div>
         <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
           <button
-            onClick={() => setFaction("all")}
+            onClick={() => setFactionAndUrl("all")}
             className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-colors whitespace-nowrap ${
               faction === "all" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-muted/70"
             }`}
@@ -125,7 +143,7 @@ export default function HeroesTab() {
           {towns.map(t => (
             <button
               key={t}
-              onClick={() => setFaction(t)}
+              onClick={() => setFactionAndUrl(t)}
               className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-colors whitespace-nowrap capitalize ${
                 faction === t ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-muted/70"
               }`}

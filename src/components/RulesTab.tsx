@@ -136,9 +136,11 @@ function makeMarkdownComponents(glyphs: ReturnType<typeof useGlyphs>["glyphs"]) 
 interface RulesTabProps {
   scrollToRuleId?: string | null;
   onScrollHandled?: () => void;
+  initialFilter?: string;
+  onFilterChange?: (filterValue: string | null) => void;
 }
 
-export default function RulesTab({ scrollToRuleId, onScrollHandled }: RulesTabProps) {
+export default function RulesTab({ scrollToRuleId, onScrollHandled, initialFilter, onFilterChange }: RulesTabProps) {
   const { rules, loaded } = useRules();
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
@@ -149,6 +151,16 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled }: RulesTabPr
   const listRef = useRef<HTMLDivElement>(null);
 
   const mdComponents = useMemo(() => makeMarkdownComponents(glyphs), [glyphs]);
+
+  // Sync URL filter (from parent) → internal state. Rule categories are already lowercase keys.
+  useEffect(() => {
+    if (initialFilter) {
+      const known = RULE_CATEGORIES.find((c) => c.key === initialFilter);
+      setSelectedCategory(known ? known.key : null);
+    } else {
+      setSelectedCategory(null);
+    }
+  }, [initialFilter]);
 
   useEffect(() => {
     if (scrollToRuleId && loaded) {
@@ -309,7 +321,7 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled }: RulesTabPr
       <div className="px-3 pb-2 shrink-0 overflow-x-auto scrollbar-none">
         <div className="flex gap-2 w-max">
           <button
-            onClick={() => setSelectedCategory(null)}
+            onClick={() => { setSelectedCategory(null); onFilterChange?.(null); }}
             className={`px-3 py-1 text-xs font-medium rounded-full whitespace-nowrap transition-colors ${
               !selectedCategory
                 ? "bg-primary text-primary-foreground"
@@ -321,7 +333,11 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled }: RulesTabPr
           {categories.map((cat) => (
             <button
               key={cat.key}
-              onClick={() => setSelectedCategory(cat.key === selectedCategory ? null : cat.key)}
+              onClick={() => {
+                const next = cat.key === selectedCategory ? null : cat.key;
+                setSelectedCategory(next);
+                onFilterChange?.(next);
+              }}
               className={`px-3 py-1 text-xs font-medium rounded-full whitespace-nowrap transition-colors ${
                 selectedCategory === cat.key
                   ? "bg-primary text-primary-foreground"

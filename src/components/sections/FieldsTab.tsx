@@ -24,9 +24,9 @@ interface Field {
   sort_order: number | null;
 }
 
-interface Props { searchQuery?: string; }
+interface Props { searchQuery?: string; filterSlug?: string; }
 
-export default function FieldsTab({ searchQuery = "" }: Props) {
+export default function FieldsTab({ searchQuery = "", filterSlug }: Props) {
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
   const [items, setItems] = useState<Field[]>([]);
@@ -43,12 +43,15 @@ export default function FieldsTab({ searchQuery = "" }: Props) {
   const name = (i: Field) => lang === "RU" ? (i.name_ru || i.name_en) : i.name_en;
 
   const q = searchQuery.toLowerCase();
+  const afterType = filterSlug
+    ? items.filter(i => i.type_en && i.type_en.toLowerCase().replace(/\s+/g, "-") === filterSlug)
+    : items;
   const filtered = searchQuery
-    ? items.filter(i => {
+    ? afterType.filter(i => {
         const fields = [i.name_en, i.name_ru, i.effect_en, i.effect_ru];
         return fields.some(f => f && f.toLowerCase().includes(q));
       })
-    : items;
+    : afterType;
 
   return (
     <>

@@ -86,7 +86,12 @@ interface DisplayItem {
   isNeutral: boolean;
 }
 
-export default function UnitsTab() {
+interface UnitsTabProps {
+  initialFilter?: string;
+  onFilterChange?: (filterValue: string | null) => void;
+}
+
+export default function UnitsTab({ initialFilter, onFilterChange }: UnitsTabProps = {}) {
   const { lang } = useLang();
   const [units, setUnits] = useState<UnitStat[]>([]);
   const [loading, setLoading] = useState(true);
@@ -108,6 +113,19 @@ export default function UnitsTab() {
         setLoading(false);
       });
   }, []);
+
+  // Sync URL filter slug → internal town filter (graceful fallback if no match)
+  useEffect(() => {
+    if (!initialFilter) { setFilterFaction('all'); return; }
+    const towns = Array.from(new Set(units.map(u => u.town).filter(Boolean)));
+    const match = towns.find(t => t.toLowerCase().replace(/\s+/g, '-') === initialFilter);
+    setFilterFaction(match ?? 'all');
+  }, [initialFilter, units]);
+
+  const setFactionAndUrl = (next: string) => {
+    setFilterFaction(next);
+    onFilterChange?.(next === 'all' ? null : next);
+  };
 
   // Reset active variant when selected unit changes
   useEffect(() => {
@@ -206,7 +224,7 @@ export default function UnitsTab() {
 
   const hasFilters = mode !== 'all' || filterFaction !== 'all' || filterTier !== 'all' || filterType !== 'all' || !!searchQuery;
   const resetAllFilters = () => {
-    setMode('all'); setFilterFaction('all'); setFilterTier('all'); setFilterType('all'); setSearchQuery('');
+    setMode('all'); setFactionAndUrl('all'); setFilterTier('all'); setFilterType('all'); setSearchQuery('');
   };
 
   if (loading) {
@@ -225,7 +243,7 @@ export default function UnitsTab() {
         {(() => {
           const activeChips: { label: string; onRemove: () => void }[] = [];
           if (mode !== 'all') activeChips.push({ label: modeLabels[mode], onRemove: () => setMode('all') });
-          if (filterFaction !== 'all') activeChips.push({ label: filterFaction, onRemove: () => setFilterFaction('all') });
+          if (filterFaction !== 'all') activeChips.push({ label: filterFaction, onRemove: () => setFactionAndUrl('all') });
           if (filterTier !== 'all') activeChips.push({ label: capitalize(filterTier), onRemove: () => setFilterTier('all') });
           if (filterType !== 'all') activeChips.push({ label: capitalize(filterType.replace('unit_', '')), onRemove: () => setFilterType('all') });
           const filterCount = activeChips.length;
@@ -295,7 +313,7 @@ export default function UnitsTab() {
                   {mode !== 'neutral' && (
                     <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
                       {factions.map((f) => (
-                        <FilterChip key={f} label={f === 'all' ? (lang === 'RU' ? 'Все' : 'All') : f} active={filterFaction === f} onClick={() => setFilterFaction(f)} />
+                        <FilterChip key={f} label={f === 'all' ? (lang === 'RU' ? 'Все' : 'All') : f} active={filterFaction === f} onClick={() => setFactionAndUrl(f)} />
                       ))}
                     </div>
                   )}
@@ -339,7 +357,7 @@ export default function UnitsTab() {
           {mode !== 'neutral' && (
             <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
               {factions.map((f) => (
-                <FilterChip key={f} label={f === 'all' ? (lang === 'RU' ? 'Все' : 'All') : f} active={filterFaction === f} onClick={() => setFilterFaction(f)} />
+                <FilterChip key={f} label={f === 'all' ? (lang === 'RU' ? 'Все' : 'All') : f} active={filterFaction === f} onClick={() => setFactionAndUrl(f)} />
               ))}
             </div>
           )}

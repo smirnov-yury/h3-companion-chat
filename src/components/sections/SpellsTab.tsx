@@ -46,9 +46,13 @@ function levelStyle(level: string): string {
   return LEVEL_COLORS[key] || "bg-muted text-muted-foreground";
 }
 
-interface Props { searchQuery?: string; }
+interface Props {
+  searchQuery?: string;
+  initialFilter?: string;
+  onFilterChange?: (filterValue: string | null) => void;
+}
 
-export default function SpellsTab({ searchQuery = "" }: Props) {
+export default function SpellsTab({ searchQuery = "", initialFilter, onFilterChange }: Props) {
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
   const [items, setItems] = useState<Spell[]>([]);
@@ -63,6 +67,19 @@ export default function SpellsTab({ searchQuery = "" }: Props) {
     });
   }, []);
 
+  // Sync URL filter slug → internal school (graceful fallback)
+  useEffect(() => {
+    if (!initialFilter) { setFilterSchool("all"); return; }
+    const knownSchools = Array.from(new Set(items.map(i => i.school).filter(Boolean) as string[]));
+    const match = knownSchools.find(s => s.toLowerCase() === initialFilter);
+    setFilterSchool(match ?? "all");
+  }, [initialFilter, items]);
+
+  const setSchoolAndUrl = (next: string) => {
+    setFilterSchool(next);
+    onFilterChange?.(next === "all" ? null : next);
+  };
+
   const schools = ["all", ...Array.from(new Set(items.map(i => i.school).filter(Boolean))) as string[]];
   const afterSchool = filterSchool === "all" ? items : items.filter(i => i.school === filterSchool);
   const q = searchQuery.toLowerCase();
@@ -75,14 +92,14 @@ export default function SpellsTab({ searchQuery = "" }: Props) {
 
   const name = (i: Spell) => lang === "RU" ? (i.name_ru || i.name_en) : i.name_en;
   const hasFilters = filterSchool !== "all" || !!searchQuery;
-  const resetFilters = () => setFilterSchool("all");
+  const resetFilters = () => setSchoolAndUrl("all");
 
   return (
     <>
       <div className="flex flex-col h-full">
         <div className="flex gap-1.5 overflow-x-auto px-3 pt-3 pb-2 scrollbar-none shrink-0">
           {schools.map(s => (
-            <button key={s} onClick={() => setFilterSchool(s)}
+            <button key={s} onClick={() => setSchoolAndUrl(s)}
               className={`shrink-0 px-2.5 py-1 rounded-full text-[11px] font-medium transition-colors ${filterSchool === s ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
               {s === "all" ? (lang === "RU" ? "Все" : "All") : s.charAt(0).toUpperCase() + s.slice(1)}
             </button>

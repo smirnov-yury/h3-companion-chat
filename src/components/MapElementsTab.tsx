@@ -3,9 +3,17 @@ import { Search, X } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
 import FieldsTab from "@/components/sections/FieldsTab";
 
-export default function MapElementsTab() {
+interface Props {
+  initialFilter?: string;
+  onFilterChange?: (filterValue: string | null) => void;
+}
+
+export default function MapElementsTab({ initialFilter, onFilterChange: _onFilterChange }: Props = {}) {
   const { lang } = useLang();
   const [searchQuery, setSearchQuery] = useState("");
+
+  // initialFilter is propagated to FieldsTab; no UI exists yet to surface filter changes
+  // upward, so onFilterChange is currently unused. Wired for symmetry / future filter UI.
 
   return (
     <div className="flex flex-col h-full">
@@ -28,7 +36,7 @@ export default function MapElementsTab() {
         </div>
       </div>
       <div className="flex-1 overflow-hidden">
-        <FieldsTab searchQuery={searchQuery} />
+        <FieldsTab searchQuery={searchQuery} filterSlug={initialFilter} />
       </div>
     </div>
   );

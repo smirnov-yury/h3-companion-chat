@@ -12,13 +12,15 @@ export interface SectionDef {
   tabId: TabId;
   levels: readonly string[];
   table: string | null;
+  /** Field name on the entity used for the first-level filter (lowercased+hyphenated for URL). */
+  filterField?: string;
   subtypes?: readonly string[];
 }
 
 export const SECTION_REGISTRY: readonly SectionDef[] = [
-  { slug: "rules",        tabId: "rules",         levels: ["category", "id"],         table: "rules" },
+  { slug: "rules",        tabId: "rules",         levels: ["category", "id"],         table: "rules",      filterField: "category" },
   { slug: "scenarios",    tabId: "scenarios",     levels: ["id"],                      table: "scenarios" },
-  { slug: "map-elements", tabId: "map_elements",  levels: ["type", "id"],              table: "fields" },
+  { slug: "map-elements", tabId: "map_elements",  levels: ["type", "id"],              table: "fields",     filterField: "type_en" },
   { slug: "events",       tabId: "global_events", levels: ["id"],                      table: "events" },
   {
     slug: "decks",
@@ -27,8 +29,8 @@ export const SECTION_REGISTRY: readonly SectionDef[] = [
     table: null,
     subtypes: ["artifacts", "spells", "abilities", "attributes", "warmachines"],
   },
-  { slug: "units",        tabId: "units",         levels: ["town", "id"],              table: "unit_stats" },
-  { slug: "heroes",       tabId: "heroes",        levels: ["town", "id"],              table: "heroes" },
+  { slug: "units",        tabId: "units",         levels: ["town", "id"],              table: "unit_stats", filterField: "town" },
+  { slug: "heroes",       tabId: "heroes",        levels: ["town", "id"],              table: "heroes",     filterField: "town" },
   { slug: "towns",        tabId: "towns",         levels: ["id"],                      table: "towns" },
   { slug: "ai",           tabId: "ai",            levels: [],                          table: null },
 ] as const;
