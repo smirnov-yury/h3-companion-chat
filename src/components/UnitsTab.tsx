@@ -224,7 +224,7 @@ export default function UnitsTab({ initialFilter, onFilterChange }: UnitsTabProp
 
   const hasFilters = mode !== 'all' || filterFaction !== 'all' || filterTier !== 'all' || filterType !== 'all' || !!searchQuery;
   const resetAllFilters = () => {
-    setMode('all'); setFilterFaction('all'); setFilterTier('all'); setFilterType('all'); setSearchQuery('');
+    setMode('all'); setFactionAndUrl('all'); setFilterTier('all'); setFilterType('all'); setSearchQuery('');
   };
 
   if (loading) {
