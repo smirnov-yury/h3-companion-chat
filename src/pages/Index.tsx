@@ -171,6 +171,7 @@ export default function Index() {
             onScrollHandled={() => setScrollToRuleId(null)}
             initialFilter={urlFilter}
             initialCardId={urlCardId}
+            initialSearch={initialSearch}
             onFilterChange={handleFilterChange}
             onCardOpen={handleCardOpen}
             onCardClose={handleCardClose}
@@ -181,6 +182,7 @@ export default function Index() {
             initialFilter={urlDeckFilter}
             initialCardId={urlCardId}
             initialAmbiguous={urlDeckCardAmbiguous}
+            initialSearch={initialSearch}
             onSubtypeChange={handleDecksSubtypeChange}
             onFilterChange={handleDecksFilterChange}
             onCardOpen={handleDecksCardOpen}
@@ -189,6 +191,7 @@ export default function Index() {
         ) : tab === "scenarios" ? (
           <ScenariosTab
             initialCardId={urlCardId}
+            searchQuery={initialSearch}
             onCardOpen={handleCardOpen}
             onCardClose={handleCardClose}
           />
@@ -196,6 +199,7 @@ export default function Index() {
           <MapElementsTab
             initialFilter={urlFilter}
             initialCardId={urlCardId}
+            initialSearch={initialSearch}
             onFilterChange={handleFilterChange}
             onCardOpen={handleCardOpen}
             onCardClose={handleCardClose}
@@ -203,6 +207,7 @@ export default function Index() {
         ) : tab === "global_events" ? (
           <GlobalEventsTab
             initialCardId={urlCardId}
+            initialSearch={initialSearch}
             onCardOpen={handleCardOpen}
             onCardClose={handleCardClose}
           />
@@ -210,6 +215,7 @@ export default function Index() {
           <UnitsTab
             initialFilter={urlFilter}
             initialCardId={urlCardId}
+            initialSearch={initialSearch}
             onFilterChange={handleFilterChange}
             onCardOpen={handleCardOpen}
             onCardClose={handleCardClose}
@@ -224,6 +230,7 @@ export default function Index() {
           <HeroesTab
             initialFilter={urlFilter}
             initialCardId={urlCardId}
+            initialSearch={initialSearch}
             onFilterChange={handleFilterChange}
             onCardOpen={handleCardOpen}
             onCardClose={handleCardClose}
