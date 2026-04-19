@@ -410,7 +410,7 @@ export default function UnitsTab({ initialFilter, initialCardId, onFilterChange,
               return (
                 <button
                   key={item.key}
-                  onClick={() => setSelectedKey(item.key)}
+                  onClick={() => openCard(item.key, item.isNeutral ? item.unit.id : item.unit.slug)}
                   className="flex flex-col rounded-xl border border-border bg-card overflow-hidden text-left hover:border-primary transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg cursor-pointer"
                 >
                   <div className="relative aspect-square bg-muted">
