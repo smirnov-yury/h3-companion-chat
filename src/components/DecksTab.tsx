@@ -20,11 +20,19 @@ const SECTIONS: { id: DeckSection; slug: string; labelRU: string; labelEN: strin
 interface Props {
   initialSubtype?: string;
   initialFilter?: string;
+  initialCardId?: string;
+  /** Single segment after subtype that could be filter OR card; resolved by inner tab. */
+  initialAmbiguous?: string;
   onSubtypeChange?: (subtype: string) => void;
   onFilterChange?: (subtype: string, filterValue: string | null) => void;
+  onCardOpen?: (subtype: string, filterValue: string | null, cardId: string) => void;
+  onCardClose?: (subtype: string, filterValue: string | null) => void;
 }
 
-export default function DecksTab({ initialSubtype, initialFilter, onSubtypeChange, onFilterChange }: Props = {}) {
+export default function DecksTab({
+  initialSubtype, initialFilter, initialCardId, initialAmbiguous,
+  onSubtypeChange, onFilterChange, onCardOpen, onCardClose,
+}: Props = {}) {
   const { lang } = useLang();
   const [active, setActive] = useState<DeckSection>("artifacts");
   const [searchQuery, setSearchQuery] = useState("");
@@ -47,6 +55,16 @@ export default function DecksTab({ initialSubtype, initialFilter, onSubtypeChang
   const handleInnerFilterChange = (filterValue: string | null) => {
     onFilterChange?.(activeSlug, filterValue);
   };
+  const handleInnerCardOpen = (currentFilter: string | null, cardId: string) => {
+    onCardOpen?.(activeSlug, currentFilter, cardId);
+  };
+  const handleInnerCardClose = (currentFilter: string | null) => {
+    onCardClose?.(activeSlug, currentFilter);
+  };
+
+  // For ambiguous segment: pass to inner tab as both initialFilter and initialCardId
+  const innerFilter = initialFilter ?? initialAmbiguous;
+  const innerCardId = initialCardId ?? initialAmbiguous;
 
   return (
     <div className="flex flex-col h-full">
@@ -82,11 +100,11 @@ export default function DecksTab({ initialSubtype, initialFilter, onSubtypeChang
         </div>
       </div>
       <div className="flex-1 overflow-hidden">
-        {active === "artifacts"    ? <ArtifactsTab    searchQuery={searchQuery} initialFilter={initialFilter} onFilterChange={handleInnerFilterChange} /> :
-         active === "spells"       ? <SpellsTab       searchQuery={searchQuery} initialFilter={initialFilter} onFilterChange={handleInnerFilterChange} /> :
-         active === "abilities"    ? <AbilitiesTab    searchQuery={searchQuery} /> :
-         active === "attributes"   ? <StatisticsTab   searchQuery={searchQuery} /> :
-         active === "war_machines" ? <WarMachinesTab  searchQuery={searchQuery} /> : null}
+        {active === "artifacts"    ? <ArtifactsTab    searchQuery={searchQuery} initialFilter={innerFilter} initialCardId={innerCardId} onFilterChange={handleInnerFilterChange} onCardOpen={handleInnerCardOpen} onCardClose={handleInnerCardClose} /> :
+         active === "spells"       ? <SpellsTab       searchQuery={searchQuery} initialFilter={innerFilter} initialCardId={innerCardId} onFilterChange={handleInnerFilterChange} onCardOpen={handleInnerCardOpen} onCardClose={handleInnerCardClose} /> :
+         active === "abilities"    ? <AbilitiesTab    searchQuery={searchQuery} initialCardId={innerCardId} onCardOpen={(id) => handleInnerCardOpen(null, id)} onCardClose={() => handleInnerCardClose(null)} /> :
+         active === "attributes"   ? <StatisticsTab   searchQuery={searchQuery} initialFilter={innerFilter} initialCardId={innerCardId} onFilterChange={handleInnerFilterChange} onCardOpen={handleInnerCardOpen} onCardClose={handleInnerCardClose} /> :
+         active === "war_machines" ? <WarMachinesTab  searchQuery={searchQuery} initialCardId={innerCardId} onCardOpen={(id) => handleInnerCardOpen(null, id)} onCardClose={() => handleInnerCardClose(null)} /> : null}
       </div>
     </div>
   );

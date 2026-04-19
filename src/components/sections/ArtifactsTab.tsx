@@ -38,10 +38,13 @@ const QUALITY_ORDER = ["minor", "major", "relic"];
 interface Props {
   searchQuery?: string;
   initialFilter?: string;
+  initialCardId?: string;
   onFilterChange?: (filterValue: string | null) => void;
+  onCardOpen?: (currentFilter: string | null, cardId: string) => void;
+  onCardClose?: (currentFilter: string | null) => void;
 }
 
-export default function ArtifactsTab({ searchQuery = "", initialFilter, onFilterChange }: Props) {
+export default function ArtifactsTab({ searchQuery = "", initialFilter, initialCardId, onFilterChange, onCardOpen, onCardClose }: Props) {
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
   const [items, setItems] = useState<Artifact[]>([]);
@@ -66,6 +69,17 @@ export default function ArtifactsTab({ searchQuery = "", initialFilter, onFilter
     setFilterQuality(next);
     onFilterChange?.(next === "all" ? null : next);
   };
+
+  // Auto-open card from URL
+  useEffect(() => {
+    if (!loaded || !initialCardId) return;
+    const found = items.find(i => i.id === initialCardId);
+    if (found) setSelected(found);
+  }, [loaded, initialCardId, items]);
+
+  const currentFilter = filterQuality === "all" ? null : filterQuality;
+  const openCard = (i: Artifact) => { setSelected(i); onCardOpen?.(currentFilter, i.id); };
+  const closeCard = () => { setSelected(null); onCardClose?.(currentFilter); };
 
   const qualitiesSet = new Set(items.map(i => i.quality).filter(Boolean));
   const qualities = ["all", ...QUALITY_ORDER.filter(q => qualitiesSet.has(q)), ...Array.from(qualitiesSet).filter(q => !QUALITY_ORDER.includes(q!))];
@@ -103,7 +117,7 @@ export default function ArtifactsTab({ searchQuery = "", initialFilter, onFilter
               {filtered.map((item) => {
                 const imgSrc = item.image ? `${STORAGE}/artifacts/${item.image}` : null;
                 return (
-                  <button key={item.id} onClick={() => setSelected(item)}
+                  <button key={item.id} onClick={() => openCard(item)}
                     className="flex flex-col rounded-xl border border-border bg-card overflow-hidden text-left hover:border-primary transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg cursor-pointer">
                     <div className="aspect-[5/7] w-full bg-muted flex items-center justify-center overflow-hidden relative rounded-lg">
                       {imgSrc
@@ -127,7 +141,7 @@ export default function ArtifactsTab({ searchQuery = "", initialFilter, onFilter
         </div>
       </div>
 
-      <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
+      <Dialog open={!!selected} onOpenChange={(o) => !o && closeCard()}>
         <CardDialogContent>
           {selected && (
             <>

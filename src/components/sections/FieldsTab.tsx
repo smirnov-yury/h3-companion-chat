@@ -24,9 +24,15 @@ interface Field {
   sort_order: number | null;
 }
 
-interface Props { searchQuery?: string; filterSlug?: string; }
+interface Props {
+  searchQuery?: string;
+  filterSlug?: string;
+  initialCardId?: string;
+  onCardOpen?: (cardId: string) => void;
+  onCardClose?: () => void;
+}
 
-export default function FieldsTab({ searchQuery = "", filterSlug }: Props) {
+export default function FieldsTab({ searchQuery = "", filterSlug, initialCardId, onCardOpen, onCardClose }: Props) {
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
   const [items, setItems] = useState<Field[]>([]);
@@ -39,6 +45,15 @@ export default function FieldsTab({ searchQuery = "", filterSlug }: Props) {
       setLoaded(true);
     });
   }, []);
+
+  useEffect(() => {
+    if (!loaded || !initialCardId) return;
+    const found = items.find(i => i.id === initialCardId);
+    if (found) setSelected(found);
+  }, [loaded, initialCardId, items]);
+
+  const openCard = (i: Field) => { setSelected(i); onCardOpen?.(i.id); };
+  const closeCard = () => { setSelected(null); onCardClose?.(); };
 
   const name = (i: Field) => lang === "RU" ? (i.name_ru || i.name_en) : i.name_en;
 
@@ -65,7 +80,7 @@ export default function FieldsTab({ searchQuery = "", filterSlug }: Props) {
             {filtered.map((item) => {
               const imgSrc = item.image ? `${STORAGE}/fields/${item.image}` : null;
               return (
-                <button key={item.id} onClick={() => setSelected(item)}
+                <button key={item.id} onClick={() => openCard(item)}
                   className="flex flex-col w-full overflow-hidden rounded-lg bg-muted text-left cursor-pointer transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg hover:ring-2 hover:ring-primary">
                   <div className="aspect-[4/3] w-full bg-muted overflow-hidden">
                     {imgSrc
@@ -81,7 +96,7 @@ export default function FieldsTab({ searchQuery = "", filterSlug }: Props) {
         )}
       </div>
 
-      <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
+      <Dialog open={!!selected} onOpenChange={(o) => !o && closeCard()}>
         <CardDialogContent>
           {selected && (
             <>

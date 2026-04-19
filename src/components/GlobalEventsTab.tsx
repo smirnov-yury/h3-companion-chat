@@ -11,7 +11,13 @@ const SECTIONS: { id: Section; labelRU: string; labelEN: string }[] = [
   { id: "astrologers", labelRU: "Астрологи", labelEN: "Astrologers Proclaim" },
 ];
 
-export default function GlobalEventsTab() {
+interface Props {
+  initialCardId?: string;
+  onCardOpen?: (cardId: string) => void;
+  onCardClose?: () => void;
+}
+
+export default function GlobalEventsTab({ initialCardId, onCardOpen, onCardClose }: Props = {}) {
   const { lang } = useLang();
   const [active, setActive] = useState<Section>("events");
   const [searchQuery, setSearchQuery] = useState("");
@@ -55,8 +61,8 @@ export default function GlobalEventsTab() {
         </div>
       </div>
       <div className="flex-1 overflow-hidden">
-        {active === "events"      ? <EventsTab searchQuery={searchQuery} /> :
-         active === "astrologers" ? <AstrologersTab searchQuery={searchQuery} /> : null}
+        {active === "events"      ? <EventsTab      searchQuery={searchQuery} initialCardId={initialCardId} onCardOpen={onCardOpen} onCardClose={onCardClose} /> :
+         active === "astrologers" ? <AstrologersTab searchQuery={searchQuery} initialCardId={initialCardId} onCardOpen={onCardOpen} onCardClose={onCardClose} /> : null}
       </div>
     </div>
   );

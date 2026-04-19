@@ -48,9 +48,14 @@ const MODE_LABELS_RU: Record<string, string> = { clash: "Столкновени�
 const MODE_ICONS: Record<string, typeof Swords> = { clash: Swords, cooperative: Heart, campaign: Crown, alliance: Shield, solo: User };
 const MODE_ORDER = ["clash", "cooperative", "campaign", "alliance", "solo"];
 
-interface Props { searchQuery?: string; }
+interface Props {
+  searchQuery?: string;
+  initialCardId?: string;
+  onCardOpen?: (cardId: string) => void;
+  onCardClose?: () => void;
+}
 
-export default function ScenariosTab({ searchQuery = "" }: Props) {
+export default function ScenariosTab({ searchQuery = "", initialCardId, onCardOpen, onCardClose }: Props) {
   const { lang } = useLang();
   const [scenarios, setScenarios] = useState<Scenario[]>([]);
   const [books, setBooks] = useState<Book[]>([]);
@@ -84,6 +89,16 @@ export default function ScenariosTab({ searchQuery = "" }: Props) {
       setLoaded(true);
     })();
   }, []);
+
+  // Auto-open card from URL
+  useEffect(() => {
+    if (!loaded || !initialCardId) return;
+    const found = scenarios.find(s => s.id === initialCardId || s.slug === initialCardId);
+    if (found) setSelected(found);
+  }, [loaded, initialCardId, scenarios]);
+
+  const openCard = (s: Scenario) => { setSelected(s); onCardOpen?.(s.slug || s.id); };
+  const closeCard = () => { setSelected(null); onCardClose?.(); };
 
   const activeCount = [filterMode, filterPlayers, filterBook].filter(f => f !== "all").length;
 
@@ -282,7 +297,7 @@ export default function ScenariosTab({ searchQuery = "" }: Props) {
       </Sheet>
 
       {selected && (
-        <ScenarioDetail scenario={selected} onClose={() => setSelected(null)} />
+        <ScenarioDetail scenario={selected} onClose={closeCard} />
       )}
     </>
   );
@@ -292,7 +307,7 @@ export default function ScenariosTab({ searchQuery = "" }: Props) {
     const rt = roundsText(s);
     const diff = lang === "RU" ? (s.difficulty_text_ru || s.difficulty_text_en) : s.difficulty_text_en;
     return (
-      <button key={s.id} onClick={() => setSelected(s)}
+      <button key={s.id} onClick={() => openCard(s)}
         className="flex flex-col rounded-xl border border-border bg-card p-3 text-left hover:border-primary transition-colors w-full">
         <div className="flex items-start justify-between gap-2">
           <p className="text-sm font-semibold text-foreground flex-1">{title(s)}</p>

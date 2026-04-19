@@ -26,9 +26,14 @@ interface Ability {
   sort_order: number | null;
 }
 
-interface Props { searchQuery?: string; }
+interface Props {
+  searchQuery?: string;
+  initialCardId?: string;
+  onCardOpen?: (cardId: string) => void;
+  onCardClose?: () => void;
+}
 
-export default function AbilitiesTab({ searchQuery = "" }: Props) {
+export default function AbilitiesTab({ searchQuery = "", initialCardId, onCardOpen, onCardClose }: Props) {
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
   const [items, setItems] = useState<Ability[]>([]);
@@ -41,6 +46,15 @@ export default function AbilitiesTab({ searchQuery = "" }: Props) {
       setLoaded(true);
     });
   }, []);
+
+  useEffect(() => {
+    if (!loaded || !initialCardId) return;
+    const found = items.find(i => i.id === initialCardId);
+    if (found) setSelected(found);
+  }, [loaded, initialCardId, items]);
+
+  const openCard = (i: Ability) => { setSelected(i); onCardOpen?.(i.id); };
+  const closeCard = () => { setSelected(null); onCardClose?.(); };
 
   const name = (i: Ability) => lang === "RU" ? (i.name_ru || i.name_en) : i.name_en;
 
@@ -64,7 +78,7 @@ export default function AbilitiesTab({ searchQuery = "" }: Props) {
             {filtered.map((item) => {
               const imgSrc = item.image_regular ? `${STORAGE}/abilities/${item.image_regular}` : null;
               return (
-                <button key={item.id} onClick={() => setSelected(item)}
+                <button key={item.id} onClick={() => openCard(item)}
                   className="flex flex-col rounded-xl border border-border bg-card overflow-hidden text-left hover:border-primary transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg cursor-pointer">
                   <div className="aspect-[5/7] w-full bg-muted flex items-center justify-center overflow-hidden relative rounded-lg">
                     {imgSrc
@@ -82,7 +96,7 @@ export default function AbilitiesTab({ searchQuery = "" }: Props) {
         )}
       </div>
 
-      <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
+      <Dialog open={!!selected} onOpenChange={(o) => !o && closeCard()}>
         <CardDialogContent>
           {selected && (
             <>

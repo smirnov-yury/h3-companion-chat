@@ -48,10 +48,13 @@ function heroInitials(name: string): string {
 
 interface HeroesTabProps {
   initialFilter?: string;
+  initialCardId?: string;
   onFilterChange?: (filterValue: string | null) => void;
+  onCardOpen?: (cardId: string) => void;
+  onCardClose?: () => void;
 }
 
-export default function HeroesTab({ initialFilter, onFilterChange }: HeroesTabProps = {}) {
+export default function HeroesTab({ initialFilter, initialCardId, onFilterChange, onCardOpen, onCardClose }: HeroesTabProps = {}) {
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
   const [heroes, setHeroes] = useState<Hero[]>([]);
@@ -80,6 +83,16 @@ export default function HeroesTab({ initialFilter, onFilterChange }: HeroesTabPr
     setFaction(next);
     onFilterChange?.(next === "all" ? null : next);
   };
+
+  // Auto-open card from URL
+  useEffect(() => {
+    if (!loaded || !initialCardId) return;
+    const found = heroes.find(h => h.id === initialCardId);
+    if (found) { setSelected(found); setSpecialtyTab(0); }
+  }, [loaded, initialCardId, heroes]);
+
+  const openCard = (h: Hero) => { setSelected(h); setSpecialtyTab(0); onCardOpen?.(h.id); };
+  const closeCard = () => { setSelected(null); onCardClose?.(); };
 
   const hasFilters = faction !== "all" || !!searchQuery;
   const resetFilters = () => { setFactionAndUrl("all"); setSearchQuery(""); };
@@ -162,7 +175,7 @@ export default function HeroesTab({ initialFilter, onFilterChange }: HeroesTabPr
         ) : (
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             {filtered.map(h => (
-              <button key={h.id} onClick={() => { setSelected(h); setSpecialtyTab(0); }} className="flex flex-col rounded-xl border border-border bg-card overflow-hidden text-left hover:border-primary transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg cursor-pointer">
+              <button key={h.id} onClick={() => openCard(h)} className="flex flex-col rounded-xl border border-border bg-card overflow-hidden text-left hover:border-primary transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg cursor-pointer">
                 <div className="relative aspect-square bg-muted">
                   {hasPortrait(h.image) ? (
                     <img src={`${STORAGE}/heroes/${h.image}`} alt={name(h)} className="w-full h-full object-cover object-left" />
@@ -198,7 +211,7 @@ export default function HeroesTab({ initialFilter, onFilterChange }: HeroesTabPr
         )}
       </div>
 
-      <Dialog open={!!selected} onOpenChange={open => { if (!open) setSelected(null); }} >
+      <Dialog open={!!selected} onOpenChange={open => { if (!open) closeCard(); }} >
         {selected && (
           <DialogContent className="max-h-[85vh] overflow-y-auto">
             <DialogTitle className="sr-only">{name(selected)}</DialogTitle>

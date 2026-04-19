@@ -52,9 +52,16 @@ function statTypeLabel(st: string, lang: "EN" | "RU") {
   return map[st] || st;
 }
 
-interface Props { searchQuery?: string; }
+interface Props {
+  searchQuery?: string;
+  initialFilter?: string;
+  initialCardId?: string;
+  onFilterChange?: (filterValue: string | null) => void;
+  onCardOpen?: (currentFilter: string | null, cardId: string) => void;
+  onCardClose?: (currentFilter: string | null) => void;
+}
 
-export default function StatisticsTab({ searchQuery = "" }: Props) {
+export default function StatisticsTab({ searchQuery = "", initialCardId, onCardOpen, onCardClose }: Props) {
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
   const [items, setItems] = useState<Statistic[]>([]);
@@ -68,6 +75,16 @@ export default function StatisticsTab({ searchQuery = "" }: Props) {
       setLoaded(true);
     });
   }, []);
+
+  useEffect(() => {
+    if (!loaded || !initialCardId) return;
+    const found = items.find(i => i.id === initialCardId);
+    if (found) setSelected(found);
+  }, [loaded, initialCardId, items]);
+
+  const currentFilter = filterStat === "all" ? null : filterStat;
+  const openCard = (i: Statistic) => { setSelected(i); onCardOpen?.(currentFilter, i.id); };
+  const closeCard = () => { setSelected(null); onCardClose?.(currentFilter); };
 
   const statTypes = ["all", ...Array.from(new Set(items.map(i => i.stat_type).filter(Boolean))) as string[]];
   const afterFilter = filterStat === "all" ? items : items.filter(i => i.stat_type === filterStat);
@@ -104,7 +121,7 @@ export default function StatisticsTab({ searchQuery = "" }: Props) {
               {filtered.map((item) => {
                 const imgSrc = item.image ? `${STORAGE}/statistics/${item.image}` : null;
                 return (
-                  <div key={item.id} onClick={() => setSelected(item)}
+                  <div key={item.id} onClick={() => openCard(item)}
                     className="relative aspect-[5/7] bg-muted rounded-lg overflow-hidden cursor-pointer transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg">
                     {imgSrc
                       ? <img src={imgSrc} alt={item.name_en || ""} className="absolute inset-0 w-full h-full object-cover rounded-lg" />
@@ -132,7 +149,7 @@ export default function StatisticsTab({ searchQuery = "" }: Props) {
         </div>
       </div>
 
-      <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
+      <Dialog open={!!selected} onOpenChange={(o) => !o && closeCard()}>
         <CardDialogContent>
           {selected && (
             <>

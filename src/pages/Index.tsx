@@ -34,8 +34,39 @@ export default function Index() {
 
   // Parse path segments after section slug: e.g. /heroes/castle/adelaide → ["castle","adelaide"]
   const restSegments = (params["*"] ?? "").split("/").filter(Boolean);
-  const urlFilter = restSegments[0]; // first sub-segment = filter slug (or subtype for decks)
-  const urlSubFilter = restSegments[1]; // for decks: filter within subtype
+
+  // Disambiguate filter vs card id based on registry levels.
+  // levels: ['id']                   → seg0 = card
+  // levels: ['filter', 'id']         → 1 seg = ambiguous (filter OR card), 2 segs = filter+card
+  // levels: ['subtype', 'filter', 'id'] (decks) → 1=subtype, 2=subtype+(filter|card), 3=all
+  let urlFilter: string | undefined;
+  let urlCardId: string | undefined;
+  let urlSubtype: string | undefined;
+  let urlDeckFilter: string | undefined;
+  let urlDeckCardAmbiguous: string | undefined;
+
+  if (matched.slug === "decks") {
+    urlSubtype = restSegments[0];
+    // For decks, seg1 could be filter or card; seg2 is card if both filter+card.
+    if (restSegments.length === 2) {
+      urlDeckCardAmbiguous = restSegments[1]; // tab decides: filter or card
+    } else if (restSegments.length >= 3) {
+      urlDeckFilter = restSegments[1];
+      urlCardId = restSegments[2];
+    }
+  } else if (matched.levels.length === 1 && matched.levels[0] === "id") {
+    // Single-level: seg0 is card id
+    urlCardId = restSegments[0];
+  } else if (matched.levels.length >= 2) {
+    if (restSegments.length === 1) {
+      // Ambiguous: pass to tab as both initialFilter AND initialCardId; tab resolves.
+      urlFilter = restSegments[0];
+      urlCardId = restSegments[0];
+    } else if (restSegments.length >= 2) {
+      urlFilter = restSegments[0];
+      urlCardId = restSegments[1];
+    }
+  }
 
   const handleTabChange = useCallback(
     (newTab: TabId) => {
@@ -64,7 +95,24 @@ export default function Index() {
     [matched.slug, navigate],
   );
 
-  /** Decks: subtype change → /decks/:subtype (clears filter). */
+  /** Open card → /:section/:filter/:cardId or /:section/:cardId */
+  const handleCardOpen = useCallback(
+    (cardId: string) => {
+      const slug = matched.slug;
+      const filterPart = urlFilter ? `/${urlFilter}` : "";
+      navigate(`/${slug}${filterPart}/${cardId}`);
+    },
+    [matched.slug, urlFilter, navigate],
+  );
+
+  /** Close card → /:section/:filter or /:section */
+  const handleCardClose = useCallback(() => {
+    const slug = matched.slug;
+    const filterPart = urlFilter ? `/${urlFilter}` : "";
+    navigate(`/${slug}${filterPart}`);
+  }, [matched.slug, urlFilter, navigate]);
+
+  /** Decks: subtype change → /decks/:subtype (clears filter+card). */
   const handleDecksSubtypeChange = useCallback(
     (subtype: string) => {
       navigate(`/decks/${toSlug(subtype)}`);
@@ -77,6 +125,26 @@ export default function Index() {
     (subtype: string, filterValue: string | null) => {
       if (!filterValue) navigate(`/decks/${toSlug(subtype)}`);
       else navigate(`/decks/${toSlug(subtype)}/${toSlug(filterValue)}`);
+    },
+    [navigate],
+  );
+
+  /** Decks: open card → /decks/:subtype/:filter/:id or /decks/:subtype/:id */
+  const handleDecksCardOpen = useCallback(
+    (subtype: string, filterValue: string | null, cardId: string) => {
+      const sub = toSlug(subtype);
+      if (filterValue) navigate(`/decks/${sub}/${toSlug(filterValue)}/${cardId}`);
+      else navigate(`/decks/${sub}/${cardId}`);
+    },
+    [navigate],
+  );
+
+  /** Decks: close card → /decks/:subtype/:filter or /decks/:subtype */
+  const handleDecksCardClose = useCallback(
+    (subtype: string, filterValue: string | null) => {
+      const sub = toSlug(subtype);
+      if (filterValue) navigate(`/decks/${sub}/${toSlug(filterValue)}`);
+      else navigate(`/decks/${sub}`);
     },
     [navigate],
   );
@@ -96,27 +164,64 @@ export default function Index() {
             scrollToRuleId={scrollToRuleId}
             onScrollHandled={() => setScrollToRuleId(null)}
             initialFilter={urlFilter}
+            initialCardId={urlCardId}
             onFilterChange={handleFilterChange}
+            onCardOpen={handleCardOpen}
+            onCardClose={handleCardClose}
           />
         ) : tab === "decks" ? (
           <DecksTab
-            initialSubtype={urlFilter}
-            initialFilter={urlSubFilter}
+            initialSubtype={urlSubtype}
+            initialFilter={urlDeckFilter}
+            initialCardId={urlCardId}
+            initialAmbiguous={urlDeckCardAmbiguous}
             onSubtypeChange={handleDecksSubtypeChange}
             onFilterChange={handleDecksFilterChange}
+            onCardOpen={handleDecksCardOpen}
+            onCardClose={handleDecksCardClose}
           />
         ) : tab === "scenarios" ? (
-          <ScenariosTab />
+          <ScenariosTab
+            initialCardId={urlCardId}
+            onCardOpen={handleCardOpen}
+            onCardClose={handleCardClose}
+          />
         ) : tab === "map_elements" ? (
-          <MapElementsTab initialFilter={urlFilter} onFilterChange={handleFilterChange} />
+          <MapElementsTab
+            initialFilter={urlFilter}
+            initialCardId={urlCardId}
+            onFilterChange={handleFilterChange}
+            onCardOpen={handleCardOpen}
+            onCardClose={handleCardClose}
+          />
         ) : tab === "global_events" ? (
-          <GlobalEventsTab />
+          <GlobalEventsTab
+            initialCardId={urlCardId}
+            onCardOpen={handleCardOpen}
+            onCardClose={handleCardClose}
+          />
         ) : tab === "units" ? (
-          <UnitsTab initialFilter={urlFilter} onFilterChange={handleFilterChange} />
+          <UnitsTab
+            initialFilter={urlFilter}
+            initialCardId={urlCardId}
+            onFilterChange={handleFilterChange}
+            onCardOpen={handleCardOpen}
+            onCardClose={handleCardClose}
+          />
         ) : tab === "towns" ? (
-          <TownsTab />
+          <TownsTab
+            initialCardId={urlCardId}
+            onCardOpen={handleCardOpen}
+            onCardClose={handleCardClose}
+          />
         ) : tab === "heroes" ? (
-          <HeroesTab initialFilter={urlFilter} onFilterChange={handleFilterChange} />
+          <HeroesTab
+            initialFilter={urlFilter}
+            initialCardId={urlCardId}
+            onFilterChange={handleFilterChange}
+            onCardOpen={handleCardOpen}
+            onCardClose={handleCardClose}
+          />
         ) : null}
       </div>
       <BackToTop />

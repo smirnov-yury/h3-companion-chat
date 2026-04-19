@@ -49,10 +49,13 @@ function levelStyle(level: string): string {
 interface Props {
   searchQuery?: string;
   initialFilter?: string;
+  initialCardId?: string;
   onFilterChange?: (filterValue: string | null) => void;
+  onCardOpen?: (currentFilter: string | null, cardId: string) => void;
+  onCardClose?: (currentFilter: string | null) => void;
 }
 
-export default function SpellsTab({ searchQuery = "", initialFilter, onFilterChange }: Props) {
+export default function SpellsTab({ searchQuery = "", initialFilter, initialCardId, onFilterChange, onCardOpen, onCardClose }: Props) {
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
   const [items, setItems] = useState<Spell[]>([]);
@@ -79,6 +82,17 @@ export default function SpellsTab({ searchQuery = "", initialFilter, onFilterCha
     setFilterSchool(next);
     onFilterChange?.(next === "all" ? null : next);
   };
+
+  // Auto-open card from URL
+  useEffect(() => {
+    if (!loaded || !initialCardId) return;
+    const found = items.find(i => i.id === initialCardId);
+    if (found) setSelected(found);
+  }, [loaded, initialCardId, items]);
+
+  const currentFilter = filterSchool === "all" ? null : filterSchool;
+  const openCard = (i: Spell) => { setSelected(i); onCardOpen?.(currentFilter, i.id); };
+  const closeCard = () => { setSelected(null); onCardClose?.(currentFilter); };
 
   const schools = ["all", ...Array.from(new Set(items.map(i => i.school).filter(Boolean))) as string[]];
   const afterSchool = filterSchool === "all" ? items : items.filter(i => i.school === filterSchool);
@@ -115,7 +129,7 @@ export default function SpellsTab({ searchQuery = "", initialFilter, onFilterCha
               {filtered.map((item) => {
                 const imgSrc = item.image ? `${STORAGE}/spells/${item.image}` : null;
                 return (
-                  <button key={item.id} onClick={() => setSelected(item)}
+                  <button key={item.id} onClick={() => openCard(item)}
                     className="flex flex-col rounded-xl border border-border bg-card overflow-hidden text-left hover:border-primary transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg cursor-pointer">
                     <div className="aspect-[5/7] w-full bg-muted flex items-center justify-center overflow-hidden relative rounded-lg">
                       {imgSrc
@@ -148,7 +162,7 @@ export default function SpellsTab({ searchQuery = "", initialFilter, onFilterCha
         </div>
       </div>
 
-      <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
+      <Dialog open={!!selected} onOpenChange={(o) => !o && closeCard()}>
         <CardDialogContent>
           {selected && (
             <>

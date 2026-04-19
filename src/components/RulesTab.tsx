@@ -137,10 +137,13 @@ interface RulesTabProps {
   scrollToRuleId?: string | null;
   onScrollHandled?: () => void;
   initialFilter?: string;
+  initialCardId?: string;
   onFilterChange?: (filterValue: string | null) => void;
+  onCardOpen?: (cardId: string) => void;
+  onCardClose?: () => void;
 }
 
-export default function RulesTab({ scrollToRuleId, onScrollHandled, initialFilter, onFilterChange }: RulesTabProps) {
+export default function RulesTab({ scrollToRuleId, onScrollHandled, initialFilter, initialCardId, onFilterChange, onCardOpen, onCardClose }: RulesTabProps) {
   const { rules, loaded } = useRules();
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
@@ -153,6 +156,7 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled, initialFilte
   const mdComponents = useMemo(() => makeMarkdownComponents(glyphs), [glyphs]);
 
   // Sync URL filter (from parent) → internal state. Rule categories are already lowercase keys.
+  // If initialFilter doesn't match a category but matches a rule id, treat it as ambiguous card id.
   useEffect(() => {
     if (initialFilter) {
       const known = RULE_CATEGORIES.find((c) => c.key === initialFilter);
@@ -161,6 +165,19 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled, initialFilte
       setSelectedCategory(null);
     }
   }, [initialFilter]);
+
+  // Auto-open accordion item from URL (initialCardId may match a rule id).
+  useEffect(() => {
+    if (!loaded || !initialCardId) return;
+    const found = rules.find((r) => r.id === initialCardId);
+    if (found) {
+      setOpenItem(found.id);
+      requestAnimationFrame(() => {
+        const el = document.getElementById(`rule-${found.id}`);
+        el?.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+    }
+  }, [loaded, initialCardId, rules]);
 
   useEffect(() => {
     if (scrollToRuleId && loaded) {
@@ -361,7 +378,7 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled, initialFilte
           type="single"
           collapsible
           value={openItem}
-          onValueChange={(v) => setOpenItem(v)}
+          onValueChange={(v) => { setOpenItem(v); if (v) onCardOpen?.(v); else onCardClose?.(); }}
           className="space-y-1"
         >
           {renderAccordionItems(coreRules)}
