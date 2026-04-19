@@ -76,7 +76,7 @@ export default function WarMachinesTab({ searchQuery = "", initialCardId, onCard
             {filtered.map((item) => {
               const imgSrc = item.image ? `${STORAGE}/war_machines/${item.image}` : null;
               return (
-                <button key={item.id} onClick={() => setSelected(item)}
+                <button key={item.id} onClick={() => openCard(item)}
                   className="flex flex-col rounded-xl border border-border bg-card overflow-hidden text-left hover:border-primary transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg cursor-pointer">
                   <div className="aspect-[5/7] w-full bg-muted flex items-center justify-center overflow-hidden relative rounded-lg">
                     {imgSrc
@@ -94,7 +94,7 @@ export default function WarMachinesTab({ searchQuery = "", initialCardId, onCard
         )}
       </div>
 
-      <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
+      <Dialog open={!!selected} onOpenChange={(o) => !o && closeCard()}>
         <CardDialogContent>
           {selected && (() => {
             // Replace plain "gold" word in cost strings with the <gold> glyph token.

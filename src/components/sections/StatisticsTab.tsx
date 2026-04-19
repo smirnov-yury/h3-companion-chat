@@ -121,7 +121,7 @@ export default function StatisticsTab({ searchQuery = "", initialCardId, onCardO
               {filtered.map((item) => {
                 const imgSrc = item.image ? `${STORAGE}/statistics/${item.image}` : null;
                 return (
-                  <div key={item.id} onClick={() => setSelected(item)}
+                  <div key={item.id} onClick={() => openCard(item)}
                     className="relative aspect-[5/7] bg-muted rounded-lg overflow-hidden cursor-pointer transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg">
                     {imgSrc
                       ? <img src={imgSrc} alt={item.name_en || ""} className="absolute inset-0 w-full h-full object-cover rounded-lg" />
@@ -149,7 +149,7 @@ export default function StatisticsTab({ searchQuery = "", initialCardId, onCardO
         </div>
       </div>
 
-      <Dialog open={!!selected} onOpenChange={(o) => !o && setSelected(null)}>
+      <Dialog open={!!selected} onOpenChange={(o) => !o && closeCard()}>
         <CardDialogContent>
           {selected && (
             <>
