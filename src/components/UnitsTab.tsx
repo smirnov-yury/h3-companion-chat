@@ -7,6 +7,9 @@ import { Dialog } from '@/components/ui/dialog';
 import { CardDialogContent } from '@/components/ui/card-dialog';
 import { Swords, Shield, Heart, Zap, Search, X, ChevronDown, SlidersHorizontal } from 'lucide-react';
 import { EmptyState, SkeletonGrid } from '@/components/ui/empty-state';
+import { useEntityLinkHandler as useEntityLinkHandlerImported } from '@/hooks/useEntityLinkHandler';
+import TagBadges from '@/components/TagBadges';
+import SeeAlso from '@/components/SeeAlso';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 const STORAGE = `${SUPABASE_URL}/storage/v1/object/public/component-media`;
@@ -97,6 +100,7 @@ interface UnitsTabProps {
 
 export default function UnitsTab({ initialFilter, initialCardId, initialSearch, onFilterChange, onCardOpen, onCardClose }: UnitsTabProps = {}) {
   const { lang } = useLang();
+  const handleEntityClick = useEntityLinkHandlerImported();
   const [units, setUnits] = useState<UnitStat[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
@@ -547,8 +551,9 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
                   </div>
                 </div>
 
+                <TagBadges entityType="unit" entityId={u.id} lang={lang as "EN" | "RU"} />
                 {/* BOTTOM: Scrollable content */}
-                <div className="flex-1 overflow-y-auto px-4 pb-4 pt-0">
+                <div className="flex-1 overflow-y-auto px-4 pb-4 pt-0" onClick={handleEntityClick}>
                   {abilities && (
                     <div className="text-sm leading-relaxed mt-0">
                       <GlyphText text={abilities} />
@@ -561,6 +566,7 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
                     </div>
                   )}
                 </div>
+                <SeeAlso entityType="unit" entityId={u.id} lang={lang as "EN" | "RU"} />
               </>
             );
           })()}
