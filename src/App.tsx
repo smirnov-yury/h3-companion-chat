@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { HelmetProvider } from "react-helmet-async";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -12,15 +13,18 @@ import Index from "./pages/Index.tsx";
 import Admin from "./pages/Admin.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import PWAUpdateBanner from "./components/PWAUpdateBanner";
+import SEOMeta from "./components/SEOMeta";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
+    <HelmetProvider>
     <LanguageProvider>
     <GlyphsProvider>
     <RulesProvider>
     <TooltipProvider>
+      <SEOMeta />
       <Toaster />
       <Sonner />
       <PWAUpdateBanner />
@@ -38,8 +42,8 @@ const App = () => (
     </RulesProvider>
     </GlyphsProvider>
     </LanguageProvider>
+    </HelmetProvider>
   </QueryClientProvider>
 );
 
 export default App;
-

@@ -25,6 +25,7 @@ import { useLang } from "@/context/LanguageContext";
 import { findSectionByTabId, type SectionDef } from "@/config/sectionRegistry";
 import type { TabId } from "@/components/NavDrawer";
 import { checkForPWAUpdate } from "@/pwa/registerSW";
+import SEOMeta from "@/components/SEOMeta";
 
 interface FeatureRow {
   icon: LucideIcon;
@@ -74,6 +75,7 @@ export default function AboutPage() {
 
   return (
     <div className="flex flex-col h-dvh">
+      <SEOMeta routeKey="about" />
       <TopAppBar
         title={isRu ? "О приложении" : "About"}
         onMenuClick={() => setDrawerOpen(true)}

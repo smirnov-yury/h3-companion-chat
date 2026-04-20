@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import TopAppBar from "@/components/TopAppBar";
 import NavDrawer from "@/components/NavDrawer";
 import GlobalSearch from "@/components/GlobalSearch";
+import SEOMeta from "@/components/SEOMeta";
 import { useLang } from "@/context/LanguageContext";
 import { useNavigate } from "react-router-dom";
 import { findSectionByTabId, type SectionDef } from "@/config/sectionRegistry";
@@ -20,6 +21,7 @@ export default function HomePage() {
 
   return (
     <div className="flex flex-col h-dvh">
+      <SEOMeta routeKey="home" />
       <TopAppBar
         title={lang === "RU" ? "Главная" : "Home"}
         onMenuClick={() => setDrawerOpen(true)}
