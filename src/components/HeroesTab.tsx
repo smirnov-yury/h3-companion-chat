@@ -7,7 +7,6 @@ import { renderGlyphs } from "@/utils/renderGlyphs";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { EmptyState, SkeletonGrid } from "@/components/ui/empty-state";
 import { useEntityLinkHandler } from "@/hooks/useEntityLinkHandler";
-import TagBadges from "@/components/TagBadges";
 import SeeAlso from "@/components/SeeAlso";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
@@ -233,8 +232,6 @@ export default function HeroesTab({ initialFilter, initialCardId, initialSearch,
                 <span className="text-4xl font-bold text-muted-foreground/40">{heroInitials(selected.name_en)}</span>
               </div>
             )}
-
-            <TagBadges entityType="hero" entityId={selected.id} lang={lang as "EN" | "RU"} />
 
             <div onClick={handleEntityClick} className="space-y-3">
               <p className="text-lg font-semibold text-foreground">{name(selected)}</p>
