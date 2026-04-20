@@ -11,6 +11,7 @@ import AboutPage from "./pages/AboutPage.tsx";
 import Index from "./pages/Index.tsx";
 import Admin from "./pages/Admin.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import PWAUpdateBanner from "./components/PWAUpdateBanner";
 
 const queryClient = new QueryClient();
 
@@ -22,6 +23,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      <PWAUpdateBanner />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<HomePage />} />
