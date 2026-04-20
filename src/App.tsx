@@ -7,6 +7,7 @@ import { RulesProvider } from "./context/RulesContext";
 import { LanguageProvider } from "./context/LanguageContext";
 import { GlyphsProvider } from "./context/GlyphsContext";
 import HomePage from "./pages/HomePage.tsx";
+import AboutPage from "./pages/AboutPage.tsx";
 import Index from "./pages/Index.tsx";
 import Admin from "./pages/Admin.tsx";
 import NotFound from "./pages/NotFound.tsx";
