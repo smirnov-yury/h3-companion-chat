@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import TopAppBar from "@/components/TopAppBar";
 import NavDrawer from "@/components/NavDrawer";
 import GlobalSearch from "@/components/GlobalSearch";
@@ -12,6 +12,8 @@ import type { TabId } from "@/components/NavDrawer";
 export default function HomePage() {
   const { lang } = useLang();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const initialQuery = searchParams.get("q") ?? "";
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const handleTabChange = (newTab: TabId) => {
@@ -47,7 +49,7 @@ export default function HomePage() {
             </p>
           </div>
           <div className="w-full max-w-2xl">
-            <GlobalSearch mode="inline" autoFocus />
+            <GlobalSearch mode="inline" autoFocus initialQuery={initialQuery} />
             <div className="mt-4 text-center">
               <Link
                 to="/about"
