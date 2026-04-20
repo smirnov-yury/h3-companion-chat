@@ -6,6 +6,9 @@ import { useGlyphs } from "@/context/GlyphsContext";
 import { renderGlyphs } from "@/utils/renderGlyphs";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { EmptyState, SkeletonGrid } from "@/components/ui/empty-state";
+import { useEntityLinkHandler } from "@/hooks/useEntityLinkHandler";
+import TagBadges from "@/components/TagBadges";
+import SeeAlso from "@/components/SeeAlso";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 const STORAGE = `${SUPABASE_URL}/storage/v1/object/public/component-media`;
@@ -58,6 +61,7 @@ interface HeroesTabProps {
 export default function HeroesTab({ initialFilter, initialCardId, initialSearch, onFilterChange, onCardOpen, onCardClose }: HeroesTabProps = {}) {
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
+  const handleEntityClick = useEntityLinkHandler();
   const [heroes, setHeroes] = useState<Hero[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [faction, setFaction] = useState("all");
