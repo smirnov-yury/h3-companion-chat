@@ -510,6 +510,51 @@ export default function GlobalSearch({ mode, onClose, initialQuery = "", autoFoc
     </div>
   );
 
+  // Map section.key → entity_type used in entity_tags
+  const SECTION_TO_ENTITY_TYPE: Record<string, string> = {
+    heroes: "hero", units: "unit", artifacts: "artifact", spells: "spell",
+    abilities: "ability", rules: "rule",
+  };
+
+  const filteredResults = tagEntityKeys
+    ? results
+        .map((s) => {
+          const et = SECTION_TO_ENTITY_TYPE[s.key];
+          if (!et) return { ...s, hits: [], total: 0 };
+          const hits = s.hits.filter((h) => tagEntityKeys.has(`${et}:${h.id}`));
+          return { ...s, hits, total: hits.length };
+        })
+        .filter((s) => s.hits.length > 0)
+    : results;
+
+  const tagChipsBlock = tagOptions.length > 0 ? (
+    <div className="mt-2 flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+      {activeTagId && (
+        <button
+          onClick={() => setActiveTagId(null)}
+          className="shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded-full text-[11px] font-medium bg-muted text-muted-foreground hover:bg-muted/70"
+        >
+          <X size={11} />{lang === "RU" ? "Сбросить" : "Clear"}
+        </button>
+      )}
+      {tagOptions.map((t) => {
+        const name = lang === "RU" ? t.name_ru || t.name_en : t.name_en;
+        const active = activeTagId === t.id;
+        return (
+          <button
+            key={t.id}
+            onClick={() => setActiveTagId(active ? null : t.id)}
+            className={`shrink-0 px-2.5 py-1 rounded-full text-[11px] font-medium transition-colors whitespace-nowrap ${
+              active ? "border border-[#E1BB3A] text-[#E1BB3A] bg-[#E1BB3A]/10" : "bg-muted text-muted-foreground hover:bg-muted/70"
+            }`}
+          >
+            {name}
+          </button>
+        );
+      })}
+    </div>
+  ) : null;
+
   const resultsBlock = (
     <div className="mt-4 space-y-5">
       {showHint && (
@@ -522,7 +567,7 @@ export default function GlobalSearch({ mode, onClose, initialQuery = "", autoFoc
           {lang === "RU" ? "Ничего не найдено" : "Nothing found"}
         </p>
       )}
-      {results.map((section) => {
+      {filteredResults.map((section) => {
         const visible = section.hits.slice(0, VISIBLE_LIMIT);
         const remainder = section.total - visible.length;
         const sectionLabel = lang === "RU" ? section.labelRU : section.labelEN;
