@@ -19,14 +19,10 @@ export default function TopAppBar({ title, icon: Icon, onMenuClick }: TopAppBarP
         <Button variant="ghost" size="icon" onClick={onMenuClick} aria-label="Open menu" className="lg:hidden h-8 w-8">
           <Menu className="w-5 h-5" />
         </Button>
-        <button
-          onClick={() => navigate("/")}
-          className="flex items-center gap-2 min-w-0 cursor-pointer hover:text-primary transition-colors"
-          aria-label="Go to home"
-        >
+        <div className="flex items-center gap-2 min-w-0">
           {Icon && <Icon className="w-4 h-4 shrink-0" />}
-          <span className="text-sm font-semibold truncate">{title}</span>
-        </button>
+          <h1 className="text-sm font-semibold truncate">{title}</h1>
+        </div>
         <Button
           variant="ghost"
           size="icon"
