@@ -6,6 +6,9 @@ import { useGlyphs } from "@/context/GlyphsContext";
 import { renderGlyphs } from "@/utils/renderGlyphs";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { EmptyState, SkeletonGrid } from "@/components/ui/empty-state";
+import { useEntityLinkHandler } from "@/hooks/useEntityLinkHandler";
+import TagBadges from "@/components/TagBadges";
+import SeeAlso from "@/components/SeeAlso";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 const STORAGE = `${SUPABASE_URL}/storage/v1/object/public/component-media`;
@@ -58,6 +61,7 @@ interface HeroesTabProps {
 export default function HeroesTab({ initialFilter, initialCardId, initialSearch, onFilterChange, onCardOpen, onCardClose }: HeroesTabProps = {}) {
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
+  const handleEntityClick = useEntityLinkHandler();
   const [heroes, setHeroes] = useState<Hero[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [faction, setFaction] = useState("all");
@@ -230,67 +234,73 @@ export default function HeroesTab({ initialFilter, initialCardId, initialSearch,
               </div>
             )}
 
-            <p className="text-lg font-semibold text-foreground">{name(selected)}</p>
-            {cls(selected) && <p className="text-sm text-muted-foreground -mt-3" dangerouslySetInnerHTML={{ __html: renderGlyphs(cls(selected), glyphs) }} />}
+            <TagBadges entityType="hero" entityId={selected.id} lang={lang as "EN" | "RU"} />
 
-            <div className="flex gap-2">
-              {stats(selected).map(s => (
-                <div key={s.label} className="flex-1 bg-muted rounded text-center text-xs py-1.5">
-                  <span className="text-muted-foreground">{s.label}</span>{" "}
-                  <span className="font-bold text-foreground">{s.value ?? "–"}</span>
+            <div onClick={handleEntityClick} className="space-y-3">
+              <p className="text-lg font-semibold text-foreground">{name(selected)}</p>
+              {cls(selected) && <p className="text-sm text-muted-foreground -mt-3" dangerouslySetInnerHTML={{ __html: renderGlyphs(cls(selected), glyphs) }} />}
+
+              <div className="flex gap-2">
+                {stats(selected).map(s => (
+                  <div key={s.label} className="flex-1 bg-muted rounded text-center text-xs py-1.5">
+                    <span className="text-muted-foreground">{s.label}</span>{" "}
+                    <span className="font-bold text-foreground">{s.value ?? "–"}</span>
+                  </div>
+                ))}
+              </div>
+
+              {specialty(selected) && (
+                <div>
+                  <p className="text-xs font-semibold text-foreground mb-1">{lang === "RU" ? "Специальность" : "Specialty"}</p>
+                  <div className="text-sm text-muted-foreground" dangerouslySetInnerHTML={{ __html: renderGlyphs(specialty(selected), glyphs) }} />
                 </div>
-              ))}
+              )}
+
+              {levels(selected).length > 0 && (
+                <div>
+                  {levels(selected).length > 1 && (
+                    <div className="flex gap-1.5 mb-2">
+                      {levels(selected).map((lvl, i) => (
+                        <button
+                          key={i}
+                          onClick={() => setSpecialtyTab(i)}
+                          className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                            specialtyTab === i ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-muted/70"
+                          }`}
+                        >
+                          {lvl.level}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                  {(() => {
+                    const lvl = levels(selected)[levels(selected).length > 1 ? specialtyTab : 0];
+                    if (!lvl) return null;
+                    return (
+                      <div className="bg-muted rounded-lg p-3">
+                        {lvl.image && (
+                          <img
+                            src={`${STORAGE}/heroes/${lvl.image}`}
+                            alt={lvl.level}
+                            className="w-full object-contain"
+                            onError={e => (e.currentTarget.style.display = "none")}
+                          />
+                        )}
+                        {(lang === "RU" && lvl.effect_ru ? lvl.effect_ru : lvl.effect_en) && (
+                          <div className="text-xs text-muted-foreground mt-1" dangerouslySetInnerHTML={{ __html: renderGlyphs(lang === "RU" && lvl.effect_ru ? lvl.effect_ru : lvl.effect_en, glyphs) }} />
+                        )}
+                      </div>
+                    );
+                  })()}
+                </div>
+              )}
+
+              {notes(selected) && (
+                <div className="text-xs text-muted-foreground" dangerouslySetInnerHTML={{ __html: renderGlyphs(notes(selected), glyphs) }} />
+              )}
             </div>
 
-            {specialty(selected) && (
-              <div>
-                <p className="text-xs font-semibold text-foreground mb-1">{lang === "RU" ? "Специальность" : "Specialty"}</p>
-                <div className="text-sm text-muted-foreground" dangerouslySetInnerHTML={{ __html: renderGlyphs(specialty(selected), glyphs) }} />
-              </div>
-            )}
-
-            {levels(selected).length > 0 && (
-              <div>
-                {levels(selected).length > 1 && (
-                  <div className="flex gap-1.5 mb-2">
-                    {levels(selected).map((lvl, i) => (
-                      <button
-                        key={i}
-                        onClick={() => setSpecialtyTab(i)}
-                        className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                          specialtyTab === i ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-muted/70"
-                        }`}
-                      >
-                        {lvl.level}
-                      </button>
-                    ))}
-                  </div>
-                )}
-                {(() => {
-                  const lvl = levels(selected)[levels(selected).length > 1 ? specialtyTab : 0];
-                  if (!lvl) return null;
-                  return (
-                    <div className="bg-muted rounded-lg p-3">
-                      {lvl.image && (
-                        <img
-                          src={`${STORAGE}/heroes/${lvl.image}`}
-                          alt={lvl.level}
-                          className="w-full object-contain"
-                          onError={e => (e.currentTarget.style.display = "none")}
-                        />
-                      )}
-                      {(lang === "RU" && lvl.effect_ru ? lvl.effect_ru : lvl.effect_en) && (
-                        <div className="text-xs text-muted-foreground mt-1" dangerouslySetInnerHTML={{ __html: renderGlyphs(lang === "RU" && lvl.effect_ru ? lvl.effect_ru : lvl.effect_en, glyphs) }} />
-                      )}
-                    </div>
-                  );
-                })()}
-              </div>
-            )}
-
-            {notes(selected) && (
-              <div className="text-xs text-muted-foreground" dangerouslySetInnerHTML={{ __html: renderGlyphs(notes(selected), glyphs) }} />
-            )}
+            <SeeAlso entityType="hero" entityId={selected.id} lang={lang as "EN" | "RU"} />
           </DialogContent>
         )}
       </Dialog>

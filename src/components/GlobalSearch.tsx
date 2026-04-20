@@ -395,6 +395,8 @@ async function searchAll(query: string, lang: Lang): Promise<SectionResult[]> {
   return sections.filter((s) => s.hits.length > 0);
 }
 
+interface TagOption { id: string; name_en: string; name_ru: string; category: string }
+
 export default function GlobalSearch({ mode, onClose, initialQuery = "", autoFocus }: GlobalSearchProps) {
   const navigate = useNavigate();
   const { lang } = useLang();
@@ -402,8 +404,28 @@ export default function GlobalSearch({ mode, onClose, initialQuery = "", autoFoc
   const [debounced, setDebounced] = useState(initialQuery);
   const [results, setResults] = useState<SectionResult[]>([]);
   const [loading, setLoading] = useState(false);
+  const [tagOptions, setTagOptions] = useState<TagOption[]>([]);
+  const [activeTagId, setActiveTagId] = useState<string | null>(null);
+  const [tagEntityKeys, setTagEntityKeys] = useState<Set<string> | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const requestId = useRef(0);
+
+  // Load all tags once
+  useEffect(() => {
+    supabase.from("tags").select("id, name_en, name_ru, category").order("sort_order").then(({ data }) => {
+      if (data) setTagOptions(data as TagOption[]);
+    });
+  }, []);
+
+  // Resolve which entities have the active tag
+  useEffect(() => {
+    if (!activeTagId) { setTagEntityKeys(null); return; }
+    supabase.from("entity_tags").select("entity_type, entity_id").eq("tag_id", activeTagId).then(({ data }) => {
+      const set = new Set<string>();
+      (data ?? []).forEach((r: { entity_type: string; entity_id: string }) => set.add(`${r.entity_type}:${r.entity_id}`));
+      setTagEntityKeys(set);
+    });
+  }, [activeTagId]);
 
   // Auto focus
   useEffect(() => {
@@ -488,6 +510,51 @@ export default function GlobalSearch({ mode, onClose, initialQuery = "", autoFoc
     </div>
   );
 
+  // Map section.key → entity_type used in entity_tags
+  const SECTION_TO_ENTITY_TYPE: Record<string, string> = {
+    heroes: "hero", units: "unit", artifacts: "artifact", spells: "spell",
+    abilities: "ability", rules: "rule",
+  };
+
+  const filteredResults = tagEntityKeys
+    ? results
+        .map((s) => {
+          const et = SECTION_TO_ENTITY_TYPE[s.key];
+          if (!et) return { ...s, hits: [], total: 0 };
+          const hits = s.hits.filter((h) => tagEntityKeys.has(`${et}:${h.id}`));
+          return { ...s, hits, total: hits.length };
+        })
+        .filter((s) => s.hits.length > 0)
+    : results;
+
+  const tagChipsBlock = tagOptions.length > 0 ? (
+    <div className="mt-2 flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+      {activeTagId && (
+        <button
+          onClick={() => setActiveTagId(null)}
+          className="shrink-0 inline-flex items-center gap-1 px-2 py-1 rounded-full text-[11px] font-medium bg-muted text-muted-foreground hover:bg-muted/70"
+        >
+          <X size={11} />{lang === "RU" ? "Сбросить" : "Clear"}
+        </button>
+      )}
+      {tagOptions.map((t) => {
+        const name = lang === "RU" ? t.name_ru || t.name_en : t.name_en;
+        const active = activeTagId === t.id;
+        return (
+          <button
+            key={t.id}
+            onClick={() => setActiveTagId(active ? null : t.id)}
+            className={`shrink-0 px-2.5 py-1 rounded-full text-[11px] font-medium transition-colors whitespace-nowrap ${
+              active ? "border border-[#E1BB3A] text-[#E1BB3A] bg-[#E1BB3A]/10" : "bg-muted text-muted-foreground hover:bg-muted/70"
+            }`}
+          >
+            {name}
+          </button>
+        );
+      })}
+    </div>
+  ) : null;
+
   const resultsBlock = (
     <div className="mt-4 space-y-5">
       {showHint && (
@@ -500,7 +567,7 @@ export default function GlobalSearch({ mode, onClose, initialQuery = "", autoFoc
           {lang === "RU" ? "Ничего не найдено" : "Nothing found"}
         </p>
       )}
-      {results.map((section) => {
+      {filteredResults.map((section) => {
         const visible = section.hits.slice(0, VISIBLE_LIMIT);
         const remainder = section.total - visible.length;
         const sectionLabel = lang === "RU" ? section.labelRU : section.labelEN;
@@ -573,7 +640,7 @@ export default function GlobalSearch({ mode, onClose, initialQuery = "", autoFoc
           </button>
         </div>
         <div className="flex-1 overflow-y-auto px-3 pb-6">
-          <div className="max-w-2xl mx-auto">{resultsBlock}</div>
+          <div className="max-w-2xl mx-auto">{tagChipsBlock}{resultsBlock}</div>
         </div>
       </div>
     );
@@ -583,6 +650,7 @@ export default function GlobalSearch({ mode, onClose, initialQuery = "", autoFoc
   return (
     <div className="w-full">
       {inputBlock}
+      {tagChipsBlock}
       {resultsBlock}
     </div>
   );

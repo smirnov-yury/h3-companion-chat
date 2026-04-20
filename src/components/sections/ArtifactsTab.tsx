@@ -6,6 +6,9 @@ import { renderGlyphs } from "@/utils/renderGlyphs";
 import { Dialog } from "@/components/ui/dialog";
 import { CardDialogContent } from "@/components/ui/card-dialog";
 import { EmptyState, SkeletonGrid } from "@/components/ui/empty-state";
+import { useEntityLinkHandler } from "@/hooks/useEntityLinkHandler";
+import TagBadges from "@/components/TagBadges";
+import SeeAlso from "@/components/SeeAlso";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 const STORAGE = `${SUPABASE_URL}/storage/v1/object/public/component-media`;
@@ -47,6 +50,7 @@ interface Props {
 export default function ArtifactsTab({ searchQuery = "", initialFilter, initialCardId, onFilterChange, onCardOpen, onCardClose }: Props) {
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
+  const handleEntityClick = useEntityLinkHandler();
   const [items, setItems] = useState<Artifact[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [selected, setSelected] = useState<Artifact | null>(null);
@@ -155,11 +159,13 @@ export default function ArtifactsTab({ searchQuery = "", initialFilter, initialC
                   )}
                 </div>
               )}
-              <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
+              <TagBadges entityType="artifact" entityId={selected.id} lang={lang as "EN" | "RU"} />
+              <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3" onClick={handleEntityClick}>
                 <h2 className="text-lg font-semibold leading-tight pr-8">{name(selected)}</h2>
                 {selected.effect_en && <div><p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Эффект" : "Effect"}</p><p className="text-xs text-muted-foreground whitespace-pre-line" dangerouslySetInnerHTML={{ __html: renderGlyphs(lang === "RU" ? (selected.effect_ru || selected.effect_en) : selected.effect_en, glyphs) }} /></div>}
                 {selected.description_en && <div><p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Описание" : "Description"}</p><p className="text-xs text-muted-foreground whitespace-pre-line" dangerouslySetInnerHTML={{ __html: renderGlyphs(lang === "RU" ? (selected.description_ru || selected.description_en) : selected.description_en, glyphs) }} /></div>}
               </div>
+              <SeeAlso entityType="artifact" entityId={selected.id} lang={lang as "EN" | "RU"} />
             </>
           )}
         </CardDialogContent>

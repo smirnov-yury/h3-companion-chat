@@ -34,6 +34,8 @@ const TIER_CLASSES: Record<string, string> = {
   azure: "glyph-tier-azure",
 };
 
+const ENTITY_LINK_TYPES = new Set(["spell", "ability", "artifact", "unit", "hero", "rule"]);
+
 export function renderGlyphs(text: string | null | undefined, glyphs: GlyphMap): string {
   if (!text) return "";
   // Escape HTML first to prevent injection from DB content
@@ -41,8 +43,23 @@ export function renderGlyphs(text: string | null | undefined, glyphs: GlyphMap):
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;");
+
+  // Inline entity links: [Display Text](type:id) — parsed BEFORE glyph tokens.
+  // Display text may contain anything except `]`. Type must be in the allowed set.
+  const withLinks = escaped.replace(
+    /\[([^\]]+)\]\(([a-zA-Z]+):([A-Za-z0-9_\-:.]+)\)/g,
+    (match, display: string, type: string, id: string) => {
+      const t = type.toLowerCase();
+      if (!ENTITY_LINK_TYPES.has(t)) return match;
+      const safeDisplay = display;
+      const safeType = t.replace(/"/g, "");
+      const safeId = id.replace(/"/g, "");
+      return `<span class="entity-link" data-entity-type="${safeType}" data-entity-id="${safeId}" style="color:#E1BB3A;cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px;">${safeDisplay}</span>`;
+    },
+  );
+
   // Match tokens of the form &lt;name&gt; (after escaping)
-  return escaped.replace(/&lt;([a-zA-Z0-9_]+)&gt;/g, (match, token: string) => {
+  return withLinks.replace(/&lt;([a-zA-Z0-9_]+)&gt;/g, (match, token: string) => {
     const key = token.toLowerCase();
     // 1. Inline SVG (crisp, scales with font-size)
     if (GLYPH_SVGS[key]) {
