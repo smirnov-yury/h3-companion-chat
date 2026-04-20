@@ -46,6 +46,14 @@ export default function HomePage() {
           </div>
           <div className="w-full max-w-2xl">
             <GlobalSearch mode="inline" autoFocus />
+            <div className="mt-4 text-center">
+              <Link
+                to="/about"
+                className="text-sm text-muted-foreground hover:text-primary transition-colors"
+              >
+                {lang === "RU" ? "О приложении" : "About"}
+              </Link>
+            </div>
           </div>
         </div>
       </main>
