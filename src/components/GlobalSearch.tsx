@@ -395,6 +395,8 @@ async function searchAll(query: string, lang: Lang): Promise<SectionResult[]> {
   return sections.filter((s) => s.hits.length > 0);
 }
 
+interface TagOption { id: string; name_en: string; name_ru: string; category: string }
+
 export default function GlobalSearch({ mode, onClose, initialQuery = "", autoFocus }: GlobalSearchProps) {
   const navigate = useNavigate();
   const { lang } = useLang();
@@ -402,8 +404,28 @@ export default function GlobalSearch({ mode, onClose, initialQuery = "", autoFoc
   const [debounced, setDebounced] = useState(initialQuery);
   const [results, setResults] = useState<SectionResult[]>([]);
   const [loading, setLoading] = useState(false);
+  const [tagOptions, setTagOptions] = useState<TagOption[]>([]);
+  const [activeTagId, setActiveTagId] = useState<string | null>(null);
+  const [tagEntityKeys, setTagEntityKeys] = useState<Set<string> | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const requestId = useRef(0);
+
+  // Load all tags once
+  useEffect(() => {
+    supabase.from("tags").select("id, name_en, name_ru, category").order("sort_order").then(({ data }) => {
+      if (data) setTagOptions(data as TagOption[]);
+    });
+  }, []);
+
+  // Resolve which entities have the active tag
+  useEffect(() => {
+    if (!activeTagId) { setTagEntityKeys(null); return; }
+    supabase.from("entity_tags").select("entity_type, entity_id").eq("tag_id", activeTagId).then(({ data }) => {
+      const set = new Set<string>();
+      (data ?? []).forEach((r: { entity_type: string; entity_id: string }) => set.add(`${r.entity_type}:${r.entity_id}`));
+      setTagEntityKeys(set);
+    });
+  }, [activeTagId]);
 
   // Auto focus
   useEffect(() => {
