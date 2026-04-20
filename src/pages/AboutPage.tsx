@@ -49,10 +49,27 @@ export default function AboutPage() {
   const navigate = useNavigate();
   const isRu = lang === "RU";
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [checking, setChecking] = useState(false);
 
   const handleTabChange = (newTab: TabId) => {
     const def: SectionDef | undefined = findSectionByTabId(newTab);
     if (def) navigate(`/${def.slug}`);
+  };
+
+  const handleCheckUpdate = async () => {
+    setChecking(true);
+    const result = await checkForPWAUpdate();
+    setChecking(false);
+    if (result === "current") {
+      toast(isRu ? "У вас последняя версия" : "You have the latest version");
+    } else if (result === "unavailable") {
+      toast(
+        isRu
+          ? "Обновления недоступны в режиме предпросмотра"
+          : "Updates unavailable in preview mode"
+      );
+    }
+    // "updated" → banner appears automatically
   };
 
   return (
