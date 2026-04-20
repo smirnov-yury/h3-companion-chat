@@ -563,8 +563,8 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
                       <GlyphText text={notes} />
                     </div>
                   )}
+                  <SeeAlso entityType="unit" entityId={u.id} lang={lang as "EN" | "RU"} />
                 </div>
-                <SeeAlso entityType="unit" entityId={u.id} lang={lang as "EN" | "RU"} />
               </>
             );
           })()}
