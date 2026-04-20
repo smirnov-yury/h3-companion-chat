@@ -14,13 +14,17 @@ import {
   Coffee,
   Mail,
   Smartphone,
+  RefreshCw,
   type LucideIcon,
 } from "lucide-react";
+import { toast } from "sonner";
 import TopAppBar from "@/components/TopAppBar";
 import NavDrawer from "@/components/NavDrawer";
+import { Button } from "@/components/ui/button";
 import { useLang } from "@/context/LanguageContext";
 import { findSectionByTabId, type SectionDef } from "@/config/sectionRegistry";
 import type { TabId } from "@/components/NavDrawer";
+import { checkForPWAUpdate } from "@/pwa/registerSW";
 
 interface FeatureRow {
   icon: LucideIcon;
@@ -186,6 +190,17 @@ export default function AboutPage() {
                   )}
                 </ol>
               </div>
+            </div>
+            <div className="flex justify-center pt-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleCheckUpdate}
+                disabled={checking}
+              >
+                <RefreshCw className={`w-4 h-4 ${checking ? "animate-spin" : ""}`} />
+                {isRu ? "Проверить обновления" : "Check for updates"}
+              </Button>
             </div>
           </section>
 
