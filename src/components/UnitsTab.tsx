@@ -8,7 +8,6 @@ import { CardDialogContent } from '@/components/ui/card-dialog';
 import { Swords, Shield, Heart, Zap, Search, X, ChevronDown, SlidersHorizontal } from 'lucide-react';
 import { EmptyState, SkeletonGrid } from '@/components/ui/empty-state';
 import { useEntityLinkHandler as useEntityLinkHandlerImported } from '@/hooks/useEntityLinkHandler';
-import TagBadges from '@/components/TagBadges';
 import SeeAlso from '@/components/SeeAlso';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
@@ -551,7 +550,6 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
                   </div>
                 </div>
 
-                <TagBadges entityType="unit" entityId={u.id} lang={lang as "EN" | "RU"} />
                 {/* BOTTOM: Scrollable content */}
                 <div className="flex-1 overflow-y-auto px-4 pb-4 pt-0" onClick={handleEntityClick}>
                   {abilities && (

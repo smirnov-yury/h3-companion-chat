@@ -7,7 +7,6 @@ import { Dialog } from "@/components/ui/dialog";
 import { CardDialogContent } from "@/components/ui/card-dialog";
 import { EmptyState, SkeletonGrid } from "@/components/ui/empty-state";
 import { useEntityLinkHandler } from "@/hooks/useEntityLinkHandler";
-import TagBadges from "@/components/TagBadges";
 import SeeAlso from "@/components/SeeAlso";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
@@ -109,7 +108,6 @@ export default function AbilitiesTab({ searchQuery = "", initialCardId, onCardOp
                   <img src={`${STORAGE}/abilities/${selected.image_regular}`} alt={selected.name_en} className="w-full max-h-[280px] object-contain" />
                 </div>
               )}
-              <TagBadges entityType="ability" entityId={selected.id} lang={lang as "EN" | "RU"} />
               <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3" onClick={handleEntityClick}>
                 <h2 className="text-lg font-semibold leading-tight pr-8">{name(selected)}</h2>
                 {(lang === "RU" ? selected.effect_ru : selected.effect_en) && (
