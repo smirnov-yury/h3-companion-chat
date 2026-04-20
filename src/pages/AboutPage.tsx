@@ -75,6 +75,7 @@ export default function AboutPage() {
 
   return (
     <div className="flex flex-col h-dvh">
+      <SEOMeta routeKey="about" />
       <TopAppBar
         title={isRu ? "О приложении" : "About"}
         onMenuClick={() => setDrawerOpen(true)}
