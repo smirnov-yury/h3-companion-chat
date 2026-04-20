@@ -251,6 +251,65 @@ export type Database = {
         }
         Relationships: []
       }
+      entity_links: {
+        Row: {
+          context_text: string | null
+          from_id: string
+          from_type: string
+          id: number
+          link_type: string
+          sort_order: number | null
+          to_id: string
+          to_type: string
+        }
+        Insert: {
+          context_text?: string | null
+          from_id: string
+          from_type: string
+          id?: number
+          link_type: string
+          sort_order?: number | null
+          to_id: string
+          to_type: string
+        }
+        Update: {
+          context_text?: string | null
+          from_id?: string
+          from_type?: string
+          id?: number
+          link_type?: string
+          sort_order?: number | null
+          to_id?: string
+          to_type?: string
+        }
+        Relationships: []
+      }
+      entity_tags: {
+        Row: {
+          entity_id: string
+          entity_type: string
+          tag_id: string
+        }
+        Insert: {
+          entity_id: string
+          entity_type: string
+          tag_id: string
+        }
+        Update: {
+          entity_id?: string
+          entity_type?: string
+          tag_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "entity_tags_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "tags"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       events: {
         Row: {
           effect_en: string | null
@@ -950,6 +1009,30 @@ export type Database = {
           notes_ru?: string | null
           sort_order?: number | null
           stat_type?: string | null
+        }
+        Relationships: []
+      }
+      tags: {
+        Row: {
+          category: string
+          id: string
+          name_en: string
+          name_ru: string
+          sort_order: number | null
+        }
+        Insert: {
+          category: string
+          id: string
+          name_en: string
+          name_ru: string
+          sort_order?: number | null
+        }
+        Update: {
+          category?: string
+          id?: string
+          name_en?: string
+          name_ru?: string
+          sort_order?: number | null
         }
         Relationships: []
       }
