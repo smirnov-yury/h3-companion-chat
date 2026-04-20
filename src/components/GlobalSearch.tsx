@@ -640,7 +640,7 @@ export default function GlobalSearch({ mode, onClose, initialQuery = "", autoFoc
           </button>
         </div>
         <div className="flex-1 overflow-y-auto px-3 pb-6">
-          <div className="max-w-2xl mx-auto">{resultsBlock}</div>
+          <div className="max-w-2xl mx-auto">{tagChipsBlock}{resultsBlock}</div>
         </div>
       </div>
     );
@@ -650,6 +650,7 @@ export default function GlobalSearch({ mode, onClose, initialQuery = "", autoFoc
   return (
     <div className="w-full">
       {inputBlock}
+      {tagChipsBlock}
       {resultsBlock}
     </div>
   );
