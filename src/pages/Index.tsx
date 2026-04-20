@@ -12,6 +12,7 @@ import HeroesTab from "@/components/HeroesTab";
 import GlobalEventsTab from "@/components/GlobalEventsTab";
 import MapElementsTab from "@/components/MapElementsTab";
 import BackToTop from "@/components/BackToTop";
+import SEOMeta from "@/components/SEOMeta";
 import { useLang } from "@/context/LanguageContext";
 import {
   DEFAULT_SLUG,
