@@ -101,7 +101,7 @@ export default function AbilitiesTab({ searchQuery = "", initialCardId, onCardOp
         <CardDialogContent>
           {selected && (
             <>
-              <div className="relative w-[85%] mx-auto pt-4 mb-0 shrink-0">
+              <div className="relative w-[85%] mx-auto pt-4 mb-0 shrink-0 bg-muted/50 rounded-lg">
                 <img src={selected.image_regular ? `${STORAGE}/abilities/${selected.image_regular}` : DECK_PLACEHOLDER} alt={selected.name_en} className="w-full aspect-[5/7] object-contain rounded-lg shadow-lg" onError={(e) => { e.currentTarget.src = DECK_PLACEHOLDER; e.currentTarget.onerror = null; }} />
               </div>
               <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3" onClick={handleEntityClick}>
