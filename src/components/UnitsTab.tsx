@@ -13,6 +13,29 @@ import SeeAlso from '@/components/SeeAlso';
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 const STORAGE = `${SUPABASE_URL}/storage/v1/object/public/component-media`;
 
+const FACTIONS = ['castle','necropolis','dungeon','tower','fortress','rampart','inferno','conflux','stronghold','cove'];
+const isNeutral = (unit: UnitStat) => !FACTIONS.includes(unit.town?.toLowerCase() ?? '');
+
+const NEUTRAL_PLACEHOLDERS: Record<string, string> = {
+  bronze: "https://dhdjxhfbyqsobhfqeryu.supabase.co/storage/v1/object/public/component-media/units/neutral/empty_neutral_unit_bronze.webp",
+  silver: "https://dhdjxhfbyqsobhfqeryu.supabase.co/storage/v1/object/public/component-media/units/neutral/empty_neutral_unit_silver.webp",
+  golden: "https://dhdjxhfbyqsobhfqeryu.supabase.co/storage/v1/object/public/component-media/units/neutral/empty_neutral_unit_gold.webp",
+  azure:  "https://dhdjxhfbyqsobhfqeryu.supabase.co/storage/v1/object/public/component-media/units/neutral/empty_neutral_unit_azure.webp",
+};
+
+const FACTION_PLACEHOLDERS: Record<string, string> = {
+  bronze: "https://dhdjxhfbyqsobhfqeryu.supabase.co/storage/v1/object/public/component-media/units/units-blank-bronze.webp",
+  silver: "https://dhdjxhfbyqsobhfqeryu.supabase.co/storage/v1/object/public/component-media/units/units-blank-silver.webp",
+  golden: "https://dhdjxhfbyqsobhfqeryu.supabase.co/storage/v1/object/public/component-media/units/units-blank-golden.webp",
+};
+
+function getUnitPlaceholder(unit: UnitStat): string {
+  const tier = unit.tier?.toLowerCase() ?? 'bronze';
+  return isNeutral(unit)
+    ? (NEUTRAL_PLACEHOLDERS[tier] ?? NEUTRAL_PLACEHOLDERS.bronze)
+    : (FACTION_PLACEHOLDERS[tier] ?? FACTION_PLACEHOLDERS.bronze);
+}
+
 interface UnitStat {
   id: string;
   name_en: string;
@@ -424,26 +447,19 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
                   className="flex flex-col rounded-xl border border-border bg-card overflow-hidden text-left hover:border-primary transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg cursor-pointer"
                 >
                   <div className="relative aspect-square bg-muted">
-                    {imgSrc ? (
-                      <img
-                        src={imgSrc}
-                        alt={unit.name_en}
-                        className="w-full h-full object-contain"
-                        loading="lazy"
-                        onError={(e) => {
-                          const target = e.currentTarget;
-                          target.style.display = 'none';
-                          const fallback = target.nextElementSibling as HTMLElement;
-                          if (fallback) fallback.style.display = 'flex';
-                        }}
-                      />
-                    ) : null}
-                    <div
-                      className={`${imgSrc ? 'hidden' : 'flex'} items-center justify-center h-full text-muted-foreground text-xs text-center p-2`}
-                    >
-                      {lang === 'RU' && unit.name_ru ? unit.name_ru : unit.name_en}
-                    </div>
+                    <img
+                      src={imgSrc ?? getUnitPlaceholder(unit)}
+                      alt={unit.name_en}
+                      className="w-full h-full object-contain"
+                      loading="lazy"
+                      onError={(e) => { e.currentTarget.src = getUnitPlaceholder(unit); e.currentTarget.onerror = null; }}
+                    />
                     <div className="absolute top-1 left-1 flex flex-col gap-1">
+                      {isNeutral(unit) && (
+                        <span className="rounded text-[11px] font-medium px-1.5 py-0.5 bg-zinc-600 text-white">
+                          {lang === 'RU' ? 'Нейтральный' : 'Neutral'}
+                        </span>
+                      )}
                       <span className={`rounded text-[11px] font-medium px-1.5 py-0.5 ${TIER_COLOR[unit.tier] ?? 'bg-muted text-foreground'}`}>
                         {capitalize(unit.tier)}
                       </span>
@@ -482,20 +498,19 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
               <>
                 {/* TOP: Image section */}
                 <div className="relative w-[85%] mx-auto pt-4 mb-0 shrink-0">
-                  {imgSrc ? (
-                    <img
-                      src={imgSrc}
-                      alt={u.name_en}
-                      className="w-full aspect-[5/7] object-contain rounded-lg shadow-lg"
-                      onError={(e) => { e.currentTarget.style.display = 'none'; }}
-                    />
-                  ) : (
-                    <div className="w-full aspect-[5/7] rounded-lg bg-muted flex items-center justify-center text-muted-foreground text-sm text-center p-2">
-                      {lang === 'RU' && u.name_ru ? u.name_ru : u.name_en}
-                    </div>
-                  )}
+                  <img
+                    src={imgSrc ?? getUnitPlaceholder(u)}
+                    alt={u.name_en}
+                    className="w-full aspect-[5/7] object-contain rounded-lg shadow-lg"
+                    onError={(e) => { e.currentTarget.src = getUnitPlaceholder(u); e.currentTarget.onerror = null; }}
+                  />
                   {/* Badges on image top-left */}
                   <div className="absolute top-5 left-5 flex flex-col gap-1">
+                    {isNeutral(u) && (
+                      <span className="text-[11px] font-medium px-2 py-0.5 rounded text-white bg-zinc-600">
+                        {lang === 'RU' ? 'Нейтральный' : 'Neutral'}
+                      </span>
+                    )}
                     <span className={`text-[11px] font-medium px-2 py-0.5 rounded text-white ${TIER_COLOR[u.tier] ?? 'bg-muted'}`}>
                       {capitalize(u.tier)}
                     </span>
