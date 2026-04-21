@@ -136,10 +136,7 @@ export default function SpellsTab({ searchQuery = "", initialFilter, initialCard
                   <button key={item.id} onClick={() => openCard(item)}
                     className="flex flex-col rounded-xl border border-border bg-card overflow-hidden text-left hover:border-primary transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg cursor-pointer">
                     <div className="aspect-[5/7] w-full bg-muted flex items-center justify-center overflow-hidden relative rounded-lg">
-                      {imgSrc
-                        ? <img src={imgSrc} alt={item.name_en} className="w-full h-full object-cover rounded-lg" onError={(e) => { e.currentTarget.src = DECK_PLACEHOLDER; e.currentTarget.onerror = null; }} />
-                        : <p className="text-[10px] text-muted-foreground text-center px-1">{item.name_en}</p>
-                      }
+                      <img src={imgSrc || DECK_PLACEHOLDER} alt={item.name_en} className="w-full h-full object-cover rounded-lg" onError={(e) => { e.currentTarget.src = DECK_PLACEHOLDER; e.currentTarget.onerror = null; }} />
                       {(item.school || item.level) && (
                         <div className="absolute top-2 left-2 flex flex-col gap-1">
                           {item.school && (
@@ -170,17 +167,15 @@ export default function SpellsTab({ searchQuery = "", initialFilter, initialCard
         <CardDialogContent>
           {selected && (
             <>
-              {selected.image && (
-                <div className="relative w-full shrink-0 flex justify-center bg-muted">
-                  <img src={`${STORAGE}/spells/${selected.image}`} alt={selected.name_en} className="w-full max-h-[280px] object-contain" onError={(e) => { e.currentTarget.src = DECK_PLACEHOLDER; e.currentTarget.onerror = null; }} />
-                  {(selected.school || selected.level) && (
-                    <div className="absolute top-2 left-2 flex flex-col gap-1">
-                      {selected.school && <span className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${SCHOOL_COLORS[selected.school] || "bg-muted text-muted-foreground"}`}>{selected.school.charAt(0).toUpperCase() + selected.school.slice(1)}</span>}
-                      {selected.level && <span className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${levelStyle(selected.level)}`}>{formatLevel(selected.level)}</span>}
-                    </div>
-                  )}
-                </div>
-              )}
+              <div className="relative w-full shrink-0 flex justify-center bg-muted">
+                <img src={selected.image ? `${STORAGE}/spells/${selected.image}` : DECK_PLACEHOLDER} alt={selected.name_en} className="w-full max-h-[280px] object-contain" onError={(e) => { e.currentTarget.src = DECK_PLACEHOLDER; e.currentTarget.onerror = null; }} />
+                {(selected.school || selected.level) && (
+                  <div className="absolute top-2 left-2 flex flex-col gap-1">
+                    {selected.school && <span className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${SCHOOL_COLORS[selected.school] || "bg-muted text-muted-foreground"}`}>{selected.school.charAt(0).toUpperCase() + selected.school.slice(1)}</span>}
+                    {selected.level && <span className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${levelStyle(selected.level)}`}>{formatLevel(selected.level)}</span>}
+                  </div>
+                )}
+              </div>
               <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3" onClick={handleEntityClick}>
                 <h2 className="text-lg font-semibold leading-tight pr-8">{name(selected)}</h2>
                 {selected.effect_en && <div><p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Эффект" : "Effect"}</p><p className="text-xs text-muted-foreground whitespace-pre-line" dangerouslySetInnerHTML={{ __html: renderGlyphs(lang === "RU" ? (selected.effect_ru || selected.effect_en) : selected.effect_en, glyphs) }} /></div>}
