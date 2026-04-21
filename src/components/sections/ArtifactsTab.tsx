@@ -124,10 +124,7 @@ export default function ArtifactsTab({ searchQuery = "", initialFilter, initialC
                   <button key={item.id} onClick={() => openCard(item)}
                     className="flex flex-col rounded-xl border border-border bg-card overflow-hidden text-left hover:border-primary transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg cursor-pointer">
                     <div className="aspect-[5/7] w-full bg-muted flex items-center justify-center overflow-hidden relative rounded-lg">
-                      {imgSrc
-                        ? <img src={imgSrc} alt={item.name_en} className="w-full h-full object-cover rounded-lg" onError={(e) => { e.currentTarget.src = DECK_PLACEHOLDER; e.currentTarget.onerror = null; }} />
-                        : <p className="text-[10px] text-muted-foreground text-center px-1">{item.name_en}</p>
-                      }
+                      <img src={imgSrc || DECK_PLACEHOLDER} alt={item.name_en} className="w-full h-full object-cover rounded-lg" onError={(e) => { e.currentTarget.src = DECK_PLACEHOLDER; e.currentTarget.onerror = null; }} />
                       {item.quality && (
                       <span className={`absolute top-1 left-1 text-xs px-2 py-0.5 rounded-full font-medium ${QUALITY_COLORS[item.quality] || "bg-muted text-muted-foreground"}`}>
                           {QUALITY_LABELS[item.quality] || item.quality}
@@ -149,16 +146,14 @@ export default function ArtifactsTab({ searchQuery = "", initialFilter, initialC
         <CardDialogContent>
           {selected && (
             <>
-              {selected.image && (
-                <div className="relative w-full shrink-0 flex justify-center bg-muted">
-                  <img src={`${STORAGE}/artifacts/${selected.image}`} alt={selected.name_en} className="w-full max-h-[280px] object-contain" onError={(e) => { e.currentTarget.src = DECK_PLACEHOLDER; e.currentTarget.onerror = null; }} />
-                  {selected.quality && (
-                    <span className={`absolute top-2 left-2 text-[11px] px-2 py-0.5 rounded-full font-medium ${QUALITY_COLORS[selected.quality] || "bg-muted text-muted-foreground"}`}>
-                      {QUALITY_LABELS[selected.quality] || selected.quality}
-                    </span>
-                  )}
-                </div>
-              )}
+              <div className="relative w-full shrink-0 flex justify-center bg-muted">
+                <img src={selected.image ? `${STORAGE}/artifacts/${selected.image}` : DECK_PLACEHOLDER} alt={selected.name_en} className="w-full max-h-[280px] object-contain" onError={(e) => { e.currentTarget.src = DECK_PLACEHOLDER; e.currentTarget.onerror = null; }} />
+                {selected.quality && (
+                  <span className={`absolute top-2 left-2 text-[11px] px-2 py-0.5 rounded-full font-medium ${QUALITY_COLORS[selected.quality] || "bg-muted text-muted-foreground"}`}>
+                    {QUALITY_LABELS[selected.quality] || selected.quality}
+                  </span>
+                )}
+              </div>
               <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3" onClick={handleEntityClick}>
                 <h2 className="text-lg font-semibold leading-tight pr-8">{name(selected)}</h2>
                 {selected.effect_en && <div><p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Эффект" : "Effect"}</p><p className="text-xs text-muted-foreground whitespace-pre-line" dangerouslySetInnerHTML={{ __html: renderGlyphs(lang === "RU" ? (selected.effect_ru || selected.effect_en) : selected.effect_en, glyphs) }} /></div>}

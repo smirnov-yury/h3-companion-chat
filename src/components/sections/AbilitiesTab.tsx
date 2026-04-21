@@ -85,10 +85,7 @@ export default function AbilitiesTab({ searchQuery = "", initialCardId, onCardOp
                 <button key={item.id} onClick={() => openCard(item)}
                   className="flex flex-col rounded-xl border border-border bg-card overflow-hidden text-left hover:border-primary transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg cursor-pointer">
                   <div className="aspect-[5/7] w-full bg-muted flex items-center justify-center overflow-hidden relative rounded-lg">
-                    {imgSrc
-                      ? <img src={imgSrc} alt={item.name_en} className="w-full h-full object-cover rounded-lg" onError={(e) => { e.currentTarget.src = DECK_PLACEHOLDER; e.currentTarget.onerror = null; }} />
-                      : <p className="text-[10px] text-muted-foreground text-center px-1">{item.name_en}</p>
-                    }
+                    <img src={imgSrc || DECK_PLACEHOLDER} alt={item.name_en} className="w-full h-full object-cover rounded-lg" onError={(e) => { e.currentTarget.src = DECK_PLACEHOLDER; e.currentTarget.onerror = null; }} />
                   </div>
                   <div className="p-2">
                     <p className="text-xs font-semibold text-foreground truncate">{name(item)}</p>
@@ -104,11 +101,9 @@ export default function AbilitiesTab({ searchQuery = "", initialCardId, onCardOp
         <CardDialogContent>
           {selected && (
             <>
-              {selected.image_regular && (
-                <div className="w-full shrink-0 flex justify-center bg-muted">
-                  <img src={`${STORAGE}/abilities/${selected.image_regular}`} alt={selected.name_en} className="w-full max-h-[280px] object-contain" onError={(e) => { e.currentTarget.src = DECK_PLACEHOLDER; e.currentTarget.onerror = null; }} />
-                </div>
-              )}
+              <div className="w-full shrink-0 flex justify-center bg-muted">
+                <img src={selected.image_regular ? `${STORAGE}/abilities/${selected.image_regular}` : DECK_PLACEHOLDER} alt={selected.name_en} className="w-full max-h-[280px] object-contain" onError={(e) => { e.currentTarget.src = DECK_PLACEHOLDER; e.currentTarget.onerror = null; }} />
+              </div>
               <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3" onClick={handleEntityClick}>
                 <h2 className="text-lg font-semibold leading-tight pr-8">{name(selected)}</h2>
                 {(lang === "RU" ? selected.effect_ru : selected.effect_en) && (
