@@ -11,6 +11,7 @@ import SeeAlso from "@/components/SeeAlso";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 const STORAGE = `${SUPABASE_URL}/storage/v1/object/public/component-media`;
+const DECK_PLACEHOLDER = "https://dhdjxhfbyqsobhfqeryu.supabase.co/storage/v1/object/public/component-media/artifacts/empty_art_ability_spec_spell.webp";
 
 interface Spell {
   id: string;
@@ -136,7 +137,7 @@ export default function SpellsTab({ searchQuery = "", initialFilter, initialCard
                     className="flex flex-col rounded-xl border border-border bg-card overflow-hidden text-left hover:border-primary transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg cursor-pointer">
                     <div className="aspect-[5/7] w-full bg-muted flex items-center justify-center overflow-hidden relative rounded-lg">
                       {imgSrc
-                        ? <img src={imgSrc} alt={item.name_en} className="w-full h-full object-cover rounded-lg" />
+                        ? <img src={imgSrc} alt={item.name_en} className="w-full h-full object-cover rounded-lg" onError={(e) => { e.currentTarget.src = DECK_PLACEHOLDER; e.currentTarget.onerror = null; }} />
                         : <p className="text-[10px] text-muted-foreground text-center px-1">{item.name_en}</p>
                       }
                       {(item.school || item.level) && (
@@ -171,7 +172,7 @@ export default function SpellsTab({ searchQuery = "", initialFilter, initialCard
             <>
               {selected.image && (
                 <div className="relative w-full shrink-0 flex justify-center bg-muted">
-                  <img src={`${STORAGE}/spells/${selected.image}`} alt={selected.name_en} className="w-full max-h-[280px] object-contain" />
+                  <img src={`${STORAGE}/spells/${selected.image}`} alt={selected.name_en} className="w-full max-h-[280px] object-contain" onError={(e) => { e.currentTarget.src = DECK_PLACEHOLDER; e.currentTarget.onerror = null; }} />
                   {(selected.school || selected.level) && (
                     <div className="absolute top-2 left-2 flex flex-col gap-1">
                       {selected.school && <span className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${SCHOOL_COLORS[selected.school] || "bg-muted text-muted-foreground"}`}>{selected.school.charAt(0).toUpperCase() + selected.school.slice(1)}</span>}

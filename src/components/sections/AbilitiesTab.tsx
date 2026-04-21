@@ -11,6 +11,7 @@ import SeeAlso from "@/components/SeeAlso";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 const STORAGE = `${SUPABASE_URL}/storage/v1/object/public/component-media`;
+const DECK_PLACEHOLDER = "https://dhdjxhfbyqsobhfqeryu.supabase.co/storage/v1/object/public/component-media/artifacts/empty_art_ability_spec_spell.webp";
 
 interface Ability {
   id: string;
@@ -85,7 +86,7 @@ export default function AbilitiesTab({ searchQuery = "", initialCardId, onCardOp
                   className="flex flex-col rounded-xl border border-border bg-card overflow-hidden text-left hover:border-primary transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg cursor-pointer">
                   <div className="aspect-[5/7] w-full bg-muted flex items-center justify-center overflow-hidden relative rounded-lg">
                     {imgSrc
-                      ? <img src={imgSrc} alt={item.name_en} className="w-full h-full object-cover rounded-lg" />
+                      ? <img src={imgSrc} alt={item.name_en} className="w-full h-full object-cover rounded-lg" onError={(e) => { e.currentTarget.src = DECK_PLACEHOLDER; e.currentTarget.onerror = null; }} />
                       : <p className="text-[10px] text-muted-foreground text-center px-1">{item.name_en}</p>
                     }
                   </div>
@@ -105,7 +106,7 @@ export default function AbilitiesTab({ searchQuery = "", initialCardId, onCardOp
             <>
               {selected.image_regular && (
                 <div className="w-full shrink-0 flex justify-center bg-muted">
-                  <img src={`${STORAGE}/abilities/${selected.image_regular}`} alt={selected.name_en} className="w-full max-h-[280px] object-contain" />
+                  <img src={`${STORAGE}/abilities/${selected.image_regular}`} alt={selected.name_en} className="w-full max-h-[280px] object-contain" onError={(e) => { e.currentTarget.src = DECK_PLACEHOLDER; e.currentTarget.onerror = null; }} />
                 </div>
               )}
               <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3" onClick={handleEntityClick}>
