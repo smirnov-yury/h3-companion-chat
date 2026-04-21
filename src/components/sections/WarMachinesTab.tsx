@@ -100,8 +100,8 @@ export default function WarMachinesTab({ searchQuery = "", initialCardId, onCard
               s ? s.replace(/\bgold\b/gi, "<gold>") : s;
             return (
               <>
-                <div className="w-full shrink-0 flex justify-center bg-muted">
-                  <img src={selected.image ? `${STORAGE}/war_machines/${selected.image}` : DECK_PLACEHOLDER} alt={selected.name_en} className="w-[200px] h-[280px] object-contain rounded-lg shadow-lg mx-auto" onError={(e) => { e.currentTarget.src = DECK_PLACEHOLDER; e.currentTarget.onerror = null; }} />
+                <div className="relative w-[85%] mx-auto pt-4 mb-0 shrink-0">
+                  <img src={selected.image ? `${STORAGE}/war_machines/${selected.image}` : DECK_PLACEHOLDER} alt={selected.name_en} className="w-full aspect-[5/7] object-contain rounded-lg shadow-lg" onError={(e) => { e.currentTarget.src = DECK_PLACEHOLDER; e.currentTarget.onerror = null; }} />
                 </div>
                 <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
                   <h2 className="text-lg font-semibold leading-tight pr-8">{name(selected)}</h2>
