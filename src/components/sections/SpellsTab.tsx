@@ -167,8 +167,8 @@ export default function SpellsTab({ searchQuery = "", initialFilter, initialCard
         <CardDialogContent>
           {selected && (
             <>
-              <div className="relative w-full shrink-0 flex justify-center bg-muted">
-                <img src={selected.image ? `${STORAGE}/spells/${selected.image}` : DECK_PLACEHOLDER} alt={selected.name_en} className="w-[200px] h-[280px] object-contain rounded-lg shadow-lg mx-auto" onError={(e) => { e.currentTarget.src = DECK_PLACEHOLDER; e.currentTarget.onerror = null; }} />
+              <div className="relative w-[85%] mx-auto pt-4 mb-0 shrink-0">
+                <img src={selected.image ? `${STORAGE}/spells/${selected.image}` : DECK_PLACEHOLDER} alt={selected.name_en} className="w-full aspect-[5/7] object-contain rounded-lg shadow-lg" onError={(e) => { e.currentTarget.src = DECK_PLACEHOLDER; e.currentTarget.onerror = null; }} />
                 {(selected.school || selected.level) && (
                   <div className="absolute top-2 left-2 flex flex-col gap-1">
                     {selected.school && <span className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${SCHOOL_COLORS[selected.school] || "bg-muted text-muted-foreground"}`}>{selected.school.charAt(0).toUpperCase() + selected.school.slice(1)}</span>}
