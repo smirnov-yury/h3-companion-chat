@@ -146,8 +146,8 @@ export default function ArtifactsTab({ searchQuery = "", initialFilter, initialC
         <CardDialogContent>
           {selected && (
             <>
-              <div className="relative w-full shrink-0 flex justify-center bg-muted">
-                <img src={selected.image ? `${STORAGE}/artifacts/${selected.image}` : DECK_PLACEHOLDER} alt={selected.name_en} className="w-[200px] h-[280px] object-contain rounded-lg shadow-lg mx-auto" onError={(e) => { e.currentTarget.src = DECK_PLACEHOLDER; e.currentTarget.onerror = null; }} />
+              <div className="relative w-[85%] mx-auto pt-4 mb-0 shrink-0">
+                <img src={selected.image ? `${STORAGE}/artifacts/${selected.image}` : DECK_PLACEHOLDER} alt={selected.name_en} className="w-full aspect-[5/7] object-contain rounded-lg shadow-lg" onError={(e) => { e.currentTarget.src = DECK_PLACEHOLDER; e.currentTarget.onerror = null; }} />
                 {selected.quality && (
                   <span className={`absolute top-2 left-2 text-[11px] px-2 py-0.5 rounded-full font-medium ${QUALITY_COLORS[selected.quality] || "bg-muted text-muted-foreground"}`}>
                     {QUALITY_LABELS[selected.quality] || selected.quality}
