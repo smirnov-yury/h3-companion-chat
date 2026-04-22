@@ -416,7 +416,7 @@ export default function HeroesTab({ initialFilter, initialCardId, initialSearch,
                           if (!lvl) return null;
                           const effect = lang === "RU" ? lvl.effect_ru : lvl.effect_en;
                           return (
-                            <div key={idx} className="bg-muted rounded-lg p-3 space-y-2 animate-in fade-in duration-200">
+                            <div key={idx} className="bg-muted rounded-lg p-3 space-y-2 transition-opacity duration-200 opacity-100">
                               {lvl.image && (
                                 <img
                                   src={`${STORAGE}/heroes/${lvl.image}`}
