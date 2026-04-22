@@ -11,6 +11,7 @@ import SeeAlso from "@/components/SeeAlso";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 const STORAGE = `${SUPABASE_URL}/storage/v1/object/public/component-media`;
+const HERO_PLACEHOLDER = `${STORAGE}/heroes/player-deck-back.webp`;
 
 interface Hero {
   id: string;
@@ -187,13 +188,13 @@ export default function HeroesTab({ initialFilter, initialCardId, initialSearch,
             {filtered.map(h => (
               <button key={h.id} onClick={() => openCard(h)} className="flex flex-col rounded-xl border border-border bg-card overflow-hidden text-left hover:border-primary transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg cursor-pointer">
                 <div className="relative aspect-square bg-muted">
-                  {hasPortrait(h.image) ? (
-                    <img src={`${STORAGE}/heroes/${h.image}`} alt={name(h)} className="w-full h-full object-cover object-left" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <span className="text-2xl font-bold text-muted-foreground/40">{heroInitials(h.name_en)}</span>
-                    </div>
-                  )}
+                  <img
+                    src={hasPortrait(h.image) ? `${STORAGE}/heroes/${h.image}` : HERO_PLACEHOLDER}
+                    alt={name(h)}
+                    className="w-full h-full object-cover object-left"
+                    onError={(e) => { e.currentTarget.src = HERO_PLACEHOLDER; e.currentTarget.onerror = null; }}
+                  />
+
                   {h.class_en && (() => {
                     const isMagic = h.class_en.includes('<magic>');
                     const heroType = isMagic ? 'Magic' : 'Might';
