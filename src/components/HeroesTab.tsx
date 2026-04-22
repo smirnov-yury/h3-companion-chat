@@ -351,7 +351,7 @@ export default function HeroesTab({ initialFilter, initialCardId, initialSearch,
                       <div className="text-xs text-muted-foreground" dangerouslySetInnerHTML={{ __html: renderGlyphs(notes(selected), glyphs) }} />
                     )}
 
-                    <SeeAlso entityType="hero" entityId={selected.id} lang={lang as "EN" | "RU"} />
+                    <HeroLinksRow heroId={selected.id} abilityId={selected.ability_id} lang={lang as "EN" | "RU"} />
                   </div>
                   <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-background to-transparent" />
                 </div>
