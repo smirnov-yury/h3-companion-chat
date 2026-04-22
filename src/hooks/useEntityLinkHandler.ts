@@ -20,7 +20,7 @@ export function entityLinkUrl(type: string, id: string): string | null {
     case "event":
       return `/events/${id}`;
     case "astrologer":
-      return `/events/${id}`;
+      return `/events/${id}?section=astrologers`;
     case "war_machine":
       return `/decks/warmachines/${id}`;
     case "town_building": {

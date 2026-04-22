@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Search, X } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
 import EventsTab from "@/components/sections/EventsTab";
@@ -20,8 +21,15 @@ interface Props {
 
 export default function GlobalEventsTab({ initialCardId, initialSearch, onCardOpen, onCardClose }: Props = {}) {
   const { lang } = useLang();
-  const [active, setActive] = useState<Section>("events");
+  const [searchParams] = useSearchParams();
+  const [active, setActive] = useState<Section>(
+    searchParams.get("section") === "astrologers" ? "astrologers" : "events",
+  );
   const [searchQuery, setSearchQuery] = useState(initialSearch ?? "");
+
+  useEffect(() => {
+    if (searchParams.get("section") === "astrologers") setActive("astrologers");
+  }, [searchParams]);
 
   const handleSectionChange = (id: Section) => {
     setActive(id);
