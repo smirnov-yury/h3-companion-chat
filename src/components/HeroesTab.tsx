@@ -261,27 +261,25 @@ export default function HeroesTab({ initialFilter, initialCardId, initialSearch,
                     <HeroSilhouette town={h.town} />
                   )}
 
-                  {h.class_en && (() => {
-                    const isMagic = h.class_en.includes('<magic>');
-                    const heroType = isMagic ? 'Magic' : 'Might';
-                    const rawClass = (lang === "RU" && h.class_ru ? h.class_ru : h.class_en).replace(/<magic>|<might>/g, '').trim();
-                    return (
-                      <div className="absolute top-1.5 left-1.5 flex flex-col gap-1">
-                        <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-full backdrop-blur-sm text-white ${isMagic ? 'bg-blue-600/80' : 'bg-red-700/80'}`}>
-                          {heroType}
-                        </span>
-                        <span
-                          className="text-[9px] px-1.5 py-0.5 rounded-full backdrop-blur-sm bg-black/50 text-white"
-                          dangerouslySetInnerHTML={{ __html: renderGlyphs(rawClass, glyphs) }}
-                        />
-                      </div>
-                    );
-                  })()}
-                  {h.town && (
-                    <div className="absolute top-1.5 right-1.5 z-10">
-                      <FactionBadge town={h.town} />
-                    </div>
-                  )}
+                  <div className="absolute top-1.5 left-1.5 z-10 flex flex-col gap-1">
+                    {h.town && <FactionBadge town={h.town} />}
+                    {h.class_en && (() => {
+                      const isMagic = h.class_en.includes('<magic>');
+                      const heroType = isMagic ? 'Magic' : 'Might';
+                      const rawClass = (lang === "RU" && h.class_ru ? h.class_ru : h.class_en).replace(/<magic>|<might>/g, '').trim();
+                      return (
+                        <>
+                          <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-full backdrop-blur-sm text-white ${isMagic ? 'bg-blue-600/80' : 'bg-red-700/80'}`}>
+                            {heroType}
+                          </span>
+                          <span
+                            className="text-[9px] px-1.5 py-0.5 rounded-full backdrop-blur-sm bg-black/50 text-white"
+                            dangerouslySetInnerHTML={{ __html: renderGlyphs(rawClass, glyphs) }}
+                          />
+                        </>
+                      );
+                    })()}
+                  </div>
                 </div>
                 <div className="p-2">
                   <p className="text-xs font-semibold text-foreground truncate">{name(h)}</p>
