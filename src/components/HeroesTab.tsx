@@ -278,7 +278,7 @@ export default function HeroesTab({ initialFilter, initialCardId, initialSearch,
                     );
                   })()}
                   {h.town && (
-                    <div className="absolute bottom-1.5 right-1.5">
+                    <div className="absolute top-1.5 right-1.5 z-10">
                       <FactionBadge town={h.town} />
                     </div>
                   )}
