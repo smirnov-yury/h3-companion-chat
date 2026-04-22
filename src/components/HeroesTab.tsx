@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Search, X, Swords, Shield, Wand2, BookOpen, User } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/context/LanguageContext";
 import { useGlyphs } from "@/context/GlyphsContext";
@@ -8,7 +9,7 @@ import { Dialog } from "@/components/ui/dialog";
 import { CardDialogContent } from "@/components/ui/card-dialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { EmptyState, SkeletonGrid } from "@/components/ui/empty-state";
-import { useEntityLinkHandler } from "@/hooks/useEntityLinkHandler";
+import { useEntityLinkHandler, entityLinkUrl } from "@/hooks/useEntityLinkHandler";
 import SeeAlso from "@/components/SeeAlso";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
