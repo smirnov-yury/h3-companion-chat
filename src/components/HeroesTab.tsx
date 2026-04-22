@@ -411,8 +411,10 @@ export default function HeroesTab({ initialFilter, initialCardId, initialSearch,
                               <button
                                 key={i}
                                 onClick={() => setSpecialtyTab(i)}
-                                className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                                  specialtyTab === i ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-muted/70"
+                                className={`px-3 py-1 rounded-full text-xs font-medium transition-colors border ${
+                                  specialtyTab === i
+                                    ? "bg-amber-500/90 text-background border-amber-400"
+                                    : "bg-transparent text-amber-200/70 border-amber-400/40 hover:bg-amber-500/10"
                                 }`}
                               >
                                 {lvl.level}
@@ -431,7 +433,7 @@ export default function HeroesTab({ initialFilter, initialCardId, initialSearch,
                                 <img
                                   src={`${STORAGE}/heroes/${lvl.image}`}
                                   alt={lvl.level}
-                                  className="w-full object-contain"
+                                  className="w-[70%] max-w-[280px] mx-auto object-contain rounded-lg"
                                   onError={e => (e.currentTarget.style.display = "none")}
                                 />
                               )}
