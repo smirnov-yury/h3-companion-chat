@@ -317,9 +317,16 @@ export default function HeroesTab({ initialFilter, initialCardId, initialSearch,
 
       <Dialog open={!!selected} onOpenChange={open => { if (!open) closeCard(); }} >
         {selected && (
-          <CardDialogContent className="w-[95vw] max-w-md">
-            {/* FIXED HEADER */}
-            <div className="shrink-0 px-4 pt-4 pb-2">
+          <DialogContent className="max-h-[90dvh] w-[95vw] max-w-md grid grid-rows-[auto_1fr] overflow-hidden p-0 rounded-xl gap-0">
+            <DialogClose
+              aria-label="Close"
+              className="absolute top-3 right-3 z-20 inline-flex h-8 w-8 items-center justify-center rounded-full border-2 bg-background/80 backdrop-blur-sm text-foreground transition-colors hover:bg-background focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background"
+              style={{ borderColor: "#E1BB3A", color: "#E1BB3A" }}
+            >
+              <X className="h-4 w-4" strokeWidth={2.5} />
+            </DialogClose>
+
+            <div className="p-4 shrink-0">
               {hasPortrait(selected.image) ? (
                 <img
                   src={`${STORAGE}/heroes/${selected.image}`}
@@ -343,16 +350,19 @@ export default function HeroesTab({ initialFilter, initialCardId, initialSearch,
               </div>
             </div>
 
-            {/* TABS */}
-            <Tabs defaultValue="info" className="flex-1 min-h-0 flex flex-col">
-              <TabsList className="mx-4 shrink-0 grid grid-cols-2">
+            <Tabs defaultValue="info" className="grid grid-rows-[auto_1fr] overflow-hidden min-h-0">
+              <TabsList className="mx-4 shrink-0 grid grid-cols-2 w-auto">
                 <TabsTrigger value="info">{lang === "RU" ? "Инфо" : "Info"}</TabsTrigger>
                 <TabsTrigger value="specialty">{lang === "RU" ? "Специальность" : "Specialty"}</TabsTrigger>
               </TabsList>
 
-              <TabsContent value="info" className="flex-1 min-h-0 data-[state=active]:flex data-[state=active]:flex-col outline-none mt-0">
-                <div className="relative flex-1 min-h-0">
-                  <div onClick={handleEntityClick} className="h-full overflow-y-auto overscroll-contain px-4 py-3 space-y-3" style={{ WebkitOverflowScrolling: "touch", touchAction: "pan-y" }}>
+              <div className="overflow-hidden relative min-h-0">
+                <TabsContent
+                  value="info"
+                  className="absolute inset-0 mt-0 overflow-y-auto overscroll-contain data-[state=inactive]:hidden"
+                  style={{ touchAction: "pan-y", WebkitOverflowScrolling: "touch" }}
+                >
+                  <div onClick={handleEntityClick} className="px-4 py-3 pb-6 space-y-3">
                     <div className="grid grid-cols-4 gap-2 mb-3">
                       <div className="bg-muted/50 rounded-lg p-2 text-center">
                         <Swords className="w-4 h-4 mx-auto mb-1 text-red-400" />
@@ -378,13 +388,14 @@ export default function HeroesTab({ initialFilter, initialCardId, initialSearch,
 
                     <HeroLinksRow heroId={selected.id} abilityId={selected.ability_id} lang={lang as "EN" | "RU"} />
                   </div>
-                  <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-background to-transparent" />
-                </div>
-              </TabsContent>
+                </TabsContent>
 
-              <TabsContent value="specialty" className="flex-1 min-h-0 data-[state=active]:flex data-[state=active]:flex-col outline-none mt-0">
-                <div className="relative flex-1 min-h-0">
-                  <div onClick={handleEntityClick} className="h-full overflow-y-auto overscroll-contain px-4 py-3 space-y-3" style={{ WebkitOverflowScrolling: "touch", touchAction: "pan-y" }}>
+                <TabsContent
+                  value="specialty"
+                  className="absolute inset-0 mt-0 overflow-y-auto overscroll-contain data-[state=inactive]:hidden"
+                  style={{ touchAction: "pan-y", WebkitOverflowScrolling: "touch" }}
+                >
+                  <div onClick={handleEntityClick} className="px-4 py-3 pb-6 space-y-3">
                     {specialty(selected) && (
                       <p
                         className="text-sm font-bold text-foreground text-center"
@@ -433,11 +444,12 @@ export default function HeroesTab({ initialFilter, initialCardId, initialSearch,
                       </div>
                     )}
                   </div>
-                  <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-background to-transparent" />
-                </div>
-              </TabsContent>
+                </TabsContent>
+
+                <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-background to-transparent" />
+              </div>
             </Tabs>
-          </CardDialogContent>
+          </DialogContent>
         )}
       </Dialog>
     </div>
