@@ -10,7 +10,7 @@ import { CardDialogContent } from "@/components/ui/card-dialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { EmptyState, SkeletonGrid } from "@/components/ui/empty-state";
 import { useEntityLinkHandler, entityLinkUrl } from "@/hooks/useEntityLinkHandler";
-import SeeAlso from "@/components/SeeAlso";
+import { useEntityLinks } from "@/hooks/useEntityLinks";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 const STORAGE = `${SUPABASE_URL}/storage/v1/object/public/component-media`;
