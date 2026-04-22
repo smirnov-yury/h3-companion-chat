@@ -4,6 +4,7 @@ import { useLang } from "@/context/LanguageContext";
 import { useGlyphs } from "@/context/GlyphsContext";
 import { renderGlyphs } from "@/utils/renderGlyphs";
 import { SkeletonList } from "@/components/ui/empty-state";
+import SeeAlso from "@/components/SeeAlso";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 const STORAGE = `${SUPABASE_URL}/storage/v1/object/public/component-media`;
@@ -215,6 +216,7 @@ export default function TownsTab({ initialCardId, onCardOpen }: Props = {}) {
                       dangerouslySetInnerHTML={{ __html: renderGlyphs(bEffect, glyphs) }}
                     />
                   )}
+                  <SeeAlso entityType="town_building" entityId={b.id} lang={lang} />
                 </div>
               );
             })}
