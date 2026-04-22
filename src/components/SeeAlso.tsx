@@ -8,6 +8,14 @@ interface Props {
   lang: "EN" | "RU";
 }
 
+const TYPE_LABELS: Record<string, { en: string; ru: string }> = {
+  field:         { en: "Map Element", ru: "Элемент карты" },
+  event:         { en: "Event",       ru: "Событие" },
+  astrologer:    { en: "Astrologers", ru: "Астрологи" },
+  war_machine:   { en: "War Machine", ru: "Боевая машина" },
+  town_building: { en: "Building",    ru: "Здание" },
+};
+
 export default function SeeAlso({ entityType, entityId, lang }: Props) {
   const navigate = useNavigate();
   const { links } = useEntityLinks(entityType, entityId);
@@ -17,8 +25,12 @@ export default function SeeAlso({ entityType, entityId, lang }: Props) {
     <div className="flex flex-row flex-wrap items-center gap-1 mt-2">
       <span className="text-[#E1BB3A] text-sm mr-1 shrink-0">→</span>
       {links.map((l) => {
-        const name =
+        const baseName =
           (lang === "RU" ? l.name_ru || l.name_en : l.name_en) || l.to_id;
+        const labelDef = TYPE_LABELS[l.to_type];
+        const name = labelDef
+          ? `${labelDef[lang === "RU" ? "ru" : "en"]}: ${baseName}`
+          : baseName;
         const url = entityLinkUrl(l.to_type, l.to_id);
         return (
           <button
