@@ -94,6 +94,35 @@ function HeroSilhouette({ town, className = "" }: { town: string | null; classNa
   );
 }
 
+function AbilityChip({ abilityId }: { abilityId: string }) {
+  const { lang } = useLang();
+  const navigate = useNavigate();
+  const [name, setName] = useState<{ en: string; ru: string | null } | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    supabase
+      .from("abilities")
+      .select("name_en, name_ru")
+      .eq("id", abilityId)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (!cancelled && data) setName({ en: data.name_en, ru: data.name_ru });
+      });
+    return () => { cancelled = true; };
+  }, [abilityId]);
+  const label = (lang === "RU" ? name?.ru || name?.en : name?.en) || abilityId;
+  const url = entityLinkUrl("ability", abilityId);
+  return (
+    <button
+      onClick={() => url && navigate(url)}
+      disabled={!url}
+      className="text-[11px] px-2 py-0.5 rounded-full border border-[#E1BB3A] text-[#E1BB3A] bg-[#E1BB3A]/10 hover:bg-[#E1BB3A]/20 transition-colors disabled:opacity-50"
+    >
+      {label}
+    </button>
+  );
+}
+
 interface HeroesTabProps {
   initialFilter?: string;
   initialCardId?: string;
