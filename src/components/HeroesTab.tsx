@@ -317,10 +317,7 @@ export default function HeroesTab({ initialFilter, initialCardId, initialSearch,
 
       <Dialog open={!!selected} onOpenChange={open => { if (!open) closeCard(); }} >
         {selected && (
-          <DialogContent
-            className="w-[95vw] max-w-md max-h-[90dvh] overflow-y-auto overscroll-contain p-0 rounded-xl"
-            style={{ touchAction: "pan-y", WebkitOverflowScrolling: "touch" }}
-          >
+          <DialogContent className="max-h-[90dvh] w-[95vw] max-w-md grid grid-rows-[auto_auto_minmax(0,1fr)] overflow-hidden p-0 rounded-xl">
             <DialogClose
               aria-label="Close"
               className="absolute top-3 right-3 z-30 inline-flex h-8 w-8 items-center justify-center rounded-full border-2 bg-background/80 backdrop-blur-sm text-foreground transition-colors hover:bg-background focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background"
@@ -329,7 +326,7 @@ export default function HeroesTab({ initialFilter, initialCardId, initialSearch,
               <X className="h-4 w-4" strokeWidth={2.5} />
             </DialogClose>
 
-            <div className="sticky top-0 z-20 bg-background p-4">
+            <div className="p-4">
               {hasPortrait(selected.image) ? (
                 <img
                   src={`${STORAGE}/heroes/${selected.image}`}
@@ -353,94 +350,104 @@ export default function HeroesTab({ initialFilter, initialCardId, initialSearch,
               </div>
             </div>
 
-            <Tabs defaultValue="info" className="flex flex-col">
-              <TabsList className="sticky top-[280px] z-10 bg-background mx-4 shrink-0 grid grid-cols-2 w-auto">
+            <Tabs defaultValue="info" className="contents">
+              <TabsList className="mx-4 grid grid-cols-2 w-auto">
                 <TabsTrigger value="info">{lang === "RU" ? "Инфо" : "Info"}</TabsTrigger>
                 <TabsTrigger value="specialty">{lang === "RU" ? "Специальность" : "Specialty"}</TabsTrigger>
               </TabsList>
 
-              <TabsContent value="info" className="px-4 pb-6">
-                <div onClick={handleEntityClick} className="py-3 space-y-3">
-                  <div className="grid grid-cols-4 gap-2 mb-3">
-                    <div className="bg-muted/50 rounded-lg p-2 text-center">
-                      <Swords className="w-4 h-4 mx-auto mb-1 text-red-400" />
-                      <div className="text-sm font-bold text-foreground">{selected.attack ?? "–"}</div>
+              <div className="overflow-hidden relative">
+                <TabsContent
+                  value="info"
+                  className="absolute inset-0 overflow-y-auto overscroll-contain data-[state=inactive]:hidden"
+                  style={{ touchAction: "pan-y", WebkitOverflowScrolling: "touch" }}
+                >
+                  <div onClick={handleEntityClick} className="px-4 pb-6 pt-3 space-y-3">
+                    <div className="grid grid-cols-4 gap-2 mb-3">
+                      <div className="bg-muted/50 rounded-lg p-2 text-center">
+                        <Swords className="w-4 h-4 mx-auto mb-1 text-red-400" />
+                        <div className="text-sm font-bold text-foreground">{selected.attack ?? "–"}</div>
+                      </div>
+                      <div className="bg-muted/50 rounded-lg p-2 text-center">
+                        <Shield className="w-4 h-4 mx-auto mb-1 text-blue-400" />
+                        <div className="text-sm font-bold text-foreground">{selected.defense ?? "–"}</div>
+                      </div>
+                      <div className="bg-muted/50 rounded-lg p-2 text-center">
+                        <Wand2 className="w-4 h-4 mx-auto mb-1 text-purple-400" />
+                        <div className="text-sm font-bold text-foreground">{selected.power ?? "–"}</div>
+                      </div>
+                      <div className="bg-muted/50 rounded-lg p-2 text-center">
+                        <BookOpen className="w-4 h-4 mx-auto mb-1 text-amber-400" />
+                        <div className="text-sm font-bold text-foreground">{selected.knowledge ?? "–"}</div>
+                      </div>
                     </div>
-                    <div className="bg-muted/50 rounded-lg p-2 text-center">
-                      <Shield className="w-4 h-4 mx-auto mb-1 text-blue-400" />
-                      <div className="text-sm font-bold text-foreground">{selected.defense ?? "–"}</div>
-                    </div>
-                    <div className="bg-muted/50 rounded-lg p-2 text-center">
-                      <Wand2 className="w-4 h-4 mx-auto mb-1 text-purple-400" />
-                      <div className="text-sm font-bold text-foreground">{selected.power ?? "–"}</div>
-                    </div>
-                    <div className="bg-muted/50 rounded-lg p-2 text-center">
-                      <BookOpen className="w-4 h-4 mx-auto mb-1 text-amber-400" />
-                      <div className="text-sm font-bold text-foreground">{selected.knowledge ?? "–"}</div>
-                    </div>
+
+                    {notes(selected) && (
+                      <div className="text-xs text-muted-foreground" dangerouslySetInnerHTML={{ __html: renderGlyphs(notes(selected), glyphs) }} />
+                    )}
+
+                    <HeroLinksRow heroId={selected.id} abilityId={selected.ability_id} lang={lang as "EN" | "RU"} />
                   </div>
+                </TabsContent>
 
-                  {notes(selected) && (
-                    <div className="text-xs text-muted-foreground" dangerouslySetInnerHTML={{ __html: renderGlyphs(notes(selected), glyphs) }} />
-                  )}
+                <TabsContent
+                  value="specialty"
+                  className="absolute inset-0 overflow-y-auto overscroll-contain data-[state=inactive]:hidden"
+                  style={{ touchAction: "pan-y", WebkitOverflowScrolling: "touch" }}
+                >
+                  <div onClick={handleEntityClick} className="px-4 pb-6 pt-3 space-y-3">
+                    {specialty(selected) && (
+                      <p
+                        className="text-sm font-bold text-foreground text-center"
+                        dangerouslySetInnerHTML={{ __html: renderGlyphs(specialty(selected), glyphs) }}
+                      />
+                    )}
 
-                  <HeroLinksRow heroId={selected.id} abilityId={selected.ability_id} lang={lang as "EN" | "RU"} />
-                </div>
-              </TabsContent>
-
-              <TabsContent value="specialty" className="px-4 pb-6">
-                <div onClick={handleEntityClick} className="py-3 space-y-3">
-                  {specialty(selected) && (
-                    <p
-                      className="text-sm font-bold text-foreground text-center"
-                      dangerouslySetInnerHTML={{ __html: renderGlyphs(specialty(selected), glyphs) }}
-                    />
-                  )}
-
-                  {levels(selected).length > 0 && (
-                    <div>
-                      {levels(selected).length > 1 && (
-                        <div className="flex gap-1.5 mb-2 justify-center">
-                          {levels(selected).map((lvl, i) => (
-                            <button
-                              key={i}
-                              onClick={() => setSpecialtyTab(i)}
-                              className={`px-3 py-1 rounded-full text-xs font-medium transition-colors border ${
-                                specialtyTab === i
-                                  ? "bg-amber-500/90 text-background border-amber-400"
-                                  : "bg-transparent text-amber-200/70 border-amber-400/40 hover:bg-amber-500/10"
-                              }`}
-                            >
-                              {lvl.level}
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                      {(() => {
-                        const idx = levels(selected).length > 1 ? specialtyTab : 0;
-                        const lvl = levels(selected)[idx];
-                        if (!lvl) return null;
-                        const effect = lang === "RU" ? lvl.effect_ru : lvl.effect_en;
-                        return (
-                          <div key={idx} className="bg-muted rounded-lg p-3 space-y-2 transition-opacity duration-200 opacity-100">
-                            {lvl.image && (
-                              <img
-                                src={`${STORAGE}/heroes/${lvl.image}`}
-                                alt={lvl.level}
-                                className="w-[70%] max-w-[280px] mx-auto object-contain rounded-lg"
-                                onError={e => (e.currentTarget.style.display = "none")}
-                              />
-                            )}
-                            {effect && (
-                              <div className="text-xs text-muted-foreground" dangerouslySetInnerHTML={{ __html: renderGlyphs(effect, glyphs) }} />
-                            )}
+                    {levels(selected).length > 0 && (
+                      <div>
+                        {levels(selected).length > 1 && (
+                          <div className="flex gap-1.5 mb-2 justify-center">
+                            {levels(selected).map((lvl, i) => (
+                              <button
+                                key={i}
+                                onClick={() => setSpecialtyTab(i)}
+                                className={`px-3 py-1 rounded-full text-xs font-medium transition-colors border ${
+                                  specialtyTab === i
+                                    ? "bg-amber-500/90 text-background border-amber-400"
+                                    : "bg-transparent text-amber-200/70 border-amber-400/40 hover:bg-amber-500/10"
+                                }`}
+                              >
+                                {lvl.level}
+                              </button>
+                            ))}
                           </div>
-                        );
-                      })()}
-                    </div>
-                  )}
-                </div>
-              </TabsContent>
+                        )}
+                        {(() => {
+                          const idx = levels(selected).length > 1 ? specialtyTab : 0;
+                          const lvl = levels(selected)[idx];
+                          if (!lvl) return null;
+                          const effect = lang === "RU" ? lvl.effect_ru : lvl.effect_en;
+                          return (
+                            <div key={idx} className="bg-muted rounded-lg p-3 space-y-2 transition-opacity duration-200 opacity-100">
+                              {lvl.image && (
+                                <img
+                                  src={`${STORAGE}/heroes/${lvl.image}`}
+                                  alt={lvl.level}
+                                  className="w-[70%] max-w-[280px] mx-auto object-contain rounded-lg"
+                                  onError={e => (e.currentTarget.style.display = "none")}
+                                />
+                              )}
+                              {effect && (
+                                <div className="text-xs text-muted-foreground" dangerouslySetInnerHTML={{ __html: renderGlyphs(effect, glyphs) }} />
+                              )}
+                            </div>
+                          );
+                        })()}
+                      </div>
+                    )}
+                  </div>
+                </TabsContent>
+              </div>
             </Tabs>
           </DialogContent>
         )}
