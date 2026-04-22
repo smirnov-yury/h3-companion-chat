@@ -317,7 +317,7 @@ export default function HeroesTab({ initialFilter, initialCardId, initialSearch,
 
       <Dialog open={!!selected} onOpenChange={open => { if (!open) closeCard(); }} >
         {selected && (
-          <DialogContent className="max-h-[90dvh] w-[95vw] max-w-md grid grid-rows-[auto_1fr] overflow-hidden p-0 rounded-xl gap-0">
+          <DialogContent className="h-[85dvh] w-[95vw] max-w-md flex flex-col overflow-hidden p-0 rounded-xl gap-0">
             <DialogClose
               aria-label="Close"
               className="absolute top-3 right-3 z-20 inline-flex h-8 w-8 items-center justify-center rounded-full border-2 bg-background/80 backdrop-blur-sm text-foreground transition-colors hover:bg-background focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background"
@@ -350,7 +350,7 @@ export default function HeroesTab({ initialFilter, initialCardId, initialSearch,
               </div>
             </div>
 
-            <Tabs defaultValue="info" className="grid grid-rows-[auto_1fr] overflow-hidden min-h-0">
+            <Tabs defaultValue="info" className="flex-1 min-h-0 grid grid-rows-[auto_1fr] overflow-hidden">
               <TabsList className="mx-4 shrink-0 grid grid-cols-2 w-auto">
                 <TabsTrigger value="info">{lang === "RU" ? "Инфо" : "Info"}</TabsTrigger>
                 <TabsTrigger value="specialty">{lang === "RU" ? "Специальность" : "Specialty"}</TabsTrigger>
