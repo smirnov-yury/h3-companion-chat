@@ -15,6 +15,18 @@ export function entityLinkUrl(type: string, id: string): string | null {
       return `/heroes/${id}`;
     case "rule":
       return `/rules/${id}`;
+    case "field":
+      return `/map-elements/${id}`;
+    case "event":
+      return `/events/${id}`;
+    case "astrologer":
+      return `/events/${id}`;
+    case "war_machine":
+      return `/decks/warmachines/${id}`;
+    case "town_building": {
+      const townId = id.split("_")[0];
+      return townId ? `/towns/${townId}` : null;
+    }
     default:
       return null;
   }

@@ -34,7 +34,10 @@ const TIER_CLASSES: Record<string, string> = {
   azure: "glyph-tier-azure",
 };
 
-const ENTITY_LINK_TYPES = new Set(["spell", "ability", "artifact", "unit", "hero", "rule"]);
+const ENTITY_LINK_TYPES = new Set([
+  "spell", "ability", "artifact", "unit", "hero", "rule",
+  "war_machine", "town_building", "astrologer", "field", "event",
+]);
 
 export function renderGlyphs(text: string | null | undefined, glyphs: GlyphMap): string {
   if (!text) return "";
