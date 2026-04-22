@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Search, X, Swords, Shield, Wand2, BookOpen, User } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/context/LanguageContext";
 import { useGlyphs } from "@/context/GlyphsContext";
@@ -8,8 +9,8 @@ import { Dialog } from "@/components/ui/dialog";
 import { CardDialogContent } from "@/components/ui/card-dialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { EmptyState, SkeletonGrid } from "@/components/ui/empty-state";
-import { useEntityLinkHandler } from "@/hooks/useEntityLinkHandler";
-import SeeAlso from "@/components/SeeAlso";
+import { useEntityLinkHandler, entityLinkUrl } from "@/hooks/useEntityLinkHandler";
+import { useEntityLinks } from "@/hooks/useEntityLinks";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 const STORAGE = `${SUPABASE_URL}/storage/v1/object/public/component-media`;
@@ -89,6 +90,61 @@ function HeroSilhouette({ town, className = "" }: { town: string | null; classNa
   return (
     <div className={`w-full h-full flex items-center justify-center ${bg} ${className}`}>
       <User className="w-16 h-16 text-white/30" />
+    </div>
+  );
+}
+
+function AbilityChip({ abilityId }: { abilityId: string }) {
+  const { lang } = useLang();
+  const navigate = useNavigate();
+  const [name, setName] = useState<{ en: string; ru: string | null } | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    supabase
+      .from("abilities")
+      .select("name_en, name_ru")
+      .eq("id", abilityId)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (!cancelled && data) setName({ en: data.name_en, ru: data.name_ru });
+      });
+    return () => { cancelled = true; };
+  }, [abilityId]);
+  const label = (lang === "RU" ? name?.ru || name?.en : name?.en) || abilityId;
+  const url = entityLinkUrl("ability", abilityId);
+  return (
+    <button
+      onClick={() => url && navigate(url)}
+      disabled={!url}
+      className="text-[11px] px-2 py-0.5 rounded-full border border-[#E1BB3A] text-[#E1BB3A] bg-[#E1BB3A]/10 hover:bg-[#E1BB3A]/20 transition-colors disabled:opacity-50"
+    >
+      {label}
+    </button>
+  );
+}
+
+function HeroLinksRow({ heroId, abilityId, lang }: { heroId: string; abilityId: string | null; lang: "EN" | "RU" }) {
+  const navigate = useNavigate();
+  const { links } = useEntityLinks("hero", heroId);
+  if (!abilityId && links.length === 0) return null;
+  return (
+    <div className="flex flex-wrap items-center gap-2 mt-3">
+      <span className="text-[#E1BB3A] text-sm shrink-0">→</span>
+      {abilityId && <AbilityChip abilityId={abilityId} />}
+      {links.map((l) => {
+        const name = (lang === "RU" ? l.name_ru || l.name_en : l.name_en) || l.to_id;
+        const url = entityLinkUrl(l.to_type, l.to_id);
+        return (
+          <button
+            key={`${l.to_type}-${l.to_id}`}
+            onClick={() => url && navigate(url)}
+            disabled={!url}
+            className="text-[11px] px-2 py-0.5 rounded-full border border-[#E1BB3A] text-[#E1BB3A] bg-[#E1BB3A]/10 hover:bg-[#E1BB3A]/20 transition-colors disabled:opacity-50"
+          >
+            {name}
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -231,27 +287,25 @@ export default function HeroesTab({ initialFilter, initialCardId, initialSearch,
                     <HeroSilhouette town={h.town} />
                   )}
 
-                  {h.class_en && (() => {
-                    const isMagic = h.class_en.includes('<magic>');
-                    const heroType = isMagic ? 'Magic' : 'Might';
-                    const rawClass = (lang === "RU" && h.class_ru ? h.class_ru : h.class_en).replace(/<magic>|<might>/g, '').trim();
-                    return (
-                      <div className="absolute top-1.5 left-1.5 flex flex-col gap-1">
-                        <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-full backdrop-blur-sm text-white ${isMagic ? 'bg-blue-600/80' : 'bg-red-700/80'}`}>
-                          {heroType}
-                        </span>
-                        <span
-                          className="text-[9px] px-1.5 py-0.5 rounded-full backdrop-blur-sm bg-black/50 text-white"
-                          dangerouslySetInnerHTML={{ __html: renderGlyphs(rawClass, glyphs) }}
-                        />
-                      </div>
-                    );
-                  })()}
-                  {h.town && (
-                    <div className="absolute bottom-1.5 right-1.5">
-                      <FactionBadge town={h.town} />
-                    </div>
-                  )}
+                  <div className="absolute top-1.5 left-1.5 z-10 flex flex-col gap-1">
+                    {h.town && <FactionBadge town={h.town} />}
+                    {h.class_en && (() => {
+                      const isMagic = h.class_en.includes('<magic>');
+                      const heroType = isMagic ? 'Magic' : 'Might';
+                      const rawClass = (lang === "RU" && h.class_ru ? h.class_ru : h.class_en).replace(/<magic>|<might>/g, '').trim();
+                      return (
+                        <>
+                          <span className={`text-[9px] font-semibold px-1.5 py-0.5 rounded-full backdrop-blur-sm text-white ${isMagic ? 'bg-blue-600/80' : 'bg-red-700/80'}`}>
+                            {heroType}
+                          </span>
+                          <span
+                            className="text-[9px] px-1.5 py-0.5 rounded-full backdrop-blur-sm bg-black/50 text-white"
+                            dangerouslySetInnerHTML={{ __html: renderGlyphs(rawClass, glyphs) }}
+                          />
+                        </>
+                      );
+                    })()}
+                  </div>
                 </div>
                 <div className="p-2">
                   <p className="text-xs font-semibold text-foreground truncate">{name(h)}</p>
@@ -323,7 +377,7 @@ export default function HeroesTab({ initialFilter, initialCardId, initialSearch,
                       <div className="text-xs text-muted-foreground" dangerouslySetInnerHTML={{ __html: renderGlyphs(notes(selected), glyphs) }} />
                     )}
 
-                    <SeeAlso entityType="hero" entityId={selected.id} lang={lang as "EN" | "RU"} />
+                    <HeroLinksRow heroId={selected.id} abilityId={selected.ability_id} lang={lang as "EN" | "RU"} />
                   </div>
                   <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-6 bg-gradient-to-t from-background to-transparent" />
                 </div>
