@@ -317,7 +317,7 @@ export default function HeroesTab({ initialFilter, initialCardId, initialSearch,
 
       <Dialog open={!!selected} onOpenChange={open => { if (!open) closeCard(); }} >
         {selected && (
-          <DialogContent className="h-[85dvh] w-[95vw] max-w-md flex flex-col overflow-hidden p-0 rounded-xl gap-0">
+          <DialogContent className="max-h-[90dvh] w-[95vw] max-w-md grid grid-rows-[auto_auto_minmax(220px,1fr)] overflow-hidden p-0 rounded-xl gap-0">
             <DialogClose
               aria-label="Close"
               className="absolute top-3 right-3 z-20 inline-flex h-8 w-8 items-center justify-center rounded-full border-2 bg-background/80 backdrop-blur-sm text-foreground transition-colors hover:bg-background focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background"
@@ -350,7 +350,7 @@ export default function HeroesTab({ initialFilter, initialCardId, initialSearch,
               </div>
             </div>
 
-            <Tabs defaultValue="info" className="flex-1 min-h-0 grid grid-rows-[auto_1fr] overflow-hidden">
+            <Tabs defaultValue="info" className="contents">
               <TabsList className="mx-4 shrink-0 grid grid-cols-2 w-auto">
                 <TabsTrigger value="info">{lang === "RU" ? "Инфо" : "Info"}</TabsTrigger>
                 <TabsTrigger value="specialty">{lang === "RU" ? "Специальность" : "Specialty"}</TabsTrigger>
@@ -411,8 +411,10 @@ export default function HeroesTab({ initialFilter, initialCardId, initialSearch,
                               <button
                                 key={i}
                                 onClick={() => setSpecialtyTab(i)}
-                                className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                                  specialtyTab === i ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-muted/70"
+                                className={`px-3 py-1 rounded-full text-xs font-medium transition-colors border ${
+                                  specialtyTab === i
+                                    ? "bg-amber-500/90 text-background border-amber-400"
+                                    : "bg-transparent text-amber-200/70 border-amber-400/40 hover:bg-amber-500/10"
                                 }`}
                               >
                                 {lvl.level}
@@ -431,7 +433,7 @@ export default function HeroesTab({ initialFilter, initialCardId, initialSearch,
                                 <img
                                   src={`${STORAGE}/heroes/${lvl.image}`}
                                   alt={lvl.level}
-                                  className="w-full object-contain"
+                                  className="w-[70%] max-w-[280px] mx-auto object-contain rounded-lg"
                                   onError={e => (e.currentTarget.style.display = "none")}
                                 />
                               )}
