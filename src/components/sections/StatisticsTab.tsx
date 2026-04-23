@@ -156,8 +156,8 @@ export default function StatisticsTab({ searchQuery = "", initialCardId, onCardO
           {selected && (
             <>
               {selected.image && (
-                <div className="relative w-full shrink-0 flex justify-center bg-muted">
-                  <img src={`${STORAGE}/statistics/${selected.image}`} alt={selected.name_en || ""} className="w-full max-h-[280px] object-contain" />
+                <div className="relative w-[85%] mx-auto pt-4 mb-0 shrink-0">
+                  <img src={`${STORAGE}/statistics/${selected.image}`} alt={selected.name_en || ""} className="w-full max-h-[280px] object-contain rounded-lg shadow-lg" />
                   {(selected.stat_type || selected.card_type) && (
                     <div className="absolute top-2 left-2 flex flex-col gap-1">
                       {selected.stat_type && (
@@ -179,19 +179,19 @@ export default function StatisticsTab({ searchQuery = "", initialCardId, onCardO
                 {selected.effect_en && (
                   <div>
                     <p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Эффект" : "Effect"}</p>
-                    <p className="text-xs text-muted-foreground whitespace-pre-line" dangerouslySetInnerHTML={{ __html: renderGlyphs(selected.effect_en, glyphs) }} />
+                    <p className="text-xs text-muted-foreground whitespace-pre-line" dangerouslySetInnerHTML={{ __html: renderGlyphs(lang === "RU" ? (selected.effect_ru || selected.effect_en) : selected.effect_en, glyphs) }} />
                   </div>
                 )}
                 {selected.effect_en_expert && (
                   <div>
                     <p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Усиленный" : "Empowered"}</p>
-                    <p className="text-xs text-muted-foreground whitespace-pre-line" dangerouslySetInnerHTML={{ __html: renderGlyphs(selected.effect_en_expert, glyphs) }} />
+                    <p className="text-xs text-muted-foreground whitespace-pre-line" dangerouslySetInnerHTML={{ __html: renderGlyphs(lang === "RU" ? (selected.effect_en_expert_ru || selected.effect_en_expert) : selected.effect_en_expert, glyphs) }} />
                   </div>
                 )}
-                {(lang === "RU" ? selected.notes_ru : selected.notes_en) && (
+                {(lang === "RU" ? (selected.notes_ru || selected.notes_en) : selected.notes_en) && (
                   <div>
                     <p className="text-xs font-semibold text-foreground">{lang === "RU" ? "Заметки" : "Notes"}</p>
-                    <p className="text-xs text-muted-foreground whitespace-pre-line" dangerouslySetInnerHTML={{ __html: renderGlyphs(lang === "RU" ? selected.notes_ru : selected.notes_en, glyphs) }} />
+                    <p className="text-xs text-muted-foreground whitespace-pre-line" dangerouslySetInnerHTML={{ __html: renderGlyphs(lang === "RU" ? (selected.notes_ru || selected.notes_en) : selected.notes_en, glyphs) }} />
                   </div>
                 )}
               </div>
