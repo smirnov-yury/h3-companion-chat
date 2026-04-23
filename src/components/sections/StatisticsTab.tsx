@@ -67,6 +67,7 @@ interface Props {
 export default function StatisticsTab({ searchQuery = "", initialCardId, onCardOpen, onCardClose }: Props) {
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
+  const handleEntityClick = useEntityLinkHandler();
   const [items, setItems] = useState<Statistic[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [selected, setSelected] = useState<Statistic | null>(null);
