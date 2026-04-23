@@ -159,7 +159,7 @@ export default function StatisticsTab({ searchQuery = "", initialCardId, onCardO
             <>
               {selected.image && (
                 <div className="relative w-[85%] mx-auto pt-4 mb-0 shrink-0">
-                  <img src={`${STORAGE}/statistics/${selected.image}`} alt={selected.name_en || ""} className="w-full max-h-[280px] object-contain rounded-lg shadow-lg" />
+                  <img src={`${STORAGE}/statistics/${selected.image}`} alt={selected.name_en || ""} className="w-full aspect-[5/7] object-contain rounded-lg shadow-lg" />
                   {(selected.stat_type || selected.card_type) && (
                     <div className="absolute top-2 left-2 flex flex-col gap-1">
                       {selected.stat_type && (
