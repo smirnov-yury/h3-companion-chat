@@ -108,22 +108,6 @@ export default function NavDrawer({ open, onOpenChange, active, onChange }: NavD
           <NavItemList active={active} onChange={onChange} />
         </nav>
         <LangToggle />
-      </aside>
-
-      {/* Mobile drawer */}
-      <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent side="left" className="w-72 p-0 flex flex-col lg:hidden">
-          <SheetHeader className="p-4 border-b border-border">
-            <SheetTitle className="text-base text-left">
-              <button onClick={goHome} className="cursor-pointer hover:text-primary transition-colors">
-                Heroes 3 Companion
-              </button>
-            </SheetTitle>
-          </SheetHeader>
-        <nav className="flex-1 overflow-y-auto py-2">
-          <NavItemList active={active} onChange={onChange} />
-        </nav>
-        <LangToggle />
         <AboutLink />
       </aside>
 
