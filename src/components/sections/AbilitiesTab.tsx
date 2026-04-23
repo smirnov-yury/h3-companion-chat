@@ -42,7 +42,7 @@ export default function AbilitiesTab({ searchQuery = "", initialCardId, onCardOp
   const handleEntityClick = useEntityLinkHandler();
   const [items, setItems] = useState<Ability[]>([]);
   const [loaded, setLoaded] = useState(false);
-  const [selected, setSelected] = useState<Ability | null>(null);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
   useEffect(() => {
     supabase.from("abilities").select("*").order("sort_order").then(({ data }) => {
@@ -51,14 +51,7 @@ export default function AbilitiesTab({ searchQuery = "", initialCardId, onCardOp
     });
   }, []);
 
-  useEffect(() => {
-    if (!loaded || !initialCardId) return;
-    const found = items.find(i => i.id === initialCardId);
-    if (found) setSelected(found);
-  }, [loaded, initialCardId, items]);
-
-  const openCard = (i: Ability) => { setSelected(i); onCardOpen?.(i.id); };
-  const closeCard = () => { setSelected(null); onCardClose?.(); };
+  const closeCard = () => { setSelectedIndex(null); onCardClose?.(); };
 
   const name = (i: Ability) => lang === "RU" ? (i.name_ru || i.name_en) : i.name_en;
 
@@ -69,6 +62,25 @@ export default function AbilitiesTab({ searchQuery = "", initialCardId, onCardOp
         return fields.some(f => f && f.toLowerCase().includes(q));
       })
     : items;
+
+  const selected = selectedIndex !== null ? filtered[selectedIndex] ?? null : null;
+  const openCard = (i: Ability) => {
+    const idx = filtered.findIndex(x => x.id === i.id);
+    if (idx === -1) return;
+    setSelectedIndex(idx);
+    onCardOpen?.(i.id);
+  };
+  const goPrev = selectedIndex !== null && selectedIndex > 0
+    ? () => setSelectedIndex(selectedIndex - 1) : undefined;
+  const goNext = selectedIndex !== null && selectedIndex < filtered.length - 1
+    ? () => setSelectedIndex(selectedIndex + 1) : undefined;
+
+  useEffect(() => {
+    if (!loaded || !initialCardId) return;
+    const idx = filtered.findIndex(i => i.id === initialCardId);
+    if (idx !== -1) setSelectedIndex(idx);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loaded, initialCardId, items]);
 
   return (
     <>
@@ -98,7 +110,7 @@ export default function AbilitiesTab({ searchQuery = "", initialCardId, onCardOp
       </div>
 
       <Dialog open={!!selected} onOpenChange={(o) => !o && closeCard()}>
-        <CardDialogContent>
+        <CardDialogContent onPrev={goPrev} onNext={goNext}>
           {selected && (
             <>
               <div className="relative w-[85%] mx-auto pt-4 mb-0 shrink-0 bg-muted/50 rounded-lg">

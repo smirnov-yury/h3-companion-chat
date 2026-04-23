@@ -70,7 +70,7 @@ export default function StatisticsTab({ searchQuery = "", initialCardId, onCardO
   const handleEntityClick = useEntityLinkHandler();
   const [items, setItems] = useState<Statistic[]>([]);
   const [loaded, setLoaded] = useState(false);
-  const [selected, setSelected] = useState<Statistic | null>(null);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [filterStat, setFilterStat] = useState("all");
 
   useEffect(() => {
@@ -80,15 +80,8 @@ export default function StatisticsTab({ searchQuery = "", initialCardId, onCardO
     });
   }, []);
 
-  useEffect(() => {
-    if (!loaded || !initialCardId) return;
-    const found = items.find(i => i.id === initialCardId);
-    if (found) setSelected(found);
-  }, [loaded, initialCardId, items]);
-
   const currentFilter = filterStat === "all" ? null : filterStat;
-  const openCard = (i: Statistic) => { setSelected(i); onCardOpen?.(currentFilter, i.id); };
-  const closeCard = () => { setSelected(null); onCardClose?.(currentFilter); };
+  const closeCard = () => { setSelectedIndex(null); onCardClose?.(currentFilter); };
 
   const statTypes = ["all", ...Array.from(new Set(items.map(i => i.stat_type).filter(Boolean))) as string[]];
   const afterFilter = filterStat === "all" ? items : items.filter(i => i.stat_type === filterStat);
@@ -103,6 +96,25 @@ export default function StatisticsTab({ searchQuery = "", initialCardId, onCardO
   const name = (i: Statistic) => lang === "RU" ? (i.name_ru || i.name_en || "") : (i.name_en || "");
   const hasFilters = filterStat !== "all" || !!searchQuery;
   const resetFilters = () => setFilterStat("all");
+
+  const selected = selectedIndex !== null ? filtered[selectedIndex] ?? null : null;
+  const openCard = (i: Statistic) => {
+    const idx = filtered.findIndex(x => x.id === i.id);
+    if (idx === -1) return;
+    setSelectedIndex(idx);
+    onCardOpen?.(currentFilter, i.id);
+  };
+  const goPrev = selectedIndex !== null && selectedIndex > 0
+    ? () => setSelectedIndex(selectedIndex - 1) : undefined;
+  const goNext = selectedIndex !== null && selectedIndex < filtered.length - 1
+    ? () => setSelectedIndex(selectedIndex + 1) : undefined;
+
+  useEffect(() => {
+    if (!loaded || !initialCardId) return;
+    const idx = filtered.findIndex(i => i.id === initialCardId);
+    if (idx !== -1) setSelectedIndex(idx);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loaded, initialCardId, items]);
 
   return (
     <>
@@ -154,7 +166,7 @@ export default function StatisticsTab({ searchQuery = "", initialCardId, onCardO
       </div>
 
       <Dialog open={!!selected} onOpenChange={(o) => !o && closeCard()}>
-        <CardDialogContent>
+        <CardDialogContent onPrev={goPrev} onNext={goNext}>
           {selected && (
             <>
               {selected.image && (
