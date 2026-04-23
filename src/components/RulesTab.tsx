@@ -226,13 +226,13 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled, initialFilte
     return list;
   }, [rules, selectedCategory, debouncedSearch, lang]);
 
-  // Auto-open single search result
+  // Auto-open when only one rule is visible (single search result OR single filtered result)
   const autoOpenValue = useMemo(() => {
-    if (debouncedSearch.length >= 2 && filtered.length === 1) {
+    if (filtered.length === 1 && (debouncedSearch.length >= 2 || selectedCategory)) {
       return filtered[0].id;
     }
     return undefined;
-  }, [debouncedSearch, filtered]);
+  }, [debouncedSearch, filtered, selectedCategory]);
 
   useEffect(() => {
     if (autoOpenValue) {
