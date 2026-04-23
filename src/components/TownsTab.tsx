@@ -160,66 +160,68 @@ export default function TownsTab({ initialCardId, onCardOpen }: Props = {}) {
         </div>
       </div>
 
-      <div className="px-3 pb-3 space-y-3">
-        {/* Town board image */}
-        {currentImageSrc && !imgError ? (
-          <img
-            src={currentImageSrc}
-            alt={selectedTown ? name(selectedTown) : ""}
-            className="w-full rounded-lg object-contain"
-            onError={() => setImgError(true)}
-          />
-        ) : (
-          <div className="w-full rounded-lg bg-muted flex items-center justify-center py-12">
-            <p className="text-xs text-muted-foreground">
-              {lang === "RU" ? "Изображение недоступно" : "No image available"}
-            </p>
+      <div className="flex-1 overflow-y-auto px-3 pb-3">
+        <div className="md:flex md:gap-4 md:items-start">
+          <div className="md:w-[45%] md:shrink-0 space-y-3">
+            {currentImageSrc && !imgError ? (
+              <img
+                src={currentImageSrc}
+                alt={selectedTown ? name(selectedTown) : ""}
+                className="w-full max-h-[55vh] rounded-lg object-contain"
+                onError={() => setImgError(true)}
+              />
+            ) : (
+              <div className="w-full rounded-lg bg-muted flex items-center justify-center py-12">
+                <p className="text-xs text-muted-foreground">
+                  {lang === "RU" ? "Изображение недоступно" : "No image available"}
+                </p>
+              </div>
+            )}
+            {notes && (
+              <div
+                className="text-xs text-muted-foreground whitespace-pre-line"
+                dangerouslySetInnerHTML={{ __html: renderGlyphs(notes, glyphs) }}
+              />
+            )}
           </div>
-        )}
 
-        {/* Notes */}
-        {notes && (
-          <div
-            className="text-xs text-muted-foreground whitespace-pre-line"
-            dangerouslySetInnerHTML={{ __html: renderGlyphs(notes, glyphs) }}
-          />
-        )}
-
-        {/* Buildings list */}
-        {buildings.length > 0 && (
-          <div className="space-y-2">
-            <p className="text-xs font-semibold text-foreground">
-              {lang === "RU" ? "Постройки" : "Buildings"}
-            </p>
-            {buildings.map((b) => {
-              const bName = lang === "RU" ? (b.name_ru || b.name_en) : b.name_en;
-              const bEffect = lang === "RU" ? (b.effect_ru || b.effect_en) : b.effect_en;
-              return (
-                <div key={b.id} className="bg-muted rounded-lg p-3">
-                  <div className="flex items-start justify-between gap-2">
-                    <span
-                      className="font-medium text-sm text-foreground"
-                      dangerouslySetInnerHTML={{ __html: renderGlyphs(bName, glyphs) }}
-                    />
-                    {b.cost && (
+          <div className="md:flex-1 mt-3 md:mt-0 space-y-2">
+            {buildings.length > 0 && (
+              <>
+                <p className="text-xs font-semibold text-foreground">
+                  {lang === "RU" ? "Постройки" : "Buildings"}
+                </p>
+                {buildings.map((b) => {
+                  const bName = lang === "RU" ? (b.name_ru || b.name_en) : b.name_en;
+                  const bEffect = lang === "RU" ? (b.effect_ru || b.effect_en) : b.effect_en;
+                  return (
+                    <div key={b.id} className="bg-muted rounded-lg p-3">
                       <span
-                        className="text-xs text-muted-foreground shrink-0 whitespace-pre-line"
-                        dangerouslySetInnerHTML={{ __html: renderGlyphs(b.cost, glyphs) }}
+                        className="font-medium text-sm text-foreground"
+                        dangerouslySetInnerHTML={{ __html: renderGlyphs(bName, glyphs) }}
                       />
-                    )}
-                  </div>
-                  {bEffect && (
-                    <div
-                      className="text-xs text-muted-foreground mt-1 whitespace-pre-line"
-                      dangerouslySetInnerHTML={{ __html: renderGlyphs(bEffect, glyphs) }}
-                    />
-                  )}
-                  <SeeAlso entityType="town_building" entityId={b.id} lang={lang} />
-                </div>
-              );
-            })}
+                      {bEffect && (
+                        <div
+                          className="text-xs text-muted-foreground mt-1 whitespace-pre-line"
+                          dangerouslySetInnerHTML={{ __html: renderGlyphs(bEffect, glyphs) }}
+                        />
+                      )}
+                      {b.cost && (
+                        <div className="mt-1.5">
+                          <span
+                            className="text-xs text-muted-foreground whitespace-pre-line"
+                            dangerouslySetInnerHTML={{ __html: renderGlyphs(b.cost, glyphs) }}
+                          />
+                        </div>
+                      )}
+                      <SeeAlso entityType="town_building" entityId={b.id} lang={lang} />
+                    </div>
+                  );
+                })}
+              </>
+            )}
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
