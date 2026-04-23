@@ -176,7 +176,7 @@ export default function StatisticsTab({ searchQuery = "", initialCardId, onCardO
                   )}
                 </div>
               )}
-              <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
+              <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3" onClick={handleEntityClick}>
                 <h2 className="text-lg font-semibold leading-tight pr-8">{name(selected)}</h2>
                 {selected.effect_en && (
                   <div>
