@@ -64,7 +64,7 @@ export default function SpellsTab({ searchQuery = "", initialFilter, initialCard
   const handleEntityClick = useEntityLinkHandler();
   const [items, setItems] = useState<Spell[]>([]);
   const [loaded, setLoaded] = useState(false);
-  const [selected, setSelected] = useState<Spell | null>(null);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [filterSchool, setFilterSchool] = useState("all");
 
   useEffect(() => {
@@ -87,16 +87,8 @@ export default function SpellsTab({ searchQuery = "", initialFilter, initialCard
     onFilterChange?.(next === "all" ? null : next);
   };
 
-  // Auto-open card from URL
-  useEffect(() => {
-    if (!loaded || !initialCardId) return;
-    const found = items.find(i => i.id === initialCardId);
-    if (found) setSelected(found);
-  }, [loaded, initialCardId, items]);
-
   const currentFilter = filterSchool === "all" ? null : filterSchool;
-  const openCard = (i: Spell) => { setSelected(i); onCardOpen?.(currentFilter, i.id); };
-  const closeCard = () => { setSelected(null); onCardClose?.(currentFilter); };
+  const closeCard = () => { setSelectedIndex(null); onCardClose?.(currentFilter); };
 
   const schools = ["all", ...Array.from(new Set(items.map(i => i.school).filter(Boolean))) as string[]];
   const afterSchool = filterSchool === "all" ? items : items.filter(i => i.school === filterSchool);
@@ -111,6 +103,25 @@ export default function SpellsTab({ searchQuery = "", initialFilter, initialCard
   const name = (i: Spell) => lang === "RU" ? (i.name_ru || i.name_en) : i.name_en;
   const hasFilters = filterSchool !== "all" || !!searchQuery;
   const resetFilters = () => setSchoolAndUrl("all");
+
+  const selected = selectedIndex !== null ? filtered[selectedIndex] ?? null : null;
+  const openCard = (i: Spell) => {
+    const idx = filtered.findIndex(x => x.id === i.id);
+    if (idx === -1) return;
+    setSelectedIndex(idx);
+    onCardOpen?.(currentFilter, i.id);
+  };
+  const goPrev = selectedIndex !== null && selectedIndex > 0
+    ? () => setSelectedIndex(selectedIndex - 1) : undefined;
+  const goNext = selectedIndex !== null && selectedIndex < filtered.length - 1
+    ? () => setSelectedIndex(selectedIndex + 1) : undefined;
+
+  useEffect(() => {
+    if (!loaded || !initialCardId) return;
+    const idx = filtered.findIndex(i => i.id === initialCardId);
+    if (idx !== -1) setSelectedIndex(idx);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loaded, initialCardId, items]);
 
   return (
     <>
@@ -164,7 +175,7 @@ export default function SpellsTab({ searchQuery = "", initialFilter, initialCard
       </div>
 
       <Dialog open={!!selected} onOpenChange={(o) => !o && closeCard()}>
-        <CardDialogContent>
+        <CardDialogContent onPrev={goPrev} onNext={goNext}>
           {selected && (
             <>
               <div className="relative w-[85%] mx-auto pt-4 mb-0 shrink-0">

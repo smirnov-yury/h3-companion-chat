@@ -38,7 +38,7 @@ export default function WarMachinesTab({ searchQuery = "", initialCardId, onCard
   const { glyphs } = useGlyphs();
   const [items, setItems] = useState<WarMachine[]>([]);
   const [loaded, setLoaded] = useState(false);
-  const [selected, setSelected] = useState<WarMachine | null>(null);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
   useEffect(() => {
     supabase.from("war_machines").select("*").order("sort_order").then(({ data }) => {
@@ -47,14 +47,7 @@ export default function WarMachinesTab({ searchQuery = "", initialCardId, onCard
     });
   }, []);
 
-  useEffect(() => {
-    if (!loaded || !initialCardId) return;
-    const found = items.find(i => i.id === initialCardId);
-    if (found) setSelected(found);
-  }, [loaded, initialCardId, items]);
-
-  const openCard = (i: WarMachine) => { setSelected(i); onCardOpen?.(i.id); };
-  const closeCard = () => { setSelected(null); onCardClose?.(); };
+  const closeCard = () => { setSelectedIndex(null); onCardClose?.(); };
 
   const name = (i: WarMachine) => lang === "RU" ? (i.name_ru || i.name_en) : i.name_en;
 
@@ -65,6 +58,25 @@ export default function WarMachinesTab({ searchQuery = "", initialCardId, onCard
         return fields.some(f => f && f.toLowerCase().includes(q));
       })
     : items;
+
+  const selected = selectedIndex !== null ? filtered[selectedIndex] ?? null : null;
+  const openCard = (i: WarMachine) => {
+    const idx = filtered.findIndex(x => x.id === i.id);
+    if (idx === -1) return;
+    setSelectedIndex(idx);
+    onCardOpen?.(i.id);
+  };
+  const goPrev = selectedIndex !== null && selectedIndex > 0
+    ? () => setSelectedIndex(selectedIndex - 1) : undefined;
+  const goNext = selectedIndex !== null && selectedIndex < filtered.length - 1
+    ? () => setSelectedIndex(selectedIndex + 1) : undefined;
+
+  useEffect(() => {
+    if (!loaded || !initialCardId) return;
+    const idx = filtered.findIndex(i => i.id === initialCardId);
+    if (idx !== -1) setSelectedIndex(idx);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loaded, initialCardId, items]);
 
   return (
     <>
@@ -94,7 +106,7 @@ export default function WarMachinesTab({ searchQuery = "", initialCardId, onCard
       </div>
 
       <Dialog open={!!selected} onOpenChange={(o) => !o && closeCard()}>
-        <CardDialogContent>
+        <CardDialogContent onPrev={goPrev} onNext={goNext}>
           {selected && (() => {
             // Replace plain "gold" word in cost strings with the <gold> glyph token.
             const goldify = (s: string | null) =>
