@@ -32,12 +32,11 @@ interface TownBuilding {
   sort_order: number | null;
 }
 
-type ImageTab = "empty" | "full" | "back";
+type ImageTab = "empty" | "full";
 
 const IMAGE_TABS: { id: ImageTab; labelRU: string; labelEN: string }[] = [
   { id: "empty", labelRU: "Пустой", labelEN: "Empty" },
   { id: "full", labelRU: "Полный", labelEN: "Full" },
-  { id: "back", labelRU: "Обратная", labelEN: "Back" },
 ];
 
 interface Props {
