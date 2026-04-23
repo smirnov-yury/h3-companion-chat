@@ -269,11 +269,16 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
     return items;
   }, [factionGroups, neutralUnits, mode, filterFaction, filterTier, filterType, searchQuery, lang]);
 
-  // Find selected item for modal
-  const selectedItem = useMemo(() => {
-    if (!selectedKey) return null;
-    return displayItems.find((i) => i.key === selectedKey) ?? null;
+  // Find selected item for modal + neighbors for swipe nav
+  const selectedIndex = useMemo(() => {
+    if (!selectedKey) return -1;
+    return displayItems.findIndex((i) => i.key === selectedKey);
   }, [selectedKey, displayItems]);
+  const selectedItem = selectedIndex >= 0 ? displayItems[selectedIndex] : null;
+  const goPrev = selectedIndex > 0
+    ? () => setSelectedKey(displayItems[selectedIndex - 1].key) : undefined;
+  const goNext = selectedIndex >= 0 && selectedIndex < displayItems.length - 1
+    ? () => setSelectedKey(displayItems[selectedIndex + 1].key) : undefined;
 
   const modeLabels: Record<ModeFilter, string> =
     lang === 'RU'
@@ -485,7 +490,7 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
 
       {/* Detail modal */}
       <Dialog open={!!selectedKey} onOpenChange={(o) => !o && closeCard()}>
-        <CardDialogContent>
+        <CardDialogContent onPrev={goPrev} onNext={goNext}>
           {selectedItem && (() => {
             const { variants } = selectedItem;
             const currentVariant = variants.find((v) => v.number === activeVariant) ? activeVariant : variants[0].number;
