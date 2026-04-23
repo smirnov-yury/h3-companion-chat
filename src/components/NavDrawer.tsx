@@ -69,6 +69,23 @@ function LangToggle() {
   );
 }
 
+function AboutLink({ onSelect }: { onSelect?: () => void }) {
+  const { lang } = useLang();
+  const navigate = useNavigate();
+  return (
+    <>
+      <Separator />
+      <button
+        onClick={() => { navigate("/about"); onSelect?.(); }}
+        className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-foreground hover:bg-muted transition-colors"
+      >
+        <Info className="w-5 h-5 shrink-0" />
+        {lang === "RU" ? "О проекте" : "About"}
+      </button>
+    </>
+  );
+}
+
 export default function NavDrawer({ open, onOpenChange, active, onChange }: NavDrawerProps) {
   const navigate = useNavigate();
   const goHome = () => {
