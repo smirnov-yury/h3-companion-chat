@@ -1,5 +1,6 @@
-import { BookOpen, Map, MapPin, CalendarDays, Layers, Swords, User, Castle, MessageCircle, type LucideIcon } from "lucide-react";
+import { BookOpen, Map, MapPin, CalendarDays, Layers, Swords, User, Castle, MessageCircle, Info, type LucideIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Separator } from "@/components/ui/separator";
 import { useLang } from "@/context/LanguageContext";
 import {
   Sheet,
@@ -68,6 +69,23 @@ function LangToggle() {
   );
 }
 
+function AboutLink({ onSelect }: { onSelect?: () => void }) {
+  const { lang } = useLang();
+  const navigate = useNavigate();
+  return (
+    <>
+      <Separator />
+      <button
+        onClick={() => { navigate("/about"); onSelect?.(); }}
+        className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-foreground hover:bg-muted transition-colors"
+      >
+        <Info className="w-5 h-5 shrink-0" />
+        {lang === "RU" ? "О проекте" : "About"}
+      </button>
+    </>
+  );
+}
+
 export default function NavDrawer({ open, onOpenChange, active, onChange }: NavDrawerProps) {
   const navigate = useNavigate();
   const goHome = () => {
@@ -90,6 +108,7 @@ export default function NavDrawer({ open, onOpenChange, active, onChange }: NavD
           <NavItemList active={active} onChange={onChange} />
         </nav>
         <LangToggle />
+        <AboutLink />
       </aside>
 
       {/* Mobile drawer */}
@@ -106,6 +125,7 @@ export default function NavDrawer({ open, onOpenChange, active, onChange }: NavD
             <NavItemList active={active} onChange={onChange} onSelect={() => onOpenChange(false)} />
           </nav>
           <LangToggle />
+          <AboutLink onSelect={() => onOpenChange(false)} />
         </SheetContent>
       </Sheet>
     </>
