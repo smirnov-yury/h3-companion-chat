@@ -53,7 +53,7 @@ export default function ArtifactsTab({ searchQuery = "", initialFilter, initialC
   const handleEntityClick = useEntityLinkHandler();
   const [items, setItems] = useState<Artifact[]>([]);
   const [loaded, setLoaded] = useState(false);
-  const [selected, setSelected] = useState<Artifact | null>(null);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [filterQuality, setFilterQuality] = useState("all");
 
   useEffect(() => {
@@ -74,16 +74,8 @@ export default function ArtifactsTab({ searchQuery = "", initialFilter, initialC
     onFilterChange?.(next === "all" ? null : next);
   };
 
-  // Auto-open card from URL
-  useEffect(() => {
-    if (!loaded || !initialCardId) return;
-    const found = items.find(i => i.id === initialCardId);
-    if (found) setSelected(found);
-  }, [loaded, initialCardId, items]);
-
   const currentFilter = filterQuality === "all" ? null : filterQuality;
-  const openCard = (i: Artifact) => { setSelected(i); onCardOpen?.(currentFilter, i.id); };
-  const closeCard = () => { setSelected(null); onCardClose?.(currentFilter); };
+  const closeCard = () => { setSelectedIndex(null); onCardClose?.(currentFilter); };
 
   const qualitiesSet = new Set(items.map(i => i.quality).filter(Boolean));
   const qualities = ["all", ...QUALITY_ORDER.filter(q => qualitiesSet.has(q)), ...Array.from(qualitiesSet).filter(q => !QUALITY_ORDER.includes(q!))];
@@ -99,6 +91,26 @@ export default function ArtifactsTab({ searchQuery = "", initialFilter, initialC
   const name = (i: Artifact) => lang === "RU" ? (i.name_ru || i.name_en) : i.name_en;
   const hasFilters = filterQuality !== "all" || !!searchQuery;
   const resetFilters = () => setQualityAndUrl("all");
+
+  const selected = selectedIndex !== null ? filtered[selectedIndex] ?? null : null;
+  const openCard = (i: Artifact) => {
+    const idx = filtered.findIndex(x => x.id === i.id);
+    if (idx === -1) return;
+    setSelectedIndex(idx);
+    onCardOpen?.(currentFilter, i.id);
+  };
+  const goPrev = selectedIndex !== null && selectedIndex > 0
+    ? () => setSelectedIndex(selectedIndex - 1) : undefined;
+  const goNext = selectedIndex !== null && selectedIndex < filtered.length - 1
+    ? () => setSelectedIndex(selectedIndex + 1) : undefined;
+
+  // Auto-open card from URL
+  useEffect(() => {
+    if (!loaded || !initialCardId) return;
+    const idx = filtered.findIndex(i => i.id === initialCardId);
+    if (idx !== -1) setSelectedIndex(idx);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loaded, initialCardId, items]);
 
   return (
     <>
@@ -143,7 +155,7 @@ export default function ArtifactsTab({ searchQuery = "", initialFilter, initialC
       </div>
 
       <Dialog open={!!selected} onOpenChange={(o) => !o && closeCard()}>
-        <CardDialogContent>
+        <CardDialogContent onPrev={goPrev} onNext={goNext}>
           {selected && (
             <>
               <div className="relative w-[85%] mx-auto pt-4 mb-0 shrink-0">
