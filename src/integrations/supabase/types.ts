@@ -975,6 +975,8 @@ export type Database = {
           card_type: string | null
           effect_en: string | null
           effect_en_expert: string | null
+          effect_en_expert_ru: string | null
+          effect_ru: string | null
           id: string
           image: string | null
           name_en: string | null
@@ -988,6 +990,8 @@ export type Database = {
           card_type?: string | null
           effect_en?: string | null
           effect_en_expert?: string | null
+          effect_en_expert_ru?: string | null
+          effect_ru?: string | null
           id: string
           image?: string | null
           name_en?: string | null
@@ -1001,6 +1005,8 @@ export type Database = {
           card_type?: string | null
           effect_en?: string | null
           effect_en_expert?: string | null
+          effect_en_expert_ru?: string | null
+          effect_ru?: string | null
           id?: string
           image?: string | null
           name_en?: string | null

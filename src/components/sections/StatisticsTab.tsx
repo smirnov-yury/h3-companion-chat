@@ -17,7 +17,9 @@ interface Statistic {
   stat_type: string | null;
   card_type: string | null;
   effect_en: string | null;
+  effect_ru: string | null;
   effect_en_expert: string | null;
+  effect_en_expert_ru: string | null;
   notes_en: string | null;
   notes_ru: string | null;
   image: string | null;
