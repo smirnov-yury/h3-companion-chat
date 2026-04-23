@@ -6,6 +6,7 @@ import { renderGlyphs } from "@/utils/renderGlyphs";
 import { Dialog } from "@/components/ui/dialog";
 import { CardDialogContent } from "@/components/ui/card-dialog";
 import { EmptyState, SkeletonGrid } from "@/components/ui/empty-state";
+import { useEntityLinkHandler } from "@/hooks/useEntityLinkHandler";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 const STORAGE = `${SUPABASE_URL}/storage/v1/object/public/component-media`;
@@ -66,6 +67,7 @@ interface Props {
 export default function StatisticsTab({ searchQuery = "", initialCardId, onCardOpen, onCardClose }: Props) {
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
+  const handleEntityClick = useEntityLinkHandler();
   const [items, setItems] = useState<Statistic[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [selected, setSelected] = useState<Statistic | null>(null);
@@ -157,7 +159,7 @@ export default function StatisticsTab({ searchQuery = "", initialCardId, onCardO
             <>
               {selected.image && (
                 <div className="relative w-[85%] mx-auto pt-4 mb-0 shrink-0">
-                  <img src={`${STORAGE}/statistics/${selected.image}`} alt={selected.name_en || ""} className="w-full max-h-[280px] object-contain rounded-lg shadow-lg" />
+                  <img src={`${STORAGE}/statistics/${selected.image}`} alt={selected.name_en || ""} className="w-full aspect-[5/7] object-contain rounded-lg shadow-lg" />
                   {(selected.stat_type || selected.card_type) && (
                     <div className="absolute top-2 left-2 flex flex-col gap-1">
                       {selected.stat_type && (
@@ -174,7 +176,7 @@ export default function StatisticsTab({ searchQuery = "", initialCardId, onCardO
                   )}
                 </div>
               )}
-              <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
+              <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3" onClick={handleEntityClick}>
                 <h2 className="text-lg font-semibold leading-tight pr-8">{name(selected)}</h2>
                 {selected.effect_en && (
                   <div>
