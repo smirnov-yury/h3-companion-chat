@@ -114,8 +114,7 @@ export default function TownsTab({ initialCardId, onCardOpen }: Props = {}) {
 
   const currentImageFile =
     selectedTown && imageTab === "empty" ? selectedTown.image_empty :
-    selectedTown && imageTab === "full" ? selectedTown.image_full :
-    selectedTown && imageTab === "back" ? selectedTown.image_back : null;
+    selectedTown && imageTab === "full" ? selectedTown.image_full : null;
 
   const currentImageSrc = currentImageFile ? `${STORAGE}/towns/${currentImageFile}` : null;
 
