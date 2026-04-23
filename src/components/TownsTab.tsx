@@ -123,8 +123,8 @@ export default function TownsTab({ initialCardId, onCardOpen }: Props = {}) {
     : null;
 
   return (
-    <div className="flex flex-col h-full overflow-y-auto">
-      <div className="px-3 pt-3 pb-2 shrink-0 space-y-2">
+    <div className="flex flex-col h-full">
+      <div className="px-3 pt-3 pb-2 shrink-0 space-y-2 sticky top-0 z-10 bg-background">
         {/* Town selector */}
         <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
           {towns.map((t) => (
