@@ -23,21 +23,13 @@ export default function SeeAlso({ entityType, entityId, lang }: Props) {
 
   return (
     <div className="flex flex-row flex-wrap items-center gap-1 mt-2">
-      <span className="text-[#E1BB3A] text-sm mr-1 shrink-0">→</span>
+      <span className="text-primary text-sm mr-1 shrink-0 font-semibold">→</span>
       {links.map((l) => {
         const baseName =
-          (lang === "RU" ? l.name_ru || l.name_en : l.name_en) || l.to_id;
-        const labelDef = TYPE_LABELS[l.to_type];
-        const name = labelDef
-          ? `${labelDef[lang === "RU" ? "ru" : "en"]}: ${baseName}`
-          : baseName;
-        const url = entityLinkUrl(l.to_type, l.to_id);
-        return (
-          <button
-            key={`${l.to_type}-${l.to_id}`}
+...
             onClick={() => url && navigate(url)}
             disabled={!url}
-            className="text-[11px] px-2 py-0.5 rounded-full border border-[#E1BB3A] text-[#E1BB3A] bg-[#E1BB3A]/10 hover:bg-[#E1BB3A]/20 transition-colors disabled:opacity-50"
+            className="text-[11px] px-2 py-0.5 rounded-full border border-primary text-primary bg-primary/10 hover:bg-primary/20 transition-colors disabled:opacity-50 font-medium"
           >
             {name}
           </button>
