@@ -28,15 +28,15 @@ interface Statistic {
 }
 
 const STAT_COLORS: Record<string, string> = {
-  attack:    "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300",
-  defense:   "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300",
-  power:     "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300",
-  knowledge: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300",
+  attack:    "bg-red-100 text-red-700 dark:bg-red-800 dark:text-red-200",
+  defense:   "bg-blue-100 text-blue-700 dark:bg-blue-800 dark:text-blue-200",
+  power:     "bg-purple-100 text-purple-700 dark:bg-purple-800 dark:text-purple-200",
+  knowledge: "bg-emerald-100 text-emerald-700 dark:bg-emerald-800 dark:text-emerald-200",
 };
 
 const CARD_TYPE_BADGE: Record<string, string> = {
-  regular:   "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400",
-  empowered: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
+  regular:   "bg-zinc-100 text-zinc-700 dark:bg-zinc-700 dark:text-zinc-200",
+  empowered: "bg-amber-100 text-amber-800 dark:bg-amber-700 dark:text-amber-100",
 };
 
 function cardTypeLabel(ct: string, lang: "EN" | "RU") {

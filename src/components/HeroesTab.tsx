@@ -47,16 +47,16 @@ function hasPortrait(image: string | null): boolean {
 }
 
 const FACTION_BADGE: Record<string, string> = {
-  Castle: "bg-blue-500/20 text-blue-300 border-blue-400/40",
-  Necropolis: "bg-violet-500/20 text-violet-300 border-violet-400/40",
-  Dungeon: "bg-red-600/20 text-red-300 border-red-400/40",
-  Tower: "bg-cyan-500/20 text-cyan-300 border-cyan-400/40",
-  Fortress: "bg-emerald-700/20 text-emerald-300 border-emerald-400/40",
-  Rampart: "bg-green-500/20 text-green-300 border-green-400/40",
-  Inferno: "bg-orange-600/20 text-orange-300 border-orange-400/40",
-  Conflux: "bg-fuchsia-500/20 text-fuchsia-300 border-fuchsia-400/40",
-  Stronghold: "bg-amber-700/20 text-amber-300 border-amber-400/40",
-  Cove: "bg-teal-500/20 text-teal-300 border-teal-400/40",
+  Castle: "bg-blue-100 text-blue-700 border-blue-300 dark:bg-blue-500/20 dark:text-blue-300 dark:border-blue-400/40",
+  Necropolis: "bg-violet-100 text-violet-700 border-violet-300 dark:bg-violet-500/20 dark:text-violet-300 dark:border-violet-400/40",
+  Dungeon: "bg-red-100 text-red-700 border-red-300 dark:bg-red-600/20 dark:text-red-300 dark:border-red-400/40",
+  Tower: "bg-cyan-100 text-cyan-700 border-cyan-300 dark:bg-cyan-500/20 dark:text-cyan-300 dark:border-cyan-400/40",
+  Fortress: "bg-emerald-100 text-emerald-700 border-emerald-300 dark:bg-emerald-700/20 dark:text-emerald-300 dark:border-emerald-400/40",
+  Rampart: "bg-green-100 text-green-700 border-green-300 dark:bg-green-500/20 dark:text-green-300 dark:border-green-400/40",
+  Inferno: "bg-orange-100 text-orange-700 border-orange-300 dark:bg-orange-600/20 dark:text-orange-300 dark:border-orange-400/40",
+  Conflux: "bg-fuchsia-100 text-fuchsia-700 border-fuchsia-300 dark:bg-fuchsia-500/20 dark:text-fuchsia-300 dark:border-fuchsia-400/40",
+  Stronghold: "bg-amber-100 text-amber-700 border-amber-300 dark:bg-amber-700/20 dark:text-amber-300 dark:border-amber-400/40",
+  Cove: "bg-teal-100 text-teal-700 border-teal-300 dark:bg-teal-500/20 dark:text-teal-300 dark:border-teal-400/40",
 };
 
 const FACTION_SILHOUETTE_BG: Record<string, string> = {
@@ -115,7 +115,7 @@ function AbilityChip({ abilityId }: { abilityId: string }) {
     <button
       onClick={() => url && navigate(url)}
       disabled={!url}
-      className="text-[11px] px-2 py-0.5 rounded-full border border-[#E1BB3A] text-[#E1BB3A] bg-[#E1BB3A]/10 hover:bg-[#E1BB3A]/20 transition-colors disabled:opacity-50"
+      className="text-[11px] px-2 py-0.5 rounded-full border border-primary text-primary bg-primary/10 hover:bg-primary/20 transition-colors disabled:opacity-50 font-medium"
     >
       {label}
     </button>
@@ -128,7 +128,7 @@ function HeroLinksRow({ heroId, abilityId, lang }: { heroId: string; abilityId: 
   if (!abilityId && links.length === 0) return null;
   return (
     <div className="flex flex-wrap items-center gap-2 mt-3">
-      <span className="text-[#E1BB3A] text-sm shrink-0">→</span>
+      <span className="text-primary text-sm shrink-0 font-semibold">→</span>
       {abilityId && <AbilityChip abilityId={abilityId} />}
       {links.map((l) => {
         const name = (lang === "RU" ? l.name_ru || l.name_en : l.name_en) || l.to_id;
@@ -138,7 +138,7 @@ function HeroLinksRow({ heroId, abilityId, lang }: { heroId: string; abilityId: 
             key={`${l.to_type}-${l.to_id}`}
             onClick={() => url && navigate(url)}
             disabled={!url}
-            className="text-[11px] px-2 py-0.5 rounded-full border border-[#E1BB3A] text-[#E1BB3A] bg-[#E1BB3A]/10 hover:bg-[#E1BB3A]/20 transition-colors disabled:opacity-50"
+            className="text-[11px] px-2 py-0.5 rounded-full border border-primary text-primary bg-primary/10 hover:bg-primary/20 transition-colors disabled:opacity-50 font-medium"
           >
             {name}
           </button>
