@@ -54,6 +54,8 @@ interface UnitStat {
   abilities_ru: string | null;
   notes_en: string | null;
   notes_ru: string | null;
+  errata_en: string | null;
+  errata_ru: string | null;
   content: string | null;
   image: string | null;
   sort_order: number;
@@ -498,6 +500,7 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
             const imgSrc = u.image ? `${STORAGE}/units/${u.image}` : null;
             const abilities = lang === 'RU' && u.abilities_ru ? u.abilities_ru : u.abilities_en;
             const notes = lang === 'RU' && u.notes_ru ? u.notes_ru : u.notes_en;
+            const errata = lang === 'RU' && u.errata_ru ? u.errata_ru : u.errata_en;
 
             return (
               <>
