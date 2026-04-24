@@ -12,24 +12,11 @@ const LanguageContext = createContext<LanguageContextValue>({
   toggleLang: () => {},
 });
 
-function applyLangClass(lang: Lang) {
-  if (lang === "RU") {
-    document.body.classList.add("lang-ru");
-  } else {
-    document.body.classList.remove("lang-ru");
-  }
-}
-
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [lang, setLang] = useState<Lang>(() => {
-    const saved = (localStorage.getItem("app_language") as Lang) || "RU";
-    applyLangClass(saved);
-    return saved;
-  });
+  const [lang, setLang] = useState<Lang>(() => (localStorage.getItem("app_language") as Lang) || "RU");
   const toggleLang = useCallback(() => setLang((l) => {
     const next = l === "RU" ? "EN" : "RU";
     localStorage.setItem("app_language", next);
-    applyLangClass(next);
     return next;
   }), []);
   return (
