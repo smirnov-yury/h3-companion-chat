@@ -26,7 +26,15 @@ export default function SeeAlso({ entityType, entityId, lang }: Props) {
       <span className="text-primary text-sm mr-1 shrink-0 font-semibold">→</span>
       {links.map((l) => {
         const baseName =
-...
+          (lang === "RU" ? l.name_ru || l.name_en : l.name_en) || l.to_id;
+        const labelDef = TYPE_LABELS[l.to_type];
+        const name = labelDef
+          ? `${labelDef[lang === "RU" ? "ru" : "en"]}: ${baseName}`
+          : baseName;
+        const url = entityLinkUrl(l.to_type, l.to_id);
+        return (
+          <button
+            key={`${l.to_type}-${l.to_id}`}
             onClick={() => url && navigate(url)}
             disabled={!url}
             className="text-[11px] px-2 py-0.5 rounded-full border border-primary text-primary bg-primary/10 hover:bg-primary/20 transition-colors disabled:opacity-50 font-medium"
