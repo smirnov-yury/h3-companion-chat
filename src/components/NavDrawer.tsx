@@ -56,15 +56,38 @@ function NavItemList({ active, onChange, onSelect }: { active: TabId; onChange: 
   );
 }
 
-function LangToggle() {
+function SettingsRow() {
   const { lang, toggleLang } = useLang();
+  const [isDark, setIsDark] = React.useState(
+    () => document.documentElement.classList.contains('dark')
+  );
+
+  const toggleTheme = () => {
+    const next = !isDark;
+    setIsDark(next);
+    if (next) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+  };
+
   return (
-    <div className="p-4 border-t border-border">
+    <div className="p-4 border-t border-border flex items-center justify-between gap-2">
       <button
         onClick={toggleLang}
-        className="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-bold rounded-lg bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
+        className="flex-1 flex items-center justify-center px-3 py-2 text-sm font-bold rounded-lg bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
       >
         {lang === "RU" ? "RU / EN" : "EN / RU"}
+      </button>
+      <button
+        onClick={toggleTheme}
+        className="flex items-center justify-center w-9 h-9 rounded-lg bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground transition-colors shrink-0"
+        aria-label="Toggle theme"
+      >
+        {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
       </button>
     </div>
   );
