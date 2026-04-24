@@ -586,6 +586,14 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
                       <GlyphText text={notes} />
                     </div>
                   )}
+                  {errata && (
+                    <div className="mt-3 rounded-lg border border-amber-500/50 bg-amber-500/10 px-3 py-2 text-sm">
+                      <p className="font-semibold text-amber-600 dark:text-amber-400 mb-1">
+                        ⚠ {lang === 'RU' ? 'Эррата карты' : 'Card Errata'}
+                      </p>
+                      <GlyphText text={errata} />
+                    </div>
+                  )}
                   <SeeAlso entityType="unit" entityId={u.id} lang={lang as "EN" | "RU"} />
                 </div>
               </>
