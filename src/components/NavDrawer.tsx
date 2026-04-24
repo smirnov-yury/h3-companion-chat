@@ -1,4 +1,5 @@
-import { BookOpen, Map, MapPin, CalendarDays, Layers, Swords, User, Castle, MessageCircle, Info, type LucideIcon } from "lucide-react";
+import React from "react";
+import { BookOpen, Map, MapPin, CalendarDays, Layers, Swords, User, Castle, MessageCircle, Info, Sun, Moon, type LucideIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Separator } from "@/components/ui/separator";
 import { useLang } from "@/context/LanguageContext";
