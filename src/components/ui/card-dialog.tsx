@@ -47,7 +47,7 @@ const CardDialogContent = React.forwardRef<
   };
 
   const arrowBase =
-    "absolute top-[28%] -translate-y-1/2 z-20 inline-flex h-7 w-7 items-center justify-center rounded-full shadow-md transition-opacity focus:outline-none";
+    "absolute top-1/2 -translate-y-1/2 z-20 inline-flex h-8 w-8 items-center justify-center rounded-full border-2 bg-background/80 backdrop-blur-sm text-foreground transition-colors hover:bg-background focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background";
 
   return (
     <DialogPrimitive.Portal>
@@ -71,26 +71,26 @@ const CardDialogContent = React.forwardRef<
           type="button"
           aria-label="Previous"
           onClick={onPrev}
-          className={cn(arrowBase, "left-2", !onPrev ? "opacity-0 pointer-events-none" : "opacity-90 hover:opacity-100")}
-          style={{ backgroundColor: "#E1BB3A", color: "#1a1409" }}
+          className={cn(arrowBase, "left-2", !onPrev && "opacity-30 pointer-events-none")}
+          style={{ borderColor: "#E1BB3A", color: "#E1BB3A" }}
         >
-          <ChevronLeft className="h-3.5 w-3.5" strokeWidth={3} />
+          <ChevronLeft className="h-4 w-4" strokeWidth={2.5} />
         </button>
         <button
           type="button"
           aria-label="Next"
           onClick={onNext}
-          className={cn(arrowBase, "right-2", !onNext ? "opacity-0 pointer-events-none" : "opacity-90 hover:opacity-100")}
-          style={{ backgroundColor: "#E1BB3A", color: "#1a1409" }}
+          className={cn(arrowBase, "right-2", !onNext && "opacity-30 pointer-events-none")}
+          style={{ borderColor: "#E1BB3A", color: "#E1BB3A" }}
         >
-          <ChevronRight className="h-3.5 w-3.5" strokeWidth={3} />
+          <ChevronRight className="h-4 w-4" strokeWidth={2.5} />
         </button>
         <DialogPrimitive.Close
           aria-label="Close"
-          className="absolute top-3 right-3 z-20 inline-flex h-7 w-7 items-center justify-center rounded-full shadow-md opacity-90 hover:opacity-100 transition-opacity focus:outline-none"
-          style={{ backgroundColor: "#E1BB3A", color: "#1a1409" }}
+          className="absolute top-3 right-3 z-20 inline-flex h-8 w-8 items-center justify-center rounded-full border-2 bg-background/80 backdrop-blur-sm text-foreground transition-colors hover:bg-background focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background"
+          style={{ borderColor: "#E1BB3A", color: "#E1BB3A" }}
         >
-          <X className="h-3.5 w-3.5" strokeWidth={3} />
+          <X className="h-4 w-4" strokeWidth={2.5} />
         </DialogPrimitive.Close>
       </DialogPrimitive.Content>
     </DialogPrimitive.Portal>
