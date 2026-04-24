@@ -47,7 +47,7 @@ const CardDialogContent = React.forwardRef<
   };
 
   const arrowBase =
-    "absolute top-1/2 -translate-y-1/2 z-20 inline-flex h-8 w-8 items-center justify-center rounded-full border-2 bg-background/80 backdrop-blur-sm text-foreground transition-colors hover:bg-background focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background";
+    "absolute top-1/2 -translate-y-1/2 z-20 inline-flex h-8 w-8 items-center justify-center rounded-full border-2 bg-card shadow-md dark:bg-background/80 dark:backdrop-blur-sm dark:shadow-none text-foreground transition-colors hover:bg-muted dark:hover:bg-background focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background";
 
   return (
     <DialogPrimitive.Portal>
