@@ -78,6 +78,9 @@
     -webkit-font-smoothing: antialiased;
     overscroll-behavior: none;
   }
+  :root:not(.dark) body {
+    font-weight: 500;
+  }
   h1, h2, h3 {
     font-family: 'Cinzel', serif;
     letter-spacing: 0.02em;
@@ -113,6 +116,11 @@
   width: 1.4em;
   height: 1.4em;
   filter: brightness(0) saturate(100%) invert(78%) sepia(44%) saturate(600%) hue-rotate(2deg) brightness(98%);
+}
+
+/* In light theme, use darker amber so glyphs are visible on parchment */
+:root:not(.dark) .glyph-icon {
+  filter: brightness(0) saturate(100%) invert(42%) sepia(65%) saturate(800%) hue-rotate(5deg) brightness(80%);
 }
 
 /* Tier star overrides — match unit badge colors exactly */
