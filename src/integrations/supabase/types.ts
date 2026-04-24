@@ -22,12 +22,16 @@ export type Database = {
           effect_expert_en: string | null
           effect_expert_ru: string | null
           effect_ru: string | null
+          embedding_en: string | null
+          embedding_ru: string | null
           id: string
           image_regular: string | null
           name_en: string
           name_ru: string | null
           notes_en: string | null
           notes_ru: string | null
+          search_text_en: string | null
+          search_text_ru: string | null
           sort_order: number | null
         }
         Insert: {
@@ -37,12 +41,16 @@ export type Database = {
           effect_expert_en?: string | null
           effect_expert_ru?: string | null
           effect_ru?: string | null
+          embedding_en?: string | null
+          embedding_ru?: string | null
           id: string
           image_regular?: string | null
           name_en: string
           name_ru?: string | null
           notes_en?: string | null
           notes_ru?: string | null
+          search_text_en?: string | null
+          search_text_ru?: string | null
           sort_order?: number | null
         }
         Update: {
@@ -52,12 +60,16 @@ export type Database = {
           effect_expert_en?: string | null
           effect_expert_ru?: string | null
           effect_ru?: string | null
+          embedding_en?: string | null
+          embedding_ru?: string | null
           id?: string
           image_regular?: string | null
           name_en?: string
           name_ru?: string | null
           notes_en?: string | null
           notes_ru?: string | null
+          search_text_en?: string | null
+          search_text_ru?: string | null
           sort_order?: number | null
         }
         Relationships: []
@@ -68,11 +80,15 @@ export type Database = {
           description_ru: string | null
           effect_en: string | null
           effect_ru: string | null
+          embedding_en: string | null
+          embedding_ru: string | null
           id: string
           image: string | null
           name_en: string
           name_ru: string | null
           quality: string | null
+          search_text_en: string | null
+          search_text_ru: string | null
           sort_order: number | null
         }
         Insert: {
@@ -80,11 +96,15 @@ export type Database = {
           description_ru?: string | null
           effect_en?: string | null
           effect_ru?: string | null
+          embedding_en?: string | null
+          embedding_ru?: string | null
           id: string
           image?: string | null
           name_en: string
           name_ru?: string | null
           quality?: string | null
+          search_text_en?: string | null
+          search_text_ru?: string | null
           sort_order?: number | null
         }
         Update: {
@@ -92,11 +112,15 @@ export type Database = {
           description_ru?: string | null
           effect_en?: string | null
           effect_ru?: string | null
+          embedding_en?: string | null
+          embedding_ru?: string | null
           id?: string
           image?: string | null
           name_en?: string
           name_ru?: string | null
           quality?: string | null
+          search_text_en?: string | null
+          search_text_ru?: string | null
           sort_order?: number | null
         }
         Relationships: []
@@ -107,12 +131,16 @@ export type Database = {
           description_ru: string | null
           effect_en: string | null
           effect_ru: string | null
+          embedding_en: string | null
+          embedding_ru: string | null
           id: string
           image: string | null
           name_en: string
           name_ru: string | null
           notes_en: string | null
           notes_ru: string | null
+          search_text_en: string | null
+          search_text_ru: string | null
           sort_order: number | null
         }
         Insert: {
@@ -120,12 +148,16 @@ export type Database = {
           description_ru?: string | null
           effect_en?: string | null
           effect_ru?: string | null
+          embedding_en?: string | null
+          embedding_ru?: string | null
           id: string
           image?: string | null
           name_en: string
           name_ru?: string | null
           notes_en?: string | null
           notes_ru?: string | null
+          search_text_en?: string | null
+          search_text_ru?: string | null
           sort_order?: number | null
         }
         Update: {
@@ -133,12 +165,16 @@ export type Database = {
           description_ru?: string | null
           effect_en?: string | null
           effect_ru?: string | null
+          embedding_en?: string | null
+          embedding_ru?: string | null
           id?: string
           image?: string | null
           name_en?: string
           name_ru?: string | null
           notes_en?: string | null
           notes_ru?: string | null
+          search_text_en?: string | null
+          search_text_ru?: string | null
           sort_order?: number | null
         }
         Relationships: []
@@ -314,34 +350,46 @@ export type Database = {
         Row: {
           effect_en: string | null
           effect_ru: string | null
+          embedding_en: string | null
+          embedding_ru: string | null
           id: string
           image: string | null
           name_en: string
           name_ru: string | null
           notes_en: string | null
           notes_ru: string | null
+          search_text_en: string | null
+          search_text_ru: string | null
           sort_order: number | null
         }
         Insert: {
           effect_en?: string | null
           effect_ru?: string | null
+          embedding_en?: string | null
+          embedding_ru?: string | null
           id: string
           image?: string | null
           name_en: string
           name_ru?: string | null
           notes_en?: string | null
           notes_ru?: string | null
+          search_text_en?: string | null
+          search_text_ru?: string | null
           sort_order?: number | null
         }
         Update: {
           effect_en?: string | null
           effect_ru?: string | null
+          embedding_en?: string | null
+          embedding_ru?: string | null
           id?: string
           image?: string | null
           name_en?: string
           name_ru?: string | null
           notes_en?: string | null
           notes_ru?: string | null
+          search_text_en?: string | null
+          search_text_ru?: string | null
           sort_order?: number | null
         }
         Relationships: []
@@ -350,12 +398,16 @@ export type Database = {
         Row: {
           effect_en: string | null
           effect_ru: string | null
+          embedding_en: string | null
+          embedding_ru: string | null
           id: string
           image: string | null
           name_en: string
           name_ru: string | null
           notes_en: string | null
           notes_ru: string | null
+          search_text_en: string | null
+          search_text_ru: string | null
           sort_order: number | null
           type_en: string | null
           type_ru: string | null
@@ -363,12 +415,16 @@ export type Database = {
         Insert: {
           effect_en?: string | null
           effect_ru?: string | null
+          embedding_en?: string | null
+          embedding_ru?: string | null
           id: string
           image?: string | null
           name_en: string
           name_ru?: string | null
           notes_en?: string | null
           notes_ru?: string | null
+          search_text_en?: string | null
+          search_text_ru?: string | null
           sort_order?: number | null
           type_en?: string | null
           type_ru?: string | null
@@ -376,12 +432,16 @@ export type Database = {
         Update: {
           effect_en?: string | null
           effect_ru?: string | null
+          embedding_en?: string | null
+          embedding_ru?: string | null
           id?: string
           image?: string | null
           name_en?: string
           name_ru?: string | null
           notes_en?: string | null
           notes_ru?: string | null
+          search_text_en?: string | null
+          search_text_ru?: string | null
           sort_order?: number | null
           type_en?: string | null
           type_ru?: string | null
@@ -393,24 +453,36 @@ export type Database = {
           category: string | null
           description_en: string | null
           description_ru: string | null
+          embedding_en: string | null
+          embedding_ru: string | null
           id: string
           image: string | null
+          search_text_en: string | null
+          search_text_ru: string | null
           sort_order: number | null
         }
         Insert: {
           category?: string | null
           description_en?: string | null
           description_ru?: string | null
+          embedding_en?: string | null
+          embedding_ru?: string | null
           id: string
           image?: string | null
+          search_text_en?: string | null
+          search_text_ru?: string | null
           sort_order?: number | null
         }
         Update: {
           category?: string | null
           description_en?: string | null
           description_ru?: string | null
+          embedding_en?: string | null
+          embedding_ru?: string | null
           id?: string
           image?: string | null
+          search_text_en?: string | null
+          search_text_ru?: string | null
           sort_order?: number | null
         }
         Relationships: []
@@ -422,6 +494,8 @@ export type Database = {
           class_en: string | null
           class_ru: string | null
           defense: number | null
+          embedding_en: string | null
+          embedding_ru: string | null
           id: string
           image: string | null
           knowledge: number | null
@@ -430,6 +504,8 @@ export type Database = {
           notes_en: string | null
           notes_ru: string | null
           power: number | null
+          search_text_en: string | null
+          search_text_ru: string | null
           sort_order: number | null
           specialty_en: string | null
           specialty_levels: Json | null
@@ -442,6 +518,8 @@ export type Database = {
           class_en?: string | null
           class_ru?: string | null
           defense?: number | null
+          embedding_en?: string | null
+          embedding_ru?: string | null
           id: string
           image?: string | null
           knowledge?: number | null
@@ -450,6 +528,8 @@ export type Database = {
           notes_en?: string | null
           notes_ru?: string | null
           power?: number | null
+          search_text_en?: string | null
+          search_text_ru?: string | null
           sort_order?: number | null
           specialty_en?: string | null
           specialty_levels?: Json | null
@@ -462,6 +542,8 @@ export type Database = {
           class_en?: string | null
           class_ru?: string | null
           defense?: number | null
+          embedding_en?: string | null
+          embedding_ru?: string | null
           id?: string
           image?: string | null
           knowledge?: number | null
@@ -470,6 +552,8 @@ export type Database = {
           notes_en?: string | null
           notes_ru?: string | null
           power?: number | null
+          search_text_en?: string | null
+          search_text_ru?: string | null
           sort_order?: number | null
           specialty_en?: string | null
           specialty_levels?: Json | null
@@ -482,7 +566,11 @@ export type Database = {
         Row: {
           category: string | null
           created_at: string | null
+          embedding_en: string | null
+          embedding_ru: string | null
           id: string
+          search_text_en: string | null
+          search_text_ru: string | null
           sort_order: number | null
           text_en: string | null
           text_ru: string | null
@@ -493,7 +581,11 @@ export type Database = {
         Insert: {
           category?: string | null
           created_at?: string | null
+          embedding_en?: string | null
+          embedding_ru?: string | null
           id: string
+          search_text_en?: string | null
+          search_text_ru?: string | null
           sort_order?: number | null
           text_en?: string | null
           text_ru?: string | null
@@ -504,7 +596,11 @@ export type Database = {
         Update: {
           category?: string | null
           created_at?: string | null
+          embedding_en?: string | null
+          embedding_ru?: string | null
           id?: string
+          search_text_en?: string | null
+          search_text_ru?: string | null
           sort_order?: number | null
           text_en?: string | null
           text_ru?: string | null
@@ -932,6 +1028,8 @@ export type Database = {
         Row: {
           effect_en: string | null
           effect_ru: string | null
+          embedding_en: string | null
+          embedding_ru: string | null
           id: string
           image: string | null
           level: string | null
@@ -940,11 +1038,15 @@ export type Database = {
           notes_en: string | null
           notes_ru: string | null
           school: string | null
+          search_text_en: string | null
+          search_text_ru: string | null
           sort_order: number | null
         }
         Insert: {
           effect_en?: string | null
           effect_ru?: string | null
+          embedding_en?: string | null
+          embedding_ru?: string | null
           id: string
           image?: string | null
           level?: string | null
@@ -953,11 +1055,15 @@ export type Database = {
           notes_en?: string | null
           notes_ru?: string | null
           school?: string | null
+          search_text_en?: string | null
+          search_text_ru?: string | null
           sort_order?: number | null
         }
         Update: {
           effect_en?: string | null
           effect_ru?: string | null
+          embedding_en?: string | null
+          embedding_ru?: string | null
           id?: string
           image?: string | null
           level?: string | null
@@ -966,6 +1072,8 @@ export type Database = {
           notes_en?: string | null
           notes_ru?: string | null
           school?: string | null
+          search_text_en?: string | null
+          search_text_ru?: string | null
           sort_order?: number | null
         }
         Relationships: []
@@ -977,12 +1085,16 @@ export type Database = {
           effect_en_expert: string | null
           effect_en_expert_ru: string | null
           effect_ru: string | null
+          embedding_en: string | null
+          embedding_ru: string | null
           id: string
           image: string | null
           name_en: string | null
           name_ru: string | null
           notes_en: string | null
           notes_ru: string | null
+          search_text_en: string | null
+          search_text_ru: string | null
           sort_order: number | null
           stat_type: string | null
         }
@@ -992,12 +1104,16 @@ export type Database = {
           effect_en_expert?: string | null
           effect_en_expert_ru?: string | null
           effect_ru?: string | null
+          embedding_en?: string | null
+          embedding_ru?: string | null
           id: string
           image?: string | null
           name_en?: string | null
           name_ru?: string | null
           notes_en?: string | null
           notes_ru?: string | null
+          search_text_en?: string | null
+          search_text_ru?: string | null
           sort_order?: number | null
           stat_type?: string | null
         }
@@ -1007,12 +1123,16 @@ export type Database = {
           effect_en_expert?: string | null
           effect_en_expert_ru?: string | null
           effect_ru?: string | null
+          embedding_en?: string | null
+          embedding_ru?: string | null
           id?: string
           image?: string | null
           name_en?: string | null
           name_ru?: string | null
           notes_en?: string | null
           notes_ru?: string | null
+          search_text_en?: string | null
+          search_text_ru?: string | null
           sort_order?: number | null
           stat_type?: string | null
         }
@@ -1047,9 +1167,13 @@ export type Database = {
           cost: string | null
           effect_en: string | null
           effect_ru: string | null
+          embedding_en: string | null
+          embedding_ru: string | null
           id: string
           name_en: string
           name_ru: string | null
+          search_text_en: string | null
+          search_text_ru: string | null
           sort_order: number | null
           town_id: string | null
         }
@@ -1057,9 +1181,13 @@ export type Database = {
           cost?: string | null
           effect_en?: string | null
           effect_ru?: string | null
+          embedding_en?: string | null
+          embedding_ru?: string | null
           id: string
           name_en: string
           name_ru?: string | null
+          search_text_en?: string | null
+          search_text_ru?: string | null
           sort_order?: number | null
           town_id?: string | null
         }
@@ -1067,9 +1195,13 @@ export type Database = {
           cost?: string | null
           effect_en?: string | null
           effect_ru?: string | null
+          embedding_en?: string | null
+          embedding_ru?: string | null
           id?: string
           name_en?: string
           name_ru?: string | null
+          search_text_en?: string | null
+          search_text_ru?: string | null
           sort_order?: number | null
           town_id?: string | null
         }
@@ -1127,6 +1259,10 @@ export type Database = {
           content: string | null
           cost: string | null
           defense: number | null
+          embedding_en: string | null
+          embedding_ru: string | null
+          errata_en: string | null
+          errata_ru: string | null
           health_points: number | null
           id: string
           image: string | null
@@ -1136,6 +1272,8 @@ export type Database = {
           notes_en: string | null
           notes_ru: string | null
           number: string | null
+          search_text_en: string | null
+          search_text_ru: string | null
           slug: string | null
           sort_order: number | null
           tier: string | null
@@ -1149,6 +1287,10 @@ export type Database = {
           content?: string | null
           cost?: string | null
           defense?: number | null
+          embedding_en?: string | null
+          embedding_ru?: string | null
+          errata_en?: string | null
+          errata_ru?: string | null
           health_points?: number | null
           id: string
           image?: string | null
@@ -1158,6 +1300,8 @@ export type Database = {
           notes_en?: string | null
           notes_ru?: string | null
           number?: string | null
+          search_text_en?: string | null
+          search_text_ru?: string | null
           slug?: string | null
           sort_order?: number | null
           tier?: string | null
@@ -1171,6 +1315,10 @@ export type Database = {
           content?: string | null
           cost?: string | null
           defense?: number | null
+          embedding_en?: string | null
+          embedding_ru?: string | null
+          errata_en?: string | null
+          errata_ru?: string | null
           health_points?: number | null
           id?: string
           image?: string | null
@@ -1180,6 +1328,8 @@ export type Database = {
           notes_en?: string | null
           notes_ru?: string | null
           number?: string | null
+          search_text_en?: string | null
+          search_text_ru?: string | null
           slug?: string | null
           sort_order?: number | null
           tier?: string | null
@@ -1194,12 +1344,16 @@ export type Database = {
           ability_ru: string | null
           cost_blacksmith: string | null
           cost_trade_post: string | null
+          embedding_en: string | null
+          embedding_ru: string | null
           id: string
           image: string | null
           name_en: string
           name_ru: string | null
           notes_en: string | null
           notes_ru: string | null
+          search_text_en: string | null
+          search_text_ru: string | null
           sort_order: number | null
         }
         Insert: {
@@ -1207,12 +1361,16 @@ export type Database = {
           ability_ru?: string | null
           cost_blacksmith?: string | null
           cost_trade_post?: string | null
+          embedding_en?: string | null
+          embedding_ru?: string | null
           id: string
           image?: string | null
           name_en: string
           name_ru?: string | null
           notes_en?: string | null
           notes_ru?: string | null
+          search_text_en?: string | null
+          search_text_ru?: string | null
           sort_order?: number | null
         }
         Update: {
@@ -1220,12 +1378,16 @@ export type Database = {
           ability_ru?: string | null
           cost_blacksmith?: string | null
           cost_trade_post?: string | null
+          embedding_en?: string | null
+          embedding_ru?: string | null
           id?: string
           image?: string | null
           name_en?: string
           name_ru?: string | null
           notes_en?: string | null
           notes_ru?: string | null
+          search_text_en?: string | null
+          search_text_ru?: string | null
           sort_order?: number | null
         }
         Relationships: []
