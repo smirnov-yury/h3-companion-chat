@@ -27,9 +27,9 @@ interface Artifact {
 }
 
 const QUALITY_COLORS: Record<string, string> = {
-  minor: "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400",
-  major: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300",
-  relic: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
+  minor: "bg-zinc-100 text-zinc-700 dark:bg-zinc-700 dark:text-zinc-200",
+  major: "bg-blue-100 text-blue-700 dark:bg-blue-800 dark:text-blue-200",
+  relic: "bg-amber-100 text-amber-800 dark:bg-amber-700 dark:text-amber-100",
 };
 const QUALITY_LABELS: Record<string, string> = {
   minor: "Minor",
