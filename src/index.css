@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -74,12 +74,12 @@
   }
   body {
     @apply bg-background text-foreground font-sans;
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: 'PT Serif', Georgia, serif;
     -webkit-font-smoothing: antialiased;
     overscroll-behavior: none;
   }
   :root:not(.dark) body {
-    font-weight: 500;
+    font-weight: 400;
   }
   h1, h2, h3 {
     font-family: 'Cinzel', serif;
