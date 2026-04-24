@@ -1,4 +1,5 @@
-import { BookOpen, Map, MapPin, CalendarDays, Layers, Swords, User, Castle, MessageCircle, Info, type LucideIcon } from "lucide-react";
+import React from "react";
+import { BookOpen, Map, MapPin, CalendarDays, Layers, Swords, User, Castle, MessageCircle, Info, Sun, Moon, type LucideIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Separator } from "@/components/ui/separator";
 import { useLang } from "@/context/LanguageContext";
@@ -55,15 +56,38 @@ function NavItemList({ active, onChange, onSelect }: { active: TabId; onChange: 
   );
 }
 
-function LangToggle() {
+function SettingsRow() {
   const { lang, toggleLang } = useLang();
+  const [isDark, setIsDark] = React.useState(
+    () => document.documentElement.classList.contains('dark')
+  );
+
+  const toggleTheme = () => {
+    const next = !isDark;
+    setIsDark(next);
+    if (next) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('theme', 'light');
+    }
+  };
+
   return (
-    <div className="p-4 border-t border-border">
+    <div className="p-4 border-t border-border flex items-center justify-between gap-2">
       <button
         onClick={toggleLang}
-        className="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-bold rounded-lg bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
+        className="flex-1 flex items-center justify-center px-3 py-2 text-sm font-bold rounded-lg bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
       >
         {lang === "RU" ? "RU / EN" : "EN / RU"}
+      </button>
+      <button
+        onClick={toggleTheme}
+        className="flex items-center justify-center w-9 h-9 rounded-lg bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground transition-colors shrink-0"
+        aria-label="Toggle theme"
+      >
+        {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
       </button>
     </div>
   );
@@ -107,7 +131,7 @@ export default function NavDrawer({ open, onOpenChange, active, onChange }: NavD
         <nav className="flex-1 overflow-y-auto py-2">
           <NavItemList active={active} onChange={onChange} />
         </nav>
-        <LangToggle />
+        <SettingsRow />
         <AboutLink />
       </aside>
 
@@ -124,7 +148,7 @@ export default function NavDrawer({ open, onOpenChange, active, onChange }: NavD
           <nav className="flex-1 overflow-y-auto py-2">
             <NavItemList active={active} onChange={onChange} onSelect={() => onOpenChange(false)} />
           </nav>
-          <LangToggle />
+          <SettingsRow />
           <AboutLink onSelect={() => onOpenChange(false)} />
         </SheetContent>
       </Sheet>
