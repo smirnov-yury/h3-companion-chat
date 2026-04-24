@@ -54,6 +54,8 @@ interface UnitStat {
   abilities_ru: string | null;
   notes_en: string | null;
   notes_ru: string | null;
+  errata_en: string | null;
+  errata_ru: string | null;
   content: string | null;
   image: string | null;
   sort_order: number;
@@ -498,6 +500,7 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
             const imgSrc = u.image ? `${STORAGE}/units/${u.image}` : null;
             const abilities = lang === 'RU' && u.abilities_ru ? u.abilities_ru : u.abilities_en;
             const notes = lang === 'RU' && u.notes_ru ? u.notes_ru : u.notes_en;
+            const errata = lang === 'RU' && u.errata_ru ? u.errata_ru : u.errata_en;
 
             return (
               <>
@@ -581,6 +584,14 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
                   {notes && (
                     <div className="text-sm text-muted-foreground leading-relaxed mt-2">
                       <GlyphText text={notes} />
+                    </div>
+                  )}
+                  {errata && (
+                    <div className="mt-3 rounded-lg border border-amber-500/50 bg-amber-500/10 px-3 py-2 text-sm">
+                      <p className="font-semibold text-amber-600 dark:text-amber-400 mb-1">
+                        ⚠ {lang === 'RU' ? 'Эррата карты' : 'Card Errata'}
+                      </p>
+                      <GlyphText text={errata} />
                     </div>
                   )}
                   <SeeAlso entityType="unit" entityId={u.id} lang={lang as "EN" | "RU"} />
