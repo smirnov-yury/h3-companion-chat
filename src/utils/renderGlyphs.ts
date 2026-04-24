@@ -57,7 +57,7 @@ export function renderGlyphs(text: string | null | undefined, glyphs: GlyphMap):
       const safeDisplay = display;
       const safeType = t.replace(/"/g, "");
       const safeId = id.replace(/"/g, "");
-      return `<span class="entity-link" data-entity-type="${safeType}" data-entity-id="${safeId}" style="color:#E1BB3A;cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px;">${safeDisplay}</span>`;
+      return `<span class="entity-link" data-entity-type="${safeType}" data-entity-id="${safeId}" style="color:hsl(var(--primary));cursor:pointer;font-weight:600;text-decoration:underline;text-decoration-color:hsl(var(--primary));text-underline-offset:3px;">${safeDisplay}</span>`;
     },
   );
 
