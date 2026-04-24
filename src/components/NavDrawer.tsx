@@ -131,7 +131,7 @@ export default function NavDrawer({ open, onOpenChange, active, onChange }: NavD
         <nav className="flex-1 overflow-y-auto py-2">
           <NavItemList active={active} onChange={onChange} />
         </nav>
-        <LangToggle />
+        <SettingsRow />
         <AboutLink />
       </aside>
 
@@ -148,7 +148,7 @@ export default function NavDrawer({ open, onOpenChange, active, onChange }: NavD
           <nav className="flex-1 overflow-y-auto py-2">
             <NavItemList active={active} onChange={onChange} onSelect={() => onOpenChange(false)} />
           </nav>
-          <LangToggle />
+          <SettingsRow />
           <AboutLink onSelect={() => onOpenChange(false)} />
         </SheetContent>
       </Sheet>
