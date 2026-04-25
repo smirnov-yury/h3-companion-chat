@@ -566,7 +566,7 @@ export default function GlobalSearch({ mode, onClose, initialQuery = "", autoFoc
           {lang === "RU" ? "Ничего не найдено" : "Nothing found"}
         </p>
       )}
-      {results.map((section) => {
+      {activeResults.map((section) => {
         const visible = section.hits.slice(0, VISIBLE_LIMIT);
         const remainder = section.total - visible.length;
         const sectionLabel = lang === "RU" ? section.labelRU : section.labelEN;
