@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Building, Building2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/context/LanguageContext";
 import { useGlyphs } from "@/context/GlyphsContext";
@@ -33,11 +34,6 @@ interface TownBuilding {
 }
 
 type ImageTab = "empty" | "full";
-
-const IMAGE_TABS: { id: ImageTab; labelRU: string; labelEN: string }[] = [
-  { id: "empty", labelRU: "Пустой", labelEN: "Empty" },
-  { id: "full", labelRU: "Полный", labelEN: "Full" },
-];
 
 interface Props {
   initialCardId?: string;
@@ -142,41 +138,44 @@ export default function TownsTab({ initialCardId, onCardOpen }: Props = {}) {
           ))}
         </div>
 
-        {/* Image tab switcher */}
-        <div className="flex gap-1 bg-muted rounded-lg p-0.5">
-          {IMAGE_TABS.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => handleImageTabChange(tab.id)}
-              className={`flex-1 px-2 py-1 rounded-md text-xs font-medium transition-colors ${
-                imageTab === tab.id
-                  ? "bg-background text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {lang === "RU" ? tab.labelRU : tab.labelEN}
-            </button>
-          ))}
-        </div>
       </div>
 
       <div className="flex-1 overflow-y-auto px-3 pb-3">
         <div className="md:flex md:gap-4 md:items-start">
           <div className="md:w-[45%] md:shrink-0 space-y-3">
-            {currentImageSrc && !imgError ? (
-              <img
-                src={currentImageSrc}
-                alt={selectedTown ? name(selectedTown) : ""}
-                className="w-full max-h-[55vh] rounded-lg object-contain"
-                onError={() => setImgError(true)}
-              />
-            ) : (
-              <div className="w-full rounded-lg bg-muted flex items-center justify-center py-12">
-                <p className="text-xs text-muted-foreground">
-                  {lang === "RU" ? "Изображение недоступно" : "No image available"}
-                </p>
-              </div>
-            )}
+            <div className="relative">
+              {currentImageSrc && !imgError ? (
+                <img
+                  src={currentImageSrc}
+                  alt={selectedTown ? name(selectedTown) : ""}
+                  className="w-full max-h-[55vh] rounded-lg object-contain"
+                  onError={() => setImgError(true)}
+                />
+              ) : (
+                <div className="w-full rounded-lg bg-muted flex items-center justify-center py-12">
+                  <p className="text-xs text-muted-foreground">
+                    {lang === "RU" ? "Изображение недоступно" : "No image available"}
+                  </p>
+                </div>
+              )}
+              {(selectedTown?.image_empty || selectedTown?.image_full) && (
+                <button
+                  type="button"
+                  onClick={() => handleImageTabChange(imageTab === "empty" ? "full" : "empty")}
+                  aria-label={lang === "RU"
+                    ? (imageTab === "empty" ? "Пустой" : "Полный")
+                    : (imageTab === "empty" ? "Empty" : "Full")}
+                  title={lang === "RU"
+                    ? (imageTab === "empty" ? "Пустой" : "Полный")
+                    : (imageTab === "empty" ? "Empty" : "Full")}
+                  className="absolute top-2 right-2 h-8 w-8 inline-flex items-center justify-center rounded-md bg-black/40 text-white backdrop-blur-sm hover:bg-black/60 transition-colors"
+                >
+                  {imageTab === "empty"
+                    ? <Building2 className="h-4 w-4" />
+                    : <Building className="h-4 w-4" />}
+                </button>
+              )}
+            </div>
             {notes && (
               <div
                 className="text-xs text-muted-foreground whitespace-pre-line"
