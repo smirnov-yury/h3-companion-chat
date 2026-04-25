@@ -413,8 +413,8 @@ export default function HeroesTab({ initialFilter, initialCardId, initialSearch,
                                 onClick={() => setSpecialtyTab(i)}
                                 className={`px-3 py-1 rounded-full text-xs font-medium transition-colors border ${
                                   specialtyTab === i
-                                    ? "bg-amber-500/90 text-background border-amber-400"
-                                    : "bg-transparent text-amber-200/70 border-amber-400/40 hover:bg-amber-500/10"
+                                    ? "bg-primary text-primary-foreground border-primary"
+                                    : "bg-transparent text-foreground border-border hover:bg-muted"
                                 }`}
                               >
                                 {lvl.level}
