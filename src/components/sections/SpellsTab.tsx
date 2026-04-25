@@ -126,7 +126,7 @@ export default function SpellsTab({ searchQuery = "", initialFilter, initialCard
   return (
     <>
       <div className="flex flex-col h-full">
-        <div className="flex gap-1.5 overflow-x-auto px-3 pt-3 pb-2 scrollbar-none shrink-0">
+        <div className="flex gap-1.5 overflow-x-auto px-3 pt-0 pb-2 scrollbar-none shrink-0">
           {schools.map(s => (
             <button key={s} onClick={() => setSchoolAndUrl(s)}
               className={`shrink-0 px-2.5 py-1 rounded-full text-[11px] font-medium transition-colors ${filterSchool === s ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
