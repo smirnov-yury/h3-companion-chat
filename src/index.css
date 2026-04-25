@@ -120,7 +120,7 @@
 
 /* In light theme, use darker amber so glyphs are visible on parchment */
 :root:not(.dark) .glyph-icon {
-  filter: brightness(0) saturate(100%) invert(42%) sepia(65%) saturate(800%) hue-rotate(5deg) brightness(80%);
+  filter: brightness(0) saturate(100%) invert(22%) sepia(45%) saturate(700%) hue-rotate(12deg) brightness(82%);
 }
 
 /* Tier star overrides — match unit badge colors exactly */
