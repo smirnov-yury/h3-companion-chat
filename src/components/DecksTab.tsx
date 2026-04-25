@@ -86,7 +86,7 @@ export default function DecksTab({
             </button>
           )}
         </div>
-        <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+        <div className="flex gap-1.5 overflow-x-auto scrollbar-none">
           {SECTIONS.map((s) => (
             <button
               key={s.id}
