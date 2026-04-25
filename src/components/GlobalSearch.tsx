@@ -421,6 +421,44 @@ export default function GlobalSearch({ mode, onClose, initialQuery = "", autoFoc
   const [loading, setLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const requestId = useRef(0);
+  const [semanticMode, setSemanticMode] = useState(false);
+  const [semanticResults, setSemanticResults] = useState<SectionResult[]>([]);
+  const [semanticLoading, setSemanticLoading] = useState(false);
+
+  const runSemanticSearch = useCallback(async (q: string) => {
+    if (q.length < MIN_QUERY) { setSemanticResults([]); return; }
+    setSemanticLoading(true);
+    try {
+      const { data: embedData, error: embedErr } = await supabase.functions.invoke('embed-query', { body: { text: q } });
+      if (embedErr || !embedData?.embedding) throw new Error('embed failed');
+      const rpc = lang === 'RU' ? 'match_all_ru' : 'match_all_en';
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: matches } = await (supabase.rpc as any)(rpc, {
+        query_embedding: embedData.embedding,
+        match_count: 20,
+        match_threshold: 0.35,
+      });
+      if (!matches) { setSemanticResults([]); return; }
+      const grouped: Record<string, SectionResult> = {};
+      for (const m of matches as Array<{ entity_type: string; entity_id: string; name_en: string; name_ru: string; similarity: number }>) {
+        const meta = ENTITY_META[m.entity_type as EntityType];
+        if (!meta) continue;
+        if (!grouped[m.entity_type]) {
+          grouped[m.entity_type] = { key: m.entity_type, labelEN: meta.labelEN, labelRU: meta.labelRU, showMoreUrl: meta.url(''), hits: [], total: 0 };
+        }
+        grouped[m.entity_type].hits.push({
+          id: m.entity_id,
+          name: lang === 'RU' ? (m.name_ru || m.name_en) : (m.name_en || m.name_ru),
+          snippet: `${Math.round(m.similarity * 100)}% match`,
+          image: null,
+          url: meta.url(m.entity_id),
+        });
+        grouped[m.entity_type].total++;
+      }
+      setSemanticResults(Object.values(grouped));
+    } catch { setSemanticResults([]); }
+    finally { setSemanticLoading(false); }
+  }, [lang]);
 
   // Auto focus
   useEffect(() => {
