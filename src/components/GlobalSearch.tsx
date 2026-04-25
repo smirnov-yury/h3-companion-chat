@@ -41,6 +41,23 @@ const FETCH_LIMIT = 10;
 const VISIBLE_LIMIT = 3;
 const MIN_QUERY = 2;
 
+type EntityType = 'unit'|'ability'|'spell'|'artifact'|'rule'|'hero'|'building'|'field'|'glyph'|'statistic'|'event'|'war_machine'|'astrologer';
+const ENTITY_META: Record<EntityType, { labelEN: string; labelRU: string; url: (id: string) => string }> = {
+  unit:        { labelEN: 'Units',        labelRU: 'Юниты',          url: (id) => `/units/${id}` },
+  ability:     { labelEN: 'Abilities',    labelRU: 'Способности',    url: (id) => `/decks/abilities/${id}` },
+  spell:       { labelEN: 'Spells',       labelRU: 'Заклинания',     url: (id) => `/decks/spells/${id}` },
+  artifact:    { labelEN: 'Artifacts',    labelRU: 'Артефакты',      url: (id) => `/decks/artifacts/${id}` },
+  rule:        { labelEN: 'Rules',        labelRU: 'Правила',        url: (id) => `/rules/${id}` },
+  hero:        { labelEN: 'Heroes',       labelRU: 'Герои',          url: (id) => `/heroes/${id}` },
+  building:    { labelEN: 'Buildings',    labelRU: 'Постройки',      url: () => `/towns` },
+  field:       { labelEN: 'Map Elements', labelRU: 'Элементы карты', url: (id) => `/map-elements/${id}` },
+  glyph:       { labelEN: 'Glyphs',       labelRU: 'Глифы',          url: () => `/map-elements` },
+  statistic:   { labelEN: 'Statistics',   labelRU: 'Статистики',     url: () => `/rules` },
+  event:       { labelEN: 'Events',       labelRU: 'События',        url: (id) => `/events/${id}` },
+  war_machine: { labelEN: 'War Machines', labelRU: 'Военные машины', url: (id) => `/decks/warmachines/${id}` },
+  astrologer:  { labelEN: 'Astrologers',  labelRU: 'Астрологи',      url: () => `/` },
+};
+
 function pick(en: string | null | undefined, ru: string | null | undefined, lang: Lang): string {
   if (lang === "RU") return (ru ?? en ?? "").toString();
   return (en ?? ru ?? "").toString();
@@ -404,6 +421,44 @@ export default function GlobalSearch({ mode, onClose, initialQuery = "", autoFoc
   const [loading, setLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const requestId = useRef(0);
+  const [semanticMode, setSemanticMode] = useState(false);
+  const [semanticResults, setSemanticResults] = useState<SectionResult[]>([]);
+  const [semanticLoading, setSemanticLoading] = useState(false);
+
+  const runSemanticSearch = useCallback(async (q: string) => {
+    if (q.length < MIN_QUERY) { setSemanticResults([]); return; }
+    setSemanticLoading(true);
+    try {
+      const { data: embedData, error: embedErr } = await supabase.functions.invoke('embed-query', { body: { text: q } });
+      if (embedErr || !embedData?.embedding) throw new Error('embed failed');
+      const rpc = lang === 'RU' ? 'match_all_ru' : 'match_all_en';
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: matches } = await (supabase.rpc as any)(rpc, {
+        query_embedding: embedData.embedding,
+        match_count: 20,
+        match_threshold: 0.35,
+      });
+      if (!matches) { setSemanticResults([]); return; }
+      const grouped: Record<string, SectionResult> = {};
+      for (const m of matches as Array<{ entity_type: string; entity_id: string; name_en: string; name_ru: string; similarity: number }>) {
+        const meta = ENTITY_META[m.entity_type as EntityType];
+        if (!meta) continue;
+        if (!grouped[m.entity_type]) {
+          grouped[m.entity_type] = { key: m.entity_type, labelEN: meta.labelEN, labelRU: meta.labelRU, showMoreUrl: meta.url(''), hits: [], total: 0 };
+        }
+        grouped[m.entity_type].hits.push({
+          id: m.entity_id,
+          name: lang === 'RU' ? (m.name_ru || m.name_en) : (m.name_en || m.name_ru),
+          snippet: `${Math.round(m.similarity * 100)}% match`,
+          image: null,
+          url: meta.url(m.entity_id),
+        });
+        grouped[m.entity_type].total++;
+      }
+      setSemanticResults(Object.values(grouped));
+    } catch { setSemanticResults([]); }
+    finally { setSemanticLoading(false); }
+  }, [lang]);
 
   // Auto focus
   useEffect(() => {
@@ -441,6 +496,11 @@ export default function GlobalSearch({ mode, onClose, initialQuery = "", autoFoc
       });
   }, [debounced, lang]);
 
+  useEffect(() => {
+    if (!semanticMode) return;
+    runSemanticSearch(debounced.trim());
+  }, [semanticMode, debounced, runSemanticSearch]);
+
   // ESC closes overlay
   useEffect(() => {
     if (mode !== "overlay") return;
@@ -460,8 +520,10 @@ export default function GlobalSearch({ mode, onClose, initialQuery = "", autoFoc
   );
 
   const placeholder = lang === "RU" ? "Поиск правил, карточек, героев…" : "Search rules, cards, heroes…";
+  const activeResults = semanticMode ? semanticResults : results;
+  const activeLoading = semanticMode ? semanticLoading : loading;
   const showHint = query.trim().length < MIN_QUERY;
-  const showEmpty = !showHint && !loading && results.length === 0;
+  const showEmpty = !showHint && !activeLoading && activeResults.length === 0;
 
   const inputBlock = (
     <div className="relative">
@@ -474,17 +536,21 @@ export default function GlobalSearch({ mode, onClose, initialQuery = "", autoFoc
         placeholder={placeholder}
         className="w-full bg-muted rounded-xl pl-10 pr-10 py-3 text-base text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary transition-all"
       />
-      {loading ? (
-        <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground animate-spin" size={16} />
+      {(semanticMode ? semanticLoading : loading) ? (
+        <Loader2 className="absolute right-10 top-1/2 -translate-y-1/2 text-muted-foreground animate-spin" size={16} />
       ) : query ? (
-        <button
-          onClick={() => setQuery("")}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-          aria-label={lang === "RU" ? "Очистить" : "Clear"}
-        >
+        <button onClick={() => setQuery("")} className="absolute right-10 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" aria-label={lang === "RU" ? "Очистить" : "Clear"}>
           <X size={16} />
         </button>
       ) : null}
+      <button
+        type="button"
+        onClick={() => setSemanticMode((v) => !v)}
+        title={lang === "RU" ? (semanticMode ? "Смысловой поиск (вкл)" : "Смысловой поиск (выкл)") : (semanticMode ? "Semantic search (on)" : "Semantic search (off)")}
+        className={`absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-md flex items-center justify-center text-base transition-colors ${semanticMode ? "text-primary bg-primary/15" : "text-muted-foreground hover:text-foreground hover:bg-muted"}`}
+      >
+        ✦
+      </button>
     </div>
   );
 
@@ -500,7 +566,7 @@ export default function GlobalSearch({ mode, onClose, initialQuery = "", autoFoc
           {lang === "RU" ? "Ничего не найдено" : "Nothing found"}
         </p>
       )}
-      {results.map((section) => {
+      {activeResults.map((section) => {
         const visible = section.hits.slice(0, VISIBLE_LIMIT);
         const remainder = section.total - visible.length;
         const sectionLabel = lang === "RU" ? section.labelRU : section.labelEN;
