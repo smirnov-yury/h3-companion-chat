@@ -143,22 +143,6 @@ export default function TownsTab({ initialCardId, onCardOpen }: Props = {}) {
           ))}
         </div>
 
-        {/* Image tab switcher */}
-        <div className="flex gap-1 bg-muted rounded-lg p-0.5">
-          {IMAGE_TABS.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => handleImageTabChange(tab.id)}
-              className={`flex-1 px-2 py-1 rounded-md text-xs font-medium transition-colors ${
-                imageTab === tab.id
-                  ? "bg-background text-foreground shadow-sm"
-                  : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {lang === "RU" ? tab.labelRU : tab.labelEN}
-            </button>
-          ))}
-        </div>
       </div>
 
       <div className="flex-1 overflow-y-auto px-3 pb-3">
