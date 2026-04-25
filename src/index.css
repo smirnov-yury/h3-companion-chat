@@ -118,9 +118,9 @@
   filter: brightness(0) saturate(100%) invert(78%) sepia(44%) saturate(600%) hue-rotate(2deg) brightness(98%);
 }
 
-/* In light theme, use darker amber so glyphs are visible on parchment */
+/* In light theme, use dark bronze/brown so glyphs are visible on parchment */
 :root:not(.dark) .glyph-icon {
-  filter: brightness(0) saturate(100%) invert(22%) sepia(45%) saturate(700%) hue-rotate(12deg) brightness(82%);
+  filter: brightness(0) saturate(100%) invert(18%) sepia(60%) saturate(800%) hue-rotate(10deg) brightness(85%);
 }
 
 /* Tier star overrides — match unit badge colors exactly */
@@ -148,14 +148,16 @@ img.glyph-icon[src*="building_materials"] {
   filter: brightness(0) saturate(100%) invert(30%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(90%) !important;
 }
 
-.glyph-svg { display: inline-flex; align-items: center; vertical-align: middle; }
+.glyph-svg { display: inline-flex; align-items: center; vertical-align: middle; color: #E1BB3A; }
 .glyph-svg svg { width: 1.4em; height: 1.4em; filter: none; }
+:root:not(.dark) .glyph-svg { color: #7A3B10; }
 .glyph-or {
   display: block;
   text-align: center;
   margin: 0.9em 0 0.5em 0;
   color: #E1BB3A;
 }
+:root:not(.dark) .glyph-or { color: #7A3B10; }
 .glyph-or svg {
   width: 8em !important;
   height: auto !important;
