@@ -148,14 +148,16 @@ img.glyph-icon[src*="building_materials"] {
   filter: brightness(0) saturate(100%) invert(30%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(90%) !important;
 }
 
-.glyph-svg { display: inline-flex; align-items: center; vertical-align: middle; }
+.glyph-svg { display: inline-flex; align-items: center; vertical-align: middle; color: #E1BB3A; }
 .glyph-svg svg { width: 1.4em; height: 1.4em; filter: none; }
+:root:not(.dark) .glyph-svg { color: #7A3B10; }
 .glyph-or {
   display: block;
   text-align: center;
   margin: 0.9em 0 0.5em 0;
   color: #E1BB3A;
 }
+:root:not(.dark) .glyph-or { color: #7A3B10; }
 .glyph-or svg {
   width: 8em !important;
   height: auto !important;
