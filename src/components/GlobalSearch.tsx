@@ -41,6 +41,23 @@ const FETCH_LIMIT = 10;
 const VISIBLE_LIMIT = 3;
 const MIN_QUERY = 2;
 
+type EntityType = 'unit'|'ability'|'spell'|'artifact'|'rule'|'hero'|'building'|'field'|'glyph'|'statistic'|'event'|'war_machine'|'astrologer';
+const ENTITY_META: Record<EntityType, { labelEN: string; labelRU: string; url: (id: string) => string }> = {
+  unit:        { labelEN: 'Units',        labelRU: 'Юниты',          url: (id) => `/units/${id}` },
+  ability:     { labelEN: 'Abilities',    labelRU: 'Способности',    url: (id) => `/decks/abilities/${id}` },
+  spell:       { labelEN: 'Spells',       labelRU: 'Заклинания',     url: (id) => `/decks/spells/${id}` },
+  artifact:    { labelEN: 'Artifacts',    labelRU: 'Артефакты',      url: (id) => `/decks/artifacts/${id}` },
+  rule:        { labelEN: 'Rules',        labelRU: 'Правила',        url: (id) => `/rules/${id}` },
+  hero:        { labelEN: 'Heroes',       labelRU: 'Герои',          url: (id) => `/heroes/${id}` },
+  building:    { labelEN: 'Buildings',    labelRU: 'Постройки',      url: () => `/towns` },
+  field:       { labelEN: 'Map Elements', labelRU: 'Элементы карты', url: (id) => `/map-elements/${id}` },
+  glyph:       { labelEN: 'Glyphs',       labelRU: 'Глифы',          url: () => `/map-elements` },
+  statistic:   { labelEN: 'Statistics',   labelRU: 'Статистики',     url: () => `/rules` },
+  event:       { labelEN: 'Events',       labelRU: 'События',        url: (id) => `/events/${id}` },
+  war_machine: { labelEN: 'War Machines', labelRU: 'Военные машины', url: (id) => `/decks/warmachines/${id}` },
+  astrologer:  { labelEN: 'Astrologers',  labelRU: 'Астрологи',      url: () => `/` },
+};
+
 function pick(en: string | null | undefined, ru: string | null | undefined, lang: Lang): string {
   if (lang === "RU") return (ru ?? en ?? "").toString();
   return (en ?? ru ?? "").toString();
