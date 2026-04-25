@@ -520,8 +520,10 @@ export default function GlobalSearch({ mode, onClose, initialQuery = "", autoFoc
   );
 
   const placeholder = lang === "RU" ? "Поиск правил, карточек, героев…" : "Search rules, cards, heroes…";
+  const activeResults = semanticMode ? semanticResults : results;
+  const activeLoading = semanticMode ? semanticLoading : loading;
   const showHint = query.trim().length < MIN_QUERY;
-  const showEmpty = !showHint && !loading && results.length === 0;
+  const showEmpty = !showHint && !activeLoading && activeResults.length === 0;
 
   const inputBlock = (
     <div className="relative">
