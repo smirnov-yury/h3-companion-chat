@@ -1397,7 +1397,34 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      match_all_en: {
+        Args: {
+          match_count?: number
+          match_threshold?: number
+          query_embedding: string
+        }
+        Returns: {
+          entity_id: string
+          entity_type: string
+          name_en: string
+          name_ru: string
+          similarity: number
+        }[]
+      }
+      match_all_ru: {
+        Args: {
+          match_count?: number
+          match_threshold?: number
+          query_embedding: string
+        }
+        Returns: {
+          entity_id: string
+          entity_type: string
+          name_en: string
+          name_ru: string
+          similarity: number
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
