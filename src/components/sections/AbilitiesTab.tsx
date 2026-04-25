@@ -136,8 +136,8 @@ export default function AbilitiesTab({ searchQuery = "", initialCardId, onCardOp
                     <p className="text-xs text-muted-foreground whitespace-pre-line" dangerouslySetInnerHTML={{ __html: renderGlyphs(lang === "RU" ? selected.notes_ru : selected.notes_en, glyphs) }} />
                   </div>
                 )}
+                <SeeAlso entityType="ability" entityId={selected.id} lang={lang as "EN" | "RU"} />
               </div>
-              <SeeAlso entityType="ability" entityId={selected.id} lang={lang as "EN" | "RU"} />
             </>
           )}
         </CardDialogContent>
