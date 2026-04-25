@@ -534,17 +534,21 @@ export default function GlobalSearch({ mode, onClose, initialQuery = "", autoFoc
         placeholder={placeholder}
         className="w-full bg-muted rounded-xl pl-10 pr-10 py-3 text-base text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary transition-all"
       />
-      {loading ? (
-        <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground animate-spin" size={16} />
+      {(semanticMode ? semanticLoading : loading) ? (
+        <Loader2 className="absolute right-10 top-1/2 -translate-y-1/2 text-muted-foreground animate-spin" size={16} />
       ) : query ? (
-        <button
-          onClick={() => setQuery("")}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-          aria-label={lang === "RU" ? "Очистить" : "Clear"}
-        >
+        <button onClick={() => setQuery("")} className="absolute right-10 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" aria-label={lang === "RU" ? "Очистить" : "Clear"}>
           <X size={16} />
         </button>
       ) : null}
+      <button
+        type="button"
+        onClick={() => setSemanticMode((v) => !v)}
+        title={lang === "RU" ? (semanticMode ? "Смысловой поиск (вкл)" : "Смысловой поиск (выкл)") : (semanticMode ? "Semantic search (on)" : "Semantic search (off)")}
+        className={`absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-md flex items-center justify-center text-base transition-colors ${semanticMode ? "text-primary bg-primary/15" : "text-muted-foreground hover:text-foreground hover:bg-muted"}`}
+      >
+        ✦
+      </button>
     </div>
   );
 
