@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Building, Building2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/context/LanguageContext";
 import { useGlyphs } from "@/context/GlyphsContext";
