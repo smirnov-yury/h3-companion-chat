@@ -35,11 +35,6 @@ interface TownBuilding {
 
 type ImageTab = "empty" | "full";
 
-const IMAGE_TABS: { id: ImageTab; labelRU: string; labelEN: string }[] = [
-  { id: "empty", labelRU: "Пустой", labelEN: "Empty" },
-  { id: "full", labelRU: "Полный", labelEN: "Full" },
-];
-
 interface Props {
   initialCardId?: string;
   onCardOpen?: (cardId: string) => void;
