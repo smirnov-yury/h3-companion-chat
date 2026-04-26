@@ -421,7 +421,6 @@ export default function GlobalSearch({ mode, onClose, initialQuery = "", autoFoc
   const [loading, setLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const requestId = useRef(0);
-  const [semanticMode, setSemanticMode] = useState(false);
   const [semanticResults, setSemanticResults] = useState<SectionResult[]>([]);
   const [semanticLoading, setSemanticLoading] = useState(false);
 
