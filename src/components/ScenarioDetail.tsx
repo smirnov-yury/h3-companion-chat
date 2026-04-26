@@ -241,7 +241,7 @@ function EventsPane({ scenarioId }: { scenarioId: string }) {
       {Array.from(groups.entries()).map(([type, items]) => (
         <div key={type}>
           <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wide mb-1.5">
-            {TRIGGER_LABELS[type] || type}
+            {(lang === "RU" ? TRIGGER_LABELS_RU[type] : TRIGGER_LABELS_EN[type]) || type}
           </p>
           <div className="space-y-2">
             {items.map(e => {
