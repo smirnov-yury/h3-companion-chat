@@ -113,8 +113,10 @@
 
 /* Default yellow filter for most glyphs */
 .glyph-icon {
-  width: 1.4em;
-  height: 1.4em;
+  width: 1.15em;
+  height: 1.15em;
+  margin: 0 1px;
+  vertical-align: -0.2em;
   filter: brightness(0) saturate(100%) invert(78%) sepia(44%) saturate(600%) hue-rotate(2deg) brightness(98%);
 }
 
@@ -148,8 +150,8 @@ img.glyph-icon[src*="building_materials"] {
   filter: brightness(0) saturate(100%) invert(30%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(90%) !important;
 }
 
-.glyph-svg { display: inline-flex; align-items: center; vertical-align: middle; color: #E1BB3A; }
-.glyph-svg svg { width: 1.4em; height: 1.4em; filter: none; }
+.glyph-svg { display: inline-flex; align-items: center; vertical-align: middle; margin: 0 1px; color: #E1BB3A; }
+.glyph-svg svg { width: 1.15em; height: 1.15em; filter: none; }
 :root:not(.dark) .glyph-svg { color: #7A3B10; }
 .glyph-or {
   display: block;
