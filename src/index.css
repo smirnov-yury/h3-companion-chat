@@ -12,28 +12,28 @@
     --card-foreground: 24 48% 14%;
     --popover: 38 44% 96%;
     --popover-foreground: 24 48% 14%;
-    --primary: 36 74% 42%;
+    --primary: 22 78% 27%;
     --primary-foreground: 38 40% 98%;
     --secondary: 34 26% 82%;
     --secondary-foreground: 24 48% 16%;
     --muted: 34 24% 86%;
     --muted-foreground: 26 22% 36%;
-    --accent: 36 74% 42%;
+    --accent: 22 78% 27%;
     --accent-foreground: 38 40% 98%;
     --destructive: 358 55% 42%;
     --destructive-foreground: 38 38% 94%;
     --border: 32 28% 70%;
     --input: 34 24% 84%;
-    --ring: 36 74% 42%;
+    --ring: 22 78% 27%;
     --radius: 0.5rem;
     --sidebar-background: 36 38% 87%;
     --sidebar-foreground: 24 48% 14%;
-    --sidebar-primary: 36 74% 42%;
+    --sidebar-primary: 22 78% 27%;
     --sidebar-primary-foreground: 38 40% 98%;
     --sidebar-accent: 34 24% 86%;
     --sidebar-accent-foreground: 24 48% 16%;
     --sidebar-border: 32 28% 70%;
-    --sidebar-ring: 36 74% 42%;
+    --sidebar-ring: 22 78% 27%;
   }
 
   .dark {
@@ -118,9 +118,9 @@
   filter: brightness(0) saturate(100%) invert(78%) sepia(44%) saturate(600%) hue-rotate(2deg) brightness(98%);
 }
 
-/* In light theme, use dark bronze/brown so glyphs are visible on parchment */
+/* In light theme, use dark bronze/brown (#7A3B10) so glyphs are visible on parchment */
 :root:not(.dark) .glyph-icon {
-  filter: brightness(0) saturate(100%) invert(18%) sepia(60%) saturate(800%) hue-rotate(10deg) brightness(85%);
+  filter: brightness(0) saturate(100%) invert(22%) sepia(72%) saturate(1800%) hue-rotate(7deg) brightness(85%) contrast(95%);
 }
 
 /* Tier star overrides — match unit badge colors exactly */
