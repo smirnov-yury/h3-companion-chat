@@ -71,7 +71,7 @@ export default function StatisticsTab({ searchQuery = "", initialCardId, onCardO
   const [items, setItems] = useState<Statistic[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-  const [filterStat, setFilterStat] = useState("all");
+  
 
   useEffect(() => {
     supabase.from("statistics").select("*").order("sort_order").then(({ data }) => {
