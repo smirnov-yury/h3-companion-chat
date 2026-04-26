@@ -496,9 +496,8 @@ export default function GlobalSearch({ mode, onClose, initialQuery = "", autoFoc
   }, [debounced, lang]);
 
   useEffect(() => {
-    if (!semanticMode) return;
     runSemanticSearch(debounced.trim());
-  }, [semanticMode, debounced, runSemanticSearch]);
+  }, [debounced, runSemanticSearch]);
 
   // ESC closes overlay
   useEffect(() => {
