@@ -80,22 +80,20 @@ export default function StatisticsTab({ searchQuery = "", initialCardId, onCardO
     });
   }, []);
 
-  const currentFilter = filterStat === "all" ? null : filterStat;
+  const currentFilter = null;
   const closeCard = () => { setSelectedIndex(null); onCardClose?.(currentFilter); };
 
-  const statTypes = ["all", ...Array.from(new Set(items.map(i => i.stat_type).filter(Boolean))) as string[]];
-  const afterFilter = filterStat === "all" ? items : items.filter(i => i.stat_type === filterStat);
   const q = searchQuery.toLowerCase();
   const filtered = searchQuery
-    ? afterFilter.filter(i => {
+    ? items.filter(i => {
         const fields = [i.name_en, i.name_ru, i.effect_en];
         return fields.some(f => f && f.toLowerCase().includes(q));
       })
-    : afterFilter;
+    : items;
 
   const name = (i: Statistic) => lang === "RU" ? (i.name_ru || i.name_en || "") : (i.name_en || "");
-  const hasFilters = filterStat !== "all" || !!searchQuery;
-  const resetFilters = () => setFilterStat("all");
+  const hasFilters = !!searchQuery;
+  const resetFilters = () => {};
 
   const selected = selectedIndex !== null ? filtered[selectedIndex] ?? null : null;
   const openCard = (i: Statistic) => {
