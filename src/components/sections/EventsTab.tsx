@@ -64,9 +64,9 @@ export default function EventsTab({ searchQuery = "", initialCardId, onCardOpen,
     onCardOpen?.(i.id);
   };
   const goPrev = selectedIndex !== null && selectedIndex > 0
-    ? () => setSelectedIndex(selectedIndex - 1) : undefined;
+    ? () => { const ni = selectedIndex - 1; setSelectedIndex(ni); onCardOpen?.(filtered[ni].id); } : undefined;
   const goNext = selectedIndex !== null && selectedIndex < filtered.length - 1
-    ? () => setSelectedIndex(selectedIndex + 1) : undefined;
+    ? () => { const ni = selectedIndex + 1; setSelectedIndex(ni); onCardOpen?.(filtered[ni].id); } : undefined;
 
   useEffect(() => {
     if (!loaded || !initialCardId) return;

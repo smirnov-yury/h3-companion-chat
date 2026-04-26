@@ -100,9 +100,9 @@ export default function ArtifactsTab({ searchQuery = "", initialFilter, initialC
     onCardOpen?.(currentFilter, i.id);
   };
   const goPrev = selectedIndex !== null && selectedIndex > 0
-    ? () => setSelectedIndex(selectedIndex - 1) : undefined;
+    ? () => { const ni = selectedIndex - 1; setSelectedIndex(ni); onCardOpen?.(currentFilter, filtered[ni].id); } : undefined;
   const goNext = selectedIndex !== null && selectedIndex < filtered.length - 1
-    ? () => setSelectedIndex(selectedIndex + 1) : undefined;
+    ? () => { const ni = selectedIndex + 1; setSelectedIndex(ni); onCardOpen?.(currentFilter, filtered[ni].id); } : undefined;
 
   // Auto-open card from URL
   useEffect(() => {

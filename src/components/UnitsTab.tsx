@@ -277,10 +277,20 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
     return displayItems.findIndex((i) => i.key === selectedKey);
   }, [selectedKey, displayItems]);
   const selectedItem = selectedIndex >= 0 ? displayItems[selectedIndex] : null;
+  const itemCardSlug = (it: typeof displayItems[number]) =>
+    it.isNeutral ? it.unit.id : it.unit.slug;
   const goPrev = selectedIndex > 0
-    ? () => setSelectedKey(displayItems[selectedIndex - 1].key) : undefined;
+    ? () => {
+        const ni = displayItems[selectedIndex - 1];
+        setSelectedKey(ni.key);
+        onCardOpen?.(itemCardSlug(ni), filterFaction === "all" ? null : filterFaction);
+      } : undefined;
   const goNext = selectedIndex >= 0 && selectedIndex < displayItems.length - 1
-    ? () => setSelectedKey(displayItems[selectedIndex + 1].key) : undefined;
+    ? () => {
+        const ni = displayItems[selectedIndex + 1];
+        setSelectedKey(ni.key);
+        onCardOpen?.(itemCardSlug(ni), filterFaction === "all" ? null : filterFaction);
+      } : undefined;
 
   const modeLabels: Record<ModeFilter, string> =
     lang === 'RU'
