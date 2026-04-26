@@ -306,8 +306,14 @@ export default function HeroesTab({ initialFilter, initialCardId, initialSearch,
                     })()}
                   </div>
                 </div>
-                <div className="p-2">
-                  <p className="text-xs font-semibold text-foreground truncate">{name(h)}</p>
+                <div className="p-2 w-full">
+                  <p
+                    className="text-xs font-semibold text-foreground leading-tight break-words overflow-hidden"
+                    style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}
+                    title={name(h)}
+                  >
+                    {name(h)}
+                  </p>
                 </div>
               </button>
             ))}
