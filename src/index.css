@@ -164,3 +164,13 @@ img.glyph-icon[src*="building_materials"] {
   width: 8em !important;
   height: auto !important;
 }
+
+/* Card dialog close + nav arrow accent: gold (dark theme), brown (light theme) */
+.card-dialog-accent {
+  border-color: #E1BB3A;
+  color: #E1BB3A;
+}
+:root:not(.dark) .card-dialog-accent {
+  border-color: #7A3B10;
+  color: #7A3B10;
+}
