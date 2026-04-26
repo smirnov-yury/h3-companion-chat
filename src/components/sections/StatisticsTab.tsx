@@ -71,7 +71,7 @@ export default function StatisticsTab({ searchQuery = "", initialCardId, onCardO
   const [items, setItems] = useState<Statistic[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-  const [filterStat, setFilterStat] = useState("all");
+  
 
   useEffect(() => {
     supabase.from("statistics").select("*").order("sort_order").then(({ data }) => {
@@ -80,22 +80,20 @@ export default function StatisticsTab({ searchQuery = "", initialCardId, onCardO
     });
   }, []);
 
-  const currentFilter = filterStat === "all" ? null : filterStat;
+  const currentFilter = null;
   const closeCard = () => { setSelectedIndex(null); onCardClose?.(currentFilter); };
 
-  const statTypes = ["all", ...Array.from(new Set(items.map(i => i.stat_type).filter(Boolean))) as string[]];
-  const afterFilter = filterStat === "all" ? items : items.filter(i => i.stat_type === filterStat);
   const q = searchQuery.toLowerCase();
   const filtered = searchQuery
-    ? afterFilter.filter(i => {
+    ? items.filter(i => {
         const fields = [i.name_en, i.name_ru, i.effect_en];
         return fields.some(f => f && f.toLowerCase().includes(q));
       })
-    : afterFilter;
+    : items;
 
   const name = (i: Statistic) => lang === "RU" ? (i.name_ru || i.name_en || "") : (i.name_en || "");
-  const hasFilters = filterStat !== "all" || !!searchQuery;
-  const resetFilters = () => setFilterStat("all");
+  const hasFilters = !!searchQuery;
+  const resetFilters = () => {};
 
   const selected = selectedIndex !== null ? filtered[selectedIndex] ?? null : null;
   const openCard = (i: Statistic) => {
@@ -119,15 +117,8 @@ export default function StatisticsTab({ searchQuery = "", initialCardId, onCardO
   return (
     <>
       <div className="flex flex-col h-full">
-        <div className="flex gap-1.5 overflow-x-auto px-3 pt-0 pb-2 scrollbar-none shrink-0">
-          {statTypes.map(s => (
-            <button key={s} onClick={() => setFilterStat(s)}
-              className={`shrink-0 px-2.5 py-1 rounded-full text-[11px] font-medium transition-colors capitalize ${filterStat === s ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
-              {s === "all" ? (lang === "RU" ? "Все" : "All") : s}
-            </button>
-          ))}
-        </div>
         <div className="p-3 pt-0 overflow-y-auto flex-1">
+
           {!loaded ? (
             <SkeletonGrid />
           ) : filtered.length === 0 ? (
