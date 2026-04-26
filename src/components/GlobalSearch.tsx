@@ -421,7 +421,6 @@ export default function GlobalSearch({ mode, onClose, initialQuery = "", autoFoc
   const [loading, setLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const requestId = useRef(0);
-  const [semanticMode, setSemanticMode] = useState(false);
   const [semanticResults, setSemanticResults] = useState<SectionResult[]>([]);
   const [semanticLoading, setSemanticLoading] = useState(false);
 
@@ -497,9 +496,8 @@ export default function GlobalSearch({ mode, onClose, initialQuery = "", autoFoc
   }, [debounced, lang]);
 
   useEffect(() => {
-    if (!semanticMode) return;
     runSemanticSearch(debounced.trim());
-  }, [semanticMode, debounced, runSemanticSearch]);
+  }, [debounced, runSemanticSearch]);
 
   // ESC closes overlay
   useEffect(() => {
@@ -520,8 +518,8 @@ export default function GlobalSearch({ mode, onClose, initialQuery = "", autoFoc
   );
 
   const placeholder = lang === "RU" ? "Поиск правил, карточек, героев…" : "Search rules, cards, heroes…";
-  const activeResults = semanticMode ? semanticResults : results;
-  const activeLoading = semanticMode ? semanticLoading : loading;
+  const activeResults = semanticResults;
+  const activeLoading = semanticLoading;
   const showHint = query.trim().length < MIN_QUERY;
   const showEmpty = !showHint && !activeLoading && activeResults.length === 0;
 
@@ -536,21 +534,13 @@ export default function GlobalSearch({ mode, onClose, initialQuery = "", autoFoc
         placeholder={placeholder}
         className="w-full bg-muted rounded-xl pl-10 pr-10 py-3 text-base text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary transition-all"
       />
-      {(semanticMode ? semanticLoading : loading) ? (
-        <Loader2 className="absolute right-10 top-1/2 -translate-y-1/2 text-muted-foreground animate-spin" size={16} />
+      {semanticLoading ? (
+        <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground animate-spin" size={16} />
       ) : query ? (
-        <button onClick={() => setQuery("")} className="absolute right-10 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" aria-label={lang === "RU" ? "Очистить" : "Clear"}>
+        <button onClick={() => setQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" aria-label={lang === "RU" ? "Очистить" : "Clear"}>
           <X size={16} />
         </button>
       ) : null}
-      <button
-        type="button"
-        onClick={() => setSemanticMode((v) => !v)}
-        title={lang === "RU" ? (semanticMode ? "Смысловой поиск (вкл)" : "Смысловой поиск (выкл)") : (semanticMode ? "Semantic search (on)" : "Semantic search (off)")}
-        className={`absolute right-2 top-1/2 -translate-y-1/2 w-7 h-7 rounded-md flex items-center justify-center text-base transition-colors ${semanticMode ? "text-primary bg-primary/15" : "text-muted-foreground hover:text-foreground hover:bg-muted"}`}
-      >
-        ✦
-      </button>
     </div>
   );
 
