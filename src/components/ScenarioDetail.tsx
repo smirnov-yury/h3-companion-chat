@@ -18,7 +18,7 @@ const MODE_COLORS: Record<string, string> = {
   campaign: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300",
 };
 
-const TRIGGER_LABELS: Record<string, string> = {
+const TRIGGER_LABELS_EN: Record<string, string> = {
   round_start: "Round Start",
   round_end: "Round End",
   on_discover_tile: "On Tile Discovery",
@@ -26,6 +26,16 @@ const TRIGGER_LABELS: Record<string, string> = {
   on_capture_location: "On Capture",
   on_complete: "On Completion",
   custom: "Special",
+};
+
+const TRIGGER_LABELS_RU: Record<string, string> = {
+  round_start: "Начало раунда",
+  round_end: "Конец раунда",
+  on_discover_tile: "При открытии тайла",
+  on_visit_field: "При посещении",
+  on_capture_location: "При захвате",
+  on_complete: "При выполнении",
+  custom: "Особое",
 };
 
 interface ScenarioDetailProps {
