@@ -89,7 +89,10 @@ const STAT_CONFIG: Record<string, { icon: React.ElementType; color: string; labe
 function GlyphText({ text }: { text: string | null | undefined }) {
   const { glyphs } = useGlyphs();
   if (!text) return null;
-  return <span dangerouslySetInnerHTML={{ __html: renderGlyphs(text, glyphs) }} />;
+  const html = renderGlyphs(text, glyphs)
+    .replace(/\n\n/g, '<br><br>')
+    .replace(/\n/g, '<br>');
+  return <span dangerouslySetInnerHTML={{ __html: html }} />;
 }
 
 function FilterChip({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
