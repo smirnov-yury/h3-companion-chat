@@ -290,8 +290,16 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled, initialFilte
             value={search}
             onChange={(e) => handleSearch(e.target.value)}
             placeholder={lang === "RU" ? "Поиск правил…" : "Search rules…"}
-            className="w-full rounded-xl bg-input pl-9 pr-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-ring"
+            className="w-full rounded-xl bg-input pl-9 pr-16 py-2.5 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-ring"
           />
+          {search && (
+            <button
+              onClick={() => { setSearch(""); setDebouncedSearch(""); }}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Clear
+            </button>
+          )}
         </div>
       </div>
 
