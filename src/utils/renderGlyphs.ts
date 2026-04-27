@@ -66,7 +66,11 @@ export function renderGlyphs(text: string | null | undefined, glyphs: GlyphMap):
     const key = token.toLowerCase();
     // 1. Inline SVG (crisp, scales with font-size)
     if (GLYPH_SVGS[key]) {
-      const spanClass = key === 'or' ? 'glyph-svg glyph-or' : 'glyph-svg';
+      const tierClass = TIER_CLASSES[key];
+      const naturalClass = NATURAL_TOKENS.has(key) ? 'glyph-natural' : '';
+      const extraClass = tierClass || naturalClass;
+      const baseClass = key === 'or' ? 'glyph-svg glyph-or' : 'glyph-svg';
+      const spanClass = extraClass ? `${baseClass} ${extraClass}` : baseClass;
       return `<span class="${spanClass}" aria-label="${key}">${GLYPH_SVGS[key]}</span>`;
     }
     // 2. PNG fallback from Supabase storage
