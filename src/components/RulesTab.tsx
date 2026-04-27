@@ -298,30 +298,30 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled, initialFilte
       <div className="px-3 pb-2 shrink-0 overflow-x-auto scrollbar-none">
         <div className="flex gap-2 w-max">
           <button
-            onClick={() => { setSelectedCategory(null); onFilterChange?.(null); }}
+            onClick={() => { setSelectedGroup(null); onFilterChange?.(null); }}
             className={`px-3 py-1 text-xs font-medium rounded-full whitespace-nowrap transition-colors ${
-              !selectedCategory
+              !selectedGroup
                 ? "bg-primary text-primary-foreground"
                 : "bg-secondary text-secondary-foreground"
             }`}
           >
             {lang === "RU" ? "Все" : "All"}
           </button>
-          {categories.map((cat) => (
+          {RULE_FILTER_GROUPS.map(g => (
             <button
-              key={cat.key}
+              key={g.id}
               onClick={() => {
-                const next = cat.key === selectedCategory ? null : cat.key;
-                setSelectedCategory(next);
+                const next = g.id === selectedGroup ? null : g.id;
+                setSelectedGroup(next);
                 onFilterChange?.(next);
               }}
               className={`px-3 py-1 text-xs font-medium rounded-full whitespace-nowrap transition-colors ${
-                selectedCategory === cat.key
+                selectedGroup === g.id
                   ? "bg-primary text-primary-foreground"
                   : "bg-secondary text-secondary-foreground"
               }`}
             >
-              {lang === "RU" ? cat.ru : cat.en}
+              {lang === "RU" ? g.ru : g.en}
             </button>
           ))}
         </div>
@@ -330,7 +330,7 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled, initialFilte
       <div className="flex-1 overflow-y-auto px-3 pb-3">
         {filtered.length === 0 && (
           <EmptyState
-            onReset={selectedCategory || debouncedSearch ? () => { setSelectedCategory(null); setSearch(""); setDebouncedSearch(""); } : undefined}
+            onReset={selectedGroup || debouncedSearch ? () => { setSelectedGroup(null); setSearch(""); setDebouncedSearch(""); } : undefined}
           />
         )}
 
