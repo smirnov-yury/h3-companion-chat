@@ -27,33 +27,6 @@ interface Statistic {
   sort_order: number | null;
 }
 
-const STAT_COLORS: Record<string, string> = {
-  attack:    "bg-red-100 text-red-700 dark:bg-red-800 dark:text-red-200",
-  defense:   "bg-blue-100 text-blue-700 dark:bg-blue-800 dark:text-blue-200",
-  power:     "bg-purple-100 text-purple-700 dark:bg-purple-800 dark:text-purple-200",
-  knowledge: "bg-emerald-100 text-emerald-700 dark:bg-emerald-800 dark:text-emerald-200",
-};
-
-const CARD_TYPE_BADGE: Record<string, string> = {
-  regular:   "bg-zinc-100 text-zinc-700 dark:bg-zinc-700 dark:text-zinc-200",
-  empowered: "bg-amber-100 text-amber-800 dark:bg-amber-700 dark:text-amber-100",
-};
-
-function cardTypeLabel(ct: string, lang: "EN" | "RU") {
-  if (ct === "empowered") return lang === "RU" ? "✦ Усиленный" : "✦ Empowered";
-  return lang === "RU" ? "Обычный" : "Regular";
-}
-
-function statTypeLabel(st: string, lang: "EN" | "RU") {
-  if (lang !== "RU") return st.charAt(0).toUpperCase() + st.slice(1);
-  const map: Record<string, string> = {
-    attack: "Атака",
-    defense: "Защита",
-    power: "Сила",
-    knowledge: "Знание",
-  };
-  return map[st] || st;
-}
 
 interface Props {
   searchQuery?: string;
