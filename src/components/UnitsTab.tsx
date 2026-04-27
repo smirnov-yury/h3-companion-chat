@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import type { Json } from '@/integrations/supabase/types';
 import { useGlyphs } from '@/context/GlyphsContext';
 import { useLang } from '@/context/LanguageContext';
 import { renderGlyphs } from '@/utils/renderGlyphs';
@@ -54,6 +55,8 @@ interface UnitStat {
   abilities_ru: string | null;
   notes_en: string | null;
   notes_ru: string | null;
+  notes_structured_en: Json | null;
+  notes_structured_ru: Json | null;
   errata_en: string | null;
   errata_ru: string | null;
   content: string | null;
@@ -519,6 +522,9 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
             const imgSrc = u.image ? `${STORAGE}/units/${u.image}` : null;
             const abilities = lang === 'RU' && u.abilities_ru ? u.abilities_ru : u.abilities_en;
             const notes = lang === 'RU' && u.notes_ru ? u.notes_ru : u.notes_en;
+            const notesStructured = lang === 'RU' && u.notes_structured_ru
+              ? u.notes_structured_ru
+              : u.notes_structured_en;
             const errata = lang === 'RU' && u.errata_ru ? u.errata_ru : u.errata_en;
 
             return (
@@ -600,9 +606,14 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
                     </div>
                   )}
 
-                  {notes && (
+                  {(notesStructured || notes) && (
                     <div className="text-sm text-muted-foreground leading-relaxed mt-2">
-                      <GlyphText text={notes} />
+                      <StructuredNotes
+                        structured={notesStructured}
+                        fallback={notes}
+                        unitId={u.id}
+                        lang={lang}
+                      />
                     </div>
                   )}
                   {errata && (
