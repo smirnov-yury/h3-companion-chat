@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       abilities: {
         Row: {
+          ai_context: string | null
           effect_empowered_en: string | null
           effect_empowered_ru: string | null
           effect_en: string | null
@@ -26,6 +27,7 @@ export type Database = {
           embedding_ru: string | null
           id: string
           image_regular: string | null
+          image_status: Database["public"]["Enums"]["image_status_enum"]
           name_en: string
           name_ru: string | null
           notes_en: string | null
@@ -33,8 +35,10 @@ export type Database = {
           search_text_en: string | null
           search_text_ru: string | null
           sort_order: number | null
+          updated_at: string
         }
         Insert: {
+          ai_context?: string | null
           effect_empowered_en?: string | null
           effect_empowered_ru?: string | null
           effect_en?: string | null
@@ -45,6 +49,7 @@ export type Database = {
           embedding_ru?: string | null
           id: string
           image_regular?: string | null
+          image_status?: Database["public"]["Enums"]["image_status_enum"]
           name_en: string
           name_ru?: string | null
           notes_en?: string | null
@@ -52,8 +57,10 @@ export type Database = {
           search_text_en?: string | null
           search_text_ru?: string | null
           sort_order?: number | null
+          updated_at?: string
         }
         Update: {
+          ai_context?: string | null
           effect_empowered_en?: string | null
           effect_empowered_ru?: string | null
           effect_en?: string | null
@@ -64,6 +71,7 @@ export type Database = {
           embedding_ru?: string | null
           id?: string
           image_regular?: string | null
+          image_status?: Database["public"]["Enums"]["image_status_enum"]
           name_en?: string
           name_ru?: string | null
           notes_en?: string | null
@@ -71,11 +79,13 @@ export type Database = {
           search_text_en?: string | null
           search_text_ru?: string | null
           sort_order?: number | null
+          updated_at?: string
         }
         Relationships: []
       }
       artifacts: {
         Row: {
+          ai_context: string | null
           description_en: string | null
           description_ru: string | null
           effect_en: string | null
@@ -84,14 +94,17 @@ export type Database = {
           embedding_ru: string | null
           id: string
           image: string | null
+          image_status: Database["public"]["Enums"]["image_status_enum"]
           name_en: string
           name_ru: string | null
           quality: string | null
           search_text_en: string | null
           search_text_ru: string | null
           sort_order: number | null
+          updated_at: string
         }
         Insert: {
+          ai_context?: string | null
           description_en?: string | null
           description_ru?: string | null
           effect_en?: string | null
@@ -100,14 +113,17 @@ export type Database = {
           embedding_ru?: string | null
           id: string
           image?: string | null
+          image_status?: Database["public"]["Enums"]["image_status_enum"]
           name_en: string
           name_ru?: string | null
           quality?: string | null
           search_text_en?: string | null
           search_text_ru?: string | null
           sort_order?: number | null
+          updated_at?: string
         }
         Update: {
+          ai_context?: string | null
           description_en?: string | null
           description_ru?: string | null
           effect_en?: string | null
@@ -116,12 +132,14 @@ export type Database = {
           embedding_ru?: string | null
           id?: string
           image?: string | null
+          image_status?: Database["public"]["Enums"]["image_status_enum"]
           name_en?: string
           name_ru?: string | null
           quality?: string | null
           search_text_en?: string | null
           search_text_ru?: string | null
           sort_order?: number | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -135,6 +153,7 @@ export type Database = {
           embedding_ru: string | null
           id: string
           image: string | null
+          image_status: Database["public"]["Enums"]["image_status_enum"]
           name_en: string
           name_ru: string | null
           notes_en: string | null
@@ -142,6 +161,7 @@ export type Database = {
           search_text_en: string | null
           search_text_ru: string | null
           sort_order: number | null
+          updated_at: string
         }
         Insert: {
           description_en?: string | null
@@ -152,6 +172,7 @@ export type Database = {
           embedding_ru?: string | null
           id: string
           image?: string | null
+          image_status?: Database["public"]["Enums"]["image_status_enum"]
           name_en: string
           name_ru?: string | null
           notes_en?: string | null
@@ -159,6 +180,7 @@ export type Database = {
           search_text_en?: string | null
           search_text_ru?: string | null
           sort_order?: number | null
+          updated_at?: string
         }
         Update: {
           description_en?: string | null
@@ -169,6 +191,7 @@ export type Database = {
           embedding_ru?: string | null
           id?: string
           image?: string | null
+          image_status?: Database["public"]["Enums"]["image_status_enum"]
           name_en?: string
           name_ru?: string | null
           notes_en?: string | null
@@ -176,6 +199,7 @@ export type Database = {
           search_text_en?: string | null
           search_text_ru?: string | null
           sort_order?: number | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -287,6 +311,42 @@ export type Database = {
         }
         Relationships: []
       }
+      db_audit_log: {
+        Row: {
+          action: string
+          changed_at: string
+          changed_by: string
+          field_name: string | null
+          id: number
+          new_value: string | null
+          old_value: string | null
+          record_id: string
+          table_name: string
+        }
+        Insert: {
+          action: string
+          changed_at?: string
+          changed_by?: string
+          field_name?: string | null
+          id?: number
+          new_value?: string | null
+          old_value?: string | null
+          record_id: string
+          table_name: string
+        }
+        Update: {
+          action?: string
+          changed_at?: string
+          changed_by?: string
+          field_name?: string | null
+          id?: number
+          new_value?: string | null
+          old_value?: string | null
+          record_id?: string
+          table_name?: string
+        }
+        Relationships: []
+      }
       entity_links: {
         Row: {
           context_text: string | null
@@ -354,6 +414,7 @@ export type Database = {
           embedding_ru: string | null
           id: string
           image: string | null
+          image_status: Database["public"]["Enums"]["image_status_enum"]
           name_en: string
           name_ru: string | null
           notes_en: string | null
@@ -361,6 +422,7 @@ export type Database = {
           search_text_en: string | null
           search_text_ru: string | null
           sort_order: number | null
+          updated_at: string
         }
         Insert: {
           effect_en?: string | null
@@ -369,6 +431,7 @@ export type Database = {
           embedding_ru?: string | null
           id: string
           image?: string | null
+          image_status?: Database["public"]["Enums"]["image_status_enum"]
           name_en: string
           name_ru?: string | null
           notes_en?: string | null
@@ -376,6 +439,7 @@ export type Database = {
           search_text_en?: string | null
           search_text_ru?: string | null
           sort_order?: number | null
+          updated_at?: string
         }
         Update: {
           effect_en?: string | null
@@ -384,6 +448,7 @@ export type Database = {
           embedding_ru?: string | null
           id?: string
           image?: string | null
+          image_status?: Database["public"]["Enums"]["image_status_enum"]
           name_en?: string
           name_ru?: string | null
           notes_en?: string | null
@@ -391,17 +456,20 @@ export type Database = {
           search_text_en?: string | null
           search_text_ru?: string | null
           sort_order?: number | null
+          updated_at?: string
         }
         Relationships: []
       }
       fields: {
         Row: {
+          ai_context: string | null
           effect_en: string | null
           effect_ru: string | null
           embedding_en: string | null
           embedding_ru: string | null
           id: string
           image: string | null
+          image_status: Database["public"]["Enums"]["image_status_enum"]
           name_en: string
           name_ru: string | null
           notes_en: string | null
@@ -411,14 +479,17 @@ export type Database = {
           sort_order: number | null
           type_en: string | null
           type_ru: string | null
+          updated_at: string
         }
         Insert: {
+          ai_context?: string | null
           effect_en?: string | null
           effect_ru?: string | null
           embedding_en?: string | null
           embedding_ru?: string | null
           id: string
           image?: string | null
+          image_status?: Database["public"]["Enums"]["image_status_enum"]
           name_en: string
           name_ru?: string | null
           notes_en?: string | null
@@ -428,14 +499,17 @@ export type Database = {
           sort_order?: number | null
           type_en?: string | null
           type_ru?: string | null
+          updated_at?: string
         }
         Update: {
+          ai_context?: string | null
           effect_en?: string | null
           effect_ru?: string | null
           embedding_en?: string | null
           embedding_ru?: string | null
           id?: string
           image?: string | null
+          image_status?: Database["public"]["Enums"]["image_status_enum"]
           name_en?: string
           name_ru?: string | null
           notes_en?: string | null
@@ -445,6 +519,7 @@ export type Database = {
           sort_order?: number | null
           type_en?: string | null
           type_ru?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -457,9 +532,11 @@ export type Database = {
           embedding_ru: string | null
           id: string
           image: string | null
+          image_status: Database["public"]["Enums"]["image_status_enum"]
           search_text_en: string | null
           search_text_ru: string | null
           sort_order: number | null
+          updated_at: string
         }
         Insert: {
           category?: string | null
@@ -469,9 +546,11 @@ export type Database = {
           embedding_ru?: string | null
           id: string
           image?: string | null
+          image_status?: Database["public"]["Enums"]["image_status_enum"]
           search_text_en?: string | null
           search_text_ru?: string | null
           sort_order?: number | null
+          updated_at?: string
         }
         Update: {
           category?: string | null
@@ -481,15 +560,18 @@ export type Database = {
           embedding_ru?: string | null
           id?: string
           image?: string | null
+          image_status?: Database["public"]["Enums"]["image_status_enum"]
           search_text_en?: string | null
           search_text_ru?: string | null
           sort_order?: number | null
+          updated_at?: string
         }
         Relationships: []
       }
       heroes: {
         Row: {
           ability_id: string | null
+          ai_context: string | null
           attack: number | null
           class_en: string | null
           class_ru: string | null
@@ -498,6 +580,7 @@ export type Database = {
           embedding_ru: string | null
           id: string
           image: string | null
+          image_status: Database["public"]["Enums"]["image_status_enum"]
           knowledge: number | null
           name_en: string
           name_ru: string | null
@@ -511,9 +594,11 @@ export type Database = {
           specialty_levels: Json | null
           specialty_ru: string | null
           town: string | null
+          updated_at: string
         }
         Insert: {
           ability_id?: string | null
+          ai_context?: string | null
           attack?: number | null
           class_en?: string | null
           class_ru?: string | null
@@ -522,6 +607,7 @@ export type Database = {
           embedding_ru?: string | null
           id: string
           image?: string | null
+          image_status?: Database["public"]["Enums"]["image_status_enum"]
           knowledge?: number | null
           name_en: string
           name_ru?: string | null
@@ -535,9 +621,11 @@ export type Database = {
           specialty_levels?: Json | null
           specialty_ru?: string | null
           town?: string | null
+          updated_at?: string
         }
         Update: {
           ability_id?: string | null
+          ai_context?: string | null
           attack?: number | null
           class_en?: string | null
           class_ru?: string | null
@@ -546,6 +634,7 @@ export type Database = {
           embedding_ru?: string | null
           id?: string
           image?: string | null
+          image_status?: Database["public"]["Enums"]["image_status_enum"]
           knowledge?: number | null
           name_en?: string
           name_ru?: string | null
@@ -559,11 +648,13 @@ export type Database = {
           specialty_levels?: Json | null
           specialty_ru?: string | null
           town?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
       rules: {
         Row: {
+          ai_context: string | null
           category: string | null
           created_at: string | null
           embedding_en: string | null
@@ -579,6 +670,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          ai_context?: string | null
           category?: string | null
           created_at?: string | null
           embedding_en?: string | null
@@ -594,6 +686,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          ai_context?: string | null
           category?: string | null
           created_at?: string | null
           embedding_en?: string | null
@@ -628,6 +721,7 @@ export type Database = {
           scenario_id: string
           special_setup_en: string | null
           special_setup_ru: string | null
+          updated_at: string
         }
         Insert: {
           ai_faction_en?: string | null
@@ -646,6 +740,7 @@ export type Database = {
           scenario_id: string
           special_setup_en?: string | null
           special_setup_ru?: string | null
+          updated_at?: string
         }
         Update: {
           ai_faction_en?: string | null
@@ -664,6 +759,7 @@ export type Database = {
           scenario_id?: string
           special_setup_en?: string | null
           special_setup_ru?: string | null
+          updated_at?: string
         }
         Relationships: [
           {
@@ -734,6 +830,7 @@ export type Database = {
           sort_order: number
           source_page: number | null
           tile_counts: Json
+          updated_at: string
           variant_label_en: string | null
           variant_label_ru: string | null
         }
@@ -750,6 +847,7 @@ export type Database = {
           sort_order?: number
           source_page?: number | null
           tile_counts?: Json
+          updated_at?: string
           variant_label_en?: string | null
           variant_label_ru?: string | null
         }
@@ -766,6 +864,7 @@ export type Database = {
           sort_order?: number
           source_page?: number | null
           tile_counts?: Json
+          updated_at?: string
           variant_label_en?: string | null
           variant_label_ru?: string | null
         }
@@ -791,6 +890,7 @@ export type Database = {
           structured_data: Json | null
           title_en: string | null
           title_ru: string | null
+          updated_at: string
         }
         Insert: {
           block_type: string
@@ -803,6 +903,7 @@ export type Database = {
           structured_data?: Json | null
           title_en?: string | null
           title_ru?: string | null
+          updated_at?: string
         }
         Update: {
           block_type?: string
@@ -815,6 +916,7 @@ export type Database = {
           structured_data?: Json | null
           title_en?: string | null
           title_ru?: string | null
+          updated_at?: string
         }
         Relationships: [
           {
@@ -838,6 +940,7 @@ export type Database = {
           title_ru: string | null
           trigger_text_en: string | null
           trigger_text_ru: string | null
+          updated_at: string
         }
         Insert: {
           content_en: string
@@ -850,6 +953,7 @@ export type Database = {
           title_ru?: string | null
           trigger_text_en?: string | null
           trigger_text_ru?: string | null
+          updated_at?: string
         }
         Update: {
           content_en?: string
@@ -862,6 +966,7 @@ export type Database = {
           title_ru?: string | null
           trigger_text_en?: string | null
           trigger_text_ru?: string | null
+          updated_at?: string
         }
         Relationships: [
           {
@@ -887,6 +992,7 @@ export type Database = {
           trigger_label_ru: string | null
           trigger_round: number | null
           trigger_type: string
+          updated_at: string
         }
         Insert: {
           condition_en?: string | null
@@ -901,6 +1007,7 @@ export type Database = {
           trigger_label_ru?: string | null
           trigger_round?: number | null
           trigger_type: string
+          updated_at?: string
         }
         Update: {
           condition_en?: string | null
@@ -915,6 +1022,7 @@ export type Database = {
           trigger_label_ru?: string | null
           trigger_round?: number | null
           trigger_type?: string
+          updated_at?: string
         }
         Relationships: [
           {
@@ -1026,12 +1134,14 @@ export type Database = {
       }
       spells: {
         Row: {
+          ai_context: string | null
           effect_en: string | null
           effect_ru: string | null
           embedding_en: string | null
           embedding_ru: string | null
           id: string
           image: string | null
+          image_status: Database["public"]["Enums"]["image_status_enum"]
           level: string | null
           name_en: string
           name_ru: string | null
@@ -1041,14 +1151,17 @@ export type Database = {
           search_text_en: string | null
           search_text_ru: string | null
           sort_order: number | null
+          updated_at: string
         }
         Insert: {
+          ai_context?: string | null
           effect_en?: string | null
           effect_ru?: string | null
           embedding_en?: string | null
           embedding_ru?: string | null
           id: string
           image?: string | null
+          image_status?: Database["public"]["Enums"]["image_status_enum"]
           level?: string | null
           name_en: string
           name_ru?: string | null
@@ -1058,14 +1171,17 @@ export type Database = {
           search_text_en?: string | null
           search_text_ru?: string | null
           sort_order?: number | null
+          updated_at?: string
         }
         Update: {
+          ai_context?: string | null
           effect_en?: string | null
           effect_ru?: string | null
           embedding_en?: string | null
           embedding_ru?: string | null
           id?: string
           image?: string | null
+          image_status?: Database["public"]["Enums"]["image_status_enum"]
           level?: string | null
           name_en?: string
           name_ru?: string | null
@@ -1075,6 +1191,7 @@ export type Database = {
           search_text_en?: string | null
           search_text_ru?: string | null
           sort_order?: number | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -1097,6 +1214,7 @@ export type Database = {
           search_text_ru: string | null
           sort_order: number | null
           stat_type: string | null
+          updated_at: string
         }
         Insert: {
           card_type?: string | null
@@ -1116,6 +1234,7 @@ export type Database = {
           search_text_ru?: string | null
           sort_order?: number | null
           stat_type?: string | null
+          updated_at?: string
         }
         Update: {
           card_type?: string | null
@@ -1135,6 +1254,7 @@ export type Database = {
           search_text_ru?: string | null
           sort_order?: number | null
           stat_type?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -1176,6 +1296,7 @@ export type Database = {
           search_text_ru: string | null
           sort_order: number | null
           town_id: string | null
+          updated_at: string
         }
         Insert: {
           cost?: string | null
@@ -1190,6 +1311,7 @@ export type Database = {
           search_text_ru?: string | null
           sort_order?: number | null
           town_id?: string | null
+          updated_at?: string
         }
         Update: {
           cost?: string | null
@@ -1204,6 +1326,7 @@ export type Database = {
           search_text_ru?: string | null
           sort_order?: number | null
           town_id?: string | null
+          updated_at?: string
         }
         Relationships: [
           {
@@ -1221,33 +1344,39 @@ export type Database = {
           image_back: string | null
           image_empty: string | null
           image_full: string | null
+          image_status: Database["public"]["Enums"]["image_status_enum"]
           name_en: string
           name_ru: string | null
           notes_en: string | null
           notes_ru: string | null
           sort_order: number | null
+          updated_at: string
         }
         Insert: {
           id: string
           image_back?: string | null
           image_empty?: string | null
           image_full?: string | null
+          image_status?: Database["public"]["Enums"]["image_status_enum"]
           name_en: string
           name_ru?: string | null
           notes_en?: string | null
           notes_ru?: string | null
           sort_order?: number | null
+          updated_at?: string
         }
         Update: {
           id?: string
           image_back?: string | null
           image_empty?: string | null
           image_full?: string | null
+          image_status?: Database["public"]["Enums"]["image_status_enum"]
           name_en?: string
           name_ru?: string | null
           notes_en?: string | null
           notes_ru?: string | null
           sort_order?: number | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -1255,6 +1384,7 @@ export type Database = {
         Row: {
           abilities_en: string | null
           abilities_ru: string | null
+          ai_context: string | null
           attack: number | null
           content: string | null
           cost: string | null
@@ -1266,6 +1396,7 @@ export type Database = {
           health_points: number | null
           id: string
           image: string | null
+          image_status: Database["public"]["Enums"]["image_status_enum"]
           initiative: number | null
           name_en: string
           name_ru: string | null
@@ -1279,10 +1410,12 @@ export type Database = {
           tier: string | null
           town: string | null
           type: string | null
+          updated_at: string
         }
         Insert: {
           abilities_en?: string | null
           abilities_ru?: string | null
+          ai_context?: string | null
           attack?: number | null
           content?: string | null
           cost?: string | null
@@ -1294,6 +1427,7 @@ export type Database = {
           health_points?: number | null
           id: string
           image?: string | null
+          image_status?: Database["public"]["Enums"]["image_status_enum"]
           initiative?: number | null
           name_en: string
           name_ru?: string | null
@@ -1307,10 +1441,12 @@ export type Database = {
           tier?: string | null
           town?: string | null
           type?: string | null
+          updated_at?: string
         }
         Update: {
           abilities_en?: string | null
           abilities_ru?: string | null
+          ai_context?: string | null
           attack?: number | null
           content?: string | null
           cost?: string | null
@@ -1322,6 +1458,7 @@ export type Database = {
           health_points?: number | null
           id?: string
           image?: string | null
+          image_status?: Database["public"]["Enums"]["image_status_enum"]
           initiative?: number | null
           name_en?: string
           name_ru?: string | null
@@ -1335,6 +1472,7 @@ export type Database = {
           tier?: string | null
           town?: string | null
           type?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -1348,6 +1486,7 @@ export type Database = {
           embedding_ru: string | null
           id: string
           image: string | null
+          image_status: Database["public"]["Enums"]["image_status_enum"]
           name_en: string
           name_ru: string | null
           notes_en: string | null
@@ -1355,6 +1494,7 @@ export type Database = {
           search_text_en: string | null
           search_text_ru: string | null
           sort_order: number | null
+          updated_at: string
         }
         Insert: {
           ability_en?: string | null
@@ -1365,6 +1505,7 @@ export type Database = {
           embedding_ru?: string | null
           id: string
           image?: string | null
+          image_status?: Database["public"]["Enums"]["image_status_enum"]
           name_en: string
           name_ru?: string | null
           notes_en?: string | null
@@ -1372,6 +1513,7 @@ export type Database = {
           search_text_en?: string | null
           search_text_ru?: string | null
           sort_order?: number | null
+          updated_at?: string
         }
         Update: {
           ability_en?: string | null
@@ -1382,6 +1524,7 @@ export type Database = {
           embedding_ru?: string | null
           id?: string
           image?: string | null
+          image_status?: Database["public"]["Enums"]["image_status_enum"]
           name_en?: string
           name_ru?: string | null
           notes_en?: string | null
@@ -1389,6 +1532,7 @@ export type Database = {
           search_text_en?: string | null
           search_text_ru?: string | null
           sort_order?: number | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -1427,7 +1571,7 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      image_status_enum: "missing" | "uploaded" | "verified"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1554,6 +1698,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      image_status_enum: ["missing", "uploaded", "verified"],
+    },
   },
 } as const
