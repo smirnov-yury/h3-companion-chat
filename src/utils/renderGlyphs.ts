@@ -19,6 +19,7 @@ const NATURAL_TOKENS = new Set<string>([
   "sulfur",
   "crystal",
   "gems",
+  "valuables",
 ]);
 
 // Tokens whose PNG should render dark gray
