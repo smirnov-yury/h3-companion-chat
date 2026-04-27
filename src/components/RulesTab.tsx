@@ -116,7 +116,7 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled, initialFilte
   const { glyphs } = useGlyphs();
   const [search, setSearch] = useState(initialSearch ?? "");
   const [debouncedSearch, setDebouncedSearch] = useDebounce(initialSearch ?? "", 300);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
   const [openItem, setOpenItem] = useState<string | undefined>(undefined);
   const listRef = useRef<HTMLDivElement>(null);
 
@@ -126,10 +126,17 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled, initialFilte
   // If initialFilter doesn't match a category but matches a rule id, treat it as ambiguous card id.
   useEffect(() => {
     if (initialFilter) {
-      const known = RULE_CATEGORIES.find((c) => c.key === initialFilter);
-      setSelectedCategory(known ? known.key : null);
+      const knownGroup = RULE_FILTER_GROUPS.find(g => g.id === initialFilter);
+      if (knownGroup) {
+        setSelectedGroup(knownGroup.id);
+      } else {
+        const matchingGroup = RULE_FILTER_GROUPS.find(g =>
+          (g.categories as readonly string[]).includes(initialFilter)
+        );
+        setSelectedGroup(matchingGroup ? matchingGroup.id : null);
+      }
     } else {
-      setSelectedCategory(null);
+      setSelectedGroup(null);
     }
   }, [initialFilter]);
 
@@ -148,7 +155,7 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled, initialFilte
 
   useEffect(() => {
     if (scrollToRuleId && loaded) {
-      setSelectedCategory(null);
+      setSelectedGroup(null);
       setSearch("");
       setDebouncedSearch("");
       setOpenItem(scrollToRuleId);
@@ -160,25 +167,11 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled, initialFilte
     }
   }, [scrollToRuleId, loaded]);
 
-  const CATEGORY_ORDER = ["difficulties", "trading", "faq", "deckbuilding", "battlefield"];
-
-  const categories = useMemo(() => {
-    const available = RULE_CATEGORIES.filter((c) => rules.some((r) => r.category === c.key));
-    const ordered: typeof available = [];
-    for (const key of CATEGORY_ORDER) {
-      const found = available.find((c) => c.key === key);
-      if (found) ordered.push(found);
-    }
-    for (const cat of available) {
-      if (!CATEGORY_ORDER.includes(cat.key)) ordered.push(cat);
-    }
-    return ordered;
-  }, [rules]);
-
   const filtered = useMemo(() => {
     let list = rules;
-    if (selectedCategory) {
-      list = list.filter((r) => r.category === selectedCategory);
+    if (selectedGroup) {
+      const group = RULE_FILTER_GROUPS.find(g => g.id === selectedGroup);
+      if (group) list = list.filter(r => (group.categories as readonly string[]).includes(r.category));
     }
     const q = debouncedSearch.toLowerCase();
     if (q.length >= 2) {
@@ -190,15 +183,15 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled, initialFilte
       });
     }
     return list;
-  }, [rules, selectedCategory, debouncedSearch, lang]);
+  }, [rules, selectedGroup, debouncedSearch, lang]);
 
   // Auto-open when only one rule is visible (single search result OR single filtered result)
   const autoOpenValue = useMemo(() => {
-    if (filtered.length === 1 && (debouncedSearch.length >= 2 || selectedCategory)) {
+    if (filtered.length === 1 && (debouncedSearch.length >= 2 || selectedGroup)) {
       return filtered[0].id;
     }
     return undefined;
-  }, [debouncedSearch, filtered, selectedCategory]);
+  }, [debouncedSearch, filtered, selectedGroup]);
 
   useEffect(() => {
     if (autoOpenValue) {
