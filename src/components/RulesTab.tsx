@@ -44,52 +44,18 @@ function renderTextWithBadges(text: string) {
   return parts;
 }
 
-const SPECIAL_CATEGORIES = new Set(["battlefield", "faq", "difficulties", "trading"]);
+const RULE_FILTER_GROUPS = [
+  { id: 'preparation', ru: 'Подготовка',      en: 'Preparation',    categories: ['game_overview', 'game_setup'] },
+  { id: 'settings',    ru: 'Настройки',        en: 'Settings',       categories: ['game_settings', 'difficulties'] },
+  { id: 'turn',        ru: 'Ход & Действия',   en: 'Turn & Actions', categories: ['round_order', 'player_turns', 'trading'] },
+  { id: 'heroes',      ru: 'Герои & Карты',    en: 'Heroes & Cards', categories: ['heroes', 'level_effects', 'deckbuilding', 'cards_ability', 'cards_spell', 'cards_artifact'] },
+  { id: 'map',         ru: 'Карта & Ресурсы',  en: 'Map & Resources',categories: ['map_tiles', 'resources', 'towns'] },
+  { id: 'combat',      ru: 'Отряды & Бой',     en: 'Units & Combat', categories: ['units', 'neutral_units', 'combat', 'combat_tokens', 'summoning'] },
+  { id: 'modes',       ru: 'Режимы & Варианты',en: 'Modes & Variants',categories: ['tournament', 'battlefield', 'player_vs_ai', 'creature_banks', 'variants', 'expansion_rules'] },
+  { id: 'faq',         ru: 'FAQ',              en: 'FAQ',            categories: ['faq'] },
+] as const;
 
-const RULE_CATEGORIES: { key: string; ru: string; en: string }[] = [
-  { key: "alliance", ru: "Альянс", en: "Alliance" },
-  { key: "astrologers", ru: "Астрологи", en: "Astrologers" },
-  { key: "astrologers_proclaim", ru: "Провозглашение астрологов", en: "Astrologers' Proclamation" },
-  { key: "battlefield", ru: "Поле битвы", en: "Battlefield" },
-  { key: "campaign", ru: "Кампания", en: "Campaign" },
-  { key: "campaign_combat", ru: "Бой в кампании", en: "Campaign Combat" },
-  { key: "cards", ru: "Карты", en: "Cards" },
-  { key: "components", ru: "Компоненты", en: "Components" },
-  { key: "cooperative", ru: "Кооперативный режим", en: "Cooperative" },
-  { key: "deckbuilding", ru: "Составление колоды", en: "Deck Building" },
-  { key: "differences", ru: "Отличия от оригинала", en: "Differences" },
-  { key: "difficulties", ru: "Сложность", en: "Difficulties" },
-  { key: "editor", ru: "Редактор", en: "Editor" },
-  { key: "faq", ru: "FAQ", en: "FAQ" },
-  { key: "game_mechanics", ru: "Игровая механика", en: "Game Mechanics" },
-  { key: "global", ru: "Общие правила", en: "Global Rules" },
-  { key: "interaction", ru: "Взаимодействие", en: "Interaction" },
-  { key: "locations", ru: "Локации", en: "Locations" },
-  { key: "mode", ru: "Режим игры", en: "Game Mode" },
-  { key: "morale", ru: "Мораль", en: "Morale" },
-  { key: "reference", ru: "Справочник", en: "Reference" },
-  { key: "round_effects", ru: "Эффекты раунда", en: "Round Effects" },
-  { key: "rounds", ru: "Раунды", en: "Rounds" },
-  { key: "scoring", ru: "Подсчёт очков", en: "Scoring" },
-  { key: "settings", ru: "Настройка игры", en: "Setup" },
-  { key: "solo_mode", ru: "Одиночный режим", en: "Solo Mode" },
-  { key: "specialty", ru: "Специализация", en: "Specialty" },
-  { key: "statistics", ru: "Статистика", en: "Statistics" },
-  { key: "storage", ru: "Хранение", en: "Storage" },
-  { key: "timed", ru: "Игра на время", en: "Timed" },
-  { key: "timed_event", ru: "Событие по таймеру", en: "Timed Event" },
-  { key: "trading", ru: "Торговля", en: "Trading" },
-  { key: "unit_ability", ru: "Способности юнитов", en: "Unit Abilities" },
-  { key: "war_machine", ru: "Боевые машины", en: "War Machines" },
-];
-
-const RULE_CAT_MAP = Object.fromEntries(RULE_CATEGORIES.map((c) => [c.key, c]));
-
-function getCategoryLabel(key: string, lang: string): string {
-  const entry = RULE_CAT_MAP[key];
-  if (!entry) return key;
-  return lang === "RU" ? entry.ru : entry.en;
-}
+type GroupId = typeof RULE_FILTER_GROUPS[number]['id'];
 
 // Markdown components with glyph support
 function makeMarkdownComponents(glyphs: ReturnType<typeof useGlyphs>["glyphs"]) {
@@ -150,7 +116,7 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled, initialFilte
   const { glyphs } = useGlyphs();
   const [search, setSearch] = useState(initialSearch ?? "");
   const [debouncedSearch, setDebouncedSearch] = useDebounce(initialSearch ?? "", 300);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
   const [openItem, setOpenItem] = useState<string | undefined>(undefined);
   const listRef = useRef<HTMLDivElement>(null);
 
@@ -160,10 +126,17 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled, initialFilte
   // If initialFilter doesn't match a category but matches a rule id, treat it as ambiguous card id.
   useEffect(() => {
     if (initialFilter) {
-      const known = RULE_CATEGORIES.find((c) => c.key === initialFilter);
-      setSelectedCategory(known ? known.key : null);
+      const knownGroup = RULE_FILTER_GROUPS.find(g => g.id === initialFilter);
+      if (knownGroup) {
+        setSelectedGroup(knownGroup.id);
+      } else {
+        const matchingGroup = RULE_FILTER_GROUPS.find(g =>
+          (g.categories as readonly string[]).includes(initialFilter)
+        );
+        setSelectedGroup(matchingGroup ? matchingGroup.id : null);
+      }
     } else {
-      setSelectedCategory(null);
+      setSelectedGroup(null);
     }
   }, [initialFilter]);
 
@@ -182,7 +155,7 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled, initialFilte
 
   useEffect(() => {
     if (scrollToRuleId && loaded) {
-      setSelectedCategory(null);
+      setSelectedGroup(null);
       setSearch("");
       setDebouncedSearch("");
       setOpenItem(scrollToRuleId);
@@ -194,25 +167,11 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled, initialFilte
     }
   }, [scrollToRuleId, loaded]);
 
-  const CATEGORY_ORDER = ["difficulties", "trading", "faq", "deckbuilding", "battlefield"];
-
-  const categories = useMemo(() => {
-    const available = RULE_CATEGORIES.filter((c) => rules.some((r) => r.category === c.key));
-    const ordered: typeof available = [];
-    for (const key of CATEGORY_ORDER) {
-      const found = available.find((c) => c.key === key);
-      if (found) ordered.push(found);
-    }
-    for (const cat of available) {
-      if (!CATEGORY_ORDER.includes(cat.key)) ordered.push(cat);
-    }
-    return ordered;
-  }, [rules]);
-
   const filtered = useMemo(() => {
     let list = rules;
-    if (selectedCategory) {
-      list = list.filter((r) => r.category === selectedCategory);
+    if (selectedGroup) {
+      const group = RULE_FILTER_GROUPS.find(g => g.id === selectedGroup);
+      if (group) list = list.filter(r => (group.categories as readonly string[]).includes(r.category));
     }
     const q = debouncedSearch.toLowerCase();
     if (q.length >= 2) {
@@ -224,15 +183,15 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled, initialFilte
       });
     }
     return list;
-  }, [rules, selectedCategory, debouncedSearch, lang]);
+  }, [rules, selectedGroup, debouncedSearch, lang]);
 
   // Auto-open when only one rule is visible (single search result OR single filtered result)
   const autoOpenValue = useMemo(() => {
-    if (filtered.length === 1 && (debouncedSearch.length >= 2 || selectedCategory)) {
+    if (filtered.length === 1 && (debouncedSearch.length >= 2 || selectedGroup)) {
       return filtered[0].id;
     }
     return undefined;
-  }, [debouncedSearch, filtered, selectedCategory]);
+  }, [debouncedSearch, filtered, selectedGroup]);
 
   useEffect(() => {
     if (autoOpenValue) {
@@ -339,30 +298,30 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled, initialFilte
       <div className="px-3 pb-2 shrink-0 overflow-x-auto scrollbar-none">
         <div className="flex gap-2 w-max">
           <button
-            onClick={() => { setSelectedCategory(null); onFilterChange?.(null); }}
+            onClick={() => { setSelectedGroup(null); onFilterChange?.(null); }}
             className={`px-3 py-1 text-xs font-medium rounded-full whitespace-nowrap transition-colors ${
-              !selectedCategory
+              !selectedGroup
                 ? "bg-primary text-primary-foreground"
                 : "bg-secondary text-secondary-foreground"
             }`}
           >
             {lang === "RU" ? "Все" : "All"}
           </button>
-          {categories.map((cat) => (
+          {RULE_FILTER_GROUPS.map(g => (
             <button
-              key={cat.key}
+              key={g.id}
               onClick={() => {
-                const next = cat.key === selectedCategory ? null : cat.key;
-                setSelectedCategory(next);
+                const next = g.id === selectedGroup ? null : g.id;
+                setSelectedGroup(next);
                 onFilterChange?.(next);
               }}
               className={`px-3 py-1 text-xs font-medium rounded-full whitespace-nowrap transition-colors ${
-                selectedCategory === cat.key
+                selectedGroup === g.id
                   ? "bg-primary text-primary-foreground"
                   : "bg-secondary text-secondary-foreground"
               }`}
             >
-              {lang === "RU" ? cat.ru : cat.en}
+              {lang === "RU" ? g.ru : g.en}
             </button>
           ))}
         </div>
@@ -371,7 +330,7 @@ export default function RulesTab({ scrollToRuleId, onScrollHandled, initialFilte
       <div className="flex-1 overflow-y-auto px-3 pb-3">
         {filtered.length === 0 && (
           <EmptyState
-            onReset={selectedCategory || debouncedSearch ? () => { setSelectedCategory(null); setSearch(""); setDebouncedSearch(""); } : undefined}
+            onReset={selectedGroup || debouncedSearch ? () => { setSelectedGroup(null); setSearch(""); setDebouncedSearch(""); } : undefined}
           />
         )}
 
