@@ -149,20 +149,6 @@ export default function StatisticsTab({ searchQuery = "", initialCardId, onCardO
               {selected.image && (
                 <div className="relative w-[85%] mx-auto pt-4 mb-0 shrink-0">
                   <img src={`${STORAGE}/statistics/${selected.image}`} alt={selected.name_en || ""} className="w-full aspect-[5/7] object-contain rounded-lg shadow-lg" />
-                  {(selected.stat_type || selected.card_type) && (
-                    <div className="absolute top-2 left-2 flex flex-col gap-1">
-                      {selected.stat_type && (
-                        <span className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${STAT_COLORS[selected.stat_type] || "bg-muted text-muted-foreground"}`}>
-                          {statTypeLabel(selected.stat_type, lang as "EN" | "RU")}
-                        </span>
-                      )}
-                      {selected.card_type && (
-                        <span className={`text-[11px] px-2 py-0.5 rounded-full font-medium ${CARD_TYPE_BADGE[selected.card_type] || "bg-muted text-muted-foreground"}`}>
-                          {cardTypeLabel(selected.card_type, lang as "EN" | "RU")}
-                        </span>
-                      )}
-                    </div>
-                  )}
                 </div>
               )}
               <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3" onClick={handleEntityClick}>
