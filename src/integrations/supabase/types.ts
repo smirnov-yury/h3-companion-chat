@@ -1402,6 +1402,8 @@ export type Database = {
           name_ru: string | null
           notes_en: string | null
           notes_ru: string | null
+          notes_structured_en: Json | null
+          notes_structured_ru: Json | null
           number: string | null
           search_text_en: string | null
           search_text_ru: string | null
@@ -1433,6 +1435,8 @@ export type Database = {
           name_ru?: string | null
           notes_en?: string | null
           notes_ru?: string | null
+          notes_structured_en?: Json | null
+          notes_structured_ru?: Json | null
           number?: string | null
           search_text_en?: string | null
           search_text_ru?: string | null
@@ -1464,6 +1468,8 @@ export type Database = {
           name_ru?: string | null
           notes_en?: string | null
           notes_ru?: string | null
+          notes_structured_en?: Json | null
+          notes_structured_ru?: Json | null
           number?: string | null
           search_text_en?: string | null
           search_text_ru?: string | null
@@ -1569,6 +1575,7 @@ export type Database = {
           similarity: number
         }[]
       }
+      parse_unit_notes: { Args: { notes: string }; Returns: Json }
     }
     Enums: {
       image_status_enum: "missing" | "uploaded" | "verified"

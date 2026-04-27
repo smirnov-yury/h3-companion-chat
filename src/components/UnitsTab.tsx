@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import type { Json } from '@/integrations/supabase/types';
 import { useGlyphs } from '@/context/GlyphsContext';
 import { useLang } from '@/context/LanguageContext';
 import { renderGlyphs } from '@/utils/renderGlyphs';
@@ -54,6 +55,8 @@ interface UnitStat {
   abilities_ru: string | null;
   notes_en: string | null;
   notes_ru: string | null;
+  notes_structured_en: Json | null;
+  notes_structured_ru: Json | null;
   errata_en: string | null;
   errata_ru: string | null;
   content: string | null;
@@ -93,6 +96,88 @@ function GlyphText({ text }: { text: string | null | undefined }) {
     .replace(/\n\n/g, '<br><br>')
     .replace(/\n/g, '<br>');
   return <span dangerouslySetInnerHTML={{ __html: html }} />;
+}
+
+interface NoteBlock {
+  base: string[];
+  few: string[];
+  pack: string[];
+  shared: string[];
+  neutral: string[];
+  neutral_shared: string[];
+}
+
+function StructuredNotes({
+  structured,
+  fallback,
+  unitId,
+}: {
+  structured: Json | null;
+  fallback: string | null;
+  unitId: string;
+  lang: string;
+}) {
+  if (!structured) {
+    if (!fallback) return null;
+    return <GlyphText text={fallback} />;
+  }
+
+  const s = structured as unknown as NoteBlock;
+  const isFew = unitId.includes('_few');
+  const isPack = unitId.includes('_pack');
+  const isNeutral = unitId.includes('_neutral');
+
+  const sectionLabel: string | null = isFew ? 'Few' : isPack ? 'Pack' : null;
+  const sectionItems: string[] = [];
+
+  if (isFew) {
+    sectionItems.push(...(s.few ?? []), ...(s.shared ?? []));
+  } else if (isPack) {
+    sectionItems.push(...(s.pack ?? []), ...(s.shared ?? []), ...(s.neutral_shared ?? []));
+  } else if (isNeutral) {
+    sectionItems.push(...(s.neutral ?? []), ...(s.neutral_shared ?? []));
+  }
+
+  const baseItems = s.base ?? [];
+
+  return (
+    <div className="space-y-2">
+      {baseItems.length > 0 && (
+        <div className="space-y-1">
+          {baseItems.map((item, i) => (
+            <div key={`base-${i}`}>
+              <GlyphText text={item} />
+            </div>
+          ))}
+        </div>
+      )}
+
+      {sectionLabel && sectionItems.length > 0 && (
+        <div>
+          <div className="font-semibold text-foreground mb-1">{sectionLabel}</div>
+          <ul className="space-y-1">
+            {sectionItems.map((item, i) => (
+              <li key={`sec-${i}`} className="flex gap-2">
+                <span aria-hidden>•</span>
+                <span><GlyphText text={item} /></span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {isNeutral && sectionItems.length > 0 && (
+        <ul className="space-y-1">
+          {sectionItems.map((item, i) => (
+            <li key={`neu-${i}`} className="flex gap-2">
+              <span aria-hidden>•</span>
+              <span><GlyphText text={item} /></span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
 }
 
 function FilterChip({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
@@ -519,6 +604,9 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
             const imgSrc = u.image ? `${STORAGE}/units/${u.image}` : null;
             const abilities = lang === 'RU' && u.abilities_ru ? u.abilities_ru : u.abilities_en;
             const notes = lang === 'RU' && u.notes_ru ? u.notes_ru : u.notes_en;
+            const notesStructured = lang === 'RU' && u.notes_structured_ru
+              ? u.notes_structured_ru
+              : u.notes_structured_en;
             const errata = lang === 'RU' && u.errata_ru ? u.errata_ru : u.errata_en;
 
             return (
@@ -600,9 +688,14 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
                     </div>
                   )}
 
-                  {notes && (
+                  {(notesStructured || notes) && (
                     <div className="text-sm text-muted-foreground leading-relaxed mt-2">
-                      <GlyphText text={notes} />
+                      <StructuredNotes
+                        structured={notesStructured}
+                        fallback={notes}
+                        unitId={u.id}
+                        lang={lang}
+                      />
                     </div>
                   )}
                   {errata && (
