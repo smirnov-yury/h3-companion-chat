@@ -46,8 +46,8 @@ function renderTextWithBadges(text: string) {
 
 const RULE_FILTER_GROUPS = [
   { id: 'preparation', ru: 'Подготовка',      en: 'Preparation',    categories: ['game_overview', 'game_setup'] },
-  { id: 'settings',    ru: 'Настройки',        en: 'Settings',       categories: ['game_settings', 'difficulties'] },
-  { id: 'turn',        ru: 'Ход & Действия',   en: 'Turn & Actions', categories: ['round_order', 'player_turns', 'trading'] },
+  { id: 'settings',    ru: 'Настройки',        en: 'Settings',       categories: ['game_settings', 'difficulties', 'trading'] },
+  { id: 'turn',        ru: 'Ход & Действия',   en: 'Turn & Actions', categories: ['round_order', 'player_turns'] },
   { id: 'heroes',      ru: 'Герои & Карты',    en: 'Heroes & Cards', categories: ['heroes', 'level_effects', 'deckbuilding', 'cards_ability', 'cards_spell', 'cards_artifact'] },
   { id: 'map',         ru: 'Карта & Ресурсы',  en: 'Map & Resources',categories: ['map_tiles', 'resources', 'towns'] },
   { id: 'combat',      ru: 'Отряды & Бой',     en: 'Units & Combat', categories: ['units', 'neutral_units', 'combat', 'combat_tokens', 'summoning'] },
