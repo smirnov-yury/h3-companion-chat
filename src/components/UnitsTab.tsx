@@ -98,6 +98,88 @@ function GlyphText({ text }: { text: string | null | undefined }) {
   return <span dangerouslySetInnerHTML={{ __html: html }} />;
 }
 
+interface NoteBlock {
+  base: string[];
+  few: string[];
+  pack: string[];
+  shared: string[];
+  neutral: string[];
+  neutral_shared: string[];
+}
+
+function StructuredNotes({
+  structured,
+  fallback,
+  unitId,
+}: {
+  structured: Json | null;
+  fallback: string | null;
+  unitId: string;
+  lang: string;
+}) {
+  if (!structured) {
+    if (!fallback) return null;
+    return <GlyphText text={fallback} />;
+  }
+
+  const s = structured as unknown as NoteBlock;
+  const isFew = unitId.includes('_few');
+  const isPack = unitId.includes('_pack');
+  const isNeutral = unitId.includes('_neutral');
+
+  const sectionLabel: string | null = isFew ? 'Few' : isPack ? 'Pack' : null;
+  const sectionItems: string[] = [];
+
+  if (isFew) {
+    sectionItems.push(...(s.few ?? []), ...(s.shared ?? []));
+  } else if (isPack) {
+    sectionItems.push(...(s.pack ?? []), ...(s.shared ?? []), ...(s.neutral_shared ?? []));
+  } else if (isNeutral) {
+    sectionItems.push(...(s.neutral ?? []), ...(s.neutral_shared ?? []));
+  }
+
+  const baseItems = s.base ?? [];
+
+  return (
+    <div className="space-y-2">
+      {baseItems.length > 0 && (
+        <div className="space-y-1">
+          {baseItems.map((item, i) => (
+            <div key={`base-${i}`}>
+              <GlyphText text={item} />
+            </div>
+          ))}
+        </div>
+      )}
+
+      {sectionLabel && sectionItems.length > 0 && (
+        <div>
+          <div className="font-semibold text-foreground mb-1">{sectionLabel}</div>
+          <ul className="space-y-1">
+            {sectionItems.map((item, i) => (
+              <li key={`sec-${i}`} className="flex gap-2">
+                <span aria-hidden>•</span>
+                <span><GlyphText text={item} /></span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {isNeutral && sectionItems.length > 0 && (
+        <ul className="space-y-1">
+          {sectionItems.map((item, i) => (
+            <li key={`neu-${i}`} className="flex gap-2">
+              <span aria-hidden>•</span>
+              <span><GlyphText text={item} /></span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 function FilterChip({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
   return (
     <button
