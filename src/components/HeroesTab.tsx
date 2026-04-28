@@ -49,16 +49,16 @@ function hasPortrait(image: string | null): boolean {
 }
 
 const FACTION_BADGE: Record<string, string> = {
-  Castle: "bg-blue-100 text-blue-700 border-blue-300 dark:bg-blue-500/40 dark:text-blue-200 dark:border-blue-400/60",
-  Necropolis: "bg-violet-100 text-violet-700 border-violet-300 dark:bg-violet-500/40 dark:text-violet-200 dark:border-violet-400/60",
-  Dungeon: "bg-red-100 text-red-700 border-red-300 dark:bg-red-600/40 dark:text-red-200 dark:border-red-400/60",
-  Tower: "bg-cyan-100 text-cyan-700 border-cyan-300 dark:bg-cyan-500/40 dark:text-cyan-200 dark:border-cyan-400/60",
-  Fortress: "bg-emerald-100 text-emerald-700 border-emerald-300 dark:bg-emerald-700/40 dark:text-emerald-200 dark:border-emerald-400/60",
-  Rampart: "bg-green-100 text-green-700 border-green-300 dark:bg-green-500/40 dark:text-green-200 dark:border-green-400/60",
-  Inferno: "bg-orange-100 text-orange-700 border-orange-300 dark:bg-orange-600/40 dark:text-orange-200 dark:border-orange-400/60",
-  Conflux: "bg-fuchsia-100 text-fuchsia-700 border-fuchsia-300 dark:bg-fuchsia-500/40 dark:text-fuchsia-200 dark:border-fuchsia-400/60",
-  Stronghold: "bg-amber-100 text-amber-700 border-amber-300 dark:bg-amber-700/40 dark:text-amber-200 dark:border-amber-400/60",
-  Cove: "bg-teal-100 text-teal-700 border-teal-300 dark:bg-teal-500/40 dark:text-teal-200 dark:border-teal-400/60",
+  Castle: "bg-blue-100 text-blue-700 border-blue-300 dark:bg-blue-600 dark:text-white dark:border-blue-500",
+  Necropolis: "bg-violet-100 text-violet-700 border-violet-300 dark:bg-violet-600 dark:text-white dark:border-violet-500",
+  Dungeon: "bg-red-100 text-red-700 border-red-300 dark:bg-red-700 dark:text-white dark:border-red-600",
+  Tower: "bg-cyan-100 text-cyan-700 border-cyan-300 dark:bg-cyan-600 dark:text-white dark:border-cyan-500",
+  Fortress: "bg-emerald-100 text-emerald-700 border-emerald-300 dark:bg-emerald-700 dark:text-white dark:border-emerald-600",
+  Rampart: "bg-green-100 text-green-700 border-green-300 dark:bg-green-600 dark:text-white dark:border-green-500",
+  Inferno: "bg-orange-100 text-orange-700 border-orange-300 dark:bg-orange-700 dark:text-white dark:border-orange-600",
+  Conflux: "bg-fuchsia-100 text-fuchsia-700 border-fuchsia-300 dark:bg-fuchsia-600 dark:text-white dark:border-fuchsia-500",
+  Stronghold: "bg-amber-100 text-amber-700 border-amber-300 dark:bg-amber-700 dark:text-white dark:border-amber-600",
+  Cove: "bg-teal-100 text-teal-700 border-teal-300 dark:bg-teal-600 dark:text-white dark:border-teal-500",
 };
 
 const FACTION_SILHOUETTE_BG: Record<string, string> = {
