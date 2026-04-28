@@ -136,7 +136,7 @@
   filter: brightness(0) saturate(100%) invert(78%) sepia(44%) saturate(600%) hue-rotate(2deg) brightness(98%) !important;
 }
 .glyph-tier-azure {
-  filter: brightness(0) saturate(100%) invert(40%) sepia(90%) saturate(1200%) hue-rotate(155deg) brightness(95%) !important;
+  filter: brightness(0) saturate(100%) invert(16%) sepia(97%) saturate(2800%) hue-rotate(205deg) brightness(72%) !important;
 }
 
 /* Resource icons: natural/original colors */
