@@ -401,7 +401,7 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       {/* Search + Filters */}
-      <div className="shrink-0 p-3 space-y-2 border-b border-border bg-background">
+      <div className={`shrink-0 px-3 pt-3 space-y-2 border-b border-border bg-background ${!filtersOpen && filterCount > 0 ? 'pb-1.5' : 'pb-3'}`}>
         {/* MOBILE: Search + Filters button side by side */}
         {(() => {
           const activeChips: { label: string; onRemove: () => void }[] = [];
