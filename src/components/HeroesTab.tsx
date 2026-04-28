@@ -31,6 +31,8 @@ interface Hero {
   specialty_levels: SpecialtyLevel[] | null;
   notes_en: string | null;
   notes_ru: string | null;
+  biography_en: string | null;
+  biography_ru: string | null;
   image: string | null;
   sort_order: number | null;
 }
@@ -396,6 +398,17 @@ export default function HeroesTab({ initialFilter, initialCardId, initialSearch,
                     )}
 
                     <HeroLinksRow heroId={selected.id} abilityId={selected.ability_id} lang={lang as "EN" | "RU"} />
+
+                    {(lang === "RU" ? selected.biography_ru : selected.biography_en) && (
+                      <div className="mt-1">
+                        <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-1">
+                          {lang === "RU" ? "Биография" : "Biography"}
+                        </h3>
+                        <p className="text-xs text-muted-foreground leading-relaxed italic">
+                          {lang === "RU" ? selected.biography_ru : selected.biography_en}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </TabsContent>
 
