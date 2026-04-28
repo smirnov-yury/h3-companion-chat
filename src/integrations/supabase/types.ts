@@ -573,6 +573,8 @@ export type Database = {
           ability_id: string | null
           ai_context: string | null
           attack: number | null
+          biography_en: string | null
+          biography_ru: string | null
           class_en: string | null
           class_ru: string | null
           defense: number | null
@@ -600,6 +602,8 @@ export type Database = {
           ability_id?: string | null
           ai_context?: string | null
           attack?: number | null
+          biography_en?: string | null
+          biography_ru?: string | null
           class_en?: string | null
           class_ru?: string | null
           defense?: number | null
@@ -627,6 +631,8 @@ export type Database = {
           ability_id?: string | null
           ai_context?: string | null
           attack?: number | null
+          biography_en?: string | null
+          biography_ru?: string | null
           class_en?: string | null
           class_ru?: string | null
           defense?: number | null
