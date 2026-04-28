@@ -95,11 +95,16 @@ export default function FieldsTab({ searchQuery = "", filterSlug, initialCardId,
               return (
                 <button key={item.id} onClick={() => openCard(item)}
                   className="flex flex-col w-full overflow-hidden rounded-lg bg-muted text-left cursor-pointer transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg hover:ring-2 hover:ring-primary">
-                  <div className="aspect-[4/3] w-full bg-muted overflow-hidden">
+                  <div className="aspect-[4/3] w-full bg-muted overflow-hidden relative">
                     {imgSrc
                       ? <img src={imgSrc} alt={item.name_en} className="w-full h-full object-cover rounded-t-lg" />
                       : <div className="w-full h-full flex items-center justify-center"><p className="text-[10px] text-muted-foreground text-center px-1">{item.name_en}</p></div>
                     }
+                    {item.type_en && (
+                      <span className="absolute top-2 left-2 text-[11px] font-medium px-2 py-0.5 rounded bg-background/80 backdrop-blur-sm text-foreground leading-tight">
+                        {(lang === "RU" ? (item.type_ru || item.type_en) : item.type_en).split("\n")[0]}
+                      </span>
+                    )}
                   </div>
                   <p className="w-full text-sm font-medium p-2 truncate text-foreground">{name(item)}</p>
                 </button>
