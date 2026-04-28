@@ -22,6 +22,13 @@ const NATURAL_TOKENS = new Set<string>([
   "valuables",
 ]);
 
+// Tokens with intentional multi-color SVGs — red paths must not be overridden in light theme
+const MULTICOLOR_TOKENS = new Set<string>([
+  "damage",
+  "health_points",
+  "valuables",
+]);
+
 // Tokens whose PNG should render dark gray
 const DARK_TOKENS = new Set<string>([
   "building_materials",
@@ -69,7 +76,8 @@ export function renderGlyphs(text: string | null | undefined, glyphs: GlyphMap):
     if (GLYPH_SVGS[key]) {
       const tierClass = TIER_CLASSES[key];
       const naturalClass = NATURAL_TOKENS.has(key) ? 'glyph-natural' : '';
-      const extraClass = tierClass || naturalClass;
+      const multicolorClass = MULTICOLOR_TOKENS.has(key) ? 'glyph-multicolor' : '';
+      const extraClass = tierClass || naturalClass || multicolorClass;
       const baseClass = key === 'or' ? 'glyph-svg glyph-or' : 'glyph-svg';
       const spanClass = extraClass ? `${baseClass} ${extraClass}` : baseClass;
       return `<span class="${spanClass}" aria-label="${key}">${GLYPH_SVGS[key]}</span>`;
