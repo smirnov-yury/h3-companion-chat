@@ -398,10 +398,16 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
     );
   }
 
+  const activeFilterCount =
+    (mode !== 'all' ? 1 : 0) +
+    (filterFaction !== 'all' ? 1 : 0) +
+    (filterTier !== 'all' ? 1 : 0) +
+    (filterType !== 'all' ? 1 : 0);
+
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       {/* Search + Filters */}
-      <div className={`shrink-0 px-3 pt-3 space-y-2 border-b border-border bg-background ${!filtersOpen && filterCount > 0 ? 'pb-1.5' : 'pb-3'}`}>
+      <div className={`shrink-0 px-3 pt-3 space-y-2 border-b border-border bg-background ${!filtersOpen && activeFilterCount > 0 ? 'pb-1.5' : 'pb-3'}`}>
         {/* MOBILE: Search + Filters button side by side */}
         {(() => {
           const activeChips: { label: string; onRemove: () => void }[] = [];
