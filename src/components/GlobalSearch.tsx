@@ -41,7 +41,7 @@ const FETCH_LIMIT = 10;
 const VISIBLE_LIMIT = 3;
 const MIN_QUERY = 2;
 
-type EntityType = 'unit'|'ability'|'spell'|'artifact'|'rule'|'hero'|'building'|'field'|'glyph'|'statistic'|'event'|'war_machine'|'astrologer';
+type EntityType = 'unit'|'ability'|'spell'|'artifact'|'rule'|'hero'|'building'|'field'|'statistic'|'event'|'war_machine'|'astrologer';
 const ENTITY_META: Record<EntityType, { labelEN: string; labelRU: string; url: (id: string) => string }> = {
   unit:        { labelEN: 'Units',        labelRU: 'Юниты',          url: (id) => `/units/${id}` },
   ability:     { labelEN: 'Abilities',    labelRU: 'Способности',    url: (id) => `/decks/abilities/${id}` },
