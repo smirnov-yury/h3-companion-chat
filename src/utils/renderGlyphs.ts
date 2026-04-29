@@ -20,6 +20,7 @@ const NATURAL_TOKENS = new Set<string>([
   "crystal",
   "gems",
   "valuables",
+  "building_materials",
 ]);
 
 // Tokens with intentional multi-color SVGs — red paths must not be overridden in light theme
