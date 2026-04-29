@@ -69,7 +69,7 @@ export default function DecksTab({
 
   return (
     <div className="flex flex-col h-full">
-      <div className="px-3 pt-3 pb-3 shrink-0 space-y-2">
+      <div className="px-3 pt-3 pb-2 shrink-0 space-y-2">
         <div className="relative">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" size={14} />
           <input
@@ -88,7 +88,7 @@ export default function DecksTab({
             </button>
           )}
         </div>
-        <div className="flex gap-1.5 overflow-x-auto scrollbar-none">
+        <div className="flex gap-1.5 overflow-x-auto scrollbar-none pb-1">
           {SECTIONS.map((s) => (
             <button
               key={s.id}
