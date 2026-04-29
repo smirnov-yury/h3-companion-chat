@@ -49,38 +49,53 @@ function hasPortrait(image: string | null): boolean {
 }
 
 const FACTION_BADGE: Record<string, string> = {
-  Castle: "bg-blue-100 text-blue-700 border-blue-300 dark:bg-blue-600 dark:text-white dark:border-blue-500",
-  Necropolis: "bg-violet-100 text-violet-700 border-violet-300 dark:bg-violet-600 dark:text-white dark:border-violet-500",
-  Dungeon: "bg-red-100 text-red-700 border-red-300 dark:bg-red-700 dark:text-white dark:border-red-600",
-  Tower: "bg-cyan-100 text-cyan-700 border-cyan-300 dark:bg-cyan-600 dark:text-white dark:border-cyan-500",
-  Fortress: "bg-emerald-100 text-emerald-700 border-emerald-300 dark:bg-emerald-700 dark:text-white dark:border-emerald-600",
-  Rampart: "bg-green-100 text-green-700 border-green-300 dark:bg-green-600 dark:text-white dark:border-green-500",
-  Inferno: "bg-orange-100 text-orange-700 border-orange-300 dark:bg-orange-700 dark:text-white dark:border-orange-600",
-  Conflux: "bg-fuchsia-100 text-fuchsia-700 border-fuchsia-300 dark:bg-fuchsia-600 dark:text-white dark:border-fuchsia-500",
-  Stronghold: "bg-amber-100 text-amber-700 border-amber-300 dark:bg-amber-700 dark:text-white dark:border-amber-600",
-  Cove: "bg-teal-100 text-teal-700 border-teal-300 dark:bg-teal-600 dark:text-white dark:border-teal-500",
+  Castle:     "bg-[#E90000]/10 text-[#E90000] border-[#E90000]/30 dark:bg-[#E90000] dark:text-white dark:border-[#E90000]",
+  Necropolis: "bg-[#882CA0]/10 text-[#882CA0] border-[#882CA0]/30 dark:bg-[#882CA0] dark:text-white dark:border-[#882CA0]",
+  Dungeon:    "bg-[#C07888]/10 text-[#C07888] border-[#C07888]/30 dark:bg-[#C07888] dark:text-white dark:border-[#C07888]",
+  Tower:      "bg-[#3152FE]/10 text-[#3152FE] border-[#3152FE]/30 dark:bg-[#3152FE] dark:text-white dark:border-[#3152FE]",
+  Fortress:   "bg-[#0898A0]/10 text-[#0898A0] border-[#0898A0]/30 dark:bg-[#0898A0] dark:text-white dark:border-[#0898A0]",
+  Rampart:    "bg-[#449C2B]/10 text-[#449C2B] border-[#449C2B]/30 dark:bg-[#449C2B] dark:text-white dark:border-[#449C2B]",
+  Inferno:    "bg-[#F67F00]/10 text-[#F67F00] border-[#F67F00]/30 dark:bg-[#F67F00] dark:text-white dark:border-[#F67F00]",
+  Conflux:    "bg-[#F5A623]/10 text-[#F5A623] border-[#F5A623]/30 dark:bg-[#F5A623] dark:text-white dark:border-[#F5A623]",
+  Stronghold: "bg-[#9B7652]/10 text-[#9B7652] border-[#9B7652]/30 dark:bg-[#9B7652] dark:text-white dark:border-[#9B7652]",
+  Cove:       "bg-[#0369A1]/10 text-[#0369A1] border-[#0369A1]/30 dark:bg-[#0369A1] dark:text-white dark:border-[#0369A1]",
 };
 
 const FACTION_SILHOUETTE_BG: Record<string, string> = {
-  Castle: "bg-blue-900/40",
-  Necropolis: "bg-violet-900/40",
-  Dungeon: "bg-red-900/40",
-  Tower: "bg-cyan-900/40",
-  Fortress: "bg-emerald-900/40",
-  Rampart: "bg-green-900/40",
-  Inferno: "bg-orange-900/40",
-  Conflux: "bg-fuchsia-900/40",
-  Stronghold: "bg-amber-900/40",
-  Cove: "bg-teal-900/40",
+  Castle:     "bg-[#E90000]/20",
+  Necropolis: "bg-[#882CA0]/20",
+  Dungeon:    "bg-[#C07888]/20",
+  Tower:      "bg-[#3152FE]/20",
+  Fortress:   "bg-[#0898A0]/20",
+  Rampart:    "bg-[#449C2B]/20",
+  Inferno:    "bg-[#F67F00]/20",
+  Conflux:    "bg-[#F5A623]/20",
+  Stronghold: "bg-[#9B7652]/20",
+  Cove:       "bg-[#0369A1]/20",
+};
+
+const FACTION_LABEL_RU: Record<string, string> = {
+  Castle: "Замок",
+  Rampart: "Оплот",
+  Tower: "Башня",
+  Inferno: "Инферно",
+  Necropolis: "Некрополис",
+  Dungeon: "Темница",
+  Stronghold: "Цитадель",
+  Fortress: "Крепость",
+  Conflux: "Сопряжение",
+  Cove: "Причал",
 };
 
 function FactionBadge({ town }: { town: string }) {
+  const { lang } = useLang();
   const cls = FACTION_BADGE[town] || "bg-muted text-muted-foreground border-border";
   const matchKey = Object.keys(FACTION_BADGE).find(k => k.toLowerCase() === town.toLowerCase());
   const colorCls = matchKey ? FACTION_BADGE[matchKey] : cls;
+  const label = lang === "RU" ? FACTION_LABEL_RU[town] || town : town;
   return (
     <span className={`text-[10px] px-2 py-0.5 rounded-full border capitalize ${colorCls}`}>
-      {town}
+      {label}
     </span>
   );
 }
@@ -265,7 +280,7 @@ export default function HeroesTab({ initialFilter, initialCardId, initialSearch,
                 faction === t ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground hover:bg-muted/70"
               }`}
             >
-              {t}
+              {lang === "RU" ? FACTION_LABEL_RU[t] || t : t}
             </button>
           ))}
         </div>

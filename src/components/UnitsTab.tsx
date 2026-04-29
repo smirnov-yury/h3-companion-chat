@@ -69,6 +69,19 @@ type ModeFilter = 'all' | 'standard' | 'neutral';
 // Faction variant order (no Neutral here)
 const FACTION_VARIANT_ORDER = ['Few', 'Pack', 'Few (Alternate)', 'Pack (Alternate)'];
 
+const FACTION_LABEL_RU: Record<string, string> = {
+  Castle: "Замок",
+  Rampart: "Оплот",
+  Tower: "Башня",
+  Inferno: "Инферно",
+  Necropolis: "Некрополис",
+  Dungeon: "Темница",
+  Stronghold: "Цитадель",
+  Fortress: "Крепость",
+  Conflux: "Сопряжение",
+  Cove: "Причал",
+};
+
 const TIER_COLOR: Record<string, string> = {
   bronze: 'bg-amber-700 text-white',
   silver: 'bg-slate-500 text-white',
@@ -412,7 +425,7 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
         {(() => {
           const activeChips: { label: string; onRemove: () => void }[] = [];
           if (mode !== 'all') activeChips.push({ label: modeLabels[mode], onRemove: () => setMode('all') });
-          if (filterFaction !== 'all') activeChips.push({ label: filterFaction, onRemove: () => setFactionAndUrl('all') });
+          if (filterFaction !== 'all') activeChips.push({ label: lang === 'RU' ? FACTION_LABEL_RU[filterFaction] || filterFaction : filterFaction, onRemove: () => setFactionAndUrl('all') });
           if (filterTier !== 'all') activeChips.push({ label: capitalize(filterTier), onRemove: () => setFilterTier('all') });
           if (filterType !== 'all') activeChips.push({ label: capitalize(filterType.replace('unit_', '')), onRemove: () => setFilterType('all') });
           const filterCount = activeChips.length;
@@ -485,7 +498,7 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
                   {mode !== 'neutral' && (
                     <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
                       {factions.map((f) => (
-                        <FilterChip key={f} label={f === 'all' ? (lang === 'RU' ? 'Все' : 'All') : f} active={filterFaction === f} onClick={() => setFactionAndUrl(f)} />
+                        <FilterChip key={f} label={f === 'all' ? (lang === 'RU' ? 'Все' : 'All') : (lang === 'RU' ? FACTION_LABEL_RU[f] || f : f)} active={filterFaction === f} onClick={() => setFactionAndUrl(f)} />
                       ))}
                     </div>
                   )}
@@ -532,7 +545,7 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
           {mode !== 'neutral' && (
             <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
               {factions.map((f) => (
-                <FilterChip key={f} label={f === 'all' ? (lang === 'RU' ? 'Все' : 'All') : f} active={filterFaction === f} onClick={() => setFactionAndUrl(f)} />
+                <FilterChip key={f} label={f === 'all' ? (lang === 'RU' ? 'Все' : 'All') : (lang === 'RU' ? FACTION_LABEL_RU[f] || f : f)} active={filterFaction === f} onClick={() => setFactionAndUrl(f)} />
               ))}
             </div>
           )}
@@ -591,7 +604,7 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
                     <p className="text-xs font-semibold truncate">
                       {lang === 'RU' && unit.name_ru ? unit.name_ru : unit.name_en}
                     </p>
-                    <p className="text-[10px] text-muted-foreground">{unit.town || '—'}</p>
+                    <p className="text-[10px] text-muted-foreground">{(lang === 'RU' ? FACTION_LABEL_RU[unit.town] || unit.town : unit.town) || '—'}</p>
                   </div>
                 </button>
               );
