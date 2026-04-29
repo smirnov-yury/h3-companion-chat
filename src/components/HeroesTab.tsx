@@ -49,16 +49,16 @@ function hasPortrait(image: string | null): boolean {
 }
 
 const FACTION_BADGE: Record<string, string> = {
-  Castle:     "bg-white text-[#E90000] border-[#E90000] dark:bg-[#E90000] dark:text-white dark:border-[#E90000]",
-  Necropolis: "bg-white text-[#882CA0] border-[#882CA0] dark:bg-[#882CA0] dark:text-white dark:border-[#882CA0]",
-  Dungeon:    "bg-white text-[#C07888] border-[#C07888] dark:bg-[#C07888] dark:text-white dark:border-[#C07888]",
-  Tower:      "bg-white text-[#3152FE] border-[#3152FE] dark:bg-[#3152FE] dark:text-white dark:border-[#3152FE]",
-  Fortress:   "bg-white text-[#0898A0] border-[#0898A0] dark:bg-[#0898A0] dark:text-white dark:border-[#0898A0]",
-  Rampart:    "bg-white text-[#449C2B] border-[#449C2B] dark:bg-[#449C2B] dark:text-white dark:border-[#449C2B]",
-  Inferno:    "bg-white text-[#F67F00] border-[#F67F00] dark:bg-[#F67F00] dark:text-white dark:border-[#F67F00]",
-  Conflux:    "bg-white text-[#F5A623] border-[#F5A623] dark:bg-[#F5A623] dark:text-white dark:border-[#F5A623]",
-  Stronghold: "bg-white text-[#9B7652] border-[#9B7652] dark:bg-[#9B7652] dark:text-white dark:border-[#9B7652]",
-  Cove:       "bg-white text-[#0369A1] border-[#0369A1] dark:bg-[#0369A1] dark:text-white dark:border-[#0369A1]",
+  Castle:     "bg-[#E90000] text-white border-[#E90000]",
+  Necropolis: "bg-[#882CA0] text-white border-[#882CA0]",
+  Dungeon:    "bg-[#C07888] text-white border-[#C07888]",
+  Tower:      "bg-[#3152FE] text-white border-[#3152FE]",
+  Fortress:   "bg-[#0898A0] text-white border-[#0898A0]",
+  Rampart:    "bg-[#449C2B] text-white border-[#449C2B]",
+  Inferno:    "bg-[#F67F00] text-white border-[#F67F00]",
+  Conflux:    "bg-[#F5A623] text-white border-[#F5A623]",
+  Stronghold: "bg-[#9B7652] text-white border-[#9B7652]",
+  Cove:       "bg-[#0369A1] text-white border-[#0369A1]",
 };
 
 const FACTION_SILHOUETTE_BG: Record<string, string> = {
