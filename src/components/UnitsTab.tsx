@@ -73,7 +73,7 @@ const TIER_COLOR: Record<string, string> = {
   bronze: 'bg-amber-700 text-white',
   silver: 'bg-slate-500 text-white',
   golden: 'bg-yellow-500 text-black',
-  azure: 'bg-cyan-600 text-white',
+  azure: 'bg-[#014490] text-white',
 };
 
 const TYPE_BADGE: Record<string, { label: string; color: string }> = {
