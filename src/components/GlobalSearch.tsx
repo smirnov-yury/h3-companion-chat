@@ -537,8 +537,8 @@ export default function GlobalSearch({ mode, onClose, initialQuery = "", autoFoc
       {semanticLoading ? (
         <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground animate-spin" size={16} />
       ) : query ? (
-        <button onClick={() => setQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" aria-label={lang === "RU" ? "Очистить" : "Clear"}>
-          <X size={16} />
+        <button onClick={() => setQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground hover:text-foreground transition-colors">
+          {lang === "RU" ? "Очистить" : "Clear"}
         </button>
       ) : null}
     </div>

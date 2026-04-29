@@ -448,7 +448,7 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
                       onClick={() => setSearchQuery('')}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground hover:text-foreground transition-colors"
                     >
-                      Clear
+                      {lang === 'RU' ? 'Очистить' : 'Clear'}
                     </button>
                   )}
                 </div>
@@ -533,7 +533,7 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
                 onClick={() => setSearchQuery('')}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground hover:text-foreground transition-colors"
               >
-                Clear
+                {lang === 'RU' ? 'Очистить' : 'Clear'}
               </button>
             )}
           </div>
