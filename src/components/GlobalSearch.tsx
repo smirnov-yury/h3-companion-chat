@@ -448,7 +448,7 @@ export default function GlobalSearch({ mode, onClose, initialQuery = "", autoFoc
         grouped[m.entity_type].hits.push({
           id: m.entity_id,
           name: lang === 'RU' ? (m.name_ru || m.name_en) : (m.name_en || m.name_ru),
-          snippet: `${Math.round(m.similarity * 100)}% match`,
+          snippet: '',
           image: null,
           url: meta.url(m.entity_id),
         });
