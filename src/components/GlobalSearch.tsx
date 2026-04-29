@@ -51,7 +51,7 @@ const ENTITY_META: Record<EntityType, { labelEN: string; labelRU: string; url: (
   hero:        { labelEN: 'Heroes',       labelRU: 'Герои',          url: (id) => `/heroes/${id}` },
   building:    { labelEN: 'Buildings',    labelRU: 'Постройки',      url: () => `/towns` },
   field:       { labelEN: 'Map Elements', labelRU: 'Элементы карты', url: (id) => `/map-elements/${id}` },
-  glyph:       { labelEN: 'Glyphs',       labelRU: 'Глифы',          url: () => `/map-elements` },
+  
   statistic:   { labelEN: 'Statistics',   labelRU: 'Статистики',     url: () => `/rules` },
   event:       { labelEN: 'Events',       labelRU: 'События',        url: (id) => `/events/${id}` },
   war_machine: { labelEN: 'War Machines', labelRU: 'Военные машины', url: (id) => `/decks/warmachines/${id}` },
