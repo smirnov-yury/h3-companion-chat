@@ -78,6 +78,12 @@ export function initPWA() {
   });
 
   updateSWFn = updater;
+
+  // If a new SW is already waiting from a previous session, show the banner immediately
+  navigator.serviceWorker?.ready?.then((reg) => {
+    if (reg.waiting) notify(true);
+  });
+
   manualCheckFn = async () => {
     const regs = await navigator.serviceWorker?.getRegistrations?.();
     if (regs) {
