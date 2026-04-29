@@ -41,7 +41,7 @@ const FETCH_LIMIT = 10;
 const VISIBLE_LIMIT = 3;
 const MIN_QUERY = 2;
 
-type EntityType = 'unit'|'ability'|'spell'|'artifact'|'rule'|'hero'|'building'|'field'|'glyph'|'statistic'|'event'|'war_machine'|'astrologer';
+type EntityType = 'unit'|'ability'|'spell'|'artifact'|'rule'|'hero'|'building'|'field'|'statistic'|'event'|'war_machine'|'astrologer';
 const ENTITY_META: Record<EntityType, { labelEN: string; labelRU: string; url: (id: string) => string }> = {
   unit:        { labelEN: 'Units',        labelRU: 'Юниты',          url: (id) => `/units/${id}` },
   ability:     { labelEN: 'Abilities',    labelRU: 'Способности',    url: (id) => `/decks/abilities/${id}` },
@@ -51,7 +51,7 @@ const ENTITY_META: Record<EntityType, { labelEN: string; labelRU: string; url: (
   hero:        { labelEN: 'Heroes',       labelRU: 'Герои',          url: (id) => `/heroes/${id}` },
   building:    { labelEN: 'Buildings',    labelRU: 'Постройки',      url: () => `/towns` },
   field:       { labelEN: 'Map Elements', labelRU: 'Элементы карты', url: (id) => `/map-elements/${id}` },
-  glyph:       { labelEN: 'Glyphs',       labelRU: 'Глифы',          url: () => `/map-elements` },
+  
   statistic:   { labelEN: 'Statistics',   labelRU: 'Статистики',     url: () => `/rules` },
   event:       { labelEN: 'Events',       labelRU: 'События',        url: (id) => `/events/${id}` },
   war_machine: { labelEN: 'War Machines', labelRU: 'Военные машины', url: (id) => `/decks/warmachines/${id}` },
@@ -448,7 +448,7 @@ export default function GlobalSearch({ mode, onClose, initialQuery = "", autoFoc
         grouped[m.entity_type].hits.push({
           id: m.entity_id,
           name: lang === 'RU' ? (m.name_ru || m.name_en) : (m.name_en || m.name_ru),
-          snippet: `${Math.round(m.similarity * 100)}% match`,
+          snippet: '',
           image: null,
           url: meta.url(m.entity_id),
         });
