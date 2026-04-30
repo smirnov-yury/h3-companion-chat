@@ -14,6 +14,7 @@ import HeroesEditor from "@/components/admin/HeroesEditor";
 import DecksEditor from "@/components/admin/DecksEditor";
 import TownsEditor from "@/components/admin/TownsEditor";
 import MapElementsEditor from "@/components/admin/MapElementsEditor";
+import GlobalEventsEditor from "@/components/admin/GlobalEventsEditor";
 
 const NAV_ITEMS: Array<
   | { path: string; label: string; icon: React.ElementType }
@@ -185,8 +186,8 @@ export default function AdminPanel() {
             <Route path="rules" element={<RulesEditor />} />
             <Route path="scenarios" element={<p className="text-muted-foreground">Scenarios editor — coming soon</p>} />
             <Route path="map-elements" element={<MapElementsEditor />} />
-            <Route path="events" element={<p className="text-muted-foreground">Events editor — coming soon</p>} />
-            <Route path="astrologers" element={<p className="text-muted-foreground">Astrologers editor — coming soon</p>} />
+            <Route path="events" element={<GlobalEventsEditor tab="events" />} />
+            <Route path="astrologers" element={<GlobalEventsEditor tab="astrologers" />} />
             <Route path="artifacts" element={<DecksEditor tab="artifacts" />} />
             <Route path="spells" element={<DecksEditor tab="spells" />} />
             <Route path="abilities" element={<DecksEditor tab="abilities" />} />
