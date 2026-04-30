@@ -7,7 +7,7 @@ import ReactCrop, {
 } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 import { supabase } from "@/integrations/supabase/client";
-import { Upload, X, Check, Loader2 } from "lucide-react";
+import { Upload, X, Check, Loader2, Trash2 } from "lucide-react";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 const STORAGE_BASE = `${SUPABASE_URL}/storage/v1/object/public/component-media`;
@@ -104,6 +104,7 @@ export default function ImageUploader({
   const [blob, setBlob] = useState<Blob | null>(null);
   const [status, setStatus] = useState<"idle" | "uploading" | "done" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const handleFile = (file: File) => {
     const url = URL.createObjectURL(file);
@@ -193,6 +194,24 @@ export default function ImageUploader({
     if (preview) URL.revokeObjectURL(preview);
     setPreview(null);
     setBlob(null);
+    onUploaded?.();
+  };
+
+  const handleDelete = async () => {
+    if (!currentImage) return;
+    setDeleting(true);
+    setError(null);
+    const path = `${folder}/${currentImage}`;
+    const { error: storageErr } = await supabase.storage
+      .from("component-media")
+      .remove([path]);
+    if (storageErr) { setError(storageErr.message); setDeleting(false); return; }
+    const { error: dbErr } = await supabase
+      .from(table as never)
+      .update({ [imageField]: null, image_status: null } as never)
+      .eq("id", recordId);
+    if (dbErr) { setError(dbErr.message); setDeleting(false); return; }
+    setDeleting(false);
     onUploaded?.();
   };
 
@@ -329,13 +348,26 @@ export default function ImageUploader({
         )}
 
         {!preview && (
-          <button
-            type="button"
-            onClick={() => inputRef.current?.click()}
-            className="text-xs text-muted-foreground hover:text-foreground text-center"
-          >
-            {currentImage ? "Change image" : "Upload image"}
-          </button>
+          <div className="flex flex-col gap-1 items-center">
+            <button
+              type="button"
+              onClick={() => inputRef.current?.click()}
+              className="text-xs text-muted-foreground hover:text-foreground text-center"
+            >
+              {currentImage ? "Change image" : "Upload image"}
+            </button>
+            {currentImage && (
+              <button
+                type="button"
+                onClick={handleDelete}
+                disabled={deleting}
+                className="flex items-center gap-1 text-xs text-destructive hover:text-destructive/80 disabled:opacity-50"
+              >
+                {deleting ? <Loader2 className="w-3 h-3 animate-spin" /> : <Trash2 className="w-3 h-3" />}
+                Delete
+              </button>
+            )}
+          </div>
         )}
 
         {error && <p className="text-xs text-destructive">{error}</p>}
