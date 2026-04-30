@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Plus, Trash2, Save, Loader2, Search } from "lucide-react";
 import GlyphToolbar from "@/components/admin/GlyphToolbar";
@@ -162,6 +163,7 @@ export default function UnitsEditor() {
         .insert({ id: newId.trim(), ...payload });
       if (e) {
         setError(e.message);
+        toast.error(e.message);
       } else {
         const created: Unit = {
           id: newId.trim(),
@@ -176,6 +178,7 @@ export default function UnitsEditor() {
         );
         setSelectedUnit(created);
         setIsNew(false);
+        toast.success("Saved");
       }
     } else if (selectedUnit) {
       const { error: e } = await supabase
@@ -184,6 +187,7 @@ export default function UnitsEditor() {
         .eq("id", selectedUnit.id);
       if (e) {
         setError(e.message);
+        toast.error(e.message);
       } else {
         setUnits((prev) =>
           prev
@@ -191,6 +195,7 @@ export default function UnitsEditor() {
             .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0)),
         );
         setSelectedUnit((prev) => (prev ? { ...prev, ...payload } : null));
+        toast.success("Saved");
       }
     }
     setSaving(false);
@@ -202,11 +207,14 @@ export default function UnitsEditor() {
       .from("unit_stats")
       .delete()
       .eq("id", selectedUnit.id);
-    if (!e) {
+    if (e) {
+      toast.error(e.message);
+    } else {
       setUnits((prev) => prev.filter((u) => u.id !== selectedUnit.id));
       setSelectedUnit(null);
       setIsNew(false);
       setForm(EMPTY_FORM);
+      toast.success("Deleted");
     }
     setDeleteOpen(false);
   };
