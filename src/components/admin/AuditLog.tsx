@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { RotateCcw, Loader2, RefreshCw } from "lucide-react";
 
@@ -57,7 +58,6 @@ export default function AuditLog() {
   const [filterDateTo, setFilterDateTo] = useState("");
 
   const [rollingBack, setRollingBack] = useState<number | null>(null);
-  const [rollbackError, setRollbackError] = useState<string | null>(null);
 
   const fetchRows = async (p: number) => {
     setLoading(true);
@@ -101,7 +101,6 @@ export default function AuditLog() {
   const handleRollback = async (row: AuditRow) => {
     if (!row.table_name || !row.record_id || !row.field_name) return;
     setRollingBack(row.id);
-    setRollbackError(null);
 
     let oldVal: unknown = row.old_value;
     try {
@@ -116,8 +115,9 @@ export default function AuditLog() {
       .eq("id", row.record_id);
 
     if (e) {
-      setRollbackError(`Rollback failed: ${e.message}`);
+      toast.error(`Rollback failed: ${e.message}`);
     } else {
+      toast.success("Field rolled back. Reselect the record in the editor to see the updated value.");
       fetchRows(page);
     }
     setRollingBack(null);
@@ -191,7 +191,6 @@ export default function AuditLog() {
       </div>
 
       {error && <p className="text-sm text-destructive">{error}</p>}
-      {rollbackError && <p className="text-sm text-destructive">{rollbackError}</p>}
 
       {/* Table */}
       <div className="rounded-lg border border-border bg-card overflow-x-auto">
