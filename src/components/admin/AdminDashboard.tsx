@@ -81,7 +81,7 @@ export default function AdminDashboard() {
           const { data } = await supabase
             .from(table as any)
             .select("image_status");
-          const rows = (data ?? []) as { image_status: string }[];
+          const rows = ((data ?? []) as unknown) as { image_status: string }[];
           return {
             table,
             label,
