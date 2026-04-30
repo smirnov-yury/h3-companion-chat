@@ -37,7 +37,7 @@ const App = () => (
           <Route path="/about" element={<AboutPage />} />
           <Route path="/admin" element={<AdminGuard><AdminPanel /></AdminGuard>} />
           <Route path="/dragonutopia/login" element={<AdminLogin />} />
-          <Route path="/dragonutopia" element={<AdminGuard><AdminPanel /></AdminGuard>} />
+          <Route path="/dragonutopia/*" element={<AdminGuard><AdminPanel /></AdminGuard>} />
           <Route path="/:section/*" element={<Index />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
