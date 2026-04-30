@@ -185,11 +185,11 @@ export default function AdminPanel() {
             <Route path="map-elements" element={<p className="text-muted-foreground">Map Elements editor — coming soon</p>} />
             <Route path="events" element={<p className="text-muted-foreground">Events editor — coming soon</p>} />
             <Route path="astrologers" element={<p className="text-muted-foreground">Astrologers editor — coming soon</p>} />
-            <Route path="artifacts" element={<p className="text-muted-foreground">Artifacts editor — coming soon</p>} />
-            <Route path="spells" element={<p className="text-muted-foreground">Spells editor — coming soon</p>} />
-            <Route path="abilities" element={<p className="text-muted-foreground">Abilities editor — coming soon</p>} />
-            <Route path="attributes" element={<p className="text-muted-foreground">Attributes editor — coming soon</p>} />
-            <Route path="war-machines" element={<p className="text-muted-foreground">War Machines editor — coming soon</p>} />
+            <Route path="artifacts" element={<DecksEditor tab="artifacts" />} />
+            <Route path="spells" element={<DecksEditor tab="spells" />} />
+            <Route path="abilities" element={<DecksEditor tab="abilities" />} />
+            <Route path="attributes" element={<DecksEditor tab="attributes" />} />
+            <Route path="war-machines" element={<DecksEditor tab="war-machines" />} />
             <Route path="units" element={<UnitsEditor />} />
             <Route path="heroes" element={<HeroesEditor />} />
             <Route path="towns" element={<p className="text-muted-foreground">Towns editor — coming soon</p>} />
