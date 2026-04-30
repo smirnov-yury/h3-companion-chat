@@ -197,6 +197,24 @@ export default function ImageUploader({
     onUploaded?.();
   };
 
+  const handleDelete = async () => {
+    if (!currentImage) return;
+    setDeleting(true);
+    setError(null);
+    const path = `${folder}/${currentImage}`;
+    const { error: storageErr } = await supabase.storage
+      .from("component-media")
+      .remove([path]);
+    if (storageErr) { setError(storageErr.message); setDeleting(false); return; }
+    const { error: dbErr } = await supabase
+      .from(table as never)
+      .update({ [imageField]: null, image_status: null } as never)
+      .eq("id", recordId);
+    if (dbErr) { setError(dbErr.message); setDeleting(false); return; }
+    setDeleting(false);
+    onUploaded?.();
+  };
+
   const handleCancel = () => {
     if (preview) URL.revokeObjectURL(preview);
     setPreview(null);
