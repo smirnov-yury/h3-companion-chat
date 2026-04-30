@@ -15,6 +15,7 @@ import DecksEditor from "@/components/admin/DecksEditor";
 import TownsEditor from "@/components/admin/TownsEditor";
 import MapElementsEditor from "@/components/admin/MapElementsEditor";
 import GlobalEventsEditor from "@/components/admin/GlobalEventsEditor";
+import AboutPageEditor from "@/components/admin/AboutPageEditor";
 
 const NAV_ITEMS: Array<
   | { path: string; label: string; icon: React.ElementType }
