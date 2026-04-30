@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Plus, Trash2, Save, Loader2, ChevronRight, ChevronDown } from "lucide-react";
 import GlyphToolbar from "@/components/admin/GlyphToolbar";
@@ -118,6 +119,7 @@ export default function RulesEditor() {
       const { error: e } = await supabase.from("rules").insert({ id, ...form });
       if (e) {
         setError(e.message);
+        toast.error(e.message);
       } else {
         const newRule: Rule = { id, ...form };
         setRules((prev) =>
@@ -125,6 +127,7 @@ export default function RulesEditor() {
         );
         setSelectedRule(newRule);
         setIsNew(false);
+        toast.success("Saved");
       }
     } else if (selectedRule) {
       const { error: e } = await supabase
@@ -133,6 +136,7 @@ export default function RulesEditor() {
         .eq("id", selectedRule.id);
       if (e) {
         setError(e.message);
+        toast.error(e.message);
       } else {
         setRules((prev) =>
           prev
@@ -140,6 +144,7 @@ export default function RulesEditor() {
             .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0)),
         );
         setSelectedRule({ ...selectedRule, ...form });
+        toast.success("Saved");
       }
     }
     setSaving(false);
@@ -148,10 +153,13 @@ export default function RulesEditor() {
   const handleDeleteConfirm = async () => {
     if (!selectedRule) return;
     const { error: e } = await supabase.from("rules").delete().eq("id", selectedRule.id);
-    if (!e) {
+    if (e) {
+      toast.error(e.message);
+    } else {
       setRules((prev) => prev.filter((r) => r.id !== selectedRule.id));
       setSelectedRule(null);
       setForm(EMPTY_RULE);
+      toast.success("Deleted");
     }
     setDeleteOpen(false);
   };

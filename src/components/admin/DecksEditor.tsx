@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Plus, Trash2, Save, Loader2, Search } from "lucide-react";
 import GlyphToolbar from "@/components/admin/GlyphToolbar";
@@ -155,20 +156,22 @@ export default function DecksEditor({ tab }: { tab: DeckTab }) {
     if (isNew) {
       if (!newId.trim()) { setError("ID is required"); setSaving(false); return; }
       const { error: e } = await supabase.from(cfg.table as never).insert({ id: newId.trim(), ...payload } as never);
-      if (e) { setError(e.message); } else {
+      if (e) { setError(e.message); toast.error(e.message); } else {
         const created: DeckRow = { id: newId.trim(), ...payload, [cfg.imageField]: null, image_status: "pending" };
         setItems((prev) => [...prev, created].sort((a, b) => ((a.sort_order as number) ?? 0) - ((b.sort_order as number) ?? 0)));
         setSelected(created);
         setIsNew(false);
+        toast.success("Saved");
       }
     } else if (selected) {
       const { error: e } = await supabase.from(cfg.table as never).update(payload as never).eq("id", selected.id as string);
-      if (e) { setError(e.message); } else {
+      if (e) { setError(e.message); toast.error(e.message); } else {
         setItems((prev) =>
           prev.map((item) => item.id === selected.id ? { ...item, ...payload } : item)
             .sort((a, b) => ((a.sort_order as number) ?? 0) - ((b.sort_order as number) ?? 0))
         );
         setSelected((prev) => prev ? { ...prev, ...payload } : null);
+        toast.success("Saved");
       }
     }
     setSaving(false);
@@ -177,11 +180,14 @@ export default function DecksEditor({ tab }: { tab: DeckTab }) {
   const handleDeleteConfirm = async () => {
     if (!selected) return;
     const { error: e } = await supabase.from(cfg.table as never).delete().eq("id", selected.id as string);
-    if (!e) {
+    if (e) {
+      toast.error(e.message);
+    } else {
       setItems((prev) => prev.filter((item) => item.id !== selected.id));
       setSelected(null);
       setIsNew(false);
       setForm(buildEmptyForm(tab));
+      toast.success("Deleted");
     }
     setDeleteOpen(false);
   };

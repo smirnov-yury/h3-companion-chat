@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Save, Loader2 } from "lucide-react";
 
@@ -25,7 +26,6 @@ export default function AboutPageEditor() {
   const [form, setForm] = useState<ContentForm>({ value_en: "", value_ru: "" });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [saved, setSaved] = useState(false);
 
   useEffect(() => {
     supabase
@@ -39,24 +39,23 @@ export default function AboutPageEditor() {
     setSelected(row);
     setForm({ value_en: row.value_en ?? "", value_ru: row.value_ru ?? "" });
     setError(null);
-    setSaved(false);
   };
 
   const handleSave = async () => {
     if (!selected) return;
     setSaving(true);
     setError(null);
-    setSaved(false);
     const { error: e } = await supabase
       .from("app_content")
       .update({ value_en: form.value_en || null, value_ru: form.value_ru || null })
       .eq("key", selected.key);
     if (e) {
       setError(e.message);
+      toast.error(e.message);
     } else {
       setRows((prev) => prev.map((r) => (r.key === selected.key ? { ...r, ...form } : r)));
       setSelected((prev) => (prev ? { ...prev, ...form } : null));
-      setSaved(true);
+      toast.success("Saved");
     }
     setSaving(false);
   };
@@ -107,7 +106,6 @@ export default function AboutPageEditor() {
                 <p className="text-xs text-muted-foreground">Type: {selected.content_type ?? "text"}</p>
               </div>
               <div className="flex items-center gap-2">
-                {saved && <span className="text-xs text-muted-foreground">Saved</span>}
                 <button
                   type="button"
                   onClick={handleSave}
