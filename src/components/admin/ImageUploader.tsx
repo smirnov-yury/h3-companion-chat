@@ -348,13 +348,26 @@ export default function ImageUploader({
         )}
 
         {!preview && (
-          <button
-            type="button"
-            onClick={() => inputRef.current?.click()}
-            className="text-xs text-muted-foreground hover:text-foreground text-center"
-          >
-            {currentImage ? "Change image" : "Upload image"}
-          </button>
+          <div className="flex flex-col gap-1 items-center">
+            <button
+              type="button"
+              onClick={() => inputRef.current?.click()}
+              className="text-xs text-muted-foreground hover:text-foreground text-center"
+            >
+              {currentImage ? "Change image" : "Upload image"}
+            </button>
+            {currentImage && (
+              <button
+                type="button"
+                onClick={handleDelete}
+                disabled={deleting}
+                className="flex items-center gap-1 text-xs text-destructive hover:text-destructive/80 disabled:opacity-50"
+              >
+                {deleting ? <Loader2 className="w-3 h-3 animate-spin" /> : <Trash2 className="w-3 h-3" />}
+                Delete
+              </button>
+            )}
+          </div>
         )}
 
         {error && <p className="text-xs text-destructive">{error}</p>}
