@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Plus, Trash2, Save, Loader2, Search } from "lucide-react";
 import GlyphToolbar from "@/components/admin/GlyphToolbar";
@@ -278,6 +279,7 @@ export default function TownsEditor() {
       const { error: e } = await supabase.from("towns").insert({ id: newId.trim(), ...payload } as never);
       if (e) {
         setError(e.message);
+        toast.error(e.message);
       } else {
         const created: Town = {
           id: newId.trim(),
@@ -293,11 +295,13 @@ export default function TownsEditor() {
         setSelected(created);
         setIsNew(false);
         fetchBuildings(newId.trim());
+        toast.success("Saved");
       }
     } else if (selected) {
       const { error: e } = await supabase.from("towns").update(payload as never).eq("id", selected.id);
       if (e) {
         setError(e.message);
+        toast.error(e.message);
       } else {
         setTowns((prev) =>
           prev
@@ -305,6 +309,7 @@ export default function TownsEditor() {
             .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0)),
         );
         setSelected((prev) => (prev ? { ...prev, ...payload } : null));
+        toast.success("Saved");
       }
     }
     setSaving(false);
@@ -313,11 +318,14 @@ export default function TownsEditor() {
   const handleDeleteTown = async () => {
     if (!selected) return;
     const { error: e } = await supabase.from("towns").delete().eq("id", selected.id);
-    if (!e) {
+    if (e) {
+      toast.error(e.message);
+    } else {
       setTowns((prev) => prev.filter((t) => t.id !== selected.id));
       setSelected(null);
       setIsNew(false);
       setBuildings([]);
+      toast.success("Deleted");
     }
     setDeleteOpen(false);
   };
