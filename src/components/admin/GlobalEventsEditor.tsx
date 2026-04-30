@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Plus, Trash2, Save, Loader2, Search } from "lucide-react";
 import GlyphToolbar from "@/components/admin/GlyphToolbar";
@@ -162,6 +163,7 @@ export default function GlobalEventsEditor({ tab }: { tab: GlobalEventsTab }) {
         .insert({ id: newId.trim(), ...payload } as never);
       if (e) {
         setError(e.message);
+        toast.error(e.message);
       } else {
         const created: GERow = { id: newId.trim(), ...payload, image: null, image_status: null };
         setItems((prev) =>
@@ -171,6 +173,7 @@ export default function GlobalEventsEditor({ tab }: { tab: GlobalEventsTab }) {
         );
         setSelected(created);
         setIsNew(false);
+        toast.success("Saved");
       }
     } else if (selected) {
       const { error: e } = await supabase
@@ -179,6 +182,7 @@ export default function GlobalEventsEditor({ tab }: { tab: GlobalEventsTab }) {
         .eq("id", selected.id);
       if (e) {
         setError(e.message);
+        toast.error(e.message);
       } else {
         setItems((prev) =>
           prev
@@ -188,6 +192,7 @@ export default function GlobalEventsEditor({ tab }: { tab: GlobalEventsTab }) {
             ),
         );
         setSelected((prev) => (prev ? { ...prev, ...payload } : null));
+        toast.success("Saved");
       }
     }
     setSaving(false);
@@ -199,11 +204,14 @@ export default function GlobalEventsEditor({ tab }: { tab: GlobalEventsTab }) {
       .from(cfg.table as never)
       .delete()
       .eq("id", selected.id);
-    if (!e) {
+    if (e) {
+      toast.error(e.message);
+    } else {
       setItems((prev) => prev.filter((item) => item.id !== selected.id));
       setSelected(null);
       setIsNew(false);
       setForm(buildEmptyForm(tab));
+      toast.success("Deleted");
     }
     setDeleteOpen(false);
   };
