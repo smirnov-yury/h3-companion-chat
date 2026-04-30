@@ -188,7 +188,7 @@ export default function AdminPanel() {
             <Route path="abilities" element={<p className="text-muted-foreground">Abilities editor — coming soon</p>} />
             <Route path="attributes" element={<p className="text-muted-foreground">Attributes editor — coming soon</p>} />
             <Route path="war-machines" element={<p className="text-muted-foreground">War Machines editor — coming soon</p>} />
-            <Route path="units" element={<p className="text-muted-foreground">Units editor — coming soon</p>} />
+            <Route path="units" element={<UnitsEditor />} />
             <Route path="heroes" element={<p className="text-muted-foreground">Heroes editor — coming soon</p>} />
             <Route path="towns" element={<p className="text-muted-foreground">Towns editor — coming soon</p>} />
             <Route path="about-page" element={<p className="text-muted-foreground">About Page editor — coming soon</p>} />
