@@ -7,6 +7,7 @@ import {
   ChevronDown, ChevronRight,
 } from "lucide-react";
 import AdminDashboard from "@/components/admin/AdminDashboard";
+import RulesEditor from "@/components/admin/RulesEditor";
 
 const NAV_ITEMS: Array<
   | { path: string; label: string; icon: React.ElementType }
