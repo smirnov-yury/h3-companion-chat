@@ -1,5 +1,6 @@
 // Glyph rendering: replaces <token> placeholders in text with inline SVG
 // (preferred) or PNG icons fetched from Supabase storage.
+import DOMPurify from "dompurify";
 
 export interface GlyphInfo {
   description: string;
@@ -71,7 +72,7 @@ export function renderGlyphs(text: string | null | undefined, glyphs: GlyphMap):
   );
 
   // Match tokens of the form &lt;name&gt; (after escaping)
-  return withLinks.replace(/&lt;([a-zA-Z0-9_]+)&gt;/g, (match, token: string) => {
+  const rendered = withLinks.replace(/&lt;([a-zA-Z0-9_]+)&gt;/g, (match, token: string) => {
     const key = token.toLowerCase();
     // 1. Inline SVG (crisp, scales with font-size)
     if (GLYPH_SVGS[key]) {
@@ -96,6 +97,13 @@ export function renderGlyphs(text: string | null | undefined, glyphs: GlyphMap):
           : "";
     const cls = `glyph-icon inline-block align-text-bottom h-[1em] w-auto ${extra}`.trim();
     return `<img src="${GLYPH_STORAGE}/${info.image}" alt="${info.description}" class="${cls}" />`;
+  });
+  return DOMPurify.sanitize(rendered, {
+    ALLOWED_TAGS: ["span", "img", "br"],
+    ALLOWED_ATTR: ["class", "src", "alt", "aria-label", "style",
+                   "data-entity-type", "data-entity-id"],
+    ADD_TAGS: ["svg", "path"],
+    ADD_ATTR: ["viewBox", "xmlns", "fill", "d"],
   });
 }
 
