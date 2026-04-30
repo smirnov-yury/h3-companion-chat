@@ -11,6 +11,7 @@ import RulesEditor from "@/components/admin/RulesEditor";
 import FilterGroupsEditor from "@/components/admin/FilterGroupsEditor";
 import UnitsEditor from "@/components/admin/UnitsEditor";
 import HeroesEditor from "@/components/admin/HeroesEditor";
+import DecksEditor from "@/components/admin/DecksEditor";
 
 const NAV_ITEMS: Array<
   | { path: string; label: string; icon: React.ElementType }
