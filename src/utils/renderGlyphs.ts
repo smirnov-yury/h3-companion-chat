@@ -1,5 +1,6 @@
 // Glyph rendering: replaces <token> placeholders in text with inline SVG
 // (preferred) or PNG icons fetched from Supabase storage.
+import DOMPurify from "dompurify";
 
 export interface GlyphInfo {
   description: string;
