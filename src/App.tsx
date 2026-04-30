@@ -29,7 +29,7 @@ const App = () => (
     <TooltipProvider>
       <SEOMeta />
       <Toaster />
-      <Sonner position="top-center" richColors />
+      <Sonner position="top-center" richColors theme="dark" />
       <PWAUpdateBanner />
       <BrowserRouter>
         <Routes>
