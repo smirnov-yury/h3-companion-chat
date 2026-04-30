@@ -9,6 +9,7 @@ import {
 import AdminDashboard from "@/components/admin/AdminDashboard";
 import RulesEditor from "@/components/admin/RulesEditor";
 import FilterGroupsEditor from "@/components/admin/FilterGroupsEditor";
+import UnitsEditor from "@/components/admin/UnitsEditor";
 
 const NAV_ITEMS: Array<
   | { path: string; label: string; icon: React.ElementType }
