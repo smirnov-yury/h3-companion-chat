@@ -21,7 +21,7 @@ const CONFIGS: Record<DeckTab, DeckConfig> = {
     table: "artifacts",
     folder: "artifacts",
     imageField: "image",
-    selectCols: "id, name_en, name_ru, quality, description_en, description_ru, effect_en, effect_ru, notes_en, notes_ru, sort_order, ai_context, image, image_status",
+    selectCols: "id, name_en, name_ru, quality, description_en, description_ru, effect_en, effect_ru, sort_order, ai_context, image, image_status",
   },
   spells: {
     label: "Spells",
@@ -42,7 +42,7 @@ const CONFIGS: Record<DeckTab, DeckConfig> = {
     table: "statistics",
     folder: "statistics",
     imageField: "image",
-    selectCols: "id, name_en, name_ru, card_type, stat_type, effect_en, effect_ru, effect_en_expert, notes_en, notes_ru, sort_order, image, image_status",
+    selectCols: "id, name_en, name_ru, card_type, stat_type, effect_en, effect_ru, effect_en_expert, notes_en, notes_ru, sort_order, image",
   },
   "war-machines": {
     label: "War Machines",
@@ -66,7 +66,7 @@ function buildEmptyForm(tab: DeckTab): DeckRow {
   const base: DeckRow = {
     name_en: "", name_ru: "", sort_order: 0, notes_en: "", notes_ru: "", ai_context: "",
   };
-  if (tab === "artifacts") return { ...base, quality: "", description_en: "", description_ru: "", effect_en: "", effect_ru: "" };
+  if (tab === "artifacts") return { name_en: "", name_ru: "", sort_order: 0 as number | null, ai_context: "", quality: "", description_en: "", description_ru: "", effect_en: "", effect_ru: "" };
   if (tab === "spells") return { ...base, level: "", school: "", effect_en: "", effect_ru: "" };
   if (tab === "abilities") return { ...base, effect_en: "", effect_ru: "", effect_empowered_en: "", effect_empowered_ru: "", effect_expert_en: "", effect_expert_ru: "" };
   if (tab === "attributes") return { ...base, card_type: "", stat_type: "", effect_en: "", effect_ru: "", effect_en_expert: "" };
@@ -81,7 +81,7 @@ function rowToForm(tab: DeckTab, row: DeckRow): DeckRow {
     sort_order: num(row.sort_order), notes_en: str(row.notes_en),
     notes_ru: str(row.notes_ru), ai_context: str(row.ai_context),
   };
-  if (tab === "artifacts") return { ...base, quality: str(row.quality), description_en: str(row.description_en), description_ru: str(row.description_ru), effect_en: str(row.effect_en), effect_ru: str(row.effect_ru) };
+  if (tab === "artifacts") return { name_en: str(row.name_en), name_ru: str(row.name_ru), sort_order: num(row.sort_order), ai_context: str(row.ai_context), quality: str(row.quality), description_en: str(row.description_en), description_ru: str(row.description_ru), effect_en: str(row.effect_en), effect_ru: str(row.effect_ru) };
   if (tab === "spells") return { ...base, level: str(row.level), school: str(row.school), effect_en: str(row.effect_en), effect_ru: str(row.effect_ru) };
   if (tab === "abilities") return { ...base, effect_en: str(row.effect_en), effect_ru: str(row.effect_ru), effect_empowered_en: str(row.effect_empowered_en), effect_empowered_ru: str(row.effect_empowered_ru), effect_expert_en: str(row.effect_expert_en), effect_expert_ru: str(row.effect_expert_ru) };
   if (tab === "attributes") return { ...base, card_type: str(row.card_type), stat_type: str(row.stat_type), effect_en: str(row.effect_en), effect_ru: str(row.effect_ru), effect_en_expert: str(row.effect_en_expert) };
@@ -417,17 +417,19 @@ export default function DecksEditor({ tab }: { tab: DeckTab }) {
                 {renderSpecificFields()}
 
                 {/* Notes */}
-                <div className="grid grid-cols-2 gap-3">
-                  {label("Notes EN", <textarea value={f("notes_en")} onChange={(e) => setF("notes_en", e.target.value)} rows={3} className={TEXTAREA_PLAIN} />)}
-                  {label("Notes RU", <textarea value={f("notes_ru")} onChange={(e) => setF("notes_ru", e.target.value)} rows={3} className={TEXTAREA_PLAIN} />)}
-                </div>
+                {tab !== "artifacts" && (
+                  <div className="grid grid-cols-2 gap-3">
+                    {label("Notes EN", <textarea value={f("notes_en")} onChange={(e) => setF("notes_en", e.target.value)} rows={3} className={TEXTAREA_PLAIN} />)}
+                    {label("Notes RU", <textarea value={f("notes_ru")} onChange={(e) => setF("notes_ru", e.target.value)} rows={3} className={TEXTAREA_PLAIN} />)}
+                  </div>
+                )}
 
                 {/* AI */}
                 {label("AI Context", <textarea value={f("ai_context")} onChange={(e) => setF("ai_context", e.target.value)} rows={3} className={TEXTAREA_PLAIN} />)}
               </div>
 
               {/* Image */}
-              {!isNew && selected && (
+              {!isNew && selected && tab !== "attributes" && (
                 <div className="shrink-0">
                   <p className="text-xs text-muted-foreground mb-2">Image</p>
                   <ImageUploader
