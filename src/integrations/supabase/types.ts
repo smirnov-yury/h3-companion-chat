@@ -83,6 +83,30 @@ export type Database = {
         }
         Relationships: []
       }
+      app_content: {
+        Row: {
+          content_type: string | null
+          key: string
+          updated_at: string | null
+          value_en: string | null
+          value_ru: string | null
+        }
+        Insert: {
+          content_type?: string | null
+          key: string
+          updated_at?: string | null
+          value_en?: string | null
+          value_ru?: string | null
+        }
+        Update: {
+          content_type?: string | null
+          key?: string
+          updated_at?: string | null
+          value_en?: string | null
+          value_ru?: string | null
+        }
+        Relationships: []
+      }
       artifacts: {
         Row: {
           ai_context: string | null
@@ -655,6 +679,62 @@ export type Database = {
           specialty_ru?: string | null
           town?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      rule_categories: {
+        Row: {
+          category_key: string
+          group_id: number | null
+          id: number
+          label_en: string
+          label_ru: string
+          sort_order: number | null
+        }
+        Insert: {
+          category_key: string
+          group_id?: number | null
+          id?: number
+          label_en: string
+          label_ru: string
+          sort_order?: number | null
+        }
+        Update: {
+          category_key?: string
+          group_id?: number | null
+          id?: number
+          label_en?: string
+          label_ru?: string
+          sort_order?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rule_categories_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "rule_filter_groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rule_filter_groups: {
+        Row: {
+          id: number
+          label_en: string
+          label_ru: string
+          sort_order: number | null
+        }
+        Insert: {
+          id?: number
+          label_en: string
+          label_ru: string
+          sort_order?: number | null
+        }
+        Update: {
+          id?: number
+          label_en?: string
+          label_ru?: string
+          sort_order?: number | null
         }
         Relationships: []
       }
@@ -1488,6 +1568,27 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string | null
+          id: number
+          role: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: number
+          role?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: number
+          role?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       war_machines: {
         Row: {
           ability_en: string | null
@@ -1553,6 +1654,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      is_admin: { Args: never; Returns: boolean }
       match_all_en: {
         Args: {
           match_count?: number
