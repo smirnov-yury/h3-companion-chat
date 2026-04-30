@@ -15,6 +15,7 @@ import DecksEditor from "@/components/admin/DecksEditor";
 import TownsEditor from "@/components/admin/TownsEditor";
 import MapElementsEditor from "@/components/admin/MapElementsEditor";
 import GlobalEventsEditor from "@/components/admin/GlobalEventsEditor";
+import AboutPageEditor from "@/components/admin/AboutPageEditor";
 
 const NAV_ITEMS: Array<
   | { path: string; label: string; icon: React.ElementType }
@@ -196,7 +197,7 @@ export default function AdminPanel() {
             <Route path="units" element={<UnitsEditor />} />
             <Route path="heroes" element={<HeroesEditor />} />
             <Route path="towns" element={<TownsEditor />} />
-            <Route path="about-page" element={<p className="text-muted-foreground">About Page editor — coming soon</p>} />
+            <Route path="about-page" element={<AboutPageEditor />} />
             <Route path="filter-groups" element={<FilterGroupsEditor />} />
             <Route path="audit-log" element={<p className="text-muted-foreground">Audit Log — coming soon</p>} />
             <Route path="*" element={<Navigate to="" replace />} />
