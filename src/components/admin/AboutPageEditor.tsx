@@ -106,7 +106,6 @@ export default function AboutPageEditor() {
                 <p className="text-xs text-muted-foreground">Type: {selected.content_type ?? "text"}</p>
               </div>
               <div className="flex items-center gap-2">
-                {saved && <span className="text-xs text-muted-foreground">Saved</span>}
                 <button
                   type="button"
                   onClick={handleSave}
