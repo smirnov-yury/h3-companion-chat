@@ -208,7 +208,7 @@ export default function ImageUploader({
     if (storageErr) { setError(storageErr.message); setDeleting(false); return; }
     const { error: dbErr } = await supabase
       .from(table as never)
-      .update({ [imageField]: null, image_status: null } as never)
+      .update({ [imageField]: null } as never)
       .eq("id", recordId);
     if (dbErr) { setError(dbErr.message); setDeleting(false); return; }
     setDeleting(false);
