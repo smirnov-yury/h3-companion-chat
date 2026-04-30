@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import AdminDashboard from "@/components/admin/AdminDashboard";
 import RulesEditor from "@/components/admin/RulesEditor";
+import FilterGroupsEditor from "@/components/admin/FilterGroupsEditor";
 
 const NAV_ITEMS: Array<
   | { path: string; label: string; icon: React.ElementType }
@@ -190,7 +191,7 @@ export default function AdminPanel() {
             <Route path="heroes" element={<p className="text-muted-foreground">Heroes editor — coming soon</p>} />
             <Route path="towns" element={<p className="text-muted-foreground">Towns editor — coming soon</p>} />
             <Route path="about-page" element={<p className="text-muted-foreground">About Page editor — coming soon</p>} />
-            <Route path="filter-groups" element={<p className="text-muted-foreground">Filter Groups editor — coming soon</p>} />
+            <Route path="filter-groups" element={<FilterGroupsEditor />} />
             <Route path="audit-log" element={<p className="text-muted-foreground">Audit Log — coming soon</p>} />
             <Route path="*" element={<Navigate to="" replace />} />
           </Routes>
