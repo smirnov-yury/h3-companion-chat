@@ -133,15 +133,22 @@ export default function ImageUploader({
 
   const handleCropConfirm = async () => {
     if (!imgRef.current) return;
-    const pixelCrop: PixelCrop = completedCrop ?? {
-      unit: "px",
-      x: 0,
-      y: 0,
-      width: imgRef.current.width,
-      height: imgRef.current.height,
-    };
+    const img = imgRef.current;
+    let pixelCrop: PixelCrop;
+    if (completedCrop && completedCrop.width > 0 && completedCrop.height > 0) {
+      pixelCrop = completedCrop;
+    } else {
+      const pct = crop.unit === "%";
+      pixelCrop = {
+        unit: "px",
+        x: pct ? (crop.x / 100) * img.width : crop.x,
+        y: pct ? (crop.y / 100) * img.height : crop.y,
+        width: pct ? (crop.width / 100) * img.width : crop.width,
+        height: pct ? (crop.height / 100) * img.height : crop.height,
+      };
+    }
     try {
-      const webpBlob = await cropToWebp(imgRef.current, pixelCrop);
+      const webpBlob = await cropToWebp(img, pixelCrop);
       if (preview) URL.revokeObjectURL(preview);
       if (rawSrc) URL.revokeObjectURL(rawSrc);
       setBlob(webpBlob);
