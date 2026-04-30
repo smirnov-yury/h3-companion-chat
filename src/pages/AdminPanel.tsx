@@ -13,6 +13,7 @@ import UnitsEditor from "@/components/admin/UnitsEditor";
 import HeroesEditor from "@/components/admin/HeroesEditor";
 import DecksEditor from "@/components/admin/DecksEditor";
 import TownsEditor from "@/components/admin/TownsEditor";
+import MapElementsEditor from "@/components/admin/MapElementsEditor";
 
 const NAV_ITEMS: Array<
   | { path: string; label: string; icon: React.ElementType }
