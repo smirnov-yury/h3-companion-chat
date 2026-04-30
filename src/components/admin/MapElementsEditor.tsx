@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Plus, Trash2, Save, Loader2, Search } from "lucide-react";
 import GlyphToolbar from "@/components/admin/GlyphToolbar";
@@ -134,6 +135,7 @@ export default function MapElementsEditor() {
       const { error: e } = await supabase.from("fields").insert({ id: newId.trim(), ...payload } as never);
       if (e) {
         setError(e.message);
+        toast.error(e.message);
       } else {
         const created: Field = { id: newId.trim(), ...payload, image: null, image_status: null };
         setItems((prev) =>
@@ -141,11 +143,13 @@ export default function MapElementsEditor() {
         );
         setSelected(created);
         setIsNew(false);
+        toast.success("Saved");
       }
     } else if (selected) {
       const { error: e } = await supabase.from("fields").update(payload as never).eq("id", selected.id);
       if (e) {
         setError(e.message);
+        toast.error(e.message);
       } else {
         setItems((prev) =>
           prev
@@ -153,6 +157,7 @@ export default function MapElementsEditor() {
             .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0)),
         );
         setSelected((prev) => (prev ? { ...prev, ...payload } : null));
+        toast.success("Saved");
       }
     }
     setSaving(false);
@@ -161,11 +166,14 @@ export default function MapElementsEditor() {
   const handleDeleteConfirm = async () => {
     if (!selected) return;
     const { error: e } = await supabase.from("fields").delete().eq("id", selected.id);
-    if (!e) {
+    if (e) {
+      toast.error(e.message);
+    } else {
       setItems((prev) => prev.filter((item) => item.id !== selected.id));
       setSelected(null);
       setIsNew(false);
       setForm(emptyForm());
+      toast.success("Deleted");
     }
     setDeleteOpen(false);
   };
