@@ -184,7 +184,7 @@ export default function AdminPanel() {
             <Route index element={<AdminDashboard />} />
             <Route path="rules" element={<RulesEditor />} />
             <Route path="scenarios" element={<p className="text-muted-foreground">Scenarios editor — coming soon</p>} />
-            <Route path="map-elements" element={<p className="text-muted-foreground">Map Elements editor — coming soon</p>} />
+            <Route path="map-elements" element={<MapElementsEditor />} />
             <Route path="events" element={<p className="text-muted-foreground">Events editor — coming soon</p>} />
             <Route path="astrologers" element={<p className="text-muted-foreground">Astrologers editor — coming soon</p>} />
             <Route path="artifacts" element={<DecksEditor tab="artifacts" />} />
