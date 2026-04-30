@@ -104,6 +104,7 @@ export default function ImageUploader({
   const [blob, setBlob] = useState<Blob | null>(null);
   const [status, setStatus] = useState<"idle" | "uploading" | "done" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const handleFile = (file: File) => {
     const url = URL.createObjectURL(file);
