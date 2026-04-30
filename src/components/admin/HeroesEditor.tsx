@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Plus, Trash2, Save, Loader2, Search } from "lucide-react";
 import ImageUploader from "@/components/admin/ImageUploader";
@@ -164,6 +165,7 @@ export default function HeroesEditor() {
         .insert({ id: newId.trim(), ...payload });
       if (e) {
         setError(e.message);
+        toast.error(e.message);
       } else {
         const created: Hero = {
           id: newId.trim(),
@@ -178,6 +180,7 @@ export default function HeroesEditor() {
         );
         setSelectedHero(created);
         setIsNew(false);
+        toast.success("Saved");
       }
     } else if (selectedHero) {
       const { error: e } = await supabase
@@ -186,6 +189,7 @@ export default function HeroesEditor() {
         .eq("id", selectedHero.id);
       if (e) {
         setError(e.message);
+        toast.error(e.message);
       } else {
         setHeroes((prev) =>
           prev
@@ -197,6 +201,7 @@ export default function HeroesEditor() {
         setSelectedHero((prev) =>
           prev ? ({ ...prev, ...payload } as Hero) : null,
         );
+        toast.success("Saved");
       }
     }
     setSaving(false);
@@ -208,11 +213,14 @@ export default function HeroesEditor() {
       .from("heroes")
       .delete()
       .eq("id", selectedHero.id);
-    if (!e) {
+    if (e) {
+      toast.error(e.message);
+    } else {
       setHeroes((prev) => prev.filter((h) => h.id !== selectedHero.id));
       setSelectedHero(null);
       setIsNew(false);
       setForm(EMPTY_FORM);
+      toast.success("Deleted");
     }
     setDeleteOpen(false);
   };
