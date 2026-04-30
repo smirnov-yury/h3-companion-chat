@@ -176,7 +176,7 @@ export default function AdminPanel() {
         <main className="flex-1 overflow-y-auto p-6">
           <Routes>
             <Route index element={<AdminDashboard />} />
-            <Route path="rules" element={<p className="text-muted-foreground">Rules editor — coming soon</p>} />
+            <Route path="rules" element={<RulesEditor />} />
             <Route path="scenarios" element={<p className="text-muted-foreground">Scenarios editor — coming soon</p>} />
             <Route path="map-elements" element={<p className="text-muted-foreground">Map Elements editor — coming soon</p>} />
             <Route path="events" element={<p className="text-muted-foreground">Events editor — coming soon</p>} />
