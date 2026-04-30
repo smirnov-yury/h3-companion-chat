@@ -11,6 +11,9 @@ import HomePage from "./pages/HomePage.tsx";
 import AboutPage from "./pages/AboutPage.tsx";
 import Index from "./pages/Index.tsx";
 import Admin from "./pages/Admin.tsx";
+import AdminLogin from "./pages/AdminLogin.tsx";
+import AdminPanel from "./pages/AdminPanel.tsx";
+import AdminGuard from "./components/admin/AdminGuard.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import PWAUpdateBanner from "./components/PWAUpdateBanner";
 import SEOMeta from "./components/SEOMeta";
@@ -32,7 +35,9 @@ const App = () => (
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/about" element={<AboutPage />} />
-          <Route path="/admin" element={<Admin />} />
+          <Route path="/admin" element={<AdminGuard><AdminPanel /></AdminGuard>} />
+          <Route path="/dragonutopia/login" element={<AdminLogin />} />
+          <Route path="/dragonutopia" element={<AdminGuard><AdminPanel /></AdminGuard>} />
           <Route path="/:section/*" element={<Index />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
