@@ -12,6 +12,7 @@ import FilterGroupsEditor from "@/components/admin/FilterGroupsEditor";
 import UnitsEditor from "@/components/admin/UnitsEditor";
 import HeroesEditor from "@/components/admin/HeroesEditor";
 import DecksEditor from "@/components/admin/DecksEditor";
+import TownsEditor from "@/components/admin/TownsEditor";
 
 const NAV_ITEMS: Array<
   | { path: string; label: string; icon: React.ElementType }
@@ -192,7 +193,7 @@ export default function AdminPanel() {
             <Route path="war-machines" element={<DecksEditor tab="war-machines" />} />
             <Route path="units" element={<UnitsEditor />} />
             <Route path="heroes" element={<HeroesEditor />} />
-            <Route path="towns" element={<p className="text-muted-foreground">Towns editor — coming soon</p>} />
+            <Route path="towns" element={<TownsEditor />} />
             <Route path="about-page" element={<p className="text-muted-foreground">About Page editor — coming soon</p>} />
             <Route path="filter-groups" element={<FilterGroupsEditor />} />
             <Route path="audit-log" element={<p className="text-muted-foreground">Audit Log — coming soon</p>} />
