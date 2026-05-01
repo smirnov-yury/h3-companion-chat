@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, Trash2, Save, Loader2, Search } from "lucide-react";
+import { Plus, Trash2, Save, Loader2, Search, ChevronDown, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import DeleteConfirmDialog from "@/components/admin/DeleteConfirmDialog";
 
