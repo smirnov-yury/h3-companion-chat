@@ -289,7 +289,7 @@ function SetupBlocksTab({ scenarioId }: { scenarioId: string }) {
 
   const addRow = async () => {
     const { data, error } = await supabase.from("scenario_setup_blocks" as never)
-      .insert({ scenario_id: scenarioId, block_type: "general", sort_order: (rows.length + 1) * 10 } as never)
+      .insert({ scenario_id: scenarioId, block_type: "additional_rules", sort_order: (rows.length + 1) * 10 } as never)
       .select().single();
     if (error) toast.error(error.message);
     else if (data) setRows((p) => [...p, data as SetupBlock]);
