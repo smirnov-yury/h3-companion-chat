@@ -1135,20 +1135,6 @@ export default function ScenariosEditor() {
                     />
                   </Label>
 
-                  <div className="flex flex-wrap gap-6 pt-1">
-                    <label className={CHECKBOX_ROW}>
-                      <input type="checkbox" checked={form.has_map_variants} onChange={(e) => setF("has_map_variants", e.target.checked)} className="rounded border-border" />
-                      Has Map Variants
-                    </label>
-                    <label className={CHECKBOX_ROW}>
-                      <input type="checkbox" checked={form.has_story} onChange={(e) => setF("has_story", e.target.checked)} className="rounded border-border" />
-                      Has Story
-                    </label>
-                    <label className={CHECKBOX_ROW}>
-                      <input type="checkbox" checked={form.has_ai_setup} onChange={(e) => setF("has_ai_setup", e.target.checked)} className="rounded border-border" />
-                      Has AI Setup
-                    </label>
-                  </div>
                 </div>
               )}
 
