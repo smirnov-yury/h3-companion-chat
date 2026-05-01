@@ -58,6 +58,7 @@ const TEXTAREA = `${INPUT} resize-y`;
 
 export default function HeroesEditor() {
   const [heroes, setHeroes] = useState<Hero[]>([]);
+  const [abilities, setAbilities] = useState<{ id: string; name_en: string }[]>([]);
   const [search, setSearch] = useState("");
   const [selectedHero, setSelectedHero] = useState<Hero | null>(null);
   const [isNew, setIsNew] = useState(false);
@@ -76,6 +77,16 @@ export default function HeroesEditor() {
       )
       .order("sort_order", { ascending: true })
       .then(({ data }) => { setHeroes((data as Hero[]) ?? []); setLoading(false); });
+  }, []);
+
+  useEffect(() => {
+    supabase
+      .from("abilities")
+      .select("id, name_en")
+      .order("sort_order", { ascending: true })
+      .then(({ data }) =>
+        setAbilities((data as { id: string; name_en: string }[]) ?? []),
+      );
   }, []);
 
   const filtered = heroes.filter((h) =>
@@ -418,13 +429,20 @@ export default function HeroesEditor() {
                   )}
                   {field(
                     "Ability ID",
-                    <input
+                    <select
                       value={form.ability_id ?? ""}
                       onChange={(e) =>
                         setForm((f) => ({ ...f, ability_id: e.target.value }))
                       }
                       className={INPUT}
-                    />,
+                    >
+                      <option value="">— none —</option>
+                      {abilities.map((a) => (
+                        <option key={a.id} value={a.id}>
+                          {a.name_en} ({a.id})
+                        </option>
+                      ))}
+                    </select>,
                   )}
                 </div>
 
