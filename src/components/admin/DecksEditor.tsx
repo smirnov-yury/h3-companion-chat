@@ -54,7 +54,8 @@ const CONFIGS: Record<DeckTab, DeckConfig> = {
   },
 };
 
-const ARTIFACT_QUALITIES = ["", "Common", "Uncommon", "Rare", "Relic"];
+const ARTIFACT_QUALITIES = ["", "minor", "major", "relic"];
+const SPELL_SCHOOLS = ["", "air", "earth", "fire", "water"];
 const SPELL_LEVELS = ["", "1", "2", "3", "4", "5"];
 
 type DeckRow = Record<string, unknown>;
@@ -246,7 +247,11 @@ export default function DecksEditor({ tab }: { tab: DeckTab }) {
               {SPELL_LEVELS.map((l) => <option key={l} value={l}>{l || "— none —"}</option>)}
             </select>
           )}
-          {label("School", <input type="text" value={f("school")} onChange={(e) => setF("school", e.target.value)} className={INPUT} />)}
+          {label("School",
+            <select value={f("school")} onChange={(e) => setF("school", e.target.value)} className={INPUT}>
+              {SPELL_SCHOOLS.map((s) => <option key={s} value={s}>{s || "— none —"}</option>)}
+            </select>
+          )}
         </div>
         <div>
           <label className="text-xs text-muted-foreground block mb-1">Effect EN</label>

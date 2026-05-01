@@ -401,13 +401,19 @@ export default function HeroesEditor() {
                   )}
                   {field(
                     "Town",
-                    <input
+                    <select
                       value={form.town ?? ""}
                       onChange={(e) =>
                         setForm((f) => ({ ...f, town: e.target.value }))
                       }
                       className={INPUT}
-                    />,
+                    >
+                      {TOWNS.map((t) => (
+                        <option key={t} value={t}>
+                          {t || "— none —"}
+                        </option>
+                      ))}
+                    </select>,
                   )}
                   {field(
                     "Class EN",
