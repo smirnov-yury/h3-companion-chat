@@ -56,6 +56,9 @@ const EMPTY_FORM = {
 };
 
 const TIERS = ["", "bronze", "silver", "azure", "golden"];
+const TOWNS = ["", "Castle", "Conflux", "Cove", "Dungeon", "Fortress", "Inferno", "Necropolis", "Neutral", "Rampart", "Stronghold", "Tower"];
+const UNIT_TYPES = ["", "unit_ground", "unit_flying", "unit_ranged"];
+const UNIT_NUMBERS = ["", "Few", "Pack", "Neutral"];
 
 const INPUT =
   "w-full rounded-lg border border-border bg-input px-3 py-2 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring";
@@ -391,33 +394,51 @@ export default function UnitsEditor() {
                   )}
                   {field(
                     "Town",
-                    <input
+                    <select
                       value={form.town ?? ""}
                       onChange={(e) =>
                         setForm((f) => ({ ...f, town: e.target.value }))
                       }
                       className={INPUT}
-                    />,
+                    >
+                      {TOWNS.map((t) => (
+                        <option key={t} value={t}>
+                          {t || "— none —"}
+                        </option>
+                      ))}
+                    </select>,
                   )}
                   {field(
                     "Type",
-                    <input
+                    <select
                       value={form.type ?? ""}
                       onChange={(e) =>
                         setForm((f) => ({ ...f, type: e.target.value }))
                       }
                       className={INPUT}
-                    />,
+                    >
+                      {UNIT_TYPES.map((t) => (
+                        <option key={t} value={t}>
+                          {t || "— none —"}
+                        </option>
+                      ))}
+                    </select>,
                   )}
                   {field(
                     "Number",
-                    <input
+                    <select
                       value={form.number ?? ""}
                       onChange={(e) =>
                         setForm((f) => ({ ...f, number: e.target.value }))
                       }
                       className={INPUT}
-                    />,
+                    >
+                      {UNIT_NUMBERS.map((n) => (
+                        <option key={n} value={n}>
+                          {n || "— none —"}
+                        </option>
+                      ))}
+                    </select>,
                   )}
                   {field(
                     "Slug",
