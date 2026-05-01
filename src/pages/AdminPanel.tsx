@@ -17,6 +17,7 @@ import MapElementsEditor from "@/components/admin/MapElementsEditor";
 import GlobalEventsEditor from "@/components/admin/GlobalEventsEditor";
 import AboutPageEditor from "@/components/admin/AboutPageEditor";
 import AuditLog from "@/components/admin/AuditLog";
+import ScenariosEditor from "@/components/admin/ScenariosEditor";
 
 const NAV_ITEMS: Array<
   | { path: string; label: string; icon: React.ElementType }
@@ -186,7 +187,7 @@ export default function AdminPanel() {
           <Routes>
             <Route index element={<AdminDashboard />} />
             <Route path="rules" element={<RulesEditor />} />
-            <Route path="scenarios" element={<p className="text-muted-foreground">Scenarios editor — coming soon</p>} />
+            <Route path="scenarios" element={<ScenariosEditor />} />
             <Route path="map-elements" element={<MapElementsEditor />} />
             <Route path="events" element={<GlobalEventsEditor tab="events" />} />
             <Route path="astrologers" element={<GlobalEventsEditor tab="astrologers" />} />
