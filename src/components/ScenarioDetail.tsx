@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Users, Clock, Gauge, Map as MapIcon, BookOpen, Zap, Swords } from "lucide-react";
+import { Users, Clock, Gauge, Map as MapIcon, BookOpen, Zap, Swords, Loader2 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
