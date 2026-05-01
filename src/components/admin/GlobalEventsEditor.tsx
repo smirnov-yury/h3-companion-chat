@@ -107,6 +107,7 @@ export default function GlobalEventsEditor({ tab }: { tab: GlobalEventsTab }) {
   const [isNew, setIsNew] = useState(false);
   const [newId, setNewId] = useState("");
   const [form, setForm] = useState<GEForm>(() => buildEmptyForm(tab));
+  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -122,11 +123,12 @@ export default function GlobalEventsEditor({ tab }: { tab: GlobalEventsTab }) {
     setIsNew(false);
     setForm(buildEmptyForm(tab));
     setError(null);
+    setLoading(true);
     supabase
       .from(cfg.table as never)
       .select(cfg.selectCols)
       .order("sort_order", { ascending: true })
-      .then(({ data }) => setItems(((data as unknown) as GERow[]) ?? []));
+      .then(({ data }) => { setItems(((data as unknown) as GERow[]) ?? []); setLoading(false); });
   }, [tab, cfg.table, cfg.selectCols]);
 
   const filtered = items.filter((item) =>
@@ -260,21 +262,29 @@ export default function GlobalEventsEditor({ tab }: { tab: GlobalEventsTab }) {
           </button>
         </div>
         <div className="flex-1 overflow-y-auto p-2 space-y-0.5">
-          {filtered.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              onClick={() => selectItem(item)}
-              className={`w-full text-left px-3 py-2 rounded-lg text-xs transition-colors ${
-                selected?.id === item.id
-                  ? "bg-primary text-primary-foreground"
-                  : "text-foreground hover:bg-accent"
-              }`}
-            >
-              <div className="font-medium truncate">{String(item.name_en ?? item.id)}</div>
-              <div className="opacity-60 text-[10px] truncate">{item.id}</div>
-            </button>
-          ))}
+          {loading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+            </div>
+          ) : (
+            <>
+              {filtered.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => selectItem(item)}
+                  className={`w-full text-left px-3 py-2 rounded-lg text-xs transition-colors ${
+                    selected?.id === item.id
+                      ? "bg-primary text-primary-foreground"
+                      : "text-foreground hover:bg-accent"
+                  }`}
+                >
+                  <div className="font-medium truncate">{String(item.name_en ?? item.id)}</div>
+                  <div className="opacity-60 text-[10px] truncate">{item.id}</div>
+                </button>
+              ))}
+            </>
+          )}
         </div>
       </div>
 

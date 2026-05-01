@@ -273,23 +273,31 @@ export default function UnitsEditor() {
           </button>
         </div>
         <div className="flex-1 overflow-y-auto space-y-0.5">
-          {filtered.map((u) => (
-            <button
-              key={u.id}
-              type="button"
-              onClick={() => selectUnit(u)}
-              className={`w-full text-left px-3 py-2 rounded-lg text-xs transition-colors ${
-                selectedUnit?.id === u.id
-                  ? "bg-primary text-primary-foreground"
-                  : "text-foreground hover:bg-accent"
-              }`}
-            >
-              <div className="font-medium truncate">{u.name_en}</div>
-              <div className="text-[10px] opacity-70 truncate">
-                {[u.tier, u.town].filter(Boolean).join(" · ")}
-              </div>
-            </button>
-          ))}
+          {loading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+            </div>
+          ) : (
+            <>
+              {filtered.map((u) => (
+                <button
+                  key={u.id}
+                  type="button"
+                  onClick={() => selectUnit(u)}
+                  className={`w-full text-left px-3 py-2 rounded-lg text-xs transition-colors ${
+                    selectedUnit?.id === u.id
+                      ? "bg-primary text-primary-foreground"
+                      : "text-foreground hover:bg-accent"
+                  }`}
+                >
+                  <div className="font-medium truncate">{u.name_en}</div>
+                  <div className="text-[10px] opacity-70 truncate">
+                    {[u.tier, u.town].filter(Boolean).join(" · ")}
+                  </div>
+                </button>
+              ))}
+            </>
+          )}
         </div>
       </div>
 

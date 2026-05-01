@@ -106,6 +106,7 @@ export default function DecksEditor({ tab }: { tab: DeckTab }) {
   const [isNew, setIsNew] = useState(false);
   const [newId, setNewId] = useState("");
   const [form, setForm] = useState<DeckRow>(() => buildEmptyForm(tab));
+  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -123,11 +124,12 @@ export default function DecksEditor({ tab }: { tab: DeckTab }) {
     setIsNew(false);
     setForm(buildEmptyForm(tab));
     setError(null);
+    setLoading(true);
     supabase
       .from(cfg.table as never)
       .select(cfg.selectCols)
       .order("sort_order", { ascending: true })
-      .then(({ data }) => setItems((data as DeckRow[]) ?? []));
+      .then(({ data }) => { setItems((data as DeckRow[]) ?? []); setLoading(false); });
   }, [tab, cfg.table, cfg.selectCols]);
 
   const filtered = items.filter((item) =>

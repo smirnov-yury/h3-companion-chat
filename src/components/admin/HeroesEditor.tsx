@@ -63,6 +63,7 @@ export default function HeroesEditor() {
   const [isNew, setIsNew] = useState(false);
   const [newId, setNewId] = useState("");
   const [form, setForm] = useState(EMPTY_FORM);
+  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -74,7 +75,7 @@ export default function HeroesEditor() {
         "id, name_en, name_ru, sort_order, town, class_en, class_ru, attack, defense, knowledge, power, specialty_en, specialty_ru, biography_en, biography_ru, notes_en, notes_ru, ai_context, ability_id, specialty_levels, image, image_status",
       )
       .order("sort_order", { ascending: true })
-      .then(({ data }) => setHeroes((data as Hero[]) ?? []));
+      .then(({ data }) => { setHeroes((data as Hero[]) ?? []); setLoading(false); });
   }, []);
 
   const filtered = heroes.filter((h) =>
@@ -275,21 +276,29 @@ export default function HeroesEditor() {
         </div>
 
         <div className="flex-1 overflow-y-auto space-y-1">
-          {filtered.map((h) => (
-            <button
-              key={h.id}
-              type="button"
-              onClick={() => selectHero(h)}
-              className={`w-full text-left px-3 py-2 rounded-lg text-xs transition-colors ${
-                selectedHero?.id === h.id
-                  ? "bg-primary text-primary-foreground"
-                  : "text-foreground hover:bg-accent"
-              }`}
-            >
-              <p className="font-medium">{h.name_en}</p>
-              <p className="text-[10px] opacity-70">{h.town ?? ""}</p>
-            </button>
-          ))}
+          {loading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+            </div>
+          ) : (
+            <>
+              {filtered.map((h) => (
+                <button
+                  key={h.id}
+                  type="button"
+                  onClick={() => selectHero(h)}
+                  className={`w-full text-left px-3 py-2 rounded-lg text-xs transition-colors ${
+                    selectedHero?.id === h.id
+                      ? "bg-primary text-primary-foreground"
+                      : "text-foreground hover:bg-accent"
+                  }`}
+                >
+                  <p className="font-medium">{h.name_en}</p>
+                  <p className="text-[10px] opacity-70">{h.town ?? ""}</p>
+                </button>
+              ))}
+            </>
+          )}
         </div>
       </div>
 

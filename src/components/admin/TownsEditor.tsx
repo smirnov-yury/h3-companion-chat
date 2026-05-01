@@ -216,6 +216,7 @@ export default function TownsEditor() {
   const [isNew, setIsNew] = useState(false);
   const [newId, setNewId] = useState("");
   const [form, setForm] = useState<TownForm>(emptyTownForm());
+  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -229,7 +230,7 @@ export default function TownsEditor() {
       .from("towns")
       .select("id, name_en, name_ru, notes_en, notes_ru, image_empty, image_full, image_back, sort_order, image_status")
       .order("sort_order", { ascending: true })
-      .then(({ data }) => setTowns((data as Town[]) ?? []));
+      .then(({ data }) => { setTowns((data as Town[]) ?? []); setLoading(false); });
   }, []);
 
   const fetchBuildings = async (townId: string) => {
@@ -424,21 +425,29 @@ export default function TownsEditor() {
           </button>
         </div>
         <div className="flex-1 overflow-y-auto p-2 space-y-0.5">
-          {filtered.map((town) => (
-            <button
-              key={town.id}
-              type="button"
-              onClick={() => selectTown(town)}
-              className={`w-full text-left px-3 py-2 rounded-lg text-xs transition-colors ${
-                selected?.id === town.id
-                  ? "bg-primary text-primary-foreground"
-                  : "text-foreground hover:bg-accent"
-              }`}
-            >
-              <div className="font-medium truncate">{town.name_en ?? town.id}</div>
-              <div className="opacity-60 text-[10px] truncate">{town.id}</div>
-            </button>
-          ))}
+          {loading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+            </div>
+          ) : (
+            <>
+              {filtered.map((town) => (
+                <button
+                  key={town.id}
+                  type="button"
+                  onClick={() => selectTown(town)}
+                  className={`w-full text-left px-3 py-2 rounded-lg text-xs transition-colors ${
+                    selected?.id === town.id
+                      ? "bg-primary text-primary-foreground"
+                      : "text-foreground hover:bg-accent"
+                  }`}
+                >
+                  <div className="font-medium truncate">{town.name_en ?? town.id}</div>
+                  <div className="opacity-60 text-[10px] truncate">{town.id}</div>
+                </button>
+              ))}
+            </>
+          )}
         </div>
       </div>
 
