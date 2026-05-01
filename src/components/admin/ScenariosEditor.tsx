@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, Trash2, Save, Loader2, Search } from "lucide-react";
+import { Plus, Trash2, Save, Loader2, Search, ChevronDown, ChevronRight } from "lucide-react";
 import { toast } from "sonner";
 import DeleteConfirmDialog from "@/components/admin/DeleteConfirmDialog";
 
@@ -105,6 +105,634 @@ function Label({ text, children }: { text: string; children: React.ReactNode }) 
     <div className="space-y-1">
       <div className="text-xs font-medium text-muted-foreground">{text}</div>
       {children}
+    </div>
+  );
+}
+
+// ── child table types ──────────────────────────────────────────────────────
+
+interface SetupBlock {
+  id: number; scenario_id: string; player_count: number | null;
+  block_type: string; title_en: string | null; title_ru: string | null;
+  content_en: string | null; content_ru: string | null;
+  structured_data: unknown; sort_order: number;
+}
+
+interface StorySection {
+  id: number; scenario_id: string; section_key: string;
+  title_en: string; title_ru: string | null;
+  trigger_text_en: string | null; trigger_text_ru: string | null;
+  content_en: string; content_ru: string | null; sort_order: number;
+}
+
+interface MapVariant {
+  id: number; scenario_id: string; player_count: number;
+  variant_label_en: string | null; variant_label_ru: string | null;
+  map_setup_text_en: string | null; map_setup_text_ru: string | null;
+  tile_counts: unknown; layout_schema: unknown;
+  layout_notes_en: string | null; layout_notes_ru: string | null;
+  source_page: number | null; map_image: string | null; sort_order: number;
+}
+
+interface TimedEvent {
+  id: number; scenario_id: string; player_count: number | null;
+  trigger_type: string; trigger_round: number | null;
+  trigger_label_en: string | null; trigger_label_ru: string | null;
+  condition_en: string | null; condition_ru: string | null;
+  effect_en: string; effect_ru: string | null; sort_order: number;
+}
+
+interface AISetup {
+  id: number; scenario_id: string;
+  ai_faction_en: string | null; ai_faction_ru: string | null;
+  enemy_heroes_en: unknown; enemy_heroes_ru: unknown;
+  enemy_armies_en: unknown; enemy_armies_ru: unknown;
+  enemy_decks_en: unknown; enemy_decks_ru: unknown;
+  enemy_spell_deck_en: unknown; enemy_spell_deck_ru: unknown;
+  special_setup_en: string | null; special_setup_ru: string | null;
+  notes_en: string | null; notes_ru: string | null;
+}
+
+// ── shared child styles ────────────────────────────────────────────────────
+
+const CI = "w-full rounded-lg border border-border bg-input px-3 py-2 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring";
+const CT = `${CI} resize-y`;
+const CJ = `${CT} font-mono text-xs`;
+
+function CLabel({ text, children }: { text: string; children: React.ReactNode }) {
+  return (
+    <div className="flex flex-col gap-1">
+      <label className="text-xs text-muted-foreground">{text}</label>
+      {children}
+    </div>
+  );
+}
+
+function jsonStr(v: unknown): string {
+  if (v === null || v === undefined) return "";
+  if (typeof v === "string") return v;
+  return JSON.stringify(v, null, 2);
+}
+
+function parseJson(s: string): unknown {
+  if (!s.trim()) return null;
+  try { return JSON.parse(s); } catch { return s; }
+}
+
+// ── Setup Blocks tab ───────────────────────────────────────────────────────
+
+function SetupBlockRow({
+  block,
+  onSave,
+  onDelete,
+}: {
+  block: SetupBlock;
+  onSave: (id: number, payload: Partial<SetupBlock>) => Promise<void>;
+  onDelete: (id: number) => Promise<void>;
+}) {
+  const [open, setOpen] = useState(false);
+  const [form, setForm] = useState({ ...block });
+  const [saving, setSaving] = useState(false);
+
+  const setF = (k: keyof SetupBlock, v: unknown) => setForm((p) => ({ ...p, [k]: v }));
+
+  const save = async () => {
+    setSaving(true);
+    await onSave(block.id, {
+      player_count: form.player_count,
+      block_type: form.block_type,
+      title_en: form.title_en || null,
+      title_ru: form.title_ru || null,
+      content_en: form.content_en || null,
+      content_ru: form.content_ru || null,
+      structured_data: form.structured_data,
+      sort_order: form.sort_order,
+    });
+    setSaving(false);
+    setOpen(false);
+  };
+
+  return (
+    <div className="border border-border rounded-lg overflow-hidden">
+      <div className="flex items-center gap-2 px-3 py-2 bg-muted/20">
+        <button type="button" onClick={() => setOpen((o) => !o)} className="flex-1 flex items-center gap-2 text-left">
+          {open ? <ChevronDown className="w-3.5 h-3.5 shrink-0" /> : <ChevronRight className="w-3.5 h-3.5 shrink-0" />}
+          <span className="text-xs font-medium truncate">{form.block_type || "block"} · {form.title_en || "—"}</span>
+          {form.player_count && <span className="text-[10px] text-muted-foreground">({form.player_count}p)</span>}
+        </button>
+        <button type="button" onClick={() => onDelete(block.id)} className="text-destructive hover:text-destructive/80">
+          <Trash2 className="w-3.5 h-3.5" />
+        </button>
+      </div>
+      {open && (
+        <div className="p-3 space-y-3">
+          <div className="grid grid-cols-3 gap-2">
+            <CLabel text="Block Type">
+              <input type="text" value={form.block_type} onChange={(e) => setF("block_type", e.target.value)} className={CI} />
+            </CLabel>
+            <CLabel text="Player Count">
+              <input type="number" value={form.player_count ?? ""} onChange={(e) => setF("player_count", e.target.value ? Number(e.target.value) : null)} className={CI} />
+            </CLabel>
+            <CLabel text="Sort Order">
+              <input type="number" value={form.sort_order} onChange={(e) => setF("sort_order", Number(e.target.value))} className={CI} />
+            </CLabel>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <CLabel text="Title EN"><input type="text" value={form.title_en ?? ""} onChange={(e) => setF("title_en", e.target.value || null)} className={CI} /></CLabel>
+            <CLabel text="Title RU"><input type="text" value={form.title_ru ?? ""} onChange={(e) => setF("title_ru", e.target.value || null)} className={CI} /></CLabel>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <CLabel text="Content EN"><textarea value={form.content_en ?? ""} onChange={(e) => setF("content_en", e.target.value || null)} rows={4} className={CT} /></CLabel>
+            <CLabel text="Content RU"><textarea value={form.content_ru ?? ""} onChange={(e) => setF("content_ru", e.target.value || null)} rows={4} className={CT} /></CLabel>
+          </div>
+          <CLabel text="Structured Data (JSON)">
+            <textarea value={jsonStr(form.structured_data)} onChange={(e) => setF("structured_data", parseJson(e.target.value))} rows={3} className={CJ} />
+          </CLabel>
+          <div className="flex justify-end">
+            <button type="button" onClick={save} disabled={saving} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-medium disabled:opacity-50">
+              {saving ? <Loader2 className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />} Save
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function SetupBlocksTab({ scenarioId }: { scenarioId: string }) {
+  const [rows, setRows] = useState<SetupBlock[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    supabase.from("scenario_setup_blocks" as never).select("*").eq("scenario_id", scenarioId).order("sort_order", { ascending: true })
+      .then(({ data }) => { setRows((data as SetupBlock[]) ?? []); setLoading(false); });
+  }, [scenarioId]);
+
+  const addRow = async () => {
+    const { data, error } = await supabase.from("scenario_setup_blocks" as never)
+      .insert({ scenario_id: scenarioId, block_type: "general", sort_order: (rows.length + 1) * 10 } as never)
+      .select().single();
+    if (!error && data) setRows((p) => [...p, data as SetupBlock]);
+  };
+
+  const saveRow = async (id: number, payload: Partial<SetupBlock>) => {
+    const { error } = await supabase.from("scenario_setup_blocks" as never).update(payload as never).eq("id", id);
+    if (!error) { setRows((p) => p.map((r) => r.id === id ? { ...r, ...payload } : r)); toast.success("Saved"); }
+    else toast.error(error.message);
+  };
+
+  const deleteRow = async (id: number) => {
+    const { error } = await supabase.from("scenario_setup_blocks" as never).delete().eq("id", id);
+    if (!error) { setRows((p) => p.filter((r) => r.id !== id)); toast.success("Deleted"); }
+    else toast.error(error.message);
+  };
+
+  if (loading) return <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />;
+
+  return (
+    <div className="space-y-2">
+      <div className="flex justify-end">
+        <button type="button" onClick={addRow} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-medium">
+          <Plus className="w-3 h-3" /> Add Block
+        </button>
+      </div>
+      {rows.length === 0 && <p className="text-xs text-muted-foreground">No setup blocks.</p>}
+      {rows.map((r) => <SetupBlockRow key={r.id} block={r} onSave={saveRow} onDelete={deleteRow} />)}
+    </div>
+  );
+}
+
+// ── Story Sections tab ─────────────────────────────────────────────────────
+
+function StorySectionRow({
+  section,
+  onSave,
+  onDelete,
+}: {
+  section: StorySection;
+  onSave: (id: number, payload: Partial<StorySection>) => Promise<void>;
+  onDelete: (id: number) => Promise<void>;
+}) {
+  const [open, setOpen] = useState(false);
+  const [form, setForm] = useState({ ...section });
+  const [saving, setSaving] = useState(false);
+  const setF = (k: keyof StorySection, v: unknown) => setForm((p) => ({ ...p, [k]: v }));
+
+  const save = async () => {
+    setSaving(true);
+    await onSave(section.id, {
+      section_key: form.section_key,
+      title_en: form.title_en,
+      title_ru: form.title_ru || null,
+      trigger_text_en: form.trigger_text_en || null,
+      trigger_text_ru: form.trigger_text_ru || null,
+      content_en: form.content_en,
+      content_ru: form.content_ru || null,
+      sort_order: form.sort_order,
+    });
+    setSaving(false);
+    setOpen(false);
+  };
+
+  return (
+    <div className="border border-border rounded-lg overflow-hidden">
+      <div className="flex items-center gap-2 px-3 py-2 bg-muted/20">
+        <button type="button" onClick={() => setOpen((o) => !o)} className="flex-1 flex items-center gap-2 text-left">
+          {open ? <ChevronDown className="w-3.5 h-3.5 shrink-0" /> : <ChevronRight className="w-3.5 h-3.5 shrink-0" />}
+          <span className="text-xs font-medium truncate">{form.section_key} · {form.title_en || "—"}</span>
+        </button>
+        <button type="button" onClick={() => onDelete(section.id)} className="text-destructive hover:text-destructive/80">
+          <Trash2 className="w-3.5 h-3.5" />
+        </button>
+      </div>
+      {open && (
+        <div className="p-3 space-y-3">
+          <div className="grid grid-cols-3 gap-2">
+            <CLabel text="Section Key"><input type="text" value={form.section_key} onChange={(e) => setF("section_key", e.target.value)} className={CI} /></CLabel>
+            <CLabel text="Title EN"><input type="text" value={form.title_en} onChange={(e) => setF("title_en", e.target.value)} className={CI} /></CLabel>
+            <CLabel text="Sort Order"><input type="number" value={form.sort_order} onChange={(e) => setF("sort_order", Number(e.target.value))} className={CI} /></CLabel>
+          </div>
+          <CLabel text="Title RU"><input type="text" value={form.title_ru ?? ""} onChange={(e) => setF("title_ru", e.target.value || null)} className={CI} /></CLabel>
+          <div className="grid grid-cols-2 gap-2">
+            <CLabel text="Trigger EN"><textarea value={form.trigger_text_en ?? ""} onChange={(e) => setF("trigger_text_en", e.target.value || null)} rows={2} className={CT} /></CLabel>
+            <CLabel text="Trigger RU"><textarea value={form.trigger_text_ru ?? ""} onChange={(e) => setF("trigger_text_ru", e.target.value || null)} rows={2} className={CT} /></CLabel>
+            <CLabel text="Content EN"><textarea value={form.content_en} onChange={(e) => setF("content_en", e.target.value)} rows={5} className={CT} /></CLabel>
+            <CLabel text="Content RU"><textarea value={form.content_ru ?? ""} onChange={(e) => setF("content_ru", e.target.value || null)} rows={5} className={CT} /></CLabel>
+          </div>
+          <div className="flex justify-end">
+            <button type="button" onClick={save} disabled={saving} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-medium disabled:opacity-50">
+              {saving ? <Loader2 className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />} Save
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function StoryTab({ scenarioId }: { scenarioId: string }) {
+  const [rows, setRows] = useState<StorySection[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    supabase.from("scenario_story_sections" as never).select("*").eq("scenario_id", scenarioId).order("sort_order", { ascending: true })
+      .then(({ data }) => { setRows((data as StorySection[]) ?? []); setLoading(false); });
+  }, [scenarioId]);
+
+  const addRow = async () => {
+    const { data, error } = await supabase.from("scenario_story_sections" as never)
+      .insert({ scenario_id: scenarioId, section_key: "new", title_en: "New Section", content_en: "", sort_order: (rows.length + 1) * 10 } as never)
+      .select().single();
+    if (!error && data) setRows((p) => [...p, data as StorySection]);
+  };
+
+  const saveRow = async (id: number, payload: Partial<StorySection>) => {
+    const { error } = await supabase.from("scenario_story_sections" as never).update(payload as never).eq("id", id);
+    if (!error) { setRows((p) => p.map((r) => r.id === id ? { ...r, ...payload } : r)); toast.success("Saved"); }
+    else toast.error(error.message);
+  };
+
+  const deleteRow = async (id: number) => {
+    const { error } = await supabase.from("scenario_story_sections" as never).delete().eq("id", id);
+    if (!error) { setRows((p) => p.filter((r) => r.id !== id)); toast.success("Deleted"); }
+    else toast.error(error.message);
+  };
+
+  if (loading) return <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />;
+
+  return (
+    <div className="space-y-2">
+      <div className="flex justify-end">
+        <button type="button" onClick={addRow} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-medium">
+          <Plus className="w-3 h-3" /> Add Section
+        </button>
+      </div>
+      {rows.length === 0 && <p className="text-xs text-muted-foreground">No story sections.</p>}
+      {rows.map((r) => <StorySectionRow key={r.id} section={r} onSave={saveRow} onDelete={deleteRow} />)}
+    </div>
+  );
+}
+
+// ── Map Variants tab ───────────────────────────────────────────────────────
+
+function MapVariantRow({
+  variant,
+  onSave,
+  onDelete,
+}: {
+  variant: MapVariant;
+  onSave: (id: number, payload: Partial<MapVariant>) => Promise<void>;
+  onDelete: (id: number) => Promise<void>;
+}) {
+  const [open, setOpen] = useState(false);
+  const [form, setForm] = useState({ ...variant });
+  const [saving, setSaving] = useState(false);
+  const setF = (k: keyof MapVariant, v: unknown) => setForm((p) => ({ ...p, [k]: v }));
+
+  const save = async () => {
+    setSaving(true);
+    await onSave(variant.id, {
+      player_count: form.player_count,
+      variant_label_en: form.variant_label_en || null,
+      variant_label_ru: form.variant_label_ru || null,
+      map_setup_text_en: form.map_setup_text_en || null,
+      map_setup_text_ru: form.map_setup_text_ru || null,
+      tile_counts: form.tile_counts,
+      layout_schema: form.layout_schema,
+      layout_notes_en: form.layout_notes_en || null,
+      layout_notes_ru: form.layout_notes_ru || null,
+      source_page: form.source_page,
+      sort_order: form.sort_order,
+    });
+    setSaving(false);
+    setOpen(false);
+  };
+
+  return (
+    <div className="border border-border rounded-lg overflow-hidden">
+      <div className="flex items-center gap-2 px-3 py-2 bg-muted/20">
+        <button type="button" onClick={() => setOpen((o) => !o)} className="flex-1 flex items-center gap-2 text-left">
+          {open ? <ChevronDown className="w-3.5 h-3.5 shrink-0" /> : <ChevronRight className="w-3.5 h-3.5 shrink-0" />}
+          <span className="text-xs font-medium truncate">{form.player_count}p · {form.variant_label_en || "variant"}</span>
+        </button>
+        <button type="button" onClick={() => onDelete(variant.id)} className="text-destructive hover:text-destructive/80">
+          <Trash2 className="w-3.5 h-3.5" />
+        </button>
+      </div>
+      {open && (
+        <div className="p-3 space-y-3">
+          <div className="grid grid-cols-3 gap-2">
+            <CLabel text="Player Count"><input type="number" value={form.player_count} onChange={(e) => setF("player_count", Number(e.target.value))} className={CI} /></CLabel>
+            <CLabel text="Source Page"><input type="number" value={form.source_page ?? ""} onChange={(e) => setF("source_page", e.target.value ? Number(e.target.value) : null)} className={CI} /></CLabel>
+            <CLabel text="Sort Order"><input type="number" value={form.sort_order} onChange={(e) => setF("sort_order", Number(e.target.value))} className={CI} /></CLabel>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <CLabel text="Label EN"><input type="text" value={form.variant_label_en ?? ""} onChange={(e) => setF("variant_label_en", e.target.value || null)} className={CI} /></CLabel>
+            <CLabel text="Label RU"><input type="text" value={form.variant_label_ru ?? ""} onChange={(e) => setF("variant_label_ru", e.target.value || null)} className={CI} /></CLabel>
+            <CLabel text="Map Setup EN"><textarea value={form.map_setup_text_en ?? ""} onChange={(e) => setF("map_setup_text_en", e.target.value || null)} rows={3} className={CT} /></CLabel>
+            <CLabel text="Map Setup RU"><textarea value={form.map_setup_text_ru ?? ""} onChange={(e) => setF("map_setup_text_ru", e.target.value || null)} rows={3} className={CT} /></CLabel>
+            <CLabel text="Layout Notes EN"><textarea value={form.layout_notes_en ?? ""} onChange={(e) => setF("layout_notes_en", e.target.value || null)} rows={3} className={CT} /></CLabel>
+            <CLabel text="Layout Notes RU"><textarea value={form.layout_notes_ru ?? ""} onChange={(e) => setF("layout_notes_ru", e.target.value || null)} rows={3} className={CT} /></CLabel>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <CLabel text="Tile Counts (JSON)"><textarea value={jsonStr(form.tile_counts)} onChange={(e) => setF("tile_counts", parseJson(e.target.value))} rows={4} className={CJ} /></CLabel>
+            <CLabel text="Layout Schema (JSON)"><textarea value={jsonStr(form.layout_schema)} onChange={(e) => setF("layout_schema", parseJson(e.target.value))} rows={4} className={CJ} /></CLabel>
+          </div>
+          <div className="flex justify-end">
+            <button type="button" onClick={save} disabled={saving} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-medium disabled:opacity-50">
+              {saving ? <Loader2 className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />} Save
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function MapVariantsTab({ scenarioId }: { scenarioId: string }) {
+  const [rows, setRows] = useState<MapVariant[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    supabase.from("scenario_map_variants" as never).select("*").eq("scenario_id", scenarioId).order("sort_order", { ascending: true })
+      .then(({ data }) => { setRows((data as MapVariant[]) ?? []); setLoading(false); });
+  }, [scenarioId]);
+
+  const addRow = async () => {
+    const { data, error } = await supabase.from("scenario_map_variants" as never)
+      .insert({ scenario_id: scenarioId, player_count: 2, tile_counts: {}, sort_order: (rows.length + 1) * 10 } as never)
+      .select().single();
+    if (!error && data) setRows((p) => [...p, data as MapVariant]);
+  };
+
+  const saveRow = async (id: number, payload: Partial<MapVariant>) => {
+    const { error } = await supabase.from("scenario_map_variants" as never).update(payload as never).eq("id", id);
+    if (!error) { setRows((p) => p.map((r) => r.id === id ? { ...r, ...payload } : r)); toast.success("Saved"); }
+    else toast.error(error.message);
+  };
+
+  const deleteRow = async (id: number) => {
+    const { error } = await supabase.from("scenario_map_variants" as never).delete().eq("id", id);
+    if (!error) { setRows((p) => p.filter((r) => r.id !== id)); toast.success("Deleted"); }
+    else toast.error(error.message);
+  };
+
+  if (loading) return <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />;
+
+  return (
+    <div className="space-y-2">
+      <div className="flex justify-end">
+        <button type="button" onClick={addRow} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-medium">
+          <Plus className="w-3 h-3" /> Add Variant
+        </button>
+      </div>
+      {rows.length === 0 && <p className="text-xs text-muted-foreground">No map variants.</p>}
+      {rows.map((r) => <MapVariantRow key={r.id} variant={r} onSave={saveRow} onDelete={deleteRow} />)}
+    </div>
+  );
+}
+
+// ── Timed Events tab ───────────────────────────────────────────────────────
+
+function TimedEventRow({
+  event,
+  onSave,
+  onDelete,
+}: {
+  event: TimedEvent;
+  onSave: (id: number, payload: Partial<TimedEvent>) => Promise<void>;
+  onDelete: (id: number) => Promise<void>;
+}) {
+  const [open, setOpen] = useState(false);
+  const [form, setForm] = useState({ ...event });
+  const [saving, setSaving] = useState(false);
+  const setF = (k: keyof TimedEvent, v: unknown) => setForm((p) => ({ ...p, [k]: v }));
+
+  const save = async () => {
+    setSaving(true);
+    await onSave(event.id, {
+      player_count: form.player_count,
+      trigger_type: form.trigger_type,
+      trigger_round: form.trigger_round,
+      trigger_label_en: form.trigger_label_en || null,
+      trigger_label_ru: form.trigger_label_ru || null,
+      condition_en: form.condition_en || null,
+      condition_ru: form.condition_ru || null,
+      effect_en: form.effect_en,
+      effect_ru: form.effect_ru || null,
+      sort_order: form.sort_order,
+    });
+    setSaving(false);
+    setOpen(false);
+  };
+
+  return (
+    <div className="border border-border rounded-lg overflow-hidden">
+      <div className="flex items-center gap-2 px-3 py-2 bg-muted/20">
+        <button type="button" onClick={() => setOpen((o) => !o)} className="flex-1 flex items-center gap-2 text-left">
+          {open ? <ChevronDown className="w-3.5 h-3.5 shrink-0" /> : <ChevronRight className="w-3.5 h-3.5 shrink-0" />}
+          <span className="text-xs font-medium truncate">
+            {form.trigger_type}{form.trigger_round ? ` R${form.trigger_round}` : ""} · {form.effect_en?.slice(0, 50) || "—"}
+          </span>
+          {form.player_count && <span className="text-[10px] text-muted-foreground">({form.player_count}p)</span>}
+        </button>
+        <button type="button" onClick={() => onDelete(event.id)} className="text-destructive hover:text-destructive/80">
+          <Trash2 className="w-3.5 h-3.5" />
+        </button>
+      </div>
+      {open && (
+        <div className="p-3 space-y-3">
+          <div className="grid grid-cols-4 gap-2">
+            <CLabel text="Trigger Type"><input type="text" value={form.trigger_type} onChange={(e) => setF("trigger_type", e.target.value)} className={CI} /></CLabel>
+            <CLabel text="Trigger Round"><input type="number" value={form.trigger_round ?? ""} onChange={(e) => setF("trigger_round", e.target.value ? Number(e.target.value) : null)} className={CI} /></CLabel>
+            <CLabel text="Player Count"><input type="number" value={form.player_count ?? ""} onChange={(e) => setF("player_count", e.target.value ? Number(e.target.value) : null)} className={CI} /></CLabel>
+            <CLabel text="Sort Order"><input type="number" value={form.sort_order} onChange={(e) => setF("sort_order", Number(e.target.value))} className={CI} /></CLabel>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <CLabel text="Trigger Label EN"><input type="text" value={form.trigger_label_en ?? ""} onChange={(e) => setF("trigger_label_en", e.target.value || null)} className={CI} /></CLabel>
+            <CLabel text="Trigger Label RU"><input type="text" value={form.trigger_label_ru ?? ""} onChange={(e) => setF("trigger_label_ru", e.target.value || null)} className={CI} /></CLabel>
+            <CLabel text="Condition EN"><textarea value={form.condition_en ?? ""} onChange={(e) => setF("condition_en", e.target.value || null)} rows={2} className={CT} /></CLabel>
+            <CLabel text="Condition RU"><textarea value={form.condition_ru ?? ""} onChange={(e) => setF("condition_ru", e.target.value || null)} rows={2} className={CT} /></CLabel>
+            <CLabel text="Effect EN"><textarea value={form.effect_en} onChange={(e) => setF("effect_en", e.target.value)} rows={4} className={CT} /></CLabel>
+            <CLabel text="Effect RU"><textarea value={form.effect_ru ?? ""} onChange={(e) => setF("effect_ru", e.target.value || null)} rows={4} className={CT} /></CLabel>
+          </div>
+          <div className="flex justify-end">
+            <button type="button" onClick={save} disabled={saving} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-medium disabled:opacity-50">
+              {saving ? <Loader2 className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />} Save
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function TimedEventsTab({ scenarioId }: { scenarioId: string }) {
+  const [rows, setRows] = useState<TimedEvent[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    supabase.from("scenario_timed_events" as never).select("*").eq("scenario_id", scenarioId).order("sort_order", { ascending: true })
+      .then(({ data }) => { setRows((data as TimedEvent[]) ?? []); setLoading(false); });
+  }, [scenarioId]);
+
+  const addRow = async () => {
+    const { data, error } = await supabase.from("scenario_timed_events" as never)
+      .insert({ scenario_id: scenarioId, trigger_type: "round", effect_en: "", sort_order: (rows.length + 1) * 10 } as never)
+      .select().single();
+    if (!error && data) setRows((p) => [...p, data as TimedEvent]);
+  };
+
+  const saveRow = async (id: number, payload: Partial<TimedEvent>) => {
+    const { error } = await supabase.from("scenario_timed_events" as never).update(payload as never).eq("id", id);
+    if (!error) { setRows((p) => p.map((r) => r.id === id ? { ...r, ...payload } : r)); toast.success("Saved"); }
+    else toast.error(error.message);
+  };
+
+  const deleteRow = async (id: number) => {
+    const { error } = await supabase.from("scenario_timed_events" as never).delete().eq("id", id);
+    if (!error) { setRows((p) => p.filter((r) => r.id !== id)); toast.success("Deleted"); }
+    else toast.error(error.message);
+  };
+
+  if (loading) return <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />;
+
+  return (
+    <div className="space-y-2">
+      <div className="flex justify-end">
+        <button type="button" onClick={addRow} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-medium">
+          <Plus className="w-3 h-3" /> Add Event
+        </button>
+      </div>
+      {rows.length === 0 && <p className="text-xs text-muted-foreground">No timed events.</p>}
+      {rows.map((r) => <TimedEventRow key={r.id} event={r} onSave={saveRow} onDelete={deleteRow} />)}
+    </div>
+  );
+}
+
+// ── AI Setup tab ───────────────────────────────────────────────────────────
+
+function AISetupTab({ scenarioId }: { scenarioId: string }) {
+  const [record, setRecord] = useState<AISetup | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [form, setForm] = useState<Partial<AISetup>>({});
+  const setF = (k: keyof AISetup, v: unknown) => setForm((p) => ({ ...p, [k]: v }));
+
+  useEffect(() => {
+    setLoading(true);
+    supabase.from("scenario_ai_setup" as never).select("*").eq("scenario_id", scenarioId).maybeSingle()
+      .then(({ data }) => {
+        const rec = data as AISetup | null;
+        setRecord(rec);
+        setForm(rec ?? {});
+        setLoading(false);
+      });
+  }, [scenarioId]);
+
+  const handleSave = async () => {
+    setSaving(true);
+    const payload = {
+      scenario_id: scenarioId,
+      ai_faction_en: (form.ai_faction_en as string) || null,
+      ai_faction_ru: (form.ai_faction_ru as string) || null,
+      enemy_heroes_en: form.enemy_heroes_en ?? null,
+      enemy_heroes_ru: form.enemy_heroes_ru ?? null,
+      enemy_armies_en: form.enemy_armies_en ?? null,
+      enemy_armies_ru: form.enemy_armies_ru ?? null,
+      enemy_decks_en: form.enemy_decks_en ?? null,
+      enemy_decks_ru: form.enemy_decks_ru ?? null,
+      enemy_spell_deck_en: form.enemy_spell_deck_en ?? null,
+      enemy_spell_deck_ru: form.enemy_spell_deck_ru ?? null,
+      special_setup_en: (form.special_setup_en as string) || null,
+      special_setup_ru: (form.special_setup_ru as string) || null,
+      notes_en: (form.notes_en as string) || null,
+      notes_ru: (form.notes_ru as string) || null,
+    };
+    if (record) {
+      const { error } = await supabase.from("scenario_ai_setup" as never).update(payload as never).eq("id", record.id);
+      if (!error) { setRecord((p) => p ? { ...p, ...payload } : null); toast.success("Saved"); }
+      else toast.error(error.message);
+    } else {
+      const { data, error } = await supabase.from("scenario_ai_setup" as never).insert(payload as never).select().single();
+      if (!error && data) { setRecord(data as AISetup); toast.success("Created"); }
+      else if (error) toast.error(error.message);
+    }
+    setSaving(false);
+  };
+
+  if (loading) return <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />;
+
+  return (
+    <div className="max-w-3xl space-y-4">
+      <div className="grid grid-cols-2 gap-3">
+        <CLabel text="AI Faction EN"><input type="text" value={(form.ai_faction_en as string) ?? ""} onChange={(e) => setF("ai_faction_en", e.target.value || null)} className={CI} /></CLabel>
+        <CLabel text="AI Faction RU"><input type="text" value={(form.ai_faction_ru as string) ?? ""} onChange={(e) => setF("ai_faction_ru", e.target.value || null)} className={CI} /></CLabel>
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <CLabel text="Enemy Heroes EN (JSON)"><textarea value={jsonStr(form.enemy_heroes_en)} onChange={(e) => setF("enemy_heroes_en", parseJson(e.target.value))} rows={4} className={CJ} /></CLabel>
+        <CLabel text="Enemy Heroes RU (JSON)"><textarea value={jsonStr(form.enemy_heroes_ru)} onChange={(e) => setF("enemy_heroes_ru", parseJson(e.target.value))} rows={4} className={CJ} /></CLabel>
+        <CLabel text="Enemy Armies EN (JSON)"><textarea value={jsonStr(form.enemy_armies_en)} onChange={(e) => setF("enemy_armies_en", parseJson(e.target.value))} rows={4} className={CJ} /></CLabel>
+        <CLabel text="Enemy Armies RU (JSON)"><textarea value={jsonStr(form.enemy_armies_ru)} onChange={(e) => setF("enemy_armies_ru", parseJson(e.target.value))} rows={4} className={CJ} /></CLabel>
+        <CLabel text="Enemy Decks EN (JSON)"><textarea value={jsonStr(form.enemy_decks_en)} onChange={(e) => setF("enemy_decks_en", parseJson(e.target.value))} rows={3} className={CJ} /></CLabel>
+        <CLabel text="Enemy Decks RU (JSON)"><textarea value={jsonStr(form.enemy_decks_ru)} onChange={(e) => setF("enemy_decks_ru", parseJson(e.target.value))} rows={3} className={CJ} /></CLabel>
+        <CLabel text="Spell Deck EN (JSON)"><textarea value={jsonStr(form.enemy_spell_deck_en)} onChange={(e) => setF("enemy_spell_deck_en", parseJson(e.target.value))} rows={3} className={CJ} /></CLabel>
+        <CLabel text="Spell Deck RU (JSON)"><textarea value={jsonStr(form.enemy_spell_deck_ru)} onChange={(e) => setF("enemy_spell_deck_ru", parseJson(e.target.value))} rows={3} className={CJ} /></CLabel>
+        <CLabel text="Special Setup EN"><textarea value={(form.special_setup_en as string) ?? ""} onChange={(e) => setF("special_setup_en", e.target.value || null)} rows={3} className={CT} /></CLabel>
+        <CLabel text="Special Setup RU"><textarea value={(form.special_setup_ru as string) ?? ""} onChange={(e) => setF("special_setup_ru", e.target.value || null)} rows={3} className={CT} /></CLabel>
+        <CLabel text="Notes EN"><textarea value={(form.notes_en as string) ?? ""} onChange={(e) => setF("notes_en", e.target.value || null)} rows={3} className={CT} /></CLabel>
+        <CLabel text="Notes RU"><textarea value={(form.notes_ru as string) ?? ""} onChange={(e) => setF("notes_ru", e.target.value || null)} rows={3} className={CT} /></CLabel>
+      </div>
+      <div className="flex justify-end">
+        <button type="button" onClick={handleSave} disabled={saving} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-medium disabled:opacity-50">
+          {saving ? <Loader2 className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />}
+          {record ? "Save" : "Create"}
+        </button>
+      </div>
     </div>
   );
 }
@@ -480,11 +1108,11 @@ export default function ScenariosEditor() {
                 </div>
               )}
 
-              {activeTab !== "Overview" && (
-                <div className="text-sm text-muted-foreground">
-                  {activeTab} — coming soon
-                </div>
-              )}
+              {activeTab === "Setup Blocks" && selected && <SetupBlocksTab scenarioId={selected.id} />}
+              {activeTab === "Story" && selected && <StoryTab scenarioId={selected.id} />}
+              {activeTab === "Map Variants" && selected && <MapVariantsTab scenarioId={selected.id} />}
+              {activeTab === "Timed Events" && selected && <TimedEventsTab scenarioId={selected.id} />}
+              {activeTab === "AI Setup" && selected && <AISetupTab scenarioId={selected.id} />}
             </div>
           </>
         ) : (
