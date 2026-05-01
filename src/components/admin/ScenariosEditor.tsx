@@ -665,7 +665,7 @@ function TimedEventsTab({ scenarioId }: { scenarioId: string }) {
 
   const addRow = async () => {
     const { data, error } = await supabase.from("scenario_timed_events" as never)
-      .insert({ scenario_id: scenarioId, trigger_type: "round", effect_en: "", sort_order: (rows.length + 1) * 10 } as never)
+      .insert({ scenario_id: scenarioId, trigger_type: "custom", effect_en: "", sort_order: (rows.length + 1) * 10 } as never)
       .select().single();
     if (error) toast.error(error.message);
     else if (data) setRows((p) => [...p, data as TimedEvent]);
