@@ -71,6 +71,7 @@ export default function UnitsEditor() {
   const [isNew, setIsNew] = useState(false);
   const [newId, setNewId] = useState("");
   const [form, setForm] = useState(EMPTY_FORM);
+  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -85,7 +86,7 @@ export default function UnitsEditor() {
         "id, name_en, name_ru, sort_order, tier, town, type, number, slug, attack, defense, health_points, initiative, cost, abilities_en, abilities_ru, errata_en, errata_ru, notes_en, notes_ru, ai_context, image, image_status",
       )
       .order("sort_order", { ascending: true })
-      .then(({ data }) => setUnits((data as Unit[]) ?? []));
+      .then(({ data }) => { setUnits((data as Unit[]) ?? []); setLoading(false); });
   }, []);
 
   const filtered = units.filter((u) =>
