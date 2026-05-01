@@ -266,14 +266,19 @@ function SetupBlocksTab({ scenarioId }: { scenarioId: string }) {
   useEffect(() => {
     setLoading(true);
     supabase.from("scenario_setup_blocks" as never).select("*").eq("scenario_id", scenarioId).order("sort_order", { ascending: true })
-      .then(({ data }) => { setRows((data as SetupBlock[]) ?? []); setLoading(false); });
+      .then(({ data, error }) => {
+        if (error) toast.error("Load error: " + error.message);
+        setRows((data as SetupBlock[]) ?? []);
+        setLoading(false);
+      });
   }, [scenarioId]);
 
   const addRow = async () => {
     const { data, error } = await supabase.from("scenario_setup_blocks" as never)
       .insert({ scenario_id: scenarioId, block_type: "general", sort_order: (rows.length + 1) * 10 } as never)
       .select().single();
-    if (!error && data) setRows((p) => [...p, data as SetupBlock]);
+    if (error) toast.error(error.message);
+    else if (data) setRows((p) => [...p, data as SetupBlock]);
   };
 
   const saveRow = async (id: number, payload: Partial<SetupBlock>) => {
@@ -378,14 +383,19 @@ function StoryTab({ scenarioId }: { scenarioId: string }) {
   useEffect(() => {
     setLoading(true);
     supabase.from("scenario_story_sections" as never).select("*").eq("scenario_id", scenarioId).order("sort_order", { ascending: true })
-      .then(({ data }) => { setRows((data as StorySection[]) ?? []); setLoading(false); });
+      .then(({ data, error }) => {
+        if (error) toast.error("Load error: " + error.message);
+        setRows((data as StorySection[]) ?? []);
+        setLoading(false);
+      });
   }, [scenarioId]);
 
   const addRow = async () => {
     const { data, error } = await supabase.from("scenario_story_sections" as never)
       .insert({ scenario_id: scenarioId, section_key: "new", title_en: "New Section", content_en: "", sort_order: (rows.length + 1) * 10 } as never)
       .select().single();
-    if (!error && data) setRows((p) => [...p, data as StorySection]);
+    if (error) toast.error(error.message);
+    else if (data) setRows((p) => [...p, data as StorySection]);
   };
 
   const saveRow = async (id: number, payload: Partial<StorySection>) => {
@@ -498,14 +508,19 @@ function MapVariantsTab({ scenarioId }: { scenarioId: string }) {
   useEffect(() => {
     setLoading(true);
     supabase.from("scenario_map_variants" as never).select("*").eq("scenario_id", scenarioId).order("sort_order", { ascending: true })
-      .then(({ data }) => { setRows((data as MapVariant[]) ?? []); setLoading(false); });
+      .then(({ data, error }) => {
+        if (error) toast.error("Load error: " + error.message);
+        setRows((data as MapVariant[]) ?? []);
+        setLoading(false);
+      });
   }, [scenarioId]);
 
   const addRow = async () => {
     const { data, error } = await supabase.from("scenario_map_variants" as never)
       .insert({ scenario_id: scenarioId, player_count: 2, tile_counts: {}, sort_order: (rows.length + 1) * 10 } as never)
       .select().single();
-    if (!error && data) setRows((p) => [...p, data as MapVariant]);
+    if (error) toast.error(error.message);
+    else if (data) setRows((p) => [...p, data as MapVariant]);
   };
 
   const saveRow = async (id: number, payload: Partial<MapVariant>) => {
@@ -617,14 +632,19 @@ function TimedEventsTab({ scenarioId }: { scenarioId: string }) {
   useEffect(() => {
     setLoading(true);
     supabase.from("scenario_timed_events" as never).select("*").eq("scenario_id", scenarioId).order("sort_order", { ascending: true })
-      .then(({ data }) => { setRows((data as TimedEvent[]) ?? []); setLoading(false); });
+      .then(({ data, error }) => {
+        if (error) toast.error("Load error: " + error.message);
+        setRows((data as TimedEvent[]) ?? []);
+        setLoading(false);
+      });
   }, [scenarioId]);
 
   const addRow = async () => {
     const { data, error } = await supabase.from("scenario_timed_events" as never)
       .insert({ scenario_id: scenarioId, trigger_type: "round", effect_en: "", sort_order: (rows.length + 1) * 10 } as never)
       .select().single();
-    if (!error && data) setRows((p) => [...p, data as TimedEvent]);
+    if (error) toast.error(error.message);
+    else if (data) setRows((p) => [...p, data as TimedEvent]);
   };
 
   const saveRow = async (id: number, payload: Partial<TimedEvent>) => {
