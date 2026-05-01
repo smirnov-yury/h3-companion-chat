@@ -52,6 +52,8 @@ const EMPTY_FORM = {
   specialty_levels_json: "",
 };
 
+const TOWNS = ["", "Castle", "Conflux", "Cove", "Dungeon", "Fortress", "Inferno", "Necropolis", "Neutral", "Rampart", "Stronghold", "Tower"];
+
 const INPUT =
   "w-full rounded-lg border border-border bg-input px-3 py-2 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring";
 const TEXTAREA = `${INPUT} resize-y`;
@@ -399,13 +401,19 @@ export default function HeroesEditor() {
                   )}
                   {field(
                     "Town",
-                    <input
+                    <select
                       value={form.town ?? ""}
                       onChange={(e) =>
                         setForm((f) => ({ ...f, town: e.target.value }))
                       }
                       className={INPUT}
-                    />,
+                    >
+                      {TOWNS.map((t) => (
+                        <option key={t} value={t}>
+                          {t || "— none —"}
+                        </option>
+                      ))}
+                    </select>,
                   )}
                   {field(
                     "Class EN",
