@@ -615,7 +615,17 @@ function TimedEventRow({
       {open && (
         <div className="p-3 space-y-3">
           <div className="grid grid-cols-4 gap-2">
-            <CLabel text="Trigger Type"><input type="text" value={form.trigger_type} onChange={(e) => setF("trigger_type", e.target.value)} className={CI} /></CLabel>
+            <CLabel text="Trigger Type">
+              <select value={form.trigger_type} onChange={(e) => setF("trigger_type", e.target.value)} className={CI}>
+                <option value="round_start">round_start</option>
+                <option value="round_end">round_end</option>
+                <option value="on_discover_tile">on_discover_tile</option>
+                <option value="on_visit_field">on_visit_field</option>
+                <option value="on_capture_location">on_capture_location</option>
+                <option value="on_complete">on_complete</option>
+                <option value="custom">custom</option>
+              </select>
+            </CLabel>
             <CLabel text="Trigger Round"><input type="number" value={form.trigger_round ?? ""} onChange={(e) => setF("trigger_round", e.target.value ? Number(e.target.value) : null)} className={CI} /></CLabel>
             <CLabel text="Player Count"><input type="number" value={form.player_count ?? ""} onChange={(e) => setF("player_count", e.target.value ? Number(e.target.value) : null)} className={CI} /></CLabel>
             <CLabel text="Sort Order"><input type="number" value={form.sort_order} onChange={(e) => setF("sort_order", Number(e.target.value))} className={CI} /></CLabel>
