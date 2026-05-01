@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Users, Clock, Gauge, Map as MapIcon, BookOpen, Zap, Swords } from "lucide-react";
+import { Users, Clock, Gauge, Map as MapIcon, BookOpen, Zap, Swords, Loader2 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
@@ -82,13 +82,51 @@ export default function ScenarioDetail({ scenario, onClose }: ScenarioDetailProp
     : null;
   const diff = lang === "RU" ? (s.difficulty_text_ru || s.difficulty_text_en) : s.difficulty_text_en;
 
-  const availableTabs = [
-    "setup",
-    ...(s.has_map_variants ? ["map"] : []),
-    "events",
-    ...(s.has_story ? ["story"] : []),
-    ...(s.has_ai_setup ? ["ai"] : []),
-  ];
+  const [tabsReady, setTabsReady] = useState(false);
+  const [hasSetup, setHasSetup] = useState(false);
+  const [hasMap, setHasMap] = useState(false);
+  const [hasEvents, setHasEvents] = useState(false);
+  const [hasStory, setHasStory] = useState(false);
+  const [hasAI, setHasAI] = useState(false);
+  const [activeTab, setActiveTab] = useState("");
+
+  useEffect(() => {
+    if (!scenario?.id) return;
+    setTabsReady(false);
+    const id = scenario.id;
+    Promise.all([
+      supabase.from("scenario_setup_blocks" as never).select("id").eq("scenario_id", id).limit(1),
+      supabase.from("scenario_map_variants" as never).select("id").eq("scenario_id", id).limit(1),
+      supabase.from("scenario_timed_events" as never).select("id").eq("scenario_id", id).limit(1),
+      supabase.from("scenario_story_sections" as never).select("id").eq("scenario_id", id).limit(1),
+      supabase.from("scenario_ai_setup" as never).select("id").eq("scenario_id", id).limit(1),
+    ]).then(([setup, map, events, story, ai]) => {
+      setHasSetup(((setup.data as unknown[]) ?? []).length > 0);
+      setHasMap(((map.data as unknown[]) ?? []).length > 0);
+      setHasEvents(((events.data as unknown[]) ?? []).length > 0);
+      setHasStory(((story.data as unknown[]) ?? []).length > 0);
+      setHasAI(((ai.data as unknown[]) ?? []).length > 0);
+      setTabsReady(true);
+      setActiveTab("");
+    });
+  }, [scenario?.id]);
+
+  const tabs = [
+    hasSetup && "setup",
+    hasMap && "map",
+    hasEvents && "events",
+    hasStory && "story",
+    hasAI && "ai",
+  ].filter(Boolean) as string[];
+
+  const currentTab = tabs.includes(activeTab) ? activeTab : tabs[0] ?? "";
+
+  const tabLabel = (key: string) => {
+    if (lang === "RU") {
+      return { setup: "Настройка", map: "Карта", events: "События", story: "Сюжет", ai: "ИИ враг" }[key] || key;
+    }
+    return { setup: "Setup", map: "Map", events: "Events", story: "Story", ai: "AI Setup" }[key] || key;
+  };
 
   return (
     <Dialog open onOpenChange={(o) => !o && onClose()}>
@@ -110,23 +148,31 @@ export default function ScenarioDetail({ scenario, onClose }: ScenarioDetailProp
           </div>
         </DialogHeader>
 
-        <Tabs defaultValue="setup" className="flex-1 flex flex-col overflow-hidden">
-          <TabsList className="shrink-0 w-full justify-start overflow-x-auto">
-            <TabsTrigger value="setup">{lang === "RU" ? "Настройка" : "Setup"}</TabsTrigger>
-            {s.has_map_variants && <TabsTrigger value="map">{lang === "RU" ? "Карта" : "Map"}</TabsTrigger>}
-            <TabsTrigger value="events">{lang === "RU" ? "События" : "Events"}</TabsTrigger>
-            {s.has_story && <TabsTrigger value="story">{lang === "RU" ? "Сюжет" : "Story"}</TabsTrigger>}
-            {s.has_ai_setup && <TabsTrigger value="ai">{lang === "RU" ? "ИИ враг" : "AI Setup"}</TabsTrigger>}
-          </TabsList>
-
-          <div className="flex-1 overflow-y-auto mt-2">
-            <TabsContent value="setup" className="mt-0"><SetupPane scenarioId={s.id} /></TabsContent>
-            {s.has_map_variants && <TabsContent value="map" className="mt-0"><MapPane scenarioId={s.id} /></TabsContent>}
-            <TabsContent value="events" className="mt-0"><EventsPane scenarioId={s.id} /></TabsContent>
-            {s.has_story && <TabsContent value="story" className="mt-0"><StoryPane scenarioId={s.id} /></TabsContent>}
-            {s.has_ai_setup && <TabsContent value="ai" className="mt-0"><AiPane scenarioId={s.id} /></TabsContent>}
+        {!tabsReady ? (
+          <div className="flex items-center justify-center py-6">
+            <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
           </div>
-        </Tabs>
+        ) : tabs.length === 0 ? (
+          <p className="text-sm text-muted-foreground py-4">
+            {lang === "RU" ? "Нет подробных данных для этого сценария." : "No detailed data available for this scenario."}
+          </p>
+        ) : (
+          <Tabs value={currentTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
+            <TabsList className="shrink-0 w-full justify-start overflow-x-auto">
+              {tabs.map((t) => (
+                <TabsTrigger key={t} value={t}>{tabLabel(t)}</TabsTrigger>
+              ))}
+            </TabsList>
+
+            <div className="flex-1 overflow-y-auto mt-2">
+              {hasSetup && <TabsContent value="setup" className="mt-0"><SetupPane scenarioId={s.id} /></TabsContent>}
+              {hasMap && <TabsContent value="map" className="mt-0"><MapPane scenarioId={s.id} /></TabsContent>}
+              {hasEvents && <TabsContent value="events" className="mt-0"><EventsPane scenarioId={s.id} /></TabsContent>}
+              {hasStory && <TabsContent value="story" className="mt-0"><StoryPane scenarioId={s.id} /></TabsContent>}
+              {hasAI && <TabsContent value="ai" className="mt-0"><AiPane scenarioId={s.id} /></TabsContent>}
+            </div>
+          </Tabs>
+        )}
       </DialogContent>
     </Dialog>
   );
