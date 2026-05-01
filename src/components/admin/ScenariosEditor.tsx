@@ -228,7 +228,21 @@ function SetupBlockRow({
         <div className="p-3 space-y-3">
           <div className="grid grid-cols-3 gap-2">
             <CLabel text="Block Type">
-              <input type="text" value={form.block_type} onChange={(e) => setF("block_type", e.target.value)} className={CI} />
+              <select value={form.block_type} onChange={(e) => setF("block_type", e.target.value)} className={CI}>
+                <option value="player_setup">player_setup</option>
+                <option value="map_setup_text">map_setup_text</option>
+                <option value="starting_resources">starting_resources</option>
+                <option value="player_income">player_income</option>
+                <option value="starting_buildings">starting_buildings</option>
+                <option value="starting_units">starting_units</option>
+                <option value="bonus">bonus</option>
+                <option value="additional_rules">additional_rules</option>
+                <option value="victory_conditions">victory_conditions</option>
+                <option value="lose_conditions">lose_conditions</option>
+                <option value="round_tracker">round_tracker</option>
+                <option value="heroes_placement">heroes_placement</option>
+                <option value="special_notes">special_notes</option>
+              </select>
             </CLabel>
             <CLabel text="Player Count">
               <input type="number" value={form.player_count ?? ""} onChange={(e) => setF("player_count", e.target.value ? Number(e.target.value) : null)} className={CI} />
@@ -275,7 +289,7 @@ function SetupBlocksTab({ scenarioId }: { scenarioId: string }) {
 
   const addRow = async () => {
     const { data, error } = await supabase.from("scenario_setup_blocks" as never)
-      .insert({ scenario_id: scenarioId, block_type: "general", sort_order: (rows.length + 1) * 10 } as never)
+      .insert({ scenario_id: scenarioId, block_type: "additional_rules", sort_order: (rows.length + 1) * 10 } as never)
       .select().single();
     if (error) toast.error(error.message);
     else if (data) setRows((p) => [...p, data as SetupBlock]);
@@ -601,7 +615,17 @@ function TimedEventRow({
       {open && (
         <div className="p-3 space-y-3">
           <div className="grid grid-cols-4 gap-2">
-            <CLabel text="Trigger Type"><input type="text" value={form.trigger_type} onChange={(e) => setF("trigger_type", e.target.value)} className={CI} /></CLabel>
+            <CLabel text="Trigger Type">
+              <select value={form.trigger_type} onChange={(e) => setF("trigger_type", e.target.value)} className={CI}>
+                <option value="round_start">round_start</option>
+                <option value="round_end">round_end</option>
+                <option value="on_discover_tile">on_discover_tile</option>
+                <option value="on_visit_field">on_visit_field</option>
+                <option value="on_capture_location">on_capture_location</option>
+                <option value="on_complete">on_complete</option>
+                <option value="custom">custom</option>
+              </select>
+            </CLabel>
             <CLabel text="Trigger Round"><input type="number" value={form.trigger_round ?? ""} onChange={(e) => setF("trigger_round", e.target.value ? Number(e.target.value) : null)} className={CI} /></CLabel>
             <CLabel text="Player Count"><input type="number" value={form.player_count ?? ""} onChange={(e) => setF("player_count", e.target.value ? Number(e.target.value) : null)} className={CI} /></CLabel>
             <CLabel text="Sort Order"><input type="number" value={form.sort_order} onChange={(e) => setF("sort_order", Number(e.target.value))} className={CI} /></CLabel>
@@ -641,7 +665,7 @@ function TimedEventsTab({ scenarioId }: { scenarioId: string }) {
 
   const addRow = async () => {
     const { data, error } = await supabase.from("scenario_timed_events" as never)
-      .insert({ scenario_id: scenarioId, trigger_type: "round", effect_en: "", sort_order: (rows.length + 1) * 10 } as never)
+      .insert({ scenario_id: scenarioId, trigger_type: "custom", effect_en: "", sort_order: (rows.length + 1) * 10 } as never)
       .select().single();
     if (error) toast.error(error.message);
     else if (data) setRows((p) => [...p, data as TimedEvent]);
