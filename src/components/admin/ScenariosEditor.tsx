@@ -1108,11 +1108,11 @@ export default function ScenariosEditor() {
                 </div>
               )}
 
-              {activeTab !== "Overview" && (
-                <div className="text-sm text-muted-foreground">
-                  {activeTab} — coming soon
-                </div>
-              )}
+              {activeTab === "Setup Blocks" && selected && <SetupBlocksTab scenarioId={selected.id} />}
+              {activeTab === "Story" && selected && <StoryTab scenarioId={selected.id} />}
+              {activeTab === "Map Variants" && selected && <MapVariantsTab scenarioId={selected.id} />}
+              {activeTab === "Timed Events" && selected && <TimedEventsTab scenarioId={selected.id} />}
+              {activeTab === "AI Setup" && selected && <AISetupTab scenarioId={selected.id} />}
             </div>
           </>
         ) : (
