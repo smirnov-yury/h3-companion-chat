@@ -71,6 +71,7 @@ export default function UnitsEditor() {
   const [isNew, setIsNew] = useState(false);
   const [newId, setNewId] = useState("");
   const [form, setForm] = useState(EMPTY_FORM);
+  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -85,7 +86,7 @@ export default function UnitsEditor() {
         "id, name_en, name_ru, sort_order, tier, town, type, number, slug, attack, defense, health_points, initiative, cost, abilities_en, abilities_ru, errata_en, errata_ru, notes_en, notes_ru, ai_context, image, image_status",
       )
       .order("sort_order", { ascending: true })
-      .then(({ data }) => setUnits((data as Unit[]) ?? []));
+      .then(({ data }) => { setUnits((data as Unit[]) ?? []); setLoading(false); });
   }, []);
 
   const filtered = units.filter((u) =>
@@ -272,23 +273,31 @@ export default function UnitsEditor() {
           </button>
         </div>
         <div className="flex-1 overflow-y-auto space-y-0.5">
-          {filtered.map((u) => (
-            <button
-              key={u.id}
-              type="button"
-              onClick={() => selectUnit(u)}
-              className={`w-full text-left px-3 py-2 rounded-lg text-xs transition-colors ${
-                selectedUnit?.id === u.id
-                  ? "bg-primary text-primary-foreground"
-                  : "text-foreground hover:bg-accent"
-              }`}
-            >
-              <div className="font-medium truncate">{u.name_en}</div>
-              <div className="text-[10px] opacity-70 truncate">
-                {[u.tier, u.town].filter(Boolean).join(" · ")}
-              </div>
-            </button>
-          ))}
+          {loading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+            </div>
+          ) : (
+            <>
+              {filtered.map((u) => (
+                <button
+                  key={u.id}
+                  type="button"
+                  onClick={() => selectUnit(u)}
+                  className={`w-full text-left px-3 py-2 rounded-lg text-xs transition-colors ${
+                    selectedUnit?.id === u.id
+                      ? "bg-primary text-primary-foreground"
+                      : "text-foreground hover:bg-accent"
+                  }`}
+                >
+                  <div className="font-medium truncate">{u.name_en}</div>
+                  <div className="text-[10px] opacity-70 truncate">
+                    {[u.tier, u.town].filter(Boolean).join(" · ")}
+                  </div>
+                </button>
+              ))}
+            </>
+          )}
         </div>
       </div>
 

@@ -79,6 +79,7 @@ export default function MapElementsEditor() {
   const [isNew, setIsNew] = useState(false);
   const [newId, setNewId] = useState("");
   const [form, setForm] = useState<FieldForm>(emptyForm());
+  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -93,7 +94,7 @@ export default function MapElementsEditor() {
       .from("fields")
       .select("id, name_en, name_ru, type_en, type_ru, effect_en, effect_ru, notes_en, notes_ru, image, sort_order, image_status, ai_context")
       .order("sort_order", { ascending: true })
-      .then(({ data }) => setItems((data as Field[]) ?? []));
+      .then(({ data }) => { setItems((data as Field[]) ?? []); setLoading(false); });
   }, []);
 
   const selectItem = (item: Field) => {
@@ -219,21 +220,29 @@ export default function MapElementsEditor() {
           </button>
         </div>
         <div className="flex-1 overflow-y-auto p-2 space-y-0.5">
-          {filtered.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              onClick={() => selectItem(item)}
-              className={`w-full text-left px-3 py-2 rounded-lg text-xs transition-colors ${
-                selected?.id === item.id
-                  ? "bg-primary text-primary-foreground"
-                  : "text-foreground hover:bg-accent"
-              }`}
-            >
-              <div className="font-medium truncate">{item.name_en ?? item.id}</div>
-              <div className="opacity-60 text-[10px] truncate">{item.id}</div>
-            </button>
-          ))}
+          {loading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+            </div>
+          ) : (
+            <>
+              {filtered.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => selectItem(item)}
+                  className={`w-full text-left px-3 py-2 rounded-lg text-xs transition-colors ${
+                    selected?.id === item.id
+                      ? "bg-primary text-primary-foreground"
+                      : "text-foreground hover:bg-accent"
+                  }`}
+                >
+                  <div className="font-medium truncate">{item.name_en ?? item.id}</div>
+                  <div className="opacity-60 text-[10px] truncate">{item.id}</div>
+                </button>
+              ))}
+            </>
+          )}
         </div>
       </div>
 
