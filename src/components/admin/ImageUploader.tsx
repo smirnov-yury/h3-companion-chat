@@ -80,6 +80,7 @@ interface ImageUploaderProps {
   defaultCropPreset?: CropPreset;
   hasImageStatus?: boolean;
   onUploaded?: () => void;
+  onDeleted?: () => void;
 }
 
 export default function ImageUploader({
@@ -91,6 +92,7 @@ export default function ImageUploader({
   defaultCropPreset,
   hasImageStatus = true,
   onUploaded,
+  onDeleted,
 }: ImageUploaderProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
@@ -217,7 +219,7 @@ export default function ImageUploader({
       .eq("id", recordId);
     if (dbErr) { setError(dbErr.message); setDeleting(false); return; }
     setDeleting(false);
-    onUploaded?.();
+    onDeleted?.();
   };
 
   const handleCancel = () => {
