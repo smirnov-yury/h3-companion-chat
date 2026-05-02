@@ -527,6 +527,7 @@ function MapVariantRow({
               imageField="map_image"
               currentImage={form.map_image ?? null}
               defaultCropPreset="free"
+              hasImageStatus={false}
               onUploaded={() => setF("map_image", `${variant.id}.webp`)}
             />
           </div>
