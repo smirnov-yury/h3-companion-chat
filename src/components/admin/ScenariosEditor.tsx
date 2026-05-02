@@ -529,6 +529,7 @@ function MapVariantRow({
               defaultCropPreset="free"
               hasImageStatus={false}
               onUploaded={() => setF("map_image", `${variant.id}.webp`)}
+              onDeleted={() => setF("map_image", null)}
             />
           </div>
         </div>
