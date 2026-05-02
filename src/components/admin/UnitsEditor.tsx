@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus, Trash2, Save, Loader2, Search } from "lucide-react";
+import { Plus, Trash2, Save, Loader2, Search, Copy } from "lucide-react";
 import GlyphToolbar from "@/components/admin/GlyphToolbar";
 import ImageUploader from "@/components/admin/ImageUploader";
 import DeleteConfirmDialog from "@/components/admin/DeleteConfirmDialog";
@@ -126,6 +126,36 @@ export default function UnitsEditor() {
     setIsNew(true);
     setNewId("");
     setForm(EMPTY_FORM);
+    setError(null);
+  };
+
+  const handleDuplicate = () => {
+    if (!selectedUnit) return;
+    setSelectedUnit(null);
+    setIsNew(true);
+    setNewId(selectedUnit.id + "_copy");
+    setForm({
+      name_en: form.name_en + " (Copy)",
+      name_ru: form.name_ru,
+      sort_order: form.sort_order,
+      tier: form.tier,
+      town: form.town,
+      type: form.type,
+      number: form.number,
+      slug: form.slug ? form.slug + "_copy" : "",
+      attack: form.attack,
+      defense: form.defense,
+      health_points: form.health_points,
+      initiative: form.initiative,
+      cost: form.cost,
+      abilities_en: form.abilities_en,
+      abilities_ru: form.abilities_ru,
+      errata_en: form.errata_en,
+      errata_ru: form.errata_ru,
+      notes_en: form.notes_en,
+      notes_ru: form.notes_ru,
+      ai_context: form.ai_context,
+    });
     setError(null);
   };
 
@@ -310,6 +340,15 @@ export default function UnitsEditor() {
                 {isNew ? "New Unit" : selectedUnit?.name_en}
               </h2>
               <div className="flex gap-2">
+                {selectedUnit && !isNew && (
+                  <button
+                    type="button"
+                    onClick={handleDuplicate}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border text-xs font-medium hover:bg-muted"
+                  >
+                    <Copy className="w-3.5 h-3.5" /> Duplicate
+                  </button>
+                )}
                 {!isNew && (
                   <button
                     type="button"
