@@ -183,9 +183,12 @@ export default function ImageUploader({
       setStatus("error");
       return;
     }
+    const updatePayload = hasImageStatus
+      ? { [imageField]: filename, image_status: "uploaded" }
+      : { [imageField]: filename };
     const { error: dbErr } = await supabase
       .from(table as never)
-      .update({ [imageField]: filename, image_status: "uploaded" } as never)
+      .update(updatePayload as never)
       .eq("id", recordId);
     if (dbErr) {
       setError(dbErr.message);
