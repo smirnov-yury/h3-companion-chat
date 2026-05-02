@@ -470,6 +470,7 @@ function MapVariantRow({
       layout_notes_ru: form.layout_notes_ru || null,
       source_page: form.source_page,
       sort_order: form.sort_order,
+      map_image: form.map_image,
     });
     setSaving(false);
     setOpen(false);
@@ -509,6 +510,25 @@ function MapVariantRow({
             <button type="button" onClick={save} disabled={saving} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-medium disabled:opacity-50">
               {saving ? <Loader2 className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />} Save
             </button>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground mb-1">Map Image</p>
+            {form.map_image && (
+              <img
+                src={`${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/component-media/scenario-maps/${form.map_image}`}
+                alt="map"
+                className="w-full max-h-48 object-contain rounded-lg border border-border mb-2"
+              />
+            )}
+            <ImageUploader
+              table="scenario_map_variants"
+              recordId={String(variant.id)}
+              folder="scenario-maps"
+              imageField="map_image"
+              currentImage={form.map_image ?? null}
+              defaultCropPreset="free"
+              onUploaded={() => setF("map_image", `${variant.id}.webp`)}
+            />
           </div>
         </div>
       )}
