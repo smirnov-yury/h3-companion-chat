@@ -78,6 +78,7 @@ interface ImageUploaderProps {
   imageField: string;
   currentImage: string | null;
   defaultCropPreset?: CropPreset;
+  hasImageStatus?: boolean;
   onUploaded?: () => void;
 }
 
@@ -88,6 +89,7 @@ export default function ImageUploader({
   imageField,
   currentImage,
   defaultCropPreset,
+  hasImageStatus = true,
   onUploaded,
 }: ImageUploaderProps) {
   const inputRef = useRef<HTMLInputElement>(null);
