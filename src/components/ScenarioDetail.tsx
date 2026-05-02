@@ -244,10 +244,10 @@ function MapPane({ scenarioId }: { scenarioId: string }) {
             </div>
             {v.map_image && (
               <img
-                src={`${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/component-media/scenario-maps/${v.map_image}`}
+                src={`${SUPABASE_URL}/storage/v1/object/public/component-media/scenario-maps/${v.map_image}`}
                 alt="map"
                 className="w-full rounded-lg border border-border mb-2 cursor-zoom-in object-contain max-h-64"
-                onClick={() => setZoomedImg(`${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/component-media/scenario-maps/${v.map_image}`)}
+                onClick={() => setZoomedImg(`${SUPABASE_URL}/storage/v1/object/public/component-media/scenario-maps/${v.map_image}`)}
               />
             )}
             {setupText && <p className="text-xs text-muted-foreground whitespace-pre-line mb-2">{setupText}</p>}
