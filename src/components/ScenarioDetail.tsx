@@ -10,6 +10,8 @@ import { useGlyphs } from "@/context/GlyphsContext";
 import { renderGlyphs } from "@/utils/renderGlyphs";
 import type { Json } from "@/integrations/supabase/types";
 
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
+
 const MODE_LABELS_EN: Record<string, string> = { clash: "Clash", cooperative: "Cooperative", campaign: "Campaign" };
 const MODE_LABELS_RU: Record<string, string> = { clash: "Столкновение", cooperative: "Кооператив", campaign: "Кампания" };
 const MODE_COLORS: Record<string, string> = {
@@ -244,10 +246,10 @@ function MapPane({ scenarioId }: { scenarioId: string }) {
             </div>
             {v.map_image && (
               <img
-                src={`${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/component-media/scenario-maps/${v.map_image}`}
+                src={`${SUPABASE_URL}/storage/v1/object/public/component-media/scenario-maps/${v.map_image}`}
                 alt="map"
                 className="w-full rounded-lg border border-border mb-2 cursor-zoom-in object-contain max-h-64"
-                onClick={() => setZoomedImg(`${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/component-media/scenario-maps/${v.map_image}`)}
+                onClick={() => setZoomedImg(`${SUPABASE_URL}/storage/v1/object/public/component-media/scenario-maps/${v.map_image}`)}
               />
             )}
             {setupText && <p className="text-xs text-muted-foreground whitespace-pre-line mb-2">{setupText}</p>}
