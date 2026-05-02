@@ -221,6 +221,7 @@ function SetupPane({ scenarioId }: { scenarioId: string }) {
 function MapPane({ scenarioId }: { scenarioId: string }) {
   const { lang } = useLang();
   const [variants, setVariants] = useState<any[]>([]);
+  const [zoomedImg, setZoomedImg] = useState<string | null>(null);
   useEffect(() => {
     supabase.from("scenario_map_variants").select("*").eq("scenario_id", scenarioId).order("sort_order")
       .then(({ data }) => data && setVariants(data));
@@ -241,6 +242,14 @@ function MapPane({ scenarioId }: { scenarioId: string }) {
               <MapIcon size={14} className="text-muted-foreground" />
               <p className="text-xs font-semibold text-foreground">{label || `${v.player_count}P`}</p>
             </div>
+            {v.map_image && (
+              <img
+                src={`${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/component-media/scenario-maps/${v.map_image}`}
+                alt="map"
+                className="w-full rounded-lg border border-border mb-2 cursor-zoom-in object-contain max-h-64"
+                onClick={() => setZoomedImg(`${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/component-media/scenario-maps/${v.map_image}`)}
+              />
+            )}
             {setupText && <p className="text-xs text-muted-foreground whitespace-pre-line mb-2">{setupText}</p>}
             {tiles.length > 0 && (
               <div className="mb-2">
@@ -258,6 +267,18 @@ function MapPane({ scenarioId }: { scenarioId: string }) {
           </div>
         );
       })}
+      {zoomedImg && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
+          onClick={() => setZoomedImg(null)}
+        >
+          <img
+            src={zoomedImg}
+            alt="map zoomed"
+            className="max-w-full max-h-full rounded-lg shadow-2xl object-contain"
+          />
+        </div>
+      )}
     </div>
   );
 }
