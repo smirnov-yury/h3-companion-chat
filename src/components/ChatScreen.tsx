@@ -1,87 +1,36 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Send } from "lucide-react";
-import ReactMarkdown from "react-markdown";
-import ApiKeyModal from "./ApiKeyModal";
-import { useRules, Rule } from "@/context/RulesContext";
 import { useLang } from "@/context/LanguageContext";
+import { useGlyphs } from "@/context/GlyphsContext";
+import { renderGlyphs } from "@/utils/renderGlyphs";
+import { useEntityLinkHandler } from "@/hooks/useEntityLinkHandler";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Message {
   role: "user" | "assistant";
   content: string;
 }
 
-const SYSTEM_PROMPTS = {
-  RU: "Ты ассистент по настольной игре Heroes 3 Board Game. Отвечай строго на основе предоставленного текста правил. Не выдумывай правила. Отвечай на русском языке. Максимум 3 предложения. Если информация отсутствует в тексте - скажи 'Я не знаю'.",
-  EN: "You are an assistant for the Heroes 3 Board Game. Answer strictly based on the provided rules text. Do not make up rules. Answer in English. Maximum 3 sentences. If the information is not in the text, say 'I don't know'.",
-};
-
 const TITLE = { RU: "ИИ Мастер", EN: "AI Master" };
 const PLACEHOLDER = { RU: "Задайте вопрос по правилам...", EN: "Ask a question about the rules..." };
 const OFFLINE_MSG = { RU: "Для этого модуля требуется подключение к интернету", EN: "This module requires an internet connection" };
-
-function getApiKey() {
-  return localStorage.getItem("groq_api_key") || import.meta.env.VITE_GROQ_API_KEY || "";
-}
-
-const BATTLEFIELD_KEYWORDS = new Set([
-  'battlefield', 'поле', 'битва', 'битвы', 'боя', 'бой', 'combat', 'fight', 'battle',
-]);
-
-const RU_STOP_WORDS = new Set([
-  'что', 'такое', 'как', 'это', 'где', 'когда', 'можно', 'нельзя',
-  'есть', 'для', 'при', 'или', 'все', 'они', 'его', 'ему', 'мне',
-  'тут', 'там', 'уже', 'ещё', 'раз',
-]);
-
-function searchRules(rules: Rule[], query: string, lang: string, limit = 5): Rule[] {
-  const keywords = query
-    .toLowerCase()
-    .split(/\s+/)
-    .map((w) => w.replace(/[^\wа-яёА-ЯЁ]/g, ''))
-    .filter((w) => w.length > 2 && !RU_STOP_WORDS.has(w));
-
-  console.log("[searchRules] keywords:", keywords, "| rules count:", rules.length);
-
-  if (!keywords.length) return rules.filter((r) => r.category !== "battlefield").slice(0, limit);
-
-  const wantsBattlefield = keywords.some((kw) => BATTLEFIELD_KEYWORDS.has(kw));
-
-  const scored = rules.map((r) => {
-    const haystack = lang === "RU"
-      ? `${r.title_ru || ""} ${r.text_ru || ""}`.toLowerCase()
-      : `${r.title_en || ""} ${r.text_en || ""}`.toLowerCase();
-    let score = keywords.reduce((s, kw) => s + (haystack.includes(kw) ? 1 : 0), 0);
-    if (score === 0) return { rule: r, score: 0 };
-
-    // Battlefield rules only included when query is about battlefield
-    if (r.category === "battlefield" && !wantsBattlefield) return { rule: r, score: 0 };
-
-    // FAQ gets a slight penalty so core rules rank higher
-    if (r.category === "faq") score -= 0.3;
-
-    return { rule: r, score };
-  });
-
-  const matches = scored
-    .filter((s) => s.score > 0)
-    .sort((a, b) => b.score - a.score)
-    .slice(0, limit)
-    .map((s) => s.rule);
-
-  console.log("[searchRules] matched rules:", matches.length, matches.map((r) => r.title_ru || r.title_en));
-
-  return matches;
-}
+const RATE_LIMIT_MSG = {
+  RU: "Слишком много запросов. Попробуйте через час.",
+  EN: "Too many requests. Try again in an hour.",
+};
+const GENERIC_ERROR = {
+  RU: "Ошибка соединения. Попробуйте позже.",
+  EN: "Connection error. Please try again.",
+};
 
 export default function ChatScreen() {
-  const { rules } = useRules();
   const { lang } = useLang();
+  const { glyphs } = useGlyphs();
+  const handleEntityClick = useEntityLinkHandler();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [online, setOnline] = useState(navigator.onLine);
-  const [apiKey, setApiKey] = useState(getApiKey);
-  const [showKeyModal, setShowKeyModal] = useState(!getApiKey());
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -102,65 +51,99 @@ export default function ChatScreen() {
   const sendMessage = useCallback(async () => {
     const text = input.trim();
     if (!text || loading) return;
+
     const userMsg: Message = { role: "user", content: text };
     const newMessages = [...messages, userMsg];
     setMessages(newMessages);
     setInput("");
     setLoading(true);
 
-    const matches = searchRules(rules, text, lang);
-    const rulesContext = matches
-      .map((r) => {
-        const title = r.title_ru || r.title_en || "";
-        const body = r.text_ru || r.text_en || "";
-        return `### ${title}\n${body}`;
-      })
-      .join("\n\n");
-
-    const systemContent = rulesContext
-      ? `${SYSTEM_PROMPTS[lang]}\n\nКонтекст правил:\n${rulesContext}`
-      : SYSTEM_PROMPTS[lang];
-
-    console.log("[Groq] system prompt (first 500 chars):", systemContent.slice(0, 500));
+    let assistantContent = "";
+    setMessages((prev) => [...prev, { role: "assistant", content: "" }]);
 
     try {
-      const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      const session = await supabase.auth.getSession();
+      const anonKey = (supabase as unknown as { supabaseKey: string }).supabaseKey;
+      const supabaseUrl = (supabase as unknown as { supabaseUrl: string }).supabaseUrl;
+      const token = session.data.session?.access_token ?? anonKey;
+
+      const url = `${supabaseUrl}/functions/v1/ai-chat`;
+      const res = await fetch(url, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
+          Authorization: `Bearer ${token}`,
+          apikey: anonKey,
         },
-        body: JSON.stringify({
-          model: "llama-3.3-70b-versatile",
-          messages: [
-            { role: "system", content: systemContent },
-            ...newMessages,
-          ],
-        }),
+        body: JSON.stringify({ messages: newMessages, lang }),
       });
-      const data = await res.json();
-      const reply = data.choices?.[0]?.message?.content ?? "Error";
-      setMessages((prev) => [...prev, { role: "assistant", content: reply }]);
+
+      if (!res.ok) {
+        const errBody = await res.json().catch(() => ({} as { error?: string }));
+        const fallback = res.status === 429 ? RATE_LIMIT_MSG[lang] : GENERIC_ERROR[lang];
+        const msg = errBody.error ? `${fallback} (${errBody.error})` : fallback;
+        setMessages((prev) => {
+          const copy = [...prev];
+          copy[copy.length - 1] = { role: "assistant", content: msg };
+          return copy;
+        });
+        return;
+      }
+
+      if (!res.body) {
+        setMessages((prev) => {
+          const copy = [...prev];
+          copy[copy.length - 1] = { role: "assistant", content: GENERIC_ERROR[lang] };
+          return copy;
+        });
+        return;
+      }
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+
+        const lines = buffer.split("\n");
+        buffer = lines.pop() ?? "";
+
+        for (const line of lines) {
+          const trimmed = line.trim();
+          if (!trimmed.startsWith("data:")) continue;
+          const payload = trimmed.slice(5).trim();
+          if (payload === "[DONE]") continue;
+          try {
+            const parsed = JSON.parse(payload);
+            const delta: string | undefined = parsed?.choices?.[0]?.delta?.content;
+            if (delta) {
+              assistantContent += delta;
+              setMessages((prev) => {
+                const copy = [...prev];
+                copy[copy.length - 1] = { role: "assistant", content: assistantContent };
+                return copy;
+              });
+            }
+          } catch {
+            // ignore malformed chunk
+          }
+        }
+      }
     } catch {
-      setMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: lang === "RU" ? "Ошибка соединения." : "Connection error." },
-      ]);
+      setMessages((prev) => {
+        const copy = [...prev];
+        copy[copy.length - 1] = { role: "assistant", content: GENERIC_ERROR[lang] };
+        return copy;
+      });
     } finally {
       setLoading(false);
     }
-  }, [input, loading, messages, lang, apiKey, rules]);
+  }, [input, loading, messages, lang]);
 
   return (
     <div className="flex flex-col h-full">
-      <ApiKeyModal
-        open={showKeyModal}
-        onSave={(key) => {
-          localStorage.setItem("groq_api_key", key);
-          setApiKey(key);
-          setShowKeyModal(false);
-        }}
-      />
       <header className="flex items-center justify-between px-4 py-3 border-b border-border shrink-0">
         <h1 className="text-lg font-semibold text-foreground">{TITLE[lang]}</h1>
       </header>
@@ -176,16 +159,18 @@ export default function ChatScreen() {
               }`}
             >
               {m.role === "assistant" ? (
-                <div className="prose prose-sm prose-invert max-w-none [&_p]:m-0">
-                  <ReactMarkdown>{m.content}</ReactMarkdown>
-                </div>
+                <div
+                  className="prose prose-sm prose-invert max-w-none [&_p]:m-0"
+                  onClick={handleEntityClick}
+                  dangerouslySetInnerHTML={{ __html: renderGlyphs(m.content, glyphs) }}
+                />
               ) : (
                 m.content
               )}
             </div>
           </div>
         ))}
-        {loading && (
+        {loading && messages[messages.length - 1]?.content === "" && (
           <div className="flex justify-start">
             <div className="bg-card text-card-foreground rounded-2xl rounded-bl-md px-4 py-3">
               <span className="text-lg font-bold tracking-widest">
