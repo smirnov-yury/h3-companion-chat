@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/context/LanguageContext";
 import { useGlyphs } from "@/context/GlyphsContext";
@@ -36,16 +37,18 @@ interface Props {
 export default function FieldsTab({ searchQuery = "", filterSlug, initialCardId, onCardOpen, onCardClose }: Props) {
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
-  const [items, setItems] = useState<Field[]>([]);
-  const [loaded, setLoaded] = useState(false);
+  const { data: items = [], isLoading } = useQuery({
+    queryKey: ["fields"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("fields").select("*").order("sort_order");
+      if (error) throw error;
+      return (data ?? []) as Field[];
+    },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+  });
+  const loaded = !isLoading;
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-
-  useEffect(() => {
-    supabase.from("fields").select("*").order("sort_order").then(({ data }) => {
-      if (data) setItems(data as Field[]);
-      setLoaded(true);
-    });
-  }, []);
 
   const closeCard = () => { setSelectedIndex(null); onCardClose?.(); };
 
