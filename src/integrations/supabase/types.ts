@@ -83,6 +83,24 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_rate_limits: {
+        Row: {
+          count: number
+          ip_hash: string
+          window_start: string
+        }
+        Insert: {
+          count?: number
+          ip_hash: string
+          window_start: string
+        }
+        Update: {
+          count?: number
+          ip_hash?: string
+          window_start?: string
+        }
+        Relationships: []
+      }
       app_content: {
         Row: {
           content_type: string | null
@@ -1654,6 +1672,12 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_and_increment_rate_limit: {
+        Args: { p_ip_hash: string; p_max_per_hour?: number }
+        Returns: boolean
+      }
+      cleanup_ai_rate_limits: { Args: never; Returns: undefined }
+      cleanup_audit_log: { Args: never; Returns: undefined }
       is_admin: { Args: never; Returns: boolean }
       match_all_en: {
         Args: {
