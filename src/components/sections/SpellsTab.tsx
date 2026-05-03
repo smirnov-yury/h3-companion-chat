@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/context/LanguageContext";
 import { useGlyphs } from "@/context/GlyphsContext";
@@ -62,17 +63,19 @@ export default function SpellsTab({ searchQuery = "", initialFilter, initialCard
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
   const handleEntityClick = useEntityLinkHandler();
-  const [items, setItems] = useState<Spell[]>([]);
-  const [loaded, setLoaded] = useState(false);
+  const { data: items = [], isLoading } = useQuery({
+    queryKey: ["spells"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("spells").select("*").order("sort_order");
+      if (error) throw error;
+      return (data ?? []) as Spell[];
+    },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+  });
+  const loaded = !isLoading;
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [filterSchool, setFilterSchool] = useState("all");
-
-  useEffect(() => {
-    supabase.from("spells").select("*").order("sort_order").then(({ data }) => {
-      if (data) setItems(data as Spell[]);
-      setLoaded(true);
-    });
-  }, []);
 
   // Sync URL filter slug → internal school (graceful fallback)
   useEffect(() => {
