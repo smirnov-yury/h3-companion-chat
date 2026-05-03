@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Map as MapIcon, BookOpen, Users, Clock, Gauge, Swords, Heart, Crown, Shield, User, SlidersHorizontal } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/context/LanguageContext";
@@ -57,9 +58,35 @@ interface Props {
 
 export default function ScenariosTab({ searchQuery = "", initialCardId, onCardOpen, onCardClose }: Props) {
   const { lang } = useLang();
-  const [scenarios, setScenarios] = useState<Scenario[]>([]);
-  const [books, setBooks] = useState<Book[]>([]);
-  const [loaded, setLoaded] = useState(false);
+  const { data: rawScenarios = [], isLoading: scenariosLoading } = useQuery({
+    queryKey: ["scenarios"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("scenarios").select("*").order("sort_order");
+      if (error) throw error;
+      return (data ?? []) as any[];
+    },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+  });
+  const { data: books = [], isLoading: booksLoading } = useQuery({
+    queryKey: ["scenario_books"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("scenario_books").select("id, title_en, title_ru");
+      if (error) throw error;
+      return (data ?? []) as Book[];
+    },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+  });
+  const loaded = !scenariosLoading && !booksLoading;
+  const scenarios = useMemo<Scenario[]>(() => {
+    const bookMap = new Map(books.map(b => [b.id, b]));
+    return rawScenarios.map((s: any) => ({
+      ...s,
+      book_title_en: bookMap.get(s.book_id)?.title_en,
+      book_title_ru: bookMap.get(s.book_id)?.title_ru,
+    }));
+  }, [rawScenarios, books]);
   const [selected, setSelected] = useState<Scenario | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
 
@@ -72,23 +99,6 @@ export default function ScenariosTab({ searchQuery = "", initialCardId, onCardOp
   const [draftMode, setDraftMode] = useState("all");
   const [draftPlayers, setDraftPlayers] = useState("all");
   const [draftBook, setDraftBook] = useState("all");
-
-  useEffect(() => {
-    (async () => {
-      const { data: scenData } = await supabase.from("scenarios").select("*").order("sort_order");
-      const { data: bookData } = await supabase.from("scenario_books").select("id, title_en, title_ru");
-      const bookList = bookData || [];
-      const bookMap = new Map(bookList.map(b => [b.id, b]));
-      const items: Scenario[] = (scenData || []).map(s => ({
-        ...s,
-        book_title_en: bookMap.get(s.book_id)?.title_en,
-        book_title_ru: bookMap.get(s.book_id)?.title_ru,
-      }));
-      setScenarios(items);
-      setBooks(bookList);
-      setLoaded(true);
-    })();
-  }, []);
 
   // Auto-open card from URL
   useEffect(() => {
