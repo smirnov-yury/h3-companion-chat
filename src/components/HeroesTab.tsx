@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Search, X, Swords, Shield, Wand2, BookOpen, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -178,19 +179,21 @@ export default function HeroesTab({ initialFilter, initialCardId, initialSearch,
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
   const handleEntityClick = useEntityLinkHandler();
-  const [heroes, setHeroes] = useState<Hero[]>([]);
-  const [loaded, setLoaded] = useState(false);
+  const { data: heroes = [], isLoading } = useQuery({
+    queryKey: ["heroes"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("heroes").select("*").order("sort_order");
+      if (error) throw error;
+      return (data ?? []) as unknown as Hero[];
+    },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+  });
+  const loaded = !isLoading;
   const [faction, setFaction] = useState("all");
   const [searchQuery, setSearchQuery] = useState(initialSearch ?? "");
   const [selected, setSelected] = useState<Hero | null>(null);
   const [specialtyTab, setSpecialtyTab] = useState(0);
-
-  useEffect(() => {
-    supabase.from("heroes").select("*").order("sort_order").then(({ data }) => {
-      setHeroes((data as unknown as Hero[]) ?? []);
-      setLoaded(true);
-    });
-  }, []);
 
   useEffect(() => {
     const towns = Array.from(new Set(heroes.map(h => h.town).filter(Boolean) as string[]));

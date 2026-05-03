@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Building, Building2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/context/LanguageContext";
@@ -44,27 +45,37 @@ interface Props {
 export default function TownsTab({ initialCardId, onCardOpen }: Props = {}) {
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
-  const [towns, setTowns] = useState<Town[]>([]);
+  const { data: towns = [], isLoading: townsLoading } = useQuery({
+    queryKey: ["towns"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("towns").select("*").order("sort_order");
+      if (error) throw error;
+      return (data ?? []) as Town[];
+    },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+  });
+  const { data: allBuildings = [], isLoading: buildingsLoading } = useQuery({
+    queryKey: ["town_buildings"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("town_buildings").select("*").order("sort_order");
+      if (error) throw error;
+      return (data ?? []) as TownBuilding[];
+    },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+  });
+  const loaded = !townsLoading && !buildingsLoading;
   const [selectedTown, setSelectedTown] = useState<Town | null>(null);
   const [imageTab, setImageTab] = useState<ImageTab>("empty");
-  const [buildings, setBuildings] = useState<TownBuilding[]>([]);
-  const [loaded, setLoaded] = useState(false);
   const [imgError, setImgError] = useState(false);
 
   useEffect(() => {
-    supabase.from("towns").select("*").order("sort_order").then(({ data }) => {
-      if (data && data.length > 0) {
-        const list = data as Town[];
-        setTowns(list);
-        // If URL has a card id, prefer that; else default to first.
-        const fromUrl = initialCardId ? list.find(t => t.id === initialCardId) : null;
-        setSelectedTown(fromUrl ?? list[0]);
-      }
-      setLoaded(true);
-    });
-  }, []);
+    if (!towns.length || selectedTown) return;
+    const fromUrl = initialCardId ? towns.find(t => t.id === initialCardId) : null;
+    setSelectedTown(fromUrl ?? towns[0]);
+  }, [towns, initialCardId, selectedTown]);
 
-  // React to URL changes after initial load
   useEffect(() => {
     if (!loaded || !initialCardId) return;
     const found = towns.find(t => t.id === initialCardId);
@@ -75,17 +86,10 @@ export default function TownsTab({ initialCardId, onCardOpen }: Props = {}) {
     }
   }, [initialCardId, loaded, towns]);
 
-  useEffect(() => {
-    if (!selectedTown) return;
-    supabase
-      .from("town_buildings")
-      .select("*")
-      .eq("town_id", selectedTown.id)
-      .order("sort_order")
-      .then(({ data }) => {
-        setBuildings((data as TownBuilding[]) ?? []);
-      });
-  }, [selectedTown?.id]);
+  const buildings = useMemo(
+    () => selectedTown ? allBuildings.filter(b => b.town_id === selectedTown.id) : [],
+    [allBuildings, selectedTown]
+  );
 
   const handleTownChange = (town: Town) => {
     setSelectedTown(town);

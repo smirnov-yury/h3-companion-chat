@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/context/LanguageContext";
 import { useGlyphs } from "@/context/GlyphsContext";
@@ -40,16 +41,18 @@ export default function AbilitiesTab({ searchQuery = "", initialCardId, onCardOp
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
   const handleEntityClick = useEntityLinkHandler();
-  const [items, setItems] = useState<Ability[]>([]);
-  const [loaded, setLoaded] = useState(false);
+  const { data: items = [], isLoading } = useQuery({
+    queryKey: ["abilities"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("abilities").select("*").order("sort_order");
+      if (error) throw error;
+      return (data ?? []) as Ability[];
+    },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+  });
+  const loaded = !isLoading;
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-
-  useEffect(() => {
-    supabase.from("abilities").select("*").order("sort_order").then(({ data }) => {
-      if (data) setItems(data as Ability[]);
-      setLoaded(true);
-    });
-  }, []);
 
   const closeCard = () => { setSelectedIndex(null); onCardClose?.(); };
 

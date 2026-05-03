@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Users, Clock, Gauge, Map as MapIcon, BookOpen, Zap, Swords, Loader2 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
@@ -184,11 +185,17 @@ export default function ScenarioDetail({ scenario, onClose }: ScenarioDetailProp
 function SetupPane({ scenarioId }: { scenarioId: string }) {
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
-  const [blocks, setBlocks] = useState<any[]>([]);
-  useEffect(() => {
-    supabase.from("scenario_setup_blocks").select("*").eq("scenario_id", scenarioId).order("sort_order")
-      .then(({ data }) => data && setBlocks(data));
-  }, [scenarioId]);
+  const { data: blocks = [] } = useQuery({
+    queryKey: ["scenario_setup_blocks", scenarioId],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("scenario_setup_blocks").select("*").eq("scenario_id", scenarioId).order("sort_order");
+      if (error) throw error;
+      return data ?? [];
+    },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    enabled: !!scenarioId,
+  });
 
   if (!blocks.length) return <p className="text-xs text-muted-foreground p-2">{lang === "RU" ? "Нет данных" : "No data"}</p>;
 
@@ -222,12 +229,18 @@ function SetupPane({ scenarioId }: { scenarioId: string }) {
 /* ── Map Tab ── */
 function MapPane({ scenarioId }: { scenarioId: string }) {
   const { lang } = useLang();
-  const [variants, setVariants] = useState<any[]>([]);
+  const { data: variants = [] } = useQuery({
+    queryKey: ["scenario_map_variants", scenarioId],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("scenario_map_variants").select("*").eq("scenario_id", scenarioId).order("sort_order");
+      if (error) throw error;
+      return data ?? [];
+    },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    enabled: !!scenarioId,
+  });
   const [zoomedImg, setZoomedImg] = useState<string | null>(null);
-  useEffect(() => {
-    supabase.from("scenario_map_variants").select("*").eq("scenario_id", scenarioId).order("sort_order")
-      .then(({ data }) => data && setVariants(data));
-  }, [scenarioId]);
 
   if (!variants.length) return <p className="text-xs text-muted-foreground p-2">{lang === "RU" ? "Нет данных" : "No data"}</p>;
 
@@ -289,11 +302,17 @@ function MapPane({ scenarioId }: { scenarioId: string }) {
 function EventsPane({ scenarioId }: { scenarioId: string }) {
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
-  const [events, setEvents] = useState<any[]>([]);
-  useEffect(() => {
-    supabase.from("scenario_timed_events").select("*").eq("scenario_id", scenarioId).order("sort_order")
-      .then(({ data }) => data && setEvents(data));
-  }, [scenarioId]);
+  const { data: events = [] } = useQuery({
+    queryKey: ["scenario_timed_events", scenarioId],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("scenario_timed_events").select("*").eq("scenario_id", scenarioId).order("sort_order");
+      if (error) throw error;
+      return data ?? [];
+    },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    enabled: !!scenarioId,
+  });
 
   if (!events.length) return <p className="text-xs text-muted-foreground p-2">{lang === "RU" ? "Нет событий" : "No events"}</p>;
 
@@ -339,11 +358,17 @@ function EventsPane({ scenarioId }: { scenarioId: string }) {
 /* ── Story Tab ── */
 function StoryPane({ scenarioId }: { scenarioId: string }) {
   const { lang } = useLang();
-  const [sections, setSections] = useState<any[]>([]);
-  useEffect(() => {
-    supabase.from("scenario_story_sections").select("*").eq("scenario_id", scenarioId).order("sort_order")
-      .then(({ data }) => data && setSections(data));
-  }, [scenarioId]);
+  const { data: sections = [] } = useQuery({
+    queryKey: ["scenario_story_sections", scenarioId],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("scenario_story_sections").select("*").eq("scenario_id", scenarioId).order("sort_order");
+      if (error) throw error;
+      return data ?? [];
+    },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    enabled: !!scenarioId,
+  });
 
   if (!sections.length) return <p className="text-xs text-muted-foreground p-2">{lang === "RU" ? "Нет сюжета" : "No story"}</p>;
 
@@ -373,11 +398,17 @@ function StoryPane({ scenarioId }: { scenarioId: string }) {
 function AiPane({ scenarioId }: { scenarioId: string }) {
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
-  const [setup, setSetup] = useState<any | null>(null);
-  useEffect(() => {
-    supabase.from("scenario_ai_setup").select("*").eq("scenario_id", scenarioId).single()
-      .then(({ data }) => data && setSetup(data));
-  }, [scenarioId]);
+  const { data: setup = null } = useQuery({
+    queryKey: ["scenario_ai_setup", scenarioId],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("scenario_ai_setup").select("*").eq("scenario_id", scenarioId).maybeSingle();
+      if (error) throw error;
+      return data ?? null;
+    },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    enabled: !!scenarioId,
+  });
 
   if (!setup) return <p className="text-xs text-muted-foreground p-2">{lang === "RU" ? "Нет данных" : "No data"}</p>;
 
