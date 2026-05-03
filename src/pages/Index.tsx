@@ -1,16 +1,16 @@
-import { useCallback, useState } from "react";
+import { lazy, Suspense, useCallback, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import TopAppBar from "@/components/TopAppBar";
 import NavDrawer, { type TabId, navItems } from "@/components/NavDrawer";
-import ChatScreen from "@/components/ChatScreen";
-import RulesTab from "@/components/RulesTab";
-import DecksTab from "@/components/DecksTab";
-import ScenariosTab from "@/components/ScenariosTab";
-import UnitsTab from "@/components/UnitsTab";
-import TownsTab from "@/components/TownsTab";
-import HeroesTab from "@/components/HeroesTab";
-import GlobalEventsTab from "@/components/GlobalEventsTab";
-import MapElementsTab from "@/components/MapElementsTab";
+const ChatScreen      = lazy(() => import("@/components/ChatScreen"));
+const RulesTab        = lazy(() => import("@/components/RulesTab"));
+const DecksTab        = lazy(() => import("@/components/DecksTab"));
+const ScenariosTab    = lazy(() => import("@/components/ScenariosTab"));
+const UnitsTab        = lazy(() => import("@/components/UnitsTab"));
+const TownsTab        = lazy(() => import("@/components/TownsTab"));
+const HeroesTab       = lazy(() => import("@/components/HeroesTab"));
+const GlobalEventsTab = lazy(() => import("@/components/GlobalEventsTab"));
+const MapElementsTab  = lazy(() => import("@/components/MapElementsTab"));
 import BackToTop from "@/components/BackToTop";
 import SEOMeta from "@/components/SEOMeta";
 import { useLang } from "@/context/LanguageContext";
@@ -20,6 +20,14 @@ import {
   findSectionByTabId,
   toSlug,
 } from "@/config/sectionRegistry";
+
+function TabFallback() {
+  return (
+    <div className="flex-1 flex items-center justify-center text-sm text-muted-foreground">
+      Loading...
+    </div>
+  );
+}
 
 export default function Index() {
   const navigate = useNavigate();
@@ -165,6 +173,7 @@ export default function Index() {
       <TopAppBar title={title} icon={current.icon} onMenuClick={() => setDrawerOpen(true)} />
       <NavDrawer open={drawerOpen} onOpenChange={setDrawerOpen} active={tab} onChange={handleTabChange} />
       <div className="flex-1 flex flex-col overflow-hidden pt-11 lg:ml-56">
+        <Suspense fallback={<TabFallback />}>
         {tab === "ai" ? (
           <ChatScreen />
         ) : tab === "rules" ? (
@@ -238,6 +247,7 @@ export default function Index() {
             onCardClose={handleCardClose}
           />
         ) : null}
+        </Suspense>
       </div>
       <BackToTop />
     </div>
