@@ -21,6 +21,14 @@ import {
   toSlug,
 } from "@/config/sectionRegistry";
 
+function TabFallback() {
+  return (
+    <div className="flex-1 flex items-center justify-center text-sm text-muted-foreground">
+      Loading...
+    </div>
+  );
+}
+
 export default function Index() {
   const navigate = useNavigate();
   const params = useParams<{ section?: string; "*"?: string }>();
