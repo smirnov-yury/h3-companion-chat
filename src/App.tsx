@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
@@ -8,17 +9,26 @@ import { RulesProvider } from "./context/RulesContext";
 import { LanguageProvider } from "./context/LanguageContext";
 import { GlyphsProvider } from "./context/GlyphsContext";
 import HomePage from "./pages/HomePage.tsx";
-import AboutPage from "./pages/AboutPage.tsx";
-import Index from "./pages/Index.tsx";
-
-import AdminLogin from "./pages/AdminLogin.tsx";
-import AdminPanel from "./pages/AdminPanel.tsx";
-import AdminGuard from "./components/admin/AdminGuard.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import PWAUpdateBanner from "./components/PWAUpdateBanner";
 import SEOMeta from "./components/SEOMeta";
 
+// Lazy-loaded routes. Heavy or rarely visited.
+const AboutPage  = lazy(() => import("./pages/AboutPage.tsx"));
+const Index      = lazy(() => import("./pages/Index.tsx"));
+const AdminLogin = lazy(() => import("./pages/AdminLogin.tsx"));
+const AdminPanel = lazy(() => import("./pages/AdminPanel.tsx"));
+const AdminGuard = lazy(() => import("./components/admin/AdminGuard.tsx"));
+
 const queryClient = new QueryClient();
+
+function RouteFallback() {
+  return (
+    <div className="min-h-screen flex items-center justify-center text-sm text-muted-foreground">
+      Loading...
+    </div>
+  );
+}
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -32,16 +42,18 @@ const App = () => (
       <Sonner position="top-center" richColors theme="dark" />
       <PWAUpdateBanner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/about" element={<AboutPage />} />
-          <Route path="/admin" element={<AdminGuard><AdminPanel /></AdminGuard>} />
-          <Route path="/dragonutopia/login" element={<AdminLogin />} />
-          <Route path="/dragonutopia/*" element={<AdminGuard><AdminPanel /></AdminGuard>} />
-          <Route path="/:section/*" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <Suspense fallback={<RouteFallback />}>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/admin" element={<AdminGuard><AdminPanel /></AdminGuard>} />
+            <Route path="/dragonutopia/login" element={<AdminLogin />} />
+            <Route path="/dragonutopia/*" element={<AdminGuard><AdminPanel /></AdminGuard>} />
+            <Route path="/:section/*" element={<Index />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
       </BrowserRouter>
     </TooltipProvider>
     </RulesProvider>
