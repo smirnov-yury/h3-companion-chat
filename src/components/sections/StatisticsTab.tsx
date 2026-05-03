@@ -42,17 +42,18 @@ export default function StatisticsTab({ searchQuery = "", initialCardId, onCardO
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
   const handleEntityClick = useEntityLinkHandler();
-  const [items, setItems] = useState<Statistic[]>([]);
-  const [loaded, setLoaded] = useState(false);
+  const { data: items = [], isLoading } = useQuery({
+    queryKey: ["statistics"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("statistics").select("*").order("sort_order");
+      if (error) throw error;
+      return (data ?? []) as Statistic[];
+    },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+  });
+  const loaded = !isLoading;
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-  
-
-  useEffect(() => {
-    supabase.from("statistics").select("*").order("sort_order").then(({ data }) => {
-      if (data) setItems(data as Statistic[]);
-      setLoaded(true);
-    });
-  }, []);
 
   const currentFilter = null;
   const closeCard = () => { setSelectedIndex(null); onCardClose?.(currentFilter); };
