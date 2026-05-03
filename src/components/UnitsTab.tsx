@@ -227,8 +227,16 @@ interface UnitsTabProps {
 export default function UnitsTab({ initialFilter, initialCardId, initialSearch, onFilterChange, onCardOpen, onCardClose }: UnitsTabProps = {}) {
   const { lang } = useLang();
   const handleEntityClick = useEntityLinkHandlerImported();
-  const [units, setUnits] = useState<UnitStat[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: units = [], isLoading: loading } = useQuery({
+    queryKey: ["unit_stats"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('unit_stats').select('*').order('sort_order');
+      if (error) throw error;
+      return (data ?? []) as UnitStat[];
+    },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+  });
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const [activeVariant, setActiveVariant] = useState<string>('');
   const [filterFaction, setFilterFaction] = useState('all');
@@ -236,17 +244,6 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
   const [filterType, setFilterType] = useState('all');
   const [mode, setMode] = useState<ModeFilter>('all');
   const [filtersOpen, setFiltersOpen] = useState(false);
-
-  useEffect(() => {
-    supabase
-      .from('unit_stats')
-      .select('*')
-      .order('sort_order')
-      .then(({ data }) => {
-        if (data) setUnits(data as UnitStat[]);
-        setLoading(false);
-      });
-  }, []);
 
   // Sync URL filter slug → internal town filter (graceful fallback if no match).
   // Fall back to initialCardId in the ambiguous single-segment case, but only if it
