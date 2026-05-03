@@ -165,6 +165,7 @@ export default function Index() {
       <TopAppBar title={title} icon={current.icon} onMenuClick={() => setDrawerOpen(true)} />
       <NavDrawer open={drawerOpen} onOpenChange={setDrawerOpen} active={tab} onChange={handleTabChange} />
       <div className="flex-1 flex flex-col overflow-hidden pt-11 lg:ml-56">
+        <Suspense fallback={<TabFallback />}>
         {tab === "ai" ? (
           <ChatScreen />
         ) : tab === "rules" ? (
@@ -238,6 +239,7 @@ export default function Index() {
             onCardClose={handleCardClose}
           />
         ) : null}
+        </Suspense>
       </div>
       <BackToTop />
     </div>
