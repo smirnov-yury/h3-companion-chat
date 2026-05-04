@@ -98,7 +98,7 @@ export default function AiCardsTab({ searchQuery = "", initialCardId, onCardOpen
               return (
                 <button key={item.id} onClick={() => openCard(item)}
                   className="flex flex-col w-full overflow-hidden rounded-lg bg-muted text-left cursor-pointer transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg hover:ring-2 hover:ring-primary">
-                  <div className="relative w-full aspect-[4/3] overflow-hidden rounded-t-lg bg-muted">
+                  <div className="relative w-full aspect-[3/4] overflow-hidden rounded-t-lg bg-muted">
                     {imgSrc && <img src={imgSrc} alt={item.name_en} className="w-full h-full object-cover" />}
                     {diff && (
                       <span className={`absolute top-1.5 right-1.5 px-1.5 py-0.5 rounded text-[10px] font-medium ${diff.color}`}>
