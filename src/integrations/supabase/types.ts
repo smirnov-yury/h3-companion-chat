@@ -26,6 +26,7 @@ export type Database = {
           embedding_en: string | null
           embedding_ru: string | null
           id: string
+          image: string | null
           image_regular: string | null
           image_status: Database["public"]["Enums"]["image_status_enum"]
           name_en: string
@@ -48,6 +49,7 @@ export type Database = {
           embedding_en?: string | null
           embedding_ru?: string | null
           id: string
+          image?: string | null
           image_regular?: string | null
           image_status?: Database["public"]["Enums"]["image_status_enum"]
           name_en: string
@@ -70,6 +72,7 @@ export type Database = {
           embedding_en?: string | null
           embedding_ru?: string | null
           id?: string
+          image?: string | null
           image_regular?: string | null
           image_status?: Database["public"]["Enums"]["image_status_enum"]
           name_en?: string
@@ -1661,6 +1664,7 @@ export type Database = {
       towns: {
         Row: {
           id: string
+          image: string | null
           image_back: string | null
           image_empty: string | null
           image_full: string | null
@@ -1674,6 +1678,7 @@ export type Database = {
         }
         Insert: {
           id: string
+          image?: string | null
           image_back?: string | null
           image_empty?: string | null
           image_full?: string | null
@@ -1687,6 +1692,7 @@ export type Database = {
         }
         Update: {
           id?: string
+          image?: string | null
           image_back?: string | null
           image_empty?: string | null
           image_full?: string | null

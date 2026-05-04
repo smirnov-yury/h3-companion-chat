@@ -90,7 +90,7 @@ export default function PandoraTab({ searchQuery = "", initialCardId, onCardOpen
               return (
                 <button key={item.id} onClick={() => openCard(item)}
                   className="flex flex-col w-full overflow-hidden rounded-lg bg-muted text-left cursor-pointer transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg hover:ring-2 hover:ring-primary">
-                  <div className="w-full aspect-[4/3] overflow-hidden rounded-t-lg bg-muted">
+                  <div className="w-full aspect-[3/4] overflow-hidden rounded-t-lg bg-muted">
                     {imgSrc && <img src={imgSrc} alt="Pandora's Box" className="w-full h-full object-cover" />}
                   </div>
                   <p className="w-full text-sm font-medium p-2 truncate text-foreground">{label(item)}</p>
