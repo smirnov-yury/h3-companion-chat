@@ -12,7 +12,7 @@ import { EmptyState, SkeletonGrid } from "@/components/ui/empty-state";
 import { useEntityLinkHandler, entityLinkUrl } from "@/hooks/useEntityLinkHandler";
 import { useEntityLinks } from "@/hooks/useEntityLinks";
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
+import { SUPABASE_URL } from "@/integrations/supabase/client";
 const STORAGE = `${SUPABASE_URL}/storage/v1/object/public/component-media`;
 
 interface Hero {

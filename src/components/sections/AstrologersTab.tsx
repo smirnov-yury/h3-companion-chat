@@ -9,7 +9,7 @@ import { CardDialogContent } from "@/components/ui/card-dialog";
 import { EmptyState, SkeletonGrid } from "@/components/ui/empty-state";
 import SeeAlso from "@/components/SeeAlso";
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
+import { SUPABASE_URL } from "@/integrations/supabase/client";
 const STORAGE = `${SUPABASE_URL}/storage/v1/object/public/component-media`;
 
 interface AstrologersProclaim {

@@ -11,7 +11,7 @@ import { useGlyphs } from "@/context/GlyphsContext";
 import { renderGlyphs } from "@/utils/renderGlyphs";
 import type { Json } from "@/integrations/supabase/types";
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
+import { SUPABASE_URL } from "@/integrations/supabase/client";
 
 const MODE_LABELS_EN: Record<string, string> = { clash: "Clash", cooperative: "Cooperative", campaign: "Campaign" };
 const MODE_LABELS_RU: Record<string, string> = { clash: "Столкновение", cooperative: "Кооператив", campaign: "Кампания" };

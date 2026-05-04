@@ -8,7 +8,7 @@ export interface GlyphInfo {
 }
 export type GlyphMap = Record<string, GlyphInfo>;
 
-const SUPABASE_URL = (import.meta.env.VITE_SUPABASE_URL as string) ?? "";
+const SUPABASE_URL = SUPABASE_URL;
 const GLYPH_STORAGE = `${SUPABASE_URL}/storage/v1/object/public/component-media/glyphs`;
 
 // Tokens that should keep their natural color (no yellow filter)
