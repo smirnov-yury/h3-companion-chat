@@ -11,7 +11,8 @@ import SeeAlso from "@/components/SeeAlso";
 
 import { SUPABASE_URL } from "@/integrations/supabase/client";
 const STORAGE = `${SUPABASE_URL}/storage/v1/object/public/component-media`;
-const DECK_PLACEHOLDER = "https://dhdjxhfbyqsobhfqeryu.supabase.co/storage/v1/object/public/component-media/artifacts/empty_art_ability_spec_spell.webp";
+import { componentMediaUrl } from "@/lib/storage";
+const DECK_PLACEHOLDER = componentMediaUrl("artifacts/empty_art_ability_spec_spell.webp");
 
 interface WarMachine {
   id: string;
