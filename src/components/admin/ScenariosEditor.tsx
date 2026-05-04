@@ -4,6 +4,7 @@ import { Plus, Trash2, Save, Loader2, Search, ChevronDown, ChevronRight } from "
 import { toast } from "sonner";
 import DeleteConfirmDialog from "@/components/admin/DeleteConfirmDialog";
 import ImageUploader from "@/components/admin/ImageUploader";
+import { componentMediaUrl } from "@/lib/storage";
 
 const INPUT =
   "w-full rounded-lg border border-border bg-input px-3 py-2 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring";
@@ -515,7 +516,7 @@ function MapVariantRow({
             <p className="text-xs text-muted-foreground mb-1">Map Image</p>
             {form.map_image && (
               <img
-                src={`${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/component-media/scenario-maps/${form.map_image}`}
+                src={componentMediaUrl(`scenario-maps/${form.map_image}`)}
                 alt="map"
                 className="w-full max-h-48 object-contain rounded-lg border border-border mb-2"
               />

@@ -13,22 +13,23 @@ import { useEntityLinkHandler as useEntityLinkHandlerImported } from '@/hooks/us
 import SeeAlso from '@/components/SeeAlso';
 
 import { SUPABASE_URL } from "@/integrations/supabase/client";
+import { componentMediaUrl } from "@/lib/storage";
 const STORAGE = `${SUPABASE_URL}/storage/v1/object/public/component-media`;
 
 const FACTIONS = ['castle','necropolis','dungeon','tower','fortress','rampart','inferno','conflux','stronghold','cove'];
 const isNeutral = (unit: UnitStat) => !FACTIONS.includes(unit.town?.toLowerCase() ?? '');
 
 const NEUTRAL_PLACEHOLDERS: Record<string, string> = {
-  bronze: "https://dhdjxhfbyqsobhfqeryu.supabase.co/storage/v1/object/public/component-media/units/neutral/empty_neutral_unit_bronze.webp",
-  silver: "https://dhdjxhfbyqsobhfqeryu.supabase.co/storage/v1/object/public/component-media/units/neutral/empty_neutral_unit_silver.webp",
-  golden: "https://dhdjxhfbyqsobhfqeryu.supabase.co/storage/v1/object/public/component-media/units/neutral/empty_neutral_unit_gold.webp",
-  azure:  "https://dhdjxhfbyqsobhfqeryu.supabase.co/storage/v1/object/public/component-media/units/neutral/empty_neutral_unit_azure.webp",
+  bronze: componentMediaUrl("units/neutral/empty_neutral_unit_bronze.webp"),
+  silver: componentMediaUrl("units/neutral/empty_neutral_unit_silver.webp"),
+  golden: componentMediaUrl("units/neutral/empty_neutral_unit_gold.webp"),
+  azure:  componentMediaUrl("units/neutral/empty_neutral_unit_azure.webp"),
 };
 
 const FACTION_PLACEHOLDERS: Record<string, string> = {
-  bronze: "https://dhdjxhfbyqsobhfqeryu.supabase.co/storage/v1/object/public/component-media/units/units-blank-bronze.webp",
-  silver: "https://dhdjxhfbyqsobhfqeryu.supabase.co/storage/v1/object/public/component-media/units/units-blank-silver.webp",
-  golden: "https://dhdjxhfbyqsobhfqeryu.supabase.co/storage/v1/object/public/component-media/units/units-blank-golden.webp",
+  bronze: componentMediaUrl("units/units-blank-bronze.webp"),
+  silver: componentMediaUrl("units/units-blank-silver.webp"),
+  golden: componentMediaUrl("units/units-blank-golden.webp"),
 };
 
 function getUnitPlaceholder(unit: UnitStat): string {
