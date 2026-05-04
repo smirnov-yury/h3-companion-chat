@@ -1,15 +1,19 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Search, X } from "lucide-react";
+import { Search } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
 import EventsTab from "@/components/sections/EventsTab";
 import AstrologersTab from "@/components/sections/AstrologersTab";
+import AiCardsTab from "@/components/sections/AiCardsTab";
+import MoraleTab from "@/components/sections/MoraleTab";
 
-type Section = "events" | "astrologers";
+type Section = "events" | "astrologers" | "ai" | "morale";
 
 const SECTIONS: { id: Section; labelRU: string; labelEN: string }[] = [
   { id: "events",      labelRU: "События",   labelEN: "Events"               },
   { id: "astrologers", labelRU: "Астрологи", labelEN: "Astrologers Proclaim" },
+  { id: "ai",          labelRU: "Против ИИ", labelEN: "vs Computer"          },
+  { id: "morale",      labelRU: "Мораль",    labelEN: "Morale"               },
 ];
 
 interface Props {
@@ -22,13 +26,15 @@ interface Props {
 export default function GlobalEventsTab({ initialCardId, initialSearch, onCardOpen, onCardClose }: Props = {}) {
   const { lang } = useLang();
   const [searchParams] = useSearchParams();
-  const [active, setActive] = useState<Section>(
-    searchParams.get("section") === "astrologers" ? "astrologers" : "events",
-  );
+  const [active, setActive] = useState<Section>(() => {
+    const s = searchParams.get("section") as Section | null;
+    return s && SECTIONS.some(x => x.id === s) ? s : "events";
+  });
   const [searchQuery, setSearchQuery] = useState(initialSearch ?? "");
 
   useEffect(() => {
-    if (searchParams.get("section") === "astrologers") setActive("astrologers");
+    const s = searchParams.get("section") as Section | null;
+    if (s && SECTIONS.some(x => x.id === s)) setActive(s);
   }, [searchParams]);
 
   const handleSectionChange = (id: Section) => {
@@ -53,7 +59,7 @@ export default function GlobalEventsTab({ initialCardId, initialSearch, onCardOp
               onClick={() => setSearchQuery("")}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground hover:text-foreground transition-colors"
             >
-              {lang === 'RU' ? 'Очистить' : 'Clear'}
+              {lang === "RU" ? "Очистить" : "Clear"}
             </button>
           )}
         </div>
@@ -73,7 +79,9 @@ export default function GlobalEventsTab({ initialCardId, initialSearch, onCardOp
       </div>
       <div className="flex-1 overflow-hidden">
         {active === "events"      ? <EventsTab      searchQuery={searchQuery} initialCardId={initialCardId} onCardOpen={onCardOpen} onCardClose={onCardClose} /> :
-         active === "astrologers" ? <AstrologersTab searchQuery={searchQuery} initialCardId={initialCardId} onCardOpen={onCardOpen} onCardClose={onCardClose} /> : null}
+         active === "astrologers" ? <AstrologersTab searchQuery={searchQuery} initialCardId={initialCardId} onCardOpen={onCardOpen} onCardClose={onCardClose} /> :
+         active === "ai"          ? <AiCardsTab     searchQuery={searchQuery} initialCardId={initialCardId} onCardOpen={onCardOpen} onCardClose={onCardClose} /> :
+         active === "morale"      ? <MoraleTab      searchQuery={searchQuery} initialCardId={initialCardId} onCardOpen={onCardOpen} onCardClose={onCardClose} /> : null}
       </div>
     </div>
   );
