@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { useAdminAuth } from "@/context/AdminAuthContext";
 
 interface AdminGuardProps {
   children: React.ReactNode;
@@ -8,32 +8,13 @@ interface AdminGuardProps {
 
 export default function AdminGuard({ children }: AdminGuardProps) {
   const navigate = useNavigate();
-  const [checking, setChecking] = useState(true);
-  const [authorized, setAuthorized] = useState(false);
+  const { isAdmin, checked } = useAdminAuth();
 
   useEffect(() => {
-    const check = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        navigate("/dragonutopia/login");
-        return;
-      }
-      const { data } = await supabase
-        .from("user_roles")
-        .select("role")
-        .eq("user_id", session.user.id)
-        .single();
-      if (data?.role === "admin") {
-        setAuthorized(true);
-      } else {
-        navigate("/dragonutopia/login");
-      }
-      setChecking(false);
-    };
-    check();
-  }, [navigate]);
+    if (checked && !isAdmin) navigate("/dragonutopia/login");
+  }, [checked, isAdmin, navigate]);
 
-  if (checking) {
+  if (!checked) {
     return (
       <div className="min-h-screen flex items-center justify-center text-sm text-muted-foreground">
         Checking access...
@@ -41,7 +22,6 @@ export default function AdminGuard({ children }: AdminGuardProps) {
     );
   }
 
-  if (!authorized) return null;
-
+  if (!isAdmin) return null;
   return <>{children}</>;
 }

@@ -9,7 +9,7 @@ import "react-image-crop/dist/ReactCrop.css";
 import { supabase } from "@/integrations/supabase/client";
 import { Upload, X, Check, Loader2, Trash2 } from "lucide-react";
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
+import { SUPABASE_URL } from "@/integrations/supabase/client";
 const STORAGE_BASE = `${SUPABASE_URL}/storage/v1/object/public/component-media`;
 const MAX_PX = 800;
 const WEBP_QUALITY = 0.88;

@@ -12,6 +12,7 @@ import HomePage from "./pages/HomePage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import PWAUpdateBanner from "./components/PWAUpdateBanner";
 import SEOMeta from "./components/SEOMeta";
+import { AdminAuthProvider } from "@/context/AdminAuthContext";
 
 // Lazy-loaded routes. Heavy or rarely visited.
 const AboutPage  = lazy(() => import("./pages/AboutPage.tsx"));
@@ -46,9 +47,9 @@ const App = () => (
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/about" element={<AboutPage />} />
-            <Route path="/admin" element={<AdminGuard><AdminPanel /></AdminGuard>} />
-            <Route path="/dragonutopia/login" element={<AdminLogin />} />
-            <Route path="/dragonutopia/*" element={<AdminGuard><AdminPanel /></AdminGuard>} />
+            <Route path="/admin" element={<AdminAuthProvider><AdminGuard><AdminPanel /></AdminGuard></AdminAuthProvider>} />
+            <Route path="/dragonutopia/login" element={<AdminAuthProvider><AdminLogin /></AdminAuthProvider>} />
+            <Route path="/dragonutopia/*" element={<AdminAuthProvider><AdminGuard><AdminPanel /></AdminGuard></AdminAuthProvider>} />
             <Route path="/:section/*" element={<Index />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
