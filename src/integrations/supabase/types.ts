@@ -83,6 +83,69 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_cards: {
+        Row: {
+          ai_context: string | null
+          created_at: string | null
+          description_en: string | null
+          description_ru: string | null
+          difficulty: string
+          effect_en: string | null
+          effect_ru: string | null
+          embedding_en: string | null
+          embedding_ru: string | null
+          id: string
+          image: string | null
+          image_status: Database["public"]["Enums"]["image_status_enum"] | null
+          name_en: string
+          name_ru: string | null
+          search_text_en: string | null
+          search_text_ru: string | null
+          sort_order: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          ai_context?: string | null
+          created_at?: string | null
+          description_en?: string | null
+          description_ru?: string | null
+          difficulty: string
+          effect_en?: string | null
+          effect_ru?: string | null
+          embedding_en?: string | null
+          embedding_ru?: string | null
+          id: string
+          image?: string | null
+          image_status?: Database["public"]["Enums"]["image_status_enum"] | null
+          name_en: string
+          name_ru?: string | null
+          search_text_en?: string | null
+          search_text_ru?: string | null
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          ai_context?: string | null
+          created_at?: string | null
+          description_en?: string | null
+          description_ru?: string | null
+          difficulty?: string
+          effect_en?: string | null
+          effect_ru?: string | null
+          embedding_en?: string | null
+          embedding_ru?: string | null
+          id?: string
+          image?: string | null
+          image_status?: Database["public"]["Enums"]["image_status_enum"] | null
+          name_en?: string
+          name_ru?: string | null
+          search_text_en?: string | null
+          search_text_ru?: string | null
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       ai_rate_limits: {
         Row: {
           count: number
@@ -697,6 +760,159 @@ export type Database = {
           specialty_ru?: string | null
           town?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      map_events: {
+        Row: {
+          ai_context: string | null
+          created_at: string | null
+          description_en: string | null
+          description_ru: string | null
+          embedding_en: string | null
+          embedding_ru: string | null
+          id: string
+          image: string | null
+          image_status: Database["public"]["Enums"]["image_status_enum"] | null
+          name_en: string
+          name_ru: string | null
+          search_text_en: string | null
+          search_text_ru: string | null
+          sort_order: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          ai_context?: string | null
+          created_at?: string | null
+          description_en?: string | null
+          description_ru?: string | null
+          embedding_en?: string | null
+          embedding_ru?: string | null
+          id: string
+          image?: string | null
+          image_status?: Database["public"]["Enums"]["image_status_enum"] | null
+          name_en: string
+          name_ru?: string | null
+          search_text_en?: string | null
+          search_text_ru?: string | null
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          ai_context?: string | null
+          created_at?: string | null
+          description_en?: string | null
+          description_ru?: string | null
+          embedding_en?: string | null
+          embedding_ru?: string | null
+          id?: string
+          image?: string | null
+          image_status?: Database["public"]["Enums"]["image_status_enum"] | null
+          name_en?: string
+          name_ru?: string | null
+          search_text_en?: string | null
+          search_text_ru?: string | null
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      morale_cards: {
+        Row: {
+          ai_context: string | null
+          created_at: string | null
+          description_en: string | null
+          description_ru: string | null
+          embedding_en: string | null
+          embedding_ru: string | null
+          id: string
+          image: string | null
+          image_status: Database["public"]["Enums"]["image_status_enum"] | null
+          search_text_en: string | null
+          search_text_ru: string | null
+          sort_order: number | null
+          type: string
+          updated_at: string | null
+        }
+        Insert: {
+          ai_context?: string | null
+          created_at?: string | null
+          description_en?: string | null
+          description_ru?: string | null
+          embedding_en?: string | null
+          embedding_ru?: string | null
+          id: string
+          image?: string | null
+          image_status?: Database["public"]["Enums"]["image_status_enum"] | null
+          search_text_en?: string | null
+          search_text_ru?: string | null
+          sort_order?: number | null
+          type: string
+          updated_at?: string | null
+        }
+        Update: {
+          ai_context?: string | null
+          created_at?: string | null
+          description_en?: string | null
+          description_ru?: string | null
+          embedding_en?: string | null
+          embedding_ru?: string | null
+          id?: string
+          image?: string | null
+          image_status?: Database["public"]["Enums"]["image_status_enum"] | null
+          search_text_en?: string | null
+          search_text_ru?: string | null
+          sort_order?: number | null
+          type?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      pandora_box: {
+        Row: {
+          ai_context: string | null
+          created_at: string | null
+          description_en: string | null
+          description_ru: string | null
+          embedding_en: string | null
+          embedding_ru: string | null
+          id: string
+          image: string | null
+          image_status: Database["public"]["Enums"]["image_status_enum"] | null
+          search_text_en: string | null
+          search_text_ru: string | null
+          sort_order: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          ai_context?: string | null
+          created_at?: string | null
+          description_en?: string | null
+          description_ru?: string | null
+          embedding_en?: string | null
+          embedding_ru?: string | null
+          id: string
+          image?: string | null
+          image_status?: Database["public"]["Enums"]["image_status_enum"] | null
+          search_text_en?: string | null
+          search_text_ru?: string | null
+          sort_order?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          ai_context?: string | null
+          created_at?: string | null
+          description_en?: string | null
+          description_ru?: string | null
+          embedding_en?: string | null
+          embedding_ru?: string | null
+          id?: string
+          image?: string | null
+          image_status?: Database["public"]["Enums"]["image_status_enum"] | null
+          search_text_en?: string | null
+          search_text_ru?: string | null
+          sort_order?: number | null
+          updated_at?: string | null
         }
         Relationships: []
       }
@@ -1669,7 +1885,15 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      v_entity_searchable: {
+        Row: {
+          entity_id: string | null
+          entity_type: string | null
+          name_en: string | null
+          name_ru: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       check_and_increment_rate_limit: {
@@ -1681,8 +1905,8 @@ export type Database = {
       is_admin: { Args: never; Returns: boolean }
       match_all_en: {
         Args: {
-          match_count?: number
-          match_threshold?: number
+          match_count: number
+          match_threshold: number
           query_embedding: string
         }
         Returns: {
@@ -1695,8 +1919,8 @@ export type Database = {
       }
       match_all_ru: {
         Args: {
-          match_count?: number
-          match_threshold?: number
+          match_count: number
+          match_threshold: number
           query_embedding: string
         }
         Returns: {
@@ -1707,7 +1931,38 @@ export type Database = {
           similarity: number
         }[]
       }
+      match_hybrid_en: {
+        Args: {
+          match_count?: number
+          match_threshold?: number
+          query_embedding: string
+          query_text: string
+        }
+        Returns: {
+          entity_id: string
+          entity_type: string
+          name_en: string
+          name_ru: string
+          similarity: number
+        }[]
+      }
+      match_hybrid_ru: {
+        Args: {
+          match_count?: number
+          match_threshold?: number
+          query_embedding: string
+          query_text: string
+        }
+        Returns: {
+          entity_id: string
+          entity_type: string
+          name_en: string
+          name_ru: string
+          similarity: number
+        }[]
+      }
       parse_unit_notes: { Args: { notes: string }; Returns: Json }
+      refresh_embeddings_async: { Args: never; Returns: undefined }
     }
     Enums: {
       image_status_enum: "missing" | "uploaded" | "verified"
