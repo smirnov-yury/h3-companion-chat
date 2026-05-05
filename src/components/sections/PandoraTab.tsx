@@ -108,7 +108,7 @@ export default function PandoraTab({ searchQuery = "", initialCardId, onCardOpen
             <>
               {selected.image && (
                 <div className="w-full shrink-0 flex justify-center bg-muted">
-                  <img src={`${STORAGE}/${selected.image}`} alt="Pandora's Box" className="w-full max-h-[280px] object-contain" />
+                  <img src={componentImageUrl("pandora_box", selected.image as string)} alt="Pandora's Box" className="w-full max-h-[280px] object-contain" />
                 </div>
               )}
               <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
