@@ -94,7 +94,7 @@ export default function AiCardsTab({ searchQuery = "", initialCardId, onCardOpen
         ) : (
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             {filtered.map((item) => {
-              const imgSrc = item.image ? `${STORAGE}/${item.image}` : null;
+              const imgSrc = item.image ? componentImageUrl("ai_cards", item.image) : null;
               const diff = DIFFICULTY_LABEL[item.difficulty];
               return (
                 <button key={item.id} onClick={() => openCard(item)}
