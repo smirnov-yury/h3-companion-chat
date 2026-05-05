@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import ReactCrop, {
   type Crop,
   type PixelCrop,
@@ -135,6 +135,7 @@ export default function ImageUploader({
   const cropContainerRef = useRef<HTMLDivElement>(null);
   const panningRef = useRef(false);
   const panStartRef = useRef({ x: 0, y: 0, scrollLeft: 0, scrollTop: 0 });
+  const prevZoomRef = useRef(1);
 
   const [preview, setPreview] = useState<string | null>(null);
   const [blob, setBlob] = useState<Blob | null>(null);
@@ -232,6 +233,22 @@ export default function ImageUploader({
   const handlePanMouseUp = () => {
     panningRef.current = false;
   };
+
+  useEffect(() => {
+    const container = cropContainerRef.current;
+    if (!container || prevZoomRef.current === zoom) return;
+
+    const ratio = zoom / prevZoomRef.current;
+    const centerX = container.scrollLeft + container.clientWidth / 2;
+    const centerY = container.scrollTop + container.clientHeight / 2;
+
+    requestAnimationFrame(() => {
+      container.scrollLeft = centerX * ratio - container.clientWidth / 2;
+      container.scrollTop = centerY * ratio - container.clientHeight / 2;
+    });
+
+    prevZoomRef.current = zoom;
+  }, [zoom]);
 
   const handleUpload = async () => {
     if (!blob) return;
