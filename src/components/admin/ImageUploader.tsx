@@ -131,6 +131,10 @@ export default function ImageUploader({
   const [completedCrop, setCompletedCrop] = useState<PixelCrop | null>(null);
   const [rotation, setRotation] = useState(0);
   const [zoom, setZoom] = useState(1);
+  const [panMode, setPanMode] = useState(false);
+  const cropContainerRef = useRef<HTMLDivElement>(null);
+  const panningRef = useRef(false);
+  const panStartRef = useRef({ x: 0, y: 0, scrollLeft: 0, scrollTop: 0 });
 
   const [preview, setPreview] = useState<string | null>(null);
   const [blob, setBlob] = useState<Blob | null>(null);
@@ -201,6 +205,32 @@ export default function ImageUploader({
     setRawSrc(null);
     setRotation(0);
     setZoom(1);
+    setPanMode(false);
+  };
+
+  const handlePanMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!panMode || !cropContainerRef.current) return;
+    panningRef.current = true;
+    panStartRef.current = {
+      x: e.clientX,
+      y: e.clientY,
+      scrollLeft: cropContainerRef.current.scrollLeft,
+      scrollTop: cropContainerRef.current.scrollTop,
+    };
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handlePanMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!panningRef.current || !cropContainerRef.current) return;
+    const dx = e.clientX - panStartRef.current.x;
+    const dy = e.clientY - panStartRef.current.y;
+    cropContainerRef.current.scrollLeft = panStartRef.current.scrollLeft - dx;
+    cropContainerRef.current.scrollTop = panStartRef.current.scrollTop - dy;
+  };
+
+  const handlePanMouseUp = () => {
+    panningRef.current = false;
   };
 
   const handleUpload = async () => {
@@ -384,10 +414,30 @@ export default function ImageUploader({
               <span className="text-xs text-muted-foreground w-10 text-right shrink-0">
                 {zoom.toFixed(1)}×
               </span>
+              <button
+                type="button"
+                onClick={() => setPanMode((p) => !p)}
+                className={`px-2 py-1 rounded border text-xs transition-colors ${
+                  panMode
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border text-foreground hover:bg-accent"
+                }`}
+                title={panMode ? "Switch to crop mode" : "Switch to pan mode (drag to move)"}
+              >
+                {panMode ? "✋ Pan" : "✋"}
+              </button>
             </div>
 
             <div className="flex-1 overflow-auto flex items-center justify-center bg-muted/30 rounded-lg p-2">
-              <div className="overflow-auto max-h-[65vh] rounded border border-border">
+              <div
+                ref={cropContainerRef}
+                className="overflow-auto max-h-[65vh] rounded border border-border select-none"
+                style={{ cursor: panMode ? (panningRef.current ? "grabbing" : "grab") : "default" }}
+                onMouseDown={handlePanMouseDown}
+                onMouseMove={handlePanMouseMove}
+                onMouseUp={handlePanMouseUp}
+                onMouseLeave={handlePanMouseUp}
+              >
                 <ReactCrop
                   crop={crop}
                   onChange={(c) => setCrop(c)}
@@ -395,6 +445,7 @@ export default function ImageUploader({
                   aspect={currentPresetAspect}
                   minWidth={20}
                   minHeight={20}
+                  disabled={panMode}
                 >
                   <img
                     ref={imgRef}
@@ -407,8 +458,10 @@ export default function ImageUploader({
                       transform: `rotate(${rotation}deg)`,
                       transition: "transform 0.15s ease",
                       display: "block",
+                      pointerEvents: panMode ? "none" : "auto",
                     }}
                   />
+
                 </ReactCrop>
               </div>
             </div>
