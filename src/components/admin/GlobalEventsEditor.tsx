@@ -153,6 +153,8 @@ export default function GlobalEventsEditor({ tab }: { tab: GlobalEventsTab }) {
   const effRuRef = useRef<HTMLTextAreaElement>(null);
   const notesEnRef = useRef<HTMLTextAreaElement>(null);
   const notesRuRef = useRef<HTMLTextAreaElement>(null);
+  const descEnRef = useRef<HTMLTextAreaElement>(null);
+  const descRuRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     setItems([]);
