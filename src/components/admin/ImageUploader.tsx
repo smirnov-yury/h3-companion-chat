@@ -132,6 +132,7 @@ export default function ImageUploader({
   const [rotation, setRotation] = useState(0);
   const [zoom, setZoom] = useState(1);
   const [panMode, setPanMode] = useState(false);
+  const [baseImgWidth, setBaseImgWidth] = useState(0);
   const cropContainerRef = useRef<HTMLDivElement>(null);
   const panningRef = useRef(false);
   const panStartRef = useRef({ x: 0, y: 0, scrollLeft: 0, scrollTop: 0 });
@@ -151,6 +152,7 @@ export default function ImageUploader({
     setRotation(0);
     setZoom(1);
     prevZoomRef.current = 1;
+    setBaseImgWidth(0);
   };
 
   const onImageLoad = useCallback(
@@ -158,6 +160,7 @@ export default function ImageUploader({
       const { width, height } = e.currentTarget;
       const currentPreset = PRESETS.find((p) => p.key === preset);
       setCrop(centerAspectCrop(width, height, currentPreset?.aspect));
+      setBaseImgWidth(imgRef.current?.clientWidth ?? 0);
     },
     [preset],
   );
@@ -209,6 +212,7 @@ export default function ImageUploader({
     setZoom(1);
     prevZoomRef.current = 1;
     setPanMode(false);
+    setBaseImgWidth(0);
   };
 
   const handlePanMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -450,20 +454,27 @@ export default function ImageUploader({
             <div className="flex-1 overflow-auto flex items-center justify-center bg-muted/30 rounded-lg p-2">
               <div
                 ref={cropContainerRef}
-                className="rounded border border-border select-none"
                 style={{
-                  overflow: "auto",
+                  overflowX: "auto",
+                  overflowY: "auto",
                   maxHeight: "65vh",
                   width: "100%",
-                  cursor: panMode ? (panningRef.current ? "grabbing" : "grab") : "default",
+                  cursor: panMode ? "grab" : "default",
                   overscrollBehavior: "contain",
+                  WebkitOverflowScrolling: "touch",
                 }}
+                className="rounded border border-border select-none"
                 onMouseDown={handlePanMouseDown}
                 onMouseMove={handlePanMouseMove}
                 onMouseUp={handlePanMouseUp}
                 onMouseLeave={handlePanMouseUp}
               >
-                <div style={{ display: "inline-block", minWidth: "100%" }}>
+                <div
+                  style={{
+                    width: baseImgWidth > 0 ? `${Math.round(baseImgWidth * zoom)}px` : "100%",
+                    flexShrink: 0,
+                  }}
+                >
                   <ReactCrop
                     crop={crop}
                     onChange={(c) => setCrop(c)}
@@ -479,11 +490,11 @@ export default function ImageUploader({
                       onLoad={onImageLoad}
                       alt=""
                       style={{
-                        width: `${zoom * 100}%`,
+                        width: "100%",
                         maxWidth: "none",
+                        display: "block",
                         transform: `rotate(${rotation}deg)`,
                         transition: "transform 0.15s ease",
-                        display: "block",
                         pointerEvents: panMode ? "none" : "auto",
                       }}
                     />
