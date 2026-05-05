@@ -150,6 +150,7 @@ export default function ImageUploader({
     setCompletedCrop(null);
     setRotation(0);
     setZoom(1);
+    prevZoomRef.current = 1;
   };
 
   const onImageLoad = useCallback(
@@ -206,6 +207,7 @@ export default function ImageUploader({
     setRawSrc(null);
     setRotation(0);
     setZoom(1);
+    prevZoomRef.current = 1;
     setPanMode(false);
   };
 
