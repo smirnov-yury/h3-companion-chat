@@ -375,9 +375,9 @@ export default function ImageUploader({
               </button>
               <button
                 type="button"
-                onClick={() => setRotation((r) => Math.max(-180, r - 1))}
+                onClick={() => setRotation((r) => Math.max(-180, Math.round((r - 0.125) * 1000) / 1000))}
                 className="px-2 py-1 rounded border border-border text-xs text-foreground hover:bg-accent"
-                title="Rotate left 1°"
+                title="Rotate left 0.125°"
               >
                 ◀
               </button>
@@ -385,16 +385,16 @@ export default function ImageUploader({
                 type="range"
                 min={-180}
                 max={180}
-                step={1}
+                step={0.125}
                 value={rotation}
-                onChange={(e) => setRotation(Number(e.target.value))}
+                onChange={(e) => setRotation(Math.round(Number(e.target.value) * 1000) / 1000)}
                 className="flex-1 accent-primary"
               />
               <button
                 type="button"
-                onClick={() => setRotation((r) => Math.min(180, r + 1))}
+                onClick={() => setRotation((r) => Math.min(180, Math.round((r + 0.125) * 1000) / 1000))}
                 className="px-2 py-1 rounded border border-border text-xs text-foreground hover:bg-accent"
-                title="Rotate right 1°"
+                title="Rotate right 0.125°"
               >
                 ▶
               </button>
@@ -414,8 +414,8 @@ export default function ImageUploader({
               >
                 Reset
               </button>
-              <span className="text-xs text-muted-foreground w-10 text-right shrink-0">
-                {rotation}°
+              <span className="text-xs text-muted-foreground w-16 text-right shrink-0 tabular-nums">
+                {Number.isInteger(rotation) ? rotation : rotation.toFixed(3).replace(/\.?0+$/, "")}°
               </span>
             </div>
 
