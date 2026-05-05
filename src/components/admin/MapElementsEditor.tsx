@@ -129,6 +129,8 @@ export default function MapElementsEditor({ tab }: { tab: MapElementsTab }) {
   const effRuRef = useRef<HTMLTextAreaElement>(null);
   const notesEnRef = useRef<HTMLTextAreaElement>(null);
   const notesRuRef = useRef<HTMLTextAreaElement>(null);
+  const descEnRef = useRef<HTMLTextAreaElement>(null);
+  const descRuRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     setItems([]);
