@@ -131,6 +131,10 @@ export default function ImageUploader({
   const [completedCrop, setCompletedCrop] = useState<PixelCrop | null>(null);
   const [rotation, setRotation] = useState(0);
   const [zoom, setZoom] = useState(1);
+  const [panMode, setPanMode] = useState(false);
+  const cropContainerRef = useRef<HTMLDivElement>(null);
+  const panningRef = useRef(false);
+  const panStartRef = useRef({ x: 0, y: 0, scrollLeft: 0, scrollTop: 0 });
 
   const [preview, setPreview] = useState<string | null>(null);
   const [blob, setBlob] = useState<Blob | null>(null);
