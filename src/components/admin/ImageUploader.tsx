@@ -41,27 +41,53 @@ function centerAspectCrop(width: number, height: number, aspect: number | undefi
   );
 }
 
-async function cropToWebp(img: HTMLImageElement, pixelCrop: PixelCrop): Promise<Blob> {
+async function cropToWebp(
+  img: HTMLImageElement,
+  pixelCrop: PixelCrop,
+  rotation: number,
+): Promise<Blob> {
   const scaleX = img.naturalWidth / img.width;
   const scaleY = img.naturalHeight / img.height;
-  const cw = pixelCrop.width * scaleX;
-  const ch = pixelCrop.height * scaleY;
-  const scale = Math.min(1, MAX_PX / Math.max(cw, ch));
+
+  const nx = pixelCrop.x * scaleX;
+  const ny = pixelCrop.y * scaleY;
+  const nw = pixelCrop.width * scaleX;
+  const nh = pixelCrop.height * scaleY;
+
+  const scale = Math.min(1, MAX_PX / Math.max(nw, nh));
+  const outW = Math.round(nw * scale);
+  const outH = Math.round(nh * scale);
+
+  const rotCanvas = document.createElement("canvas");
+  const rad = (rotation * Math.PI) / 180;
+  const sin = Math.abs(Math.sin(rad));
+  const cos = Math.abs(Math.cos(rad));
+  rotCanvas.width = Math.round(img.naturalWidth * cos + img.naturalHeight * sin);
+  rotCanvas.height = Math.round(img.naturalWidth * sin + img.naturalHeight * cos);
+  const rotCtx = rotCanvas.getContext("2d")!;
+  rotCtx.translate(rotCanvas.width / 2, rotCanvas.height / 2);
+  rotCtx.rotate(rad);
+  rotCtx.drawImage(img, -img.naturalWidth / 2, -img.naturalHeight / 2);
+
+  const offsetX = (rotCanvas.width - img.naturalWidth) / 2;
+  const offsetY = (rotCanvas.height - img.naturalHeight) / 2;
+
   const canvas = document.createElement("canvas");
-  canvas.width = Math.round(cw * scale);
-  canvas.height = Math.round(ch * scale);
+  canvas.width = outW;
+  canvas.height = outH;
   const ctx = canvas.getContext("2d")!;
   ctx.drawImage(
-    img,
-    pixelCrop.x * scaleX,
-    pixelCrop.y * scaleY,
-    cw,
-    ch,
+    rotCanvas,
+    nx + offsetX,
+    ny + offsetY,
+    nw,
+    nh,
     0,
     0,
-    canvas.width,
-    canvas.height,
+    outW,
+    outH,
   );
+
   return new Promise<Blob>((resolve, reject) =>
     canvas.toBlob(
       (blob) => (blob ? resolve(blob) : reject(new Error("toBlob failed"))),
