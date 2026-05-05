@@ -6,7 +6,7 @@ import GlyphToolbar from "@/components/admin/GlyphToolbar";
 import ImageUploader from "@/components/admin/ImageUploader";
 import DeleteConfirmDialog from "@/components/admin/DeleteConfirmDialog";
 
-export type GlobalEventsTab = "events" | "astrologers";
+export type GlobalEventsTab = "events" | "astrologers" | "ai_cards" | "morale";
 
 const INPUT =
   "w-full rounded-lg border border-border bg-input px-3 py-2 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring";
@@ -43,6 +43,20 @@ const CONFIGS: Record<GlobalEventsTab, TabConfig> = {
     selectCols:
       "id, name_en, name_ru, effect_en, effect_ru, description_en, description_ru, notes_en, notes_ru, image, sort_order, image_status",
   },
+  ai_cards: {
+    label: "AI Cards",
+    table: "ai_cards",
+    folder: "ai_cards",
+    selectCols:
+      "id, name_en, name_ru, difficulty, description_en, description_ru, effect_en, effect_ru, image, sort_order, image_status",
+  },
+  morale: {
+    label: "Morale",
+    table: "morale_cards",
+    folder: "morale_cards",
+    selectCols:
+      "id, type, description_en, description_ru, image, sort_order, image_status",
+  },
 };
 
 type GEForm = Record<string, string | number | null>;
@@ -58,6 +72,13 @@ function buildEmptyForm(tab: GlobalEventsTab): GEForm {
     sort_order: null,
   };
   if (tab === "astrologers") return { ...base, description_en: "", description_ru: "" };
+  if (tab === "ai_cards") return {
+    name_en: "", name_ru: "", difficulty: "normal",
+    description_en: "", description_ru: "", effect_en: "", effect_ru: "", sort_order: null,
+  };
+  if (tab === "morale") return {
+    type: "positive", description_en: "", description_ru: "", sort_order: null,
+  };
   return base;
 }
 
@@ -77,6 +98,22 @@ function rowToForm(tab: GlobalEventsTab, row: GERow): GEForm {
       ...base,
       description_en: str(row.description_en),
       description_ru: str(row.description_ru),
+    };
+  }
+  if (tab === "ai_cards") {
+    return {
+      name_en: str(row.name_en), name_ru: str(row.name_ru),
+      difficulty: str(row.difficulty) || "normal",
+      description_en: str(row.description_en), description_ru: str(row.description_ru),
+      effect_en: str(row.effect_en), effect_ru: str(row.effect_ru),
+      sort_order: (row.sort_order as number | null) ?? null,
+    };
+  }
+  if (tab === "morale") {
+    return {
+      type: str(row.type) || "positive",
+      description_en: str(row.description_en), description_ru: str(row.description_ru),
+      sort_order: (row.sort_order as number | null) ?? null,
     };
   }
   return base;
@@ -132,7 +169,7 @@ export default function GlobalEventsEditor({ tab }: { tab: GlobalEventsTab }) {
   }, [tab, cfg.table, cfg.selectCols]);
 
   const filtered = items.filter((item) =>
-    String(item.name_en ?? "").toLowerCase().includes(search.toLowerCase()),
+    String(item.name_en ?? item.type ?? item.id).toLowerCase().includes(search.toLowerCase()),
   );
 
   const selectItem = (item: GERow) => {
@@ -236,6 +273,7 @@ export default function GlobalEventsEditor({ tab }: { tab: GlobalEventsTab }) {
     setForm((prev) => ({ ...prev, [key]: value as string | number | null }));
 
   const singular = cfg.label.replace(/s$/, "");
+  const isPortrait = tab === "ai_cards" || tab === "morale";
 
   return (
     <div className="flex h-full gap-0 min-h-0">
@@ -279,7 +317,7 @@ export default function GlobalEventsEditor({ tab }: { tab: GlobalEventsTab }) {
                       : "text-foreground hover:bg-accent"
                   }`}
                 >
-                  <div className="font-medium truncate">{String(item.name_en ?? item.id)}</div>
+                  <div className="font-medium truncate">{String(item.name_en ?? item.type ?? item.id)}</div>
                   <div className="opacity-60 text-[10px] truncate">{item.id}</div>
                 </button>
               ))}
@@ -296,7 +334,7 @@ export default function GlobalEventsEditor({ tab }: { tab: GlobalEventsTab }) {
               <h2 className="text-sm font-semibold text-foreground">
                 {isNew
                   ? `New ${singular}`
-                  : String(selected?.name_en ?? selected?.id ?? "")}
+                  : String(selected?.name_en ?? selected?.type ?? selected?.id ?? "")}
               </h2>
               <div className="flex gap-2">
                 {!isNew && (
@@ -335,24 +373,55 @@ export default function GlobalEventsEditor({ tab }: { tab: GlobalEventsTab }) {
                     />
                   </FieldLabel>
                 )}
-                <div className="grid grid-cols-2 gap-3">
-                  <FieldLabel text="Name EN">
-                    <input
-                      type="text"
-                      value={f("name_en")}
-                      onChange={(e) => setF("name_en", e.target.value)}
+
+                {tab === "ai_cards" && (
+                  <FieldLabel text="Difficulty">
+                    <select
+                      value={f("difficulty")}
+                      onChange={(e) => setF("difficulty", e.target.value)}
                       className={INPUT}
-                    />
+                    >
+                      <option value="easy">Easy</option>
+                      <option value="normal">Normal</option>
+                      <option value="expert">Expert</option>
+                      <option value="impossible">Impossible</option>
+                    </select>
                   </FieldLabel>
-                  <FieldLabel text="Name RU">
-                    <input
-                      type="text"
-                      value={f("name_ru")}
-                      onChange={(e) => setF("name_ru", e.target.value)}
+                )}
+                {tab === "morale" && (
+                  <FieldLabel text="Type">
+                    <select
+                      value={f("type")}
+                      onChange={(e) => setF("type", e.target.value)}
                       className={INPUT}
-                    />
+                    >
+                      <option value="positive">Positive</option>
+                      <option value="negative">Negative</option>
+                    </select>
                   </FieldLabel>
-                </div>
+                )}
+
+                {tab !== "morale" && (
+                  <div className="grid grid-cols-2 gap-3">
+                    <FieldLabel text="Name EN">
+                      <input
+                        type="text"
+                        value={f("name_en")}
+                        onChange={(e) => setF("name_en", e.target.value)}
+                        className={INPUT}
+                      />
+                    </FieldLabel>
+                    <FieldLabel text="Name RU">
+                      <input
+                        type="text"
+                        value={f("name_ru")}
+                        onChange={(e) => setF("name_ru", e.target.value)}
+                        className={INPUT}
+                      />
+                    </FieldLabel>
+                  </div>
+                )}
+
                 <FieldLabel text="Sort Order">
                   <input
                     type="number"
@@ -364,30 +433,7 @@ export default function GlobalEventsEditor({ tab }: { tab: GlobalEventsTab }) {
                   />
                 </FieldLabel>
 
-                <div>
-                  <label className="text-xs text-muted-foreground block mb-1">Effect EN</label>
-                  <GlyphToolbar textareaRef={effEnRef} onChange={(v) => setF("effect_en", v)} />
-                  <textarea
-                    ref={effEnRef}
-                    value={f("effect_en")}
-                    onChange={(e) => setF("effect_en", e.target.value)}
-                    rows={4}
-                    className={`mt-1 ${TEXTAREA}`}
-                  />
-                </div>
-                <div>
-                  <label className="text-xs text-muted-foreground block mb-1">Effect RU</label>
-                  <GlyphToolbar textareaRef={effRuRef} onChange={(v) => setF("effect_ru", v)} />
-                  <textarea
-                    ref={effRuRef}
-                    value={f("effect_ru")}
-                    onChange={(e) => setF("effect_ru", e.target.value)}
-                    rows={4}
-                    className={`mt-1 ${TEXTAREA}`}
-                  />
-                </div>
-
-                {tab === "astrologers" && (
+                {tab === "ai_cards" && (
                   <div className="grid grid-cols-2 gap-3">
                     <FieldLabel text="Description EN">
                       <textarea
@@ -408,28 +454,80 @@ export default function GlobalEventsEditor({ tab }: { tab: GlobalEventsTab }) {
                   </div>
                 )}
 
-                <div>
-                  <label className="text-xs text-muted-foreground block mb-1">Notes EN</label>
-                  <GlyphToolbar textareaRef={notesEnRef} onChange={(v) => setF("notes_en", v)} />
-                  <textarea
-                    ref={notesEnRef}
-                    value={f("notes_en")}
-                    onChange={(e) => setF("notes_en", e.target.value)}
-                    rows={3}
-                    className={`mt-1 ${TEXTAREA}`}
-                  />
-                </div>
-                <div>
-                  <label className="text-xs text-muted-foreground block mb-1">Notes RU</label>
-                  <GlyphToolbar textareaRef={notesRuRef} onChange={(v) => setF("notes_ru", v)} />
-                  <textarea
-                    ref={notesRuRef}
-                    value={f("notes_ru")}
-                    onChange={(e) => setF("notes_ru", e.target.value)}
-                    rows={3}
-                    className={`mt-1 ${TEXTAREA}`}
-                  />
-                </div>
+                {tab !== "morale" && (
+                  <>
+                    <div>
+                      <label className="text-xs text-muted-foreground block mb-1">Effect EN</label>
+                      <GlyphToolbar textareaRef={effEnRef} onChange={(v) => setF("effect_en", v)} />
+                      <textarea
+                        ref={effEnRef}
+                        value={f("effect_en")}
+                        onChange={(e) => setF("effect_en", e.target.value)}
+                        rows={4}
+                        className={`mt-1 ${TEXTAREA}`}
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs text-muted-foreground block mb-1">Effect RU</label>
+                      <GlyphToolbar textareaRef={effRuRef} onChange={(v) => setF("effect_ru", v)} />
+                      <textarea
+                        ref={effRuRef}
+                        value={f("effect_ru")}
+                        onChange={(e) => setF("effect_ru", e.target.value)}
+                        rows={4}
+                        className={`mt-1 ${TEXTAREA}`}
+                      />
+                    </div>
+                  </>
+                )}
+
+                {(tab === "astrologers" || tab === "morale") && (
+                  <div className="grid grid-cols-2 gap-3">
+                    <FieldLabel text="Description EN">
+                      <textarea
+                        value={f("description_en")}
+                        onChange={(e) => setF("description_en", e.target.value)}
+                        rows={3}
+                        className={TEXTAREA_PLAIN}
+                      />
+                    </FieldLabel>
+                    <FieldLabel text="Description RU">
+                      <textarea
+                        value={f("description_ru")}
+                        onChange={(e) => setF("description_ru", e.target.value)}
+                        rows={3}
+                        className={TEXTAREA_PLAIN}
+                      />
+                    </FieldLabel>
+                  </div>
+                )}
+
+                {tab !== "morale" && tab !== "ai_cards" && (
+                  <>
+                    <div>
+                      <label className="text-xs text-muted-foreground block mb-1">Notes EN</label>
+                      <GlyphToolbar textareaRef={notesEnRef} onChange={(v) => setF("notes_en", v)} />
+                      <textarea
+                        ref={notesEnRef}
+                        value={f("notes_en")}
+                        onChange={(e) => setF("notes_en", e.target.value)}
+                        rows={3}
+                        className={`mt-1 ${TEXTAREA}`}
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs text-muted-foreground block mb-1">Notes RU</label>
+                      <GlyphToolbar textareaRef={notesRuRef} onChange={(v) => setF("notes_ru", v)} />
+                      <textarea
+                        ref={notesRuRef}
+                        value={f("notes_ru")}
+                        onChange={(e) => setF("notes_ru", e.target.value)}
+                        rows={3}
+                        className={`mt-1 ${TEXTAREA}`}
+                      />
+                    </div>
+                  </>
+                )}
               </div>
 
               {!isNew && selected && (
@@ -441,6 +539,7 @@ export default function GlobalEventsEditor({ tab }: { tab: GlobalEventsTab }) {
                     folder={cfg.folder}
                     imageField="image"
                     currentImage={(selected.image as string | null) ?? null}
+                    defaultCropPreset={isPortrait ? "card" : undefined}
                     onUploaded={() => refreshImage(selected.id)}
                   />
                 </div>
