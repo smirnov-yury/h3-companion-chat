@@ -287,6 +287,62 @@ export default function ImageUploader({
               </div>
             </div>
 
+            <div className="flex items-center gap-3">
+              <span className="text-xs text-muted-foreground w-20 shrink-0">Rotation</span>
+              <button
+                type="button"
+                onClick={() => setRotation((r) => Math.max(-180, r - 90))}
+                className="px-2 py-1 rounded border border-border text-xs text-foreground hover:bg-accent"
+                title="Rotate -90°"
+              >
+                -90°
+              </button>
+              <button
+                type="button"
+                onClick={() => setRotation((r) => Math.max(-180, r - 1))}
+                className="px-2 py-1 rounded border border-border text-xs text-foreground hover:bg-accent"
+                title="Rotate left 1°"
+              >
+                ◀
+              </button>
+              <input
+                type="range"
+                min={-180}
+                max={180}
+                step={1}
+                value={rotation}
+                onChange={(e) => setRotation(Number(e.target.value))}
+                className="flex-1 accent-primary"
+              />
+              <button
+                type="button"
+                onClick={() => setRotation((r) => Math.min(180, r + 1))}
+                className="px-2 py-1 rounded border border-border text-xs text-foreground hover:bg-accent"
+                title="Rotate right 1°"
+              >
+                ▶
+              </button>
+              <button
+                type="button"
+                onClick={() => setRotation((r) => Math.min(180, r + 90))}
+                className="px-2 py-1 rounded border border-border text-xs text-foreground hover:bg-accent"
+                title="Rotate +90°"
+              >
+                +90°
+              </button>
+              <button
+                type="button"
+                onClick={() => setRotation(0)}
+                className="px-2 py-1 rounded border border-border text-xs text-muted-foreground hover:bg-accent"
+                title="Reset rotation"
+              >
+                Reset
+              </button>
+              <span className="text-xs text-muted-foreground w-10 text-right shrink-0">
+                {rotation}°
+              </span>
+            </div>
+
             <div className="flex-1 overflow-auto flex items-center justify-center bg-muted/30 rounded-lg p-2">
               <ReactCrop
                 crop={crop}
@@ -301,7 +357,12 @@ export default function ImageUploader({
                   src={rawSrc}
                   onLoad={onImageLoad}
                   alt=""
-                  style={{ maxHeight: "70vh", maxWidth: "100%" }}
+                  style={{
+                    maxHeight: "70vh",
+                    maxWidth: "100%",
+                    transform: `rotate(${rotation}deg)`,
+                    transition: "transform 0.15s ease",
+                  }}
                 />
               </ReactCrop>
             </div>
