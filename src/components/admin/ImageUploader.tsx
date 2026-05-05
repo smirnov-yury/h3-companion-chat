@@ -130,6 +130,7 @@ export default function ImageUploader({
   const [crop, setCrop] = useState<Crop>({ unit: "%", x: 0, y: 0, width: 90, height: 90 });
   const [completedCrop, setCompletedCrop] = useState<PixelCrop | null>(null);
   const [rotation, setRotation] = useState(0);
+  const [zoom, setZoom] = useState(1);
 
   const [preview, setPreview] = useState<string | null>(null);
   const [blob, setBlob] = useState<Blob | null>(null);
@@ -143,6 +144,7 @@ export default function ImageUploader({
     setPreset(defaultCropPreset ?? folderToPreset(folder));
     setCompletedCrop(null);
     setRotation(0);
+    setZoom(1);
   };
 
   const onImageLoad = useCallback(
@@ -198,6 +200,7 @@ export default function ImageUploader({
     if (rawSrc) URL.revokeObjectURL(rawSrc);
     setRawSrc(null);
     setRotation(0);
+    setZoom(1);
   };
 
   const handleUpload = async () => {
@@ -343,28 +346,71 @@ export default function ImageUploader({
               </span>
             </div>
 
-            <div className="flex-1 overflow-auto flex items-center justify-center bg-muted/30 rounded-lg p-2">
-              <ReactCrop
-                crop={crop}
-                onChange={(c) => setCrop(c)}
-                onComplete={(c) => setCompletedCrop(c)}
-                aspect={currentPresetAspect}
-                minWidth={20}
-                minHeight={20}
+            <div className="flex items-center gap-3">
+              <span className="text-xs text-muted-foreground w-20 shrink-0">Zoom</span>
+              <button
+                type="button"
+                onClick={() => setZoom((z) => Math.max(1, parseFloat((z - 0.25).toFixed(2))))}
+                className="px-2 py-1 rounded border border-border text-xs text-foreground hover:bg-accent"
+                title="Zoom out"
               >
-                <img
-                  ref={imgRef}
-                  src={rawSrc}
-                  onLoad={onImageLoad}
-                  alt=""
-                  style={{
-                    maxHeight: "70vh",
-                    maxWidth: "100%",
-                    transform: `rotate(${rotation}deg)`,
-                    transition: "transform 0.15s ease",
-                  }}
-                />
-              </ReactCrop>
+                −
+              </button>
+              <input
+                type="range"
+                min={1}
+                max={4}
+                step={0.1}
+                value={zoom}
+                onChange={(e) => setZoom(Number(e.target.value))}
+                className="flex-1 accent-primary"
+              />
+              <button
+                type="button"
+                onClick={() => setZoom((z) => Math.min(4, parseFloat((z + 0.25).toFixed(2))))}
+                className="px-2 py-1 rounded border border-border text-xs text-foreground hover:bg-accent"
+                title="Zoom in"
+              >
+                +
+              </button>
+              <button
+                type="button"
+                onClick={() => setZoom(1)}
+                className="px-2 py-1 rounded border border-border text-xs text-muted-foreground hover:bg-accent"
+                title="Reset zoom"
+              >
+                Reset
+              </button>
+              <span className="text-xs text-muted-foreground w-10 text-right shrink-0">
+                {zoom.toFixed(1)}×
+              </span>
+            </div>
+
+            <div className="flex-1 overflow-auto flex items-center justify-center bg-muted/30 rounded-lg p-2">
+              <div className="overflow-auto max-h-[65vh] rounded border border-border">
+                <ReactCrop
+                  crop={crop}
+                  onChange={(c) => setCrop(c)}
+                  onComplete={(c) => setCompletedCrop(c)}
+                  aspect={currentPresetAspect}
+                  minWidth={20}
+                  minHeight={20}
+                >
+                  <img
+                    ref={imgRef}
+                    src={rawSrc}
+                    onLoad={onImageLoad}
+                    alt=""
+                    style={{
+                      width: `${zoom * 100}%`,
+                      maxWidth: `${zoom * 100}%`,
+                      transform: `rotate(${rotation}deg)`,
+                      transition: "transform 0.15s ease",
+                      display: "block",
+                    }}
+                  />
+                </ReactCrop>
+              </div>
             </div>
 
             <div className="flex justify-end gap-2">
