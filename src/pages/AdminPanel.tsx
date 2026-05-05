@@ -197,9 +197,14 @@ export default function AdminPanel() {
             <Route index element={<AdminDashboard />} />
             <Route path="rules" element={<RulesEditor />} />
             <Route path="scenarios" element={<ScenariosEditor />} />
-            <Route path="map-elements" element={<MapElementsEditor />} />
+            <Route path="fields" element={<MapElementsEditor tab="fields" />} />
+            <Route path="map-events" element={<MapElementsEditor tab="map_events" />} />
+            <Route path="pandora" element={<MapElementsEditor tab="pandora" />} />
             <Route path="events" element={<GlobalEventsEditor tab="events" />} />
             <Route path="astrologers" element={<GlobalEventsEditor tab="astrologers" />} />
+            <Route path="ai-cards" element={<GlobalEventsEditor tab="ai_cards" />} />
+            <Route path="morale" element={<GlobalEventsEditor tab="morale" />} />
+            <Route path="map-elements" element={<Navigate to="../fields" replace />} />
             <Route path="artifacts" element={<DecksEditor tab="artifacts" />} />
             <Route path="spells" element={<DecksEditor tab="spells" />} />
             <Route path="abilities" element={<DecksEditor tab="abilities" />} />
