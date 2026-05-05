@@ -6,61 +6,101 @@ import GlyphToolbar from "@/components/admin/GlyphToolbar";
 import ImageUploader from "@/components/admin/ImageUploader";
 import DeleteConfirmDialog from "@/components/admin/DeleteConfirmDialog";
 
+export type MapElementsTab = "fields" | "map_events" | "pandora";
+
 const INPUT =
   "w-full rounded-lg border border-border bg-input px-3 py-2 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring";
 const TEXTAREA = `${INPUT} resize-y font-mono`;
 const TEXTAREA_PLAIN = `${INPUT} resize-y`;
 
-interface Field {
+interface TabConfig {
+  label: string;
+  table: string;
+  folder: string;
+  selectCols: string;
+}
+
+const CONFIGS: Record<MapElementsTab, TabConfig> = {
+  fields: {
+    label: "Fields",
+    table: "fields",
+    folder: "fields",
+    selectCols:
+      "id, name_en, name_ru, type_en, type_ru, effect_en, effect_ru, notes_en, notes_ru, image, sort_order, image_status, ai_context",
+  },
+  map_events: {
+    label: "Map Events",
+    table: "map_events",
+    folder: "map_events",
+    selectCols:
+      "id, name_en, name_ru, description_en, description_ru, image, sort_order, image_status",
+  },
+  pandora: {
+    label: "Pandora's Box",
+    table: "pandora_box",
+    folder: "pandora_box",
+    selectCols: "id, description_en, description_ru, image, sort_order, image_status",
+  },
+};
+
+type MERow = Record<string, unknown> & {
   id: string;
-  name_en: string | null;
-  name_ru: string | null;
-  type_en: string | null;
-  type_ru: string | null;
-  effect_en: string | null;
-  effect_ru: string | null;
-  notes_en: string | null;
-  notes_ru: string | null;
-  image: string | null;
-  sort_order: number | null;
-  image_status: string | null;
-  ai_context: string | null;
+  name_en?: string | null;
+  description_en?: string | null;
+  image?: string | null;
+  image_status?: string | null;
+  sort_order?: number | null;
+};
+
+type MEForm = Record<string, string | number | null>;
+
+function buildEmptyForm(tab: MapElementsTab): MEForm {
+  if (tab === "fields") {
+    return {
+      name_en: "", name_ru: "", type_en: "", type_ru: "",
+      effect_en: "", effect_ru: "", notes_en: "", notes_ru: "",
+      ai_context: "", sort_order: null,
+    };
+  }
+  if (tab === "map_events") {
+    return {
+      name_en: "", name_ru: "", description_en: "", description_ru: "", sort_order: null,
+    };
+  }
+  return { description_en: "", description_ru: "", sort_order: null };
 }
 
-interface FieldForm {
-  name_en: string;
-  name_ru: string;
-  type_en: string;
-  type_ru: string;
-  effect_en: string;
-  effect_ru: string;
-  notes_en: string;
-  notes_ru: string;
-  ai_context: string;
-  sort_order: number | null;
-}
-
-function emptyForm(): FieldForm {
+function rowToForm(tab: MapElementsTab, row: MERow): MEForm {
+  const str = (v: unknown) => ((v as string) ?? "");
+  if (tab === "fields") {
+    return {
+      name_en: str(row.name_en), name_ru: str(row.name_ru),
+      type_en: str(row.type_en), type_ru: str(row.type_ru),
+      effect_en: str(row.effect_en), effect_ru: str(row.effect_ru),
+      notes_en: str(row.notes_en), notes_ru: str(row.notes_ru),
+      ai_context: str(row.ai_context),
+      sort_order: (row.sort_order as number | null) ?? null,
+    };
+  }
+  if (tab === "map_events") {
+    return {
+      name_en: str(row.name_en), name_ru: str(row.name_ru),
+      description_en: str(row.description_en), description_ru: str(row.description_ru),
+      sort_order: (row.sort_order as number | null) ?? null,
+    };
+  }
   return {
-    name_en: "", name_ru: "", type_en: "", type_ru: "",
-    effect_en: "", effect_ru: "", notes_en: "", notes_ru: "",
-    ai_context: "", sort_order: null,
+    description_en: str(row.description_en), description_ru: str(row.description_ru),
+    sort_order: (row.sort_order as number | null) ?? null,
   };
 }
 
-function rowToForm(r: Field): FieldForm {
-  return {
-    name_en: r.name_en ?? "",
-    name_ru: r.name_ru ?? "",
-    type_en: r.type_en ?? "",
-    type_ru: r.type_ru ?? "",
-    effect_en: r.effect_en ?? "",
-    effect_ru: r.effect_ru ?? "",
-    notes_en: r.notes_en ?? "",
-    notes_ru: r.notes_ru ?? "",
-    ai_context: r.ai_context ?? "",
-    sort_order: r.sort_order ?? null,
-  };
+function formToPayload(form: MEForm): Record<string, unknown> {
+  const result: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(form)) {
+    result[k] = typeof v === "string" ? (v || null) : v;
+  }
+  return result;
 }
 
 function FieldLabel({ text, children }: { text: string; children: React.ReactNode }) {
@@ -72,13 +112,14 @@ function FieldLabel({ text, children }: { text: string; children: React.ReactNod
   );
 }
 
-export default function MapElementsEditor() {
-  const [items, setItems] = useState<Field[]>([]);
+export default function MapElementsEditor({ tab }: { tab: MapElementsTab }) {
+  const cfg = CONFIGS[tab];
+  const [items, setItems] = useState<MERow[]>([]);
   const [search, setSearch] = useState("");
-  const [selected, setSelected] = useState<Field | null>(null);
+  const [selected, setSelected] = useState<MERow | null>(null);
   const [isNew, setIsNew] = useState(false);
   const [newId, setNewId] = useState("");
-  const [form, setForm] = useState<FieldForm>(emptyForm());
+  const [form, setForm] = useState<MEForm>(() => buildEmptyForm(tab));
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -90,17 +131,36 @@ export default function MapElementsEditor() {
   const notesRuRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
+    setItems([]);
+    setSelected(null);
+    setIsNew(false);
+    setSearch("");
+    setForm(buildEmptyForm(tab));
+    setError(null);
+    setLoading(true);
     supabase
-      .from("fields")
-      .select("id, name_en, name_ru, type_en, type_ru, effect_en, effect_ru, notes_en, notes_ru, image, sort_order, image_status, ai_context")
+      .from(cfg.table as never)
+      .select(cfg.selectCols)
       .order("sort_order", { ascending: true })
-      .then(({ data }) => { setItems((data as Field[]) ?? []); setLoading(false); });
-  }, []);
+      .then(({ data }) => { setItems(((data as unknown) as MERow[]) ?? []); setLoading(false); });
+  }, [tab, cfg.table, cfg.selectCols]);
 
-  const selectItem = (item: Field) => {
+  const labelOf = (item: MERow) => {
+    if (tab === "pandora") {
+      const d = (item.description_en as string | null) ?? "";
+      return d ? (d.length > 40 ? d.slice(0, 40) + "…" : d) : item.id;
+    }
+    return (item.name_en as string | null) ?? item.id;
+  };
+
+  const filtered = items.filter((item) =>
+    String(labelOf(item)).toLowerCase().includes(search.toLowerCase()),
+  );
+
+  const selectItem = (item: MERow) => {
     setSelected(item);
     setIsNew(false);
-    setForm(rowToForm(item));
+    setForm(rowToForm(tab, item));
     setError(null);
   };
 
@@ -108,46 +168,42 @@ export default function MapElementsEditor() {
     setSelected(null);
     setIsNew(true);
     setNewId("");
-    setForm(emptyForm());
+    setForm(buildEmptyForm(tab));
     setError(null);
   };
 
   const handleSave = async () => {
     setSaving(true);
     setError(null);
-    const payload = {
-      name_en: form.name_en || null,
-      name_ru: form.name_ru || null,
-      type_en: form.type_en || null,
-      type_ru: form.type_ru || null,
-      effect_en: form.effect_en || null,
-      effect_ru: form.effect_ru || null,
-      notes_en: form.notes_en || null,
-      notes_ru: form.notes_ru || null,
-      ai_context: form.ai_context || null,
-      sort_order: form.sort_order,
-    };
+    const payload = formToPayload(form);
     if (isNew) {
       if (!newId.trim()) {
         setError("ID is required");
         setSaving(false);
         return;
       }
-      const { error: e } = await supabase.from("fields").insert({ id: newId.trim(), ...payload } as never);
+      const { error: e } = await supabase
+        .from(cfg.table as never)
+        .insert({ id: newId.trim(), ...payload } as never);
       if (e) {
         setError(e.message);
         toast.error(e.message);
       } else {
-        const created: Field = { id: newId.trim(), ...payload, image: null, image_status: null };
+        const created: MERow = { id: newId.trim(), ...payload, image: null, image_status: null };
         setItems((prev) =>
-          [...prev, created].sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0)),
+          [...prev, created].sort(
+            (a, b) => ((a.sort_order as number) ?? 0) - ((b.sort_order as number) ?? 0),
+          ),
         );
         setSelected(created);
         setIsNew(false);
         toast.success("Saved");
       }
     } else if (selected) {
-      const { error: e } = await supabase.from("fields").update(payload as never).eq("id", selected.id);
+      const { error: e } = await supabase
+        .from(cfg.table as never)
+        .update(payload as never)
+        .eq("id", selected.id);
       if (e) {
         setError(e.message);
         toast.error(e.message);
@@ -155,7 +211,9 @@ export default function MapElementsEditor() {
         setItems((prev) =>
           prev
             .map((item) => (item.id === selected.id ? { ...item, ...payload } : item))
-            .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0)),
+            .sort(
+              (a, b) => ((a.sort_order as number) ?? 0) - ((b.sort_order as number) ?? 0),
+            ),
         );
         setSelected((prev) => (prev ? { ...prev, ...payload } : null));
         toast.success("Saved");
@@ -166,21 +224,25 @@ export default function MapElementsEditor() {
 
   const handleDeleteConfirm = async () => {
     if (!selected) return;
-    const { error: e } = await supabase.from("fields").delete().eq("id", selected.id);
+    const { error: e } = await supabase.from(cfg.table as never).delete().eq("id", selected.id);
     if (e) {
       toast.error(e.message);
     } else {
       setItems((prev) => prev.filter((item) => item.id !== selected.id));
       setSelected(null);
       setIsNew(false);
-      setForm(emptyForm());
+      setForm(buildEmptyForm(tab));
       toast.success("Deleted");
     }
     setDeleteOpen(false);
   };
 
   const refreshImage = async (id: string) => {
-    const { data } = await supabase.from("fields").select("image, image_status").eq("id", id).single();
+    const { data } = await supabase
+      .from(cfg.table as never)
+      .select("image, image_status")
+      .eq("id", id)
+      .single();
     if (data) {
       const d = data as { image: string | null; image_status: string | null };
       setItems((prev) => prev.map((item) => (item.id === id ? { ...item, ...d } : item)));
@@ -188,12 +250,11 @@ export default function MapElementsEditor() {
     }
   };
 
-  const setF = (k: keyof FieldForm, v: unknown) =>
-    setForm((prev) => ({ ...prev, [k]: v as never }));
+  const f = (key: string) => String(form[key] ?? "");
+  const setF = (key: string, value: unknown) =>
+    setForm((prev) => ({ ...prev, [key]: value as string | number | null }));
 
-  const filtered = items.filter((item) =>
-    (item.name_en ?? "").toLowerCase().includes(search.toLowerCase()),
-  );
+  const singular = cfg.label.replace(/s$/, "");
 
   return (
     <div className="flex h-full gap-0 min-h-0">
@@ -214,7 +275,7 @@ export default function MapElementsEditor() {
             type="button"
             onClick={startNew}
             className="px-2 py-1.5 rounded-lg bg-primary text-primary-foreground"
-            title="New Map Element"
+            title={`New ${singular}`}
           >
             <Plus className="w-3.5 h-3.5" />
           </button>
@@ -237,7 +298,7 @@ export default function MapElementsEditor() {
                       : "text-foreground hover:bg-accent"
                   }`}
                 >
-                  <div className="font-medium truncate">{item.name_en ?? item.id}</div>
+                  <div className="font-medium truncate">{String(labelOf(item))}</div>
                   <div className="opacity-60 text-[10px] truncate">{item.id}</div>
                 </button>
               ))}
@@ -252,7 +313,7 @@ export default function MapElementsEditor() {
           <div className="max-w-3xl space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-semibold text-foreground">
-                {isNew ? "New Map Element" : selected?.name_en ?? selected?.id ?? ""}
+                {isNew ? `New ${singular}` : String(labelOf(selected as MERow))}
               </h2>
               <div className="flex gap-2">
                 {!isNew && (
@@ -291,63 +352,87 @@ export default function MapElementsEditor() {
                     />
                   </FieldLabel>
                 )}
-                <div className="grid grid-cols-2 gap-3">
-                  <FieldLabel text="Name EN">
-                    <input type="text" value={form.name_en} onChange={(e) => setF("name_en", e.target.value)} className={INPUT} />
-                  </FieldLabel>
-                  <FieldLabel text="Name RU">
-                    <input type="text" value={form.name_ru} onChange={(e) => setF("name_ru", e.target.value)} className={INPUT} />
-                  </FieldLabel>
-                  <FieldLabel text="Type EN">
-                    <input type="text" value={form.type_en} onChange={(e) => setF("type_en", e.target.value)} className={INPUT} />
-                  </FieldLabel>
-                  <FieldLabel text="Type RU">
-                    <input type="text" value={form.type_ru} onChange={(e) => setF("type_ru", e.target.value)} className={INPUT} />
-                  </FieldLabel>
-                </div>
+
+                {tab !== "pandora" && (
+                  <div className="grid grid-cols-2 gap-3">
+                    <FieldLabel text="Name EN">
+                      <input type="text" value={f("name_en")} onChange={(e) => setF("name_en", e.target.value)} className={INPUT} />
+                    </FieldLabel>
+                    <FieldLabel text="Name RU">
+                      <input type="text" value={f("name_ru")} onChange={(e) => setF("name_ru", e.target.value)} className={INPUT} />
+                    </FieldLabel>
+                  </div>
+                )}
+
+                {tab === "fields" && (
+                  <div className="grid grid-cols-2 gap-3">
+                    <FieldLabel text="Type EN">
+                      <input type="text" value={f("type_en")} onChange={(e) => setF("type_en", e.target.value)} className={INPUT} />
+                    </FieldLabel>
+                    <FieldLabel text="Type RU">
+                      <input type="text" value={f("type_ru")} onChange={(e) => setF("type_ru", e.target.value)} className={INPUT} />
+                    </FieldLabel>
+                  </div>
+                )}
+
                 <FieldLabel text="Sort Order">
                   <input
                     type="number"
-                    value={form.sort_order ?? ""}
+                    value={(form.sort_order as number | null) ?? ""}
                     onChange={(e) => setF("sort_order", e.target.value ? Number(e.target.value) : null)}
                     className={`${INPUT} w-32`}
                   />
                 </FieldLabel>
 
-                <div>
-                  <label className="text-xs text-muted-foreground block mb-1">Effect EN</label>
-                  <GlyphToolbar textareaRef={effEnRef} onChange={(v) => setF("effect_en", v)} />
-                  <textarea ref={effEnRef} value={form.effect_en} onChange={(e) => setF("effect_en", e.target.value)} rows={4} className={`mt-1 ${TEXTAREA}`} />
-                </div>
-                <div>
-                  <label className="text-xs text-muted-foreground block mb-1">Effect RU</label>
-                  <GlyphToolbar textareaRef={effRuRef} onChange={(v) => setF("effect_ru", v)} />
-                  <textarea ref={effRuRef} value={form.effect_ru} onChange={(e) => setF("effect_ru", e.target.value)} rows={4} className={`mt-1 ${TEXTAREA}`} />
-                </div>
-                <div>
-                  <label className="text-xs text-muted-foreground block mb-1">Notes EN</label>
-                  <GlyphToolbar textareaRef={notesEnRef} onChange={(v) => setF("notes_en", v)} />
-                  <textarea ref={notesEnRef} value={form.notes_en} onChange={(e) => setF("notes_en", e.target.value)} rows={3} className={`mt-1 ${TEXTAREA}`} />
-                </div>
-                <div>
-                  <label className="text-xs text-muted-foreground block mb-1">Notes RU</label>
-                  <GlyphToolbar textareaRef={notesRuRef} onChange={(v) => setF("notes_ru", v)} />
-                  <textarea ref={notesRuRef} value={form.notes_ru} onChange={(e) => setF("notes_ru", e.target.value)} rows={3} className={`mt-1 ${TEXTAREA}`} />
-                </div>
-                <FieldLabel text="AI Context">
-                  <textarea value={form.ai_context} onChange={(e) => setF("ai_context", e.target.value)} rows={2} className={TEXTAREA_PLAIN} />
-                </FieldLabel>
+                {tab === "fields" && (
+                  <>
+                    <div>
+                      <label className="text-xs text-muted-foreground block mb-1">Effect EN</label>
+                      <GlyphToolbar textareaRef={effEnRef} onChange={(v) => setF("effect_en", v)} />
+                      <textarea ref={effEnRef} value={f("effect_en")} onChange={(e) => setF("effect_en", e.target.value)} rows={4} className={`mt-1 ${TEXTAREA}`} />
+                    </div>
+                    <div>
+                      <label className="text-xs text-muted-foreground block mb-1">Effect RU</label>
+                      <GlyphToolbar textareaRef={effRuRef} onChange={(v) => setF("effect_ru", v)} />
+                      <textarea ref={effRuRef} value={f("effect_ru")} onChange={(e) => setF("effect_ru", e.target.value)} rows={4} className={`mt-1 ${TEXTAREA}`} />
+                    </div>
+                    <div>
+                      <label className="text-xs text-muted-foreground block mb-1">Notes EN</label>
+                      <GlyphToolbar textareaRef={notesEnRef} onChange={(v) => setF("notes_en", v)} />
+                      <textarea ref={notesEnRef} value={f("notes_en")} onChange={(e) => setF("notes_en", e.target.value)} rows={3} className={`mt-1 ${TEXTAREA}`} />
+                    </div>
+                    <div>
+                      <label className="text-xs text-muted-foreground block mb-1">Notes RU</label>
+                      <GlyphToolbar textareaRef={notesRuRef} onChange={(v) => setF("notes_ru", v)} />
+                      <textarea ref={notesRuRef} value={f("notes_ru")} onChange={(e) => setF("notes_ru", e.target.value)} rows={3} className={`mt-1 ${TEXTAREA}`} />
+                    </div>
+                    <FieldLabel text="AI Context">
+                      <textarea value={f("ai_context")} onChange={(e) => setF("ai_context", e.target.value)} rows={2} className={TEXTAREA_PLAIN} />
+                    </FieldLabel>
+                  </>
+                )}
+
+                {(tab === "map_events" || tab === "pandora") && (
+                  <div className="grid grid-cols-2 gap-3">
+                    <FieldLabel text="Description EN">
+                      <textarea value={f("description_en")} onChange={(e) => setF("description_en", e.target.value)} rows={4} className={TEXTAREA_PLAIN} />
+                    </FieldLabel>
+                    <FieldLabel text="Description RU">
+                      <textarea value={f("description_ru")} onChange={(e) => setF("description_ru", e.target.value)} rows={4} className={TEXTAREA_PLAIN} />
+                    </FieldLabel>
+                  </div>
+                )}
               </div>
 
               {!isNew && selected && (
                 <div className="shrink-0">
                   <p className="text-xs text-muted-foreground mb-2">Image</p>
                   <ImageUploader
-                    table="fields"
+                    table={cfg.table}
                     recordId={selected.id}
-                    folder="fields"
+                    folder={cfg.folder}
                     imageField="image"
-                    currentImage={selected.image}
+                    currentImage={(selected.image as string | null) ?? null}
                     onUploaded={() => refreshImage(selected.id)}
                   />
                 </div>
@@ -355,7 +440,7 @@ export default function MapElementsEditor() {
             </div>
           </div>
         ) : (
-          <div className="text-sm text-muted-foreground">Select a map element or create new</div>
+          <div className="text-sm text-muted-foreground">Select an item or create new</div>
         )}
       </div>
 
