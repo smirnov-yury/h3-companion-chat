@@ -26,12 +26,21 @@ const NAV_ITEMS: Array<
   { path: "", label: "Dashboard", icon: LayoutDashboard },
   { path: "rules", label: "Rules", icon: BookOpen },
   { path: "scenarios", label: "Scenarios", icon: Map },
-  { path: "map-elements", label: "Map Elements", icon: Map },
+  {
+    label: "Map Elements", icon: Map,
+    children: [
+      { path: "fields", label: "Fields" },
+      { path: "map-events", label: "Map Events" },
+      { path: "pandora", label: "Pandora's Box" },
+    ],
+  },
   {
     label: "Global Events", icon: Zap,
     children: [
       { path: "events", label: "Events" },
       { path: "astrologers", label: "Astrologers" },
+      { path: "ai-cards", label: "AI Cards" },
+      { path: "morale", label: "Morale" },
     ],
   },
   {
