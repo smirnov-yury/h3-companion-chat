@@ -41,27 +41,53 @@ function centerAspectCrop(width: number, height: number, aspect: number | undefi
   );
 }
 
-async function cropToWebp(img: HTMLImageElement, pixelCrop: PixelCrop): Promise<Blob> {
+async function cropToWebp(
+  img: HTMLImageElement,
+  pixelCrop: PixelCrop,
+  rotation: number,
+): Promise<Blob> {
   const scaleX = img.naturalWidth / img.width;
   const scaleY = img.naturalHeight / img.height;
-  const cw = pixelCrop.width * scaleX;
-  const ch = pixelCrop.height * scaleY;
-  const scale = Math.min(1, MAX_PX / Math.max(cw, ch));
+
+  const nx = pixelCrop.x * scaleX;
+  const ny = pixelCrop.y * scaleY;
+  const nw = pixelCrop.width * scaleX;
+  const nh = pixelCrop.height * scaleY;
+
+  const scale = Math.min(1, MAX_PX / Math.max(nw, nh));
+  const outW = Math.round(nw * scale);
+  const outH = Math.round(nh * scale);
+
+  const rotCanvas = document.createElement("canvas");
+  const rad = (rotation * Math.PI) / 180;
+  const sin = Math.abs(Math.sin(rad));
+  const cos = Math.abs(Math.cos(rad));
+  rotCanvas.width = Math.round(img.naturalWidth * cos + img.naturalHeight * sin);
+  rotCanvas.height = Math.round(img.naturalWidth * sin + img.naturalHeight * cos);
+  const rotCtx = rotCanvas.getContext("2d")!;
+  rotCtx.translate(rotCanvas.width / 2, rotCanvas.height / 2);
+  rotCtx.rotate(rad);
+  rotCtx.drawImage(img, -img.naturalWidth / 2, -img.naturalHeight / 2);
+
+  const offsetX = (rotCanvas.width - img.naturalWidth) / 2;
+  const offsetY = (rotCanvas.height - img.naturalHeight) / 2;
+
   const canvas = document.createElement("canvas");
-  canvas.width = Math.round(cw * scale);
-  canvas.height = Math.round(ch * scale);
+  canvas.width = outW;
+  canvas.height = outH;
   const ctx = canvas.getContext("2d")!;
   ctx.drawImage(
-    img,
-    pixelCrop.x * scaleX,
-    pixelCrop.y * scaleY,
-    cw,
-    ch,
+    rotCanvas,
+    nx + offsetX,
+    ny + offsetY,
+    nw,
+    nh,
     0,
     0,
-    canvas.width,
-    canvas.height,
+    outW,
+    outH,
   );
+
   return new Promise<Blob>((resolve, reject) =>
     canvas.toBlob(
       (blob) => (blob ? resolve(blob) : reject(new Error("toBlob failed"))),
@@ -103,6 +129,7 @@ export default function ImageUploader({
   );
   const [crop, setCrop] = useState<Crop>({ unit: "%", x: 0, y: 0, width: 90, height: 90 });
   const [completedCrop, setCompletedCrop] = useState<PixelCrop | null>(null);
+  const [rotation, setRotation] = useState(0);
 
   const [preview, setPreview] = useState<string | null>(null);
   const [blob, setBlob] = useState<Blob | null>(null);
@@ -115,6 +142,7 @@ export default function ImageUploader({
     setRawSrc(url);
     setPreset(defaultCropPreset ?? folderToPreset(folder));
     setCompletedCrop(null);
+    setRotation(0);
   };
 
   const onImageLoad = useCallback(
@@ -153,7 +181,7 @@ export default function ImageUploader({
       };
     }
     try {
-      const webpBlob = await cropToWebp(img, pixelCrop);
+      const webpBlob = await cropToWebp(img, pixelCrop, rotation);
       if (preview) URL.revokeObjectURL(preview);
       if (rawSrc) URL.revokeObjectURL(rawSrc);
       setBlob(webpBlob);
@@ -169,6 +197,7 @@ export default function ImageUploader({
   const handleCropCancel = () => {
     if (rawSrc) URL.revokeObjectURL(rawSrc);
     setRawSrc(null);
+    setRotation(0);
   };
 
   const handleUpload = async () => {
@@ -258,6 +287,62 @@ export default function ImageUploader({
               </div>
             </div>
 
+            <div className="flex items-center gap-3">
+              <span className="text-xs text-muted-foreground w-20 shrink-0">Rotation</span>
+              <button
+                type="button"
+                onClick={() => setRotation((r) => Math.max(-180, r - 90))}
+                className="px-2 py-1 rounded border border-border text-xs text-foreground hover:bg-accent"
+                title="Rotate -90°"
+              >
+                -90°
+              </button>
+              <button
+                type="button"
+                onClick={() => setRotation((r) => Math.max(-180, r - 1))}
+                className="px-2 py-1 rounded border border-border text-xs text-foreground hover:bg-accent"
+                title="Rotate left 1°"
+              >
+                ◀
+              </button>
+              <input
+                type="range"
+                min={-180}
+                max={180}
+                step={1}
+                value={rotation}
+                onChange={(e) => setRotation(Number(e.target.value))}
+                className="flex-1 accent-primary"
+              />
+              <button
+                type="button"
+                onClick={() => setRotation((r) => Math.min(180, r + 1))}
+                className="px-2 py-1 rounded border border-border text-xs text-foreground hover:bg-accent"
+                title="Rotate right 1°"
+              >
+                ▶
+              </button>
+              <button
+                type="button"
+                onClick={() => setRotation((r) => Math.min(180, r + 90))}
+                className="px-2 py-1 rounded border border-border text-xs text-foreground hover:bg-accent"
+                title="Rotate +90°"
+              >
+                +90°
+              </button>
+              <button
+                type="button"
+                onClick={() => setRotation(0)}
+                className="px-2 py-1 rounded border border-border text-xs text-muted-foreground hover:bg-accent"
+                title="Reset rotation"
+              >
+                Reset
+              </button>
+              <span className="text-xs text-muted-foreground w-10 text-right shrink-0">
+                {rotation}°
+              </span>
+            </div>
+
             <div className="flex-1 overflow-auto flex items-center justify-center bg-muted/30 rounded-lg p-2">
               <ReactCrop
                 crop={crop}
@@ -272,7 +357,12 @@ export default function ImageUploader({
                   src={rawSrc}
                   onLoad={onImageLoad}
                   alt=""
-                  style={{ maxHeight: "70vh", maxWidth: "100%" }}
+                  style={{
+                    maxHeight: "70vh",
+                    maxWidth: "100%",
+                    transform: `rotate(${rotation}deg)`,
+                    transition: "transform 0.15s ease",
+                  }}
                 />
               </ReactCrop>
             </div>
