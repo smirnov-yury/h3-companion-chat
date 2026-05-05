@@ -450,38 +450,45 @@ export default function ImageUploader({
             <div className="flex-1 overflow-auto flex items-center justify-center bg-muted/30 rounded-lg p-2">
               <div
                 ref={cropContainerRef}
-                className="overflow-auto max-h-[65vh] rounded border border-border select-none"
-                style={{ cursor: panMode ? (panningRef.current ? "grabbing" : "grab") : "default" }}
+                className="rounded border border-border select-none"
+                style={{
+                  overflow: "auto",
+                  maxHeight: "65vh",
+                  width: "100%",
+                  cursor: panMode ? (panningRef.current ? "grabbing" : "grab") : "default",
+                  overscrollBehavior: "contain",
+                }}
                 onMouseDown={handlePanMouseDown}
                 onMouseMove={handlePanMouseMove}
                 onMouseUp={handlePanMouseUp}
                 onMouseLeave={handlePanMouseUp}
               >
-                <ReactCrop
-                  crop={crop}
-                  onChange={(c) => setCrop(c)}
-                  onComplete={(c) => setCompletedCrop(c)}
-                  aspect={currentPresetAspect}
-                  minWidth={20}
-                  minHeight={20}
-                  disabled={panMode}
-                >
-                  <img
-                    ref={imgRef}
-                    src={rawSrc}
-                    onLoad={onImageLoad}
-                    alt=""
-                    style={{
-                      width: `${zoom * 100}%`,
-                      maxWidth: `${zoom * 100}%`,
-                      transform: `rotate(${rotation}deg)`,
-                      transition: "transform 0.15s ease",
-                      display: "block",
-                      pointerEvents: panMode ? "none" : "auto",
-                    }}
-                  />
-
-                </ReactCrop>
+                <div style={{ display: "inline-block", minWidth: "100%" }}>
+                  <ReactCrop
+                    crop={crop}
+                    onChange={(c) => setCrop(c)}
+                    onComplete={(c) => setCompletedCrop(c)}
+                    aspect={currentPresetAspect}
+                    minWidth={20}
+                    minHeight={20}
+                    disabled={panMode}
+                  >
+                    <img
+                      ref={imgRef}
+                      src={rawSrc}
+                      onLoad={onImageLoad}
+                      alt=""
+                      style={{
+                        width: `${zoom * 100}%`,
+                        maxWidth: "none",
+                        transform: `rotate(${rotation}deg)`,
+                        transition: "transform 0.15s ease",
+                        display: "block",
+                        pointerEvents: panMode ? "none" : "auto",
+                      }}
+                    />
+                  </ReactCrop>
+                </div>
               </div>
             </div>
 
