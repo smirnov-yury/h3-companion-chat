@@ -9,6 +9,7 @@ import { CardDialogContent } from "@/components/ui/card-dialog";
 import { EmptyState, SkeletonGrid } from "@/components/ui/empty-state";
 import SeeAlso from "@/components/SeeAlso";
 import { SUPABASE_URL } from "@/integrations/supabase/client";
+import { componentImageUrl } from "@/lib/storage";
 
 const STORAGE = `${SUPABASE_URL}/storage/v1/object/public/component-media`;
 
