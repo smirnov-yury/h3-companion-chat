@@ -153,6 +153,8 @@ export default function GlobalEventsEditor({ tab }: { tab: GlobalEventsTab }) {
   const effRuRef = useRef<HTMLTextAreaElement>(null);
   const notesEnRef = useRef<HTMLTextAreaElement>(null);
   const notesRuRef = useRef<HTMLTextAreaElement>(null);
+  const descEnRef = useRef<HTMLTextAreaElement>(null);
+  const descRuRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     setItems([]);
@@ -434,24 +436,30 @@ export default function GlobalEventsEditor({ tab }: { tab: GlobalEventsTab }) {
                 </FieldLabel>
 
                 {tab === "ai_cards" && (
-                  <div className="grid grid-cols-2 gap-3">
-                    <FieldLabel text="Description EN">
+                  <>
+                    <div>
+                      <label className="text-xs text-muted-foreground block mb-1">Description EN</label>
+                      <GlyphToolbar textareaRef={descEnRef} onChange={(v) => setF("description_en", v)} />
                       <textarea
+                        ref={descEnRef}
                         value={f("description_en")}
                         onChange={(e) => setF("description_en", e.target.value)}
                         rows={3}
-                        className={TEXTAREA_PLAIN}
+                        className={`mt-1 ${TEXTAREA}`}
                       />
-                    </FieldLabel>
-                    <FieldLabel text="Description RU">
+                    </div>
+                    <div>
+                      <label className="text-xs text-muted-foreground block mb-1">Description RU</label>
+                      <GlyphToolbar textareaRef={descRuRef} onChange={(v) => setF("description_ru", v)} />
                       <textarea
+                        ref={descRuRef}
                         value={f("description_ru")}
                         onChange={(e) => setF("description_ru", e.target.value)}
                         rows={3}
-                        className={TEXTAREA_PLAIN}
+                        className={`mt-1 ${TEXTAREA}`}
                       />
-                    </FieldLabel>
-                  </div>
+                    </div>
+                  </>
                 )}
 
                 {tab !== "morale" && (
@@ -482,24 +490,30 @@ export default function GlobalEventsEditor({ tab }: { tab: GlobalEventsTab }) {
                 )}
 
                 {(tab === "astrologers" || tab === "morale") && (
-                  <div className="grid grid-cols-2 gap-3">
-                    <FieldLabel text="Description EN">
+                  <>
+                    <div>
+                      <label className="text-xs text-muted-foreground block mb-1">Description EN</label>
+                      <GlyphToolbar textareaRef={descEnRef} onChange={(v) => setF("description_en", v)} />
                       <textarea
+                        ref={descEnRef}
                         value={f("description_en")}
                         onChange={(e) => setF("description_en", e.target.value)}
                         rows={3}
-                        className={TEXTAREA_PLAIN}
+                        className={`mt-1 ${TEXTAREA}`}
                       />
-                    </FieldLabel>
-                    <FieldLabel text="Description RU">
+                    </div>
+                    <div>
+                      <label className="text-xs text-muted-foreground block mb-1">Description RU</label>
+                      <GlyphToolbar textareaRef={descRuRef} onChange={(v) => setF("description_ru", v)} />
                       <textarea
+                        ref={descRuRef}
                         value={f("description_ru")}
                         onChange={(e) => setF("description_ru", e.target.value)}
                         rows={3}
-                        className={TEXTAREA_PLAIN}
+                        className={`mt-1 ${TEXTAREA}`}
                       />
-                    </FieldLabel>
-                  </div>
+                    </div>
+                  </>
                 )}
 
                 {tab !== "morale" && tab !== "ai_cards" && (

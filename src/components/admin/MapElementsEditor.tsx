@@ -129,6 +129,8 @@ export default function MapElementsEditor({ tab }: { tab: MapElementsTab }) {
   const effRuRef = useRef<HTMLTextAreaElement>(null);
   const notesEnRef = useRef<HTMLTextAreaElement>(null);
   const notesRuRef = useRef<HTMLTextAreaElement>(null);
+  const descEnRef = useRef<HTMLTextAreaElement>(null);
+  const descRuRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     setItems([]);
@@ -413,14 +415,30 @@ export default function MapElementsEditor({ tab }: { tab: MapElementsTab }) {
                 )}
 
                 {(tab === "map_events" || tab === "pandora") && (
-                  <div className="grid grid-cols-2 gap-3">
-                    <FieldLabel text="Description EN">
-                      <textarea value={f("description_en")} onChange={(e) => setF("description_en", e.target.value)} rows={4} className={TEXTAREA_PLAIN} />
-                    </FieldLabel>
-                    <FieldLabel text="Description RU">
-                      <textarea value={f("description_ru")} onChange={(e) => setF("description_ru", e.target.value)} rows={4} className={TEXTAREA_PLAIN} />
-                    </FieldLabel>
-                  </div>
+                  <>
+                    <div>
+                      <label className="text-xs text-muted-foreground block mb-1">Description EN</label>
+                      <GlyphToolbar textareaRef={descEnRef} onChange={(v) => setF("description_en", v)} />
+                      <textarea
+                        ref={descEnRef}
+                        value={f("description_en")}
+                        onChange={(e) => setF("description_en", e.target.value)}
+                        rows={4}
+                        className={`mt-1 ${TEXTAREA}`}
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs text-muted-foreground block mb-1">Description RU</label>
+                      <GlyphToolbar textareaRef={descRuRef} onChange={(v) => setF("description_ru", v)} />
+                      <textarea
+                        ref={descRuRef}
+                        value={f("description_ru")}
+                        onChange={(e) => setF("description_ru", e.target.value)}
+                        rows={4}
+                        className={`mt-1 ${TEXTAREA}`}
+                      />
+                    </div>
+                  </>
                 )}
               </div>
 
