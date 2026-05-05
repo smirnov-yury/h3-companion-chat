@@ -8,6 +8,8 @@ import ReactCrop, {
 import "react-image-crop/dist/ReactCrop.css";
 import { supabase } from "@/integrations/supabase/client";
 import { Upload, X, Check, Loader2, Trash2 } from "lucide-react";
+import { toast } from "sonner";
+import { COMPONENT_MEDIA_MAX_BYTES } from "@/lib/storage";
 
 import { SUPABASE_URL } from "@/integrations/supabase/client";
 const STORAGE_BASE = `${SUPABASE_URL}/storage/v1/object/public/component-media`;
@@ -258,6 +260,17 @@ export default function ImageUploader({
 
   const handleUpload = async () => {
     if (!blob) return;
+
+    if (blob.size > COMPONENT_MEDIA_MAX_BYTES) {
+      const sizeKb = Math.round(blob.size / 1024);
+      const limitKb = Math.round(COMPONENT_MEDIA_MAX_BYTES / 1024);
+      const msg = `Image is ${sizeKb} KB, exceeds ${limitKb} KB bucket limit. Re-crop tighter or lower the source resolution.`;
+      setError(msg);
+      setStatus("error");
+      toast.error(msg);
+      return;
+    }
+
     setStatus("uploading");
     setError(null);
     const filename = `${recordId}.webp`;
@@ -266,10 +279,13 @@ export default function ImageUploader({
       .from("component-media")
       .upload(path, blob, { upsert: true, contentType: "image/webp" });
     if (storageErr) {
-      setError(storageErr.message);
+      const msg = storageErr.message || "Upload failed (unknown storage error)";
+      setError(msg);
       setStatus("error");
+      toast.error(`Storage upload failed: ${msg}`);
       return;
     }
+
     const updatePayload = hasImageStatus
       ? { [imageField]: filename, image_status: "uploaded" }
       : { [imageField]: filename };
@@ -278,14 +294,18 @@ export default function ImageUploader({
       .update(updatePayload as never)
       .eq("id", recordId);
     if (dbErr) {
-      setError(dbErr.message);
+      const msg = dbErr.message || "DB update failed (unknown error)";
+      setError(msg);
       setStatus("error");
+      toast.error(`Database update failed: ${msg}`);
       return;
     }
+
     setStatus("done");
     if (preview) URL.revokeObjectURL(preview);
     setPreview(null);
     setBlob(null);
+    toast.success("Image uploaded");
     onUploaded?.();
   };
 

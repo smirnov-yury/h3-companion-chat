@@ -9,6 +9,7 @@ import { CardDialogContent } from "@/components/ui/card-dialog";
 import { EmptyState, SkeletonGrid } from "@/components/ui/empty-state";
 import SeeAlso from "@/components/SeeAlso";
 import { SUPABASE_URL } from "@/integrations/supabase/client";
+import { componentImageUrl } from "@/lib/storage";
 
 const STORAGE = `${SUPABASE_URL}/storage/v1/object/public/component-media`;
 
@@ -93,7 +94,7 @@ export default function AiCardsTab({ searchQuery = "", initialCardId, onCardOpen
         ) : (
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             {filtered.map((item) => {
-              const imgSrc = item.image ? `${STORAGE}/${item.image}` : null;
+              const imgSrc = item.image ? componentImageUrl("ai_cards", item.image) : null;
               const diff = DIFFICULTY_LABEL[item.difficulty];
               return (
                 <button key={item.id} onClick={() => openCard(item)}
@@ -120,7 +121,7 @@ export default function AiCardsTab({ searchQuery = "", initialCardId, onCardOpen
             <>
               {selected.image && (
                 <div className="w-full shrink-0 flex justify-center bg-muted">
-                  <img src={`${STORAGE}/${selected.image}`} alt={selected.name_en} className="w-full max-h-[280px] object-contain" />
+                  <img src={componentImageUrl("ai_cards", selected.image as string)} alt={selected.name_en} className="w-full max-h-[280px] object-contain" />
                 </div>
               )}
               <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
