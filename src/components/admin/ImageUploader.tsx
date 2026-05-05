@@ -130,6 +130,7 @@ export default function ImageUploader({
   const [crop, setCrop] = useState<Crop>({ unit: "%", x: 0, y: 0, width: 90, height: 90 });
   const [completedCrop, setCompletedCrop] = useState<PixelCrop | null>(null);
   const [rotation, setRotation] = useState(0);
+  const [zoom, setZoom] = useState(1);
 
   const [preview, setPreview] = useState<string | null>(null);
   const [blob, setBlob] = useState<Blob | null>(null);
@@ -143,6 +144,7 @@ export default function ImageUploader({
     setPreset(defaultCropPreset ?? folderToPreset(folder));
     setCompletedCrop(null);
     setRotation(0);
+    setZoom(1);
   };
 
   const onImageLoad = useCallback(
@@ -198,6 +200,7 @@ export default function ImageUploader({
     if (rawSrc) URL.revokeObjectURL(rawSrc);
     setRawSrc(null);
     setRotation(0);
+    setZoom(1);
   };
 
   const handleUpload = async () => {
