@@ -48,7 +48,7 @@ const CONFIGS: Record<DeckTab, DeckConfig> = {
   "war-machines": {
     label: "War Machines",
     table: "war_machines",
-    folder: "war-machines",
+    folder: "war_machines",
     imageField: "image",
     selectCols: "id, name_en, name_ru, ability_en, ability_ru, cost_blacksmith, cost_trade_post, notes_en, notes_ru, sort_order, image, image_status",
   },
