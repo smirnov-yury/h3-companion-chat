@@ -129,6 +129,7 @@ export default function ImageUploader({
   );
   const [crop, setCrop] = useState<Crop>({ unit: "%", x: 0, y: 0, width: 90, height: 90 });
   const [completedCrop, setCompletedCrop] = useState<PixelCrop | null>(null);
+  const [rotation, setRotation] = useState(0);
 
   const [preview, setPreview] = useState<string | null>(null);
   const [blob, setBlob] = useState<Blob | null>(null);
