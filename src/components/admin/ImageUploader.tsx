@@ -414,10 +414,30 @@ export default function ImageUploader({
               <span className="text-xs text-muted-foreground w-10 text-right shrink-0">
                 {zoom.toFixed(1)}×
               </span>
+              <button
+                type="button"
+                onClick={() => setPanMode((p) => !p)}
+                className={`px-2 py-1 rounded border text-xs transition-colors ${
+                  panMode
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border text-foreground hover:bg-accent"
+                }`}
+                title={panMode ? "Switch to crop mode" : "Switch to pan mode (drag to move)"}
+              >
+                {panMode ? "✋ Pan" : "✋"}
+              </button>
             </div>
 
             <div className="flex-1 overflow-auto flex items-center justify-center bg-muted/30 rounded-lg p-2">
-              <div className="overflow-auto max-h-[65vh] rounded border border-border">
+              <div
+                ref={cropContainerRef}
+                className="overflow-auto max-h-[65vh] rounded border border-border select-none"
+                style={{ cursor: panMode ? (panningRef.current ? "grabbing" : "grab") : "default" }}
+                onMouseDown={handlePanMouseDown}
+                onMouseMove={handlePanMouseMove}
+                onMouseUp={handlePanMouseUp}
+                onMouseLeave={handlePanMouseUp}
+              >
                 <ReactCrop
                   crop={crop}
                   onChange={(c) => setCrop(c)}
@@ -425,6 +445,7 @@ export default function ImageUploader({
                   aspect={currentPresetAspect}
                   minWidth={20}
                   minHeight={20}
+                  disabled={panMode}
                 >
                   <img
                     ref={imgRef}
@@ -437,8 +458,10 @@ export default function ImageUploader({
                       transform: `rotate(${rotation}deg)`,
                       transition: "transform 0.15s ease",
                       display: "block",
+                      pointerEvents: panMode ? "none" : "auto",
                     }}
                   />
+
                 </ReactCrop>
               </div>
             </div>
