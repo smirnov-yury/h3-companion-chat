@@ -205,6 +205,32 @@ export default function ImageUploader({
     setRawSrc(null);
     setRotation(0);
     setZoom(1);
+    setPanMode(false);
+  };
+
+  const handlePanMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!panMode || !cropContainerRef.current) return;
+    panningRef.current = true;
+    panStartRef.current = {
+      x: e.clientX,
+      y: e.clientY,
+      scrollLeft: cropContainerRef.current.scrollLeft,
+      scrollTop: cropContainerRef.current.scrollTop,
+    };
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handlePanMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!panningRef.current || !cropContainerRef.current) return;
+    const dx = e.clientX - panStartRef.current.x;
+    const dy = e.clientY - panStartRef.current.y;
+    cropContainerRef.current.scrollLeft = panStartRef.current.scrollLeft - dx;
+    cropContainerRef.current.scrollTop = panStartRef.current.scrollTop - dy;
+  };
+
+  const handlePanMouseUp = () => {
+    panningRef.current = false;
   };
 
   const handleUpload = async () => {
