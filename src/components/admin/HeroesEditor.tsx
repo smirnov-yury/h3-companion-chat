@@ -1,9 +1,54 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { Plus, Trash2, Save, Loader2, Search } from "lucide-react";
 import ImageUploader from "@/components/admin/ImageUploader";
+import GlyphToolbar from "@/components/admin/GlyphToolbar";
 import DeleteConfirmDialog from "@/components/admin/DeleteConfirmDialog";
+
+interface SpecialtyLevel {
+  level: string;
+  image: string;
+  effect_en: string;
+  effect_ru: string;
+}
+
+const SPECIALTY_LEVEL_LABELS = ["Ⅰ", "Ⅳ", "Ⅵ"];
+const SPECIALTY_LEVEL_FILE_INDICES = [1, 4, 7];
+
+function emptySpecialtyLevels(): SpecialtyLevel[] {
+  return SPECIALTY_LEVEL_LABELS.map((level) => ({
+    level,
+    image: "",
+    effect_en: "",
+    effect_ru: "",
+  }));
+}
+
+function normalizeSpecialtyLevels(raw: unknown): SpecialtyLevel[] {
+  const out = emptySpecialtyLevels();
+  if (!Array.isArray(raw)) return out;
+  for (let i = 0; i < 3; i++) {
+    const item = raw[i] as Record<string, unknown> | undefined;
+    if (item && typeof item === "object") {
+      out[i] = {
+        level: typeof item.level === "string" && item.level
+          ? item.level
+          : SPECIALTY_LEVEL_LABELS[i],
+        image: typeof item.image === "string" ? item.image : "",
+        effect_en: typeof item.effect_en === "string" ? item.effect_en : "",
+        effect_ru: typeof item.effect_ru === "string" ? item.effect_ru : "",
+      };
+    }
+  }
+  return out;
+}
+
+function specialtyFilename(townRaw: string | null, heroId: string, idx: number): string {
+  const town = (townRaw ?? "").toLowerCase().trim() || "neutral";
+  const n = SPECIALTY_LEVEL_FILE_INDICES[idx] ?? idx + 1;
+  return `hero_specialties-${town}-${heroId}-${n}.webp`;
+}
 
 interface Hero {
   id: string;
@@ -49,7 +94,7 @@ const EMPTY_FORM = {
   notes_ru: "",
   ai_context: "",
   ability_id: "",
-  specialty_levels_json: "",
+  specialty_levels: emptySpecialtyLevels(),
 };
 
 const TOWNS = ["", "Castle", "Conflux", "Cove", "Dungeon", "Fortress", "Inferno", "Necropolis", "Neutral", "Rampart", "Stronghold", "Tower"];
@@ -118,9 +163,7 @@ export default function HeroesEditor() {
       notes_ru: hero.notes_ru ?? "",
       ai_context: hero.ai_context ?? "",
       ability_id: hero.ability_id ?? "",
-      specialty_levels_json: hero.specialty_levels
-        ? JSON.stringify(hero.specialty_levels, null, 2)
-        : "",
+      specialty_levels: normalizeSpecialtyLevels(hero.specialty_levels),
     });
   };
 
@@ -133,14 +176,9 @@ export default function HeroesEditor() {
   };
 
   const buildPayload = () => {
-    let specialty_levels: unknown = null;
-    if (form.specialty_levels_json.trim()) {
-      try {
-        specialty_levels = JSON.parse(form.specialty_levels_json);
-      } catch {
-        /* keep null */
-      }
-    }
+    const allEmpty = form.specialty_levels.every(
+      (l) => !l.image && !l.effect_en && !l.effect_ru,
+    );
     return {
       name_en: form.name_en,
       name_ru: form.name_ru || null,
@@ -160,7 +198,7 @@ export default function HeroesEditor() {
       notes_ru: form.notes_ru || null,
       ai_context: form.ai_context || null,
       ability_id: form.ability_id || null,
-      specialty_levels: specialty_levels as never,
+      specialty_levels: (allEmpty ? null : form.specialty_levels) as never,
     };
   };
 
@@ -242,17 +280,94 @@ export default function HeroesEditor() {
   const refreshImage = async (id: string) => {
     const { data } = await supabase
       .from("heroes")
-      .select("image")
+      .select("image, specialty_levels")
       .eq("id", id)
       .single();
     if (data) {
-      const img = (data as { image: string | null }).image;
+      const row = data as { image: string | null; specialty_levels: unknown };
       setHeroes((prev) =>
-        prev.map((h) => (h.id === id ? { ...h, image: img } : h)),
+        prev.map((h) =>
+          h.id === id
+            ? { ...h, image: row.image, specialty_levels: row.specialty_levels }
+            : h,
+        ),
       );
-      setSelectedHero((prev) => (prev ? { ...prev, image: img } : null));
+      setSelectedHero((prev) =>
+        prev
+          ? { ...prev, image: row.image, specialty_levels: row.specialty_levels }
+          : null,
+      );
+      setForm((f) => ({
+        ...f,
+        specialty_levels: normalizeSpecialtyLevels(row.specialty_levels),
+      }));
     }
   };
+
+  const persistSpecialtyLevels = async (
+    heroId: string,
+    next: SpecialtyLevel[],
+  ) => {
+    const allEmpty = next.every(
+      (l) => !l.image && !l.effect_en && !l.effect_ru,
+    );
+    const { error: e } = await supabase
+      .from("heroes")
+      .update({ specialty_levels: (allEmpty ? null : next) as never })
+      .eq("id", heroId);
+    if (e) {
+      toast.error(`Specialty save failed: ${e.message}`);
+      return false;
+    }
+    return true;
+  };
+
+  const handleSpecialtyImageUploaded = async (
+    idx: number,
+    filename: string | undefined,
+  ) => {
+    if (!selectedHero || !filename) return;
+    const next = form.specialty_levels.map((l, i) =>
+      i === idx ? { ...l, image: filename } : l,
+    );
+    setForm((f) => ({ ...f, specialty_levels: next }));
+    const ok = await persistSpecialtyLevels(selectedHero.id, next);
+    if (ok) await refreshImage(selectedHero.id);
+  };
+
+  const handleSpecialtyImageDeleted = async (idx: number) => {
+    if (!selectedHero) return;
+    const next = form.specialty_levels.map((l, i) =>
+      i === idx ? { ...l, image: "" } : l,
+    );
+    setForm((f) => ({ ...f, specialty_levels: next }));
+    const ok = await persistSpecialtyLevels(selectedHero.id, next);
+    if (ok) await refreshImage(selectedHero.id);
+  };
+
+  const setSpecialtyEffect = (
+    idx: number,
+    key: "effect_en" | "effect_ru",
+    value: string,
+  ) => {
+    setForm((f) => ({
+      ...f,
+      specialty_levels: f.specialty_levels.map((l, i) =>
+        i === idx ? { ...l, [key]: value } : l,
+      ),
+    }));
+  };
+
+  const specialtyEffectEnRefs = [
+    useRef<HTMLTextAreaElement>(null),
+    useRef<HTMLTextAreaElement>(null),
+    useRef<HTMLTextAreaElement>(null),
+  ];
+  const specialtyEffectRuRefs = [
+    useRef<HTMLTextAreaElement>(null),
+    useRef<HTMLTextAreaElement>(null),
+    useRef<HTMLTextAreaElement>(null),
+  ];
 
   const n = (v: number | null) => (v ?? "") as number | "";
   const setN = (val: string): number | null => (val === "" ? null : Number(val));
@@ -511,22 +626,112 @@ export default function HeroesEditor() {
                   )}
                 </div>
 
-                {/* Specialty levels */}
-                {field(
-                  "Specialty Levels (JSON)",
-                  <textarea
-                    value={form.specialty_levels_json}
-                    onChange={(e) =>
-                      setForm((f) => ({
-                        ...f,
-                        specialty_levels_json: e.target.value,
-                      }))
-                    }
-                    rows={4}
-                    className={`font-mono text-xs ${TEXTAREA}`}
-                    placeholder='{"1": "...", "2": "..."}'
-                  />,
-                )}
+                {/* Specialty cards */}
+                <div className="space-y-3">
+                  <p className="text-xs font-medium text-muted-foreground">
+                    Specialty Cards (3 levels)
+                  </p>
+
+                  {isNew && (
+                    <p className="text-xs text-muted-foreground italic">
+                      Save the hero first, then upload specialty card images here.
+                    </p>
+                  )}
+
+                  {form.specialty_levels.map((lvl, idx) => (
+                    <div
+                      key={idx}
+                      className="rounded-lg border border-border bg-card/30 p-3 space-y-3"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-semibold text-foreground">
+                          Level {SPECIALTY_LEVEL_LABELS[idx]}
+                        </span>
+                      </div>
+
+                      <div className="flex gap-4">
+                        <div className="shrink-0">
+                          {!isNew && selectedHero ? (
+                            <ImageUploader
+                              table="heroes"
+                              recordId={selectedHero.id}
+                              folder="heroes"
+                              imageField="specialty_levels"
+                              filename={specialtyFilename(
+                                form.town || selectedHero.town,
+                                selectedHero.id,
+                                idx,
+                              )}
+                              currentImage={lvl.image || null}
+                              defaultCropPreset="card"
+                              hasImageStatus={false}
+                              skipDbUpdate
+                              onUploaded={(filename) =>
+                                handleSpecialtyImageUploaded(idx, filename)
+                              }
+                              onDeleted={() => handleSpecialtyImageDeleted(idx)}
+                            />
+                          ) : (
+                            <div className="w-32 h-32 rounded-lg border border-dashed border-border bg-muted/20 flex items-center justify-center text-[10px] text-muted-foreground text-center px-2">
+                              Save hero first
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="flex-1 space-y-2">
+                          <div>
+                            <label className="text-xs text-muted-foreground block mb-1">
+                              Effect EN
+                            </label>
+                            <GlyphToolbar
+                              textareaRef={specialtyEffectEnRefs[idx]}
+                              onChange={(v) =>
+                                setSpecialtyEffect(idx, "effect_en", v)
+                              }
+                            />
+                            <textarea
+                              ref={specialtyEffectEnRefs[idx]}
+                              value={lvl.effect_en}
+                              onChange={(e) =>
+                                setSpecialtyEffect(
+                                  idx,
+                                  "effect_en",
+                                  e.target.value,
+                                )
+                              }
+                              rows={3}
+                              className={`mt-1 font-mono text-xs ${TEXTAREA}`}
+                            />
+                          </div>
+                          <div>
+                            <label className="text-xs text-muted-foreground block mb-1">
+                              Effect RU
+                            </label>
+                            <GlyphToolbar
+                              textareaRef={specialtyEffectRuRefs[idx]}
+                              onChange={(v) =>
+                                setSpecialtyEffect(idx, "effect_ru", v)
+                              }
+                            />
+                            <textarea
+                              ref={specialtyEffectRuRefs[idx]}
+                              value={lvl.effect_ru}
+                              onChange={(e) =>
+                                setSpecialtyEffect(
+                                  idx,
+                                  "effect_ru",
+                                  e.target.value,
+                                )
+                              }
+                              rows={3}
+                              className={`mt-1 font-mono text-xs ${TEXTAREA}`}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
 
                 {/* Biography */}
                 <div className="grid grid-cols-2 gap-3">
