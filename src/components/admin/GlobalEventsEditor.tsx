@@ -555,6 +555,7 @@ export default function GlobalEventsEditor({ tab }: { tab: GlobalEventsTab }) {
                     currentImage={(selected.image as string | null) ?? null}
                     defaultCropPreset={isPortrait ? "card" : undefined}
                     onUploaded={() => refreshImage(selected.id)}
+                    onDeleted={() => refreshImage(selected.id)}
                   />
                 </div>
               )}
