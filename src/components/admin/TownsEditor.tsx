@@ -583,6 +583,7 @@ export default function TownsEditor() {
                       filename={`towns-${selected.id}-back.webp`}
                       currentImage={selected.image_back}
                       onUploaded={() => refreshImages(selected.id)}
+                      onDeleted={() => refreshImages(selected.id)}
                     />
                   </div>
                 </div>
