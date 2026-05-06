@@ -189,7 +189,9 @@ export default function ImageUploader({
 
   const handleCropCancel = () => {
     if (rawSrc) URL.revokeObjectURL(rawSrc);
+    if (rotatedSrc) URL.revokeObjectURL(rotatedSrc);
     setRawSrc(null);
+    setRotatedSrc(null);
     setRotation(0);
     setZoom(1);
     prevZoomRef.current = 1;
