@@ -107,6 +107,7 @@ interface ImageUploaderProps {
   currentImage: string | null;
   defaultCropPreset?: CropPreset;
   hasImageStatus?: boolean;
+  filename?: string;
   onUploaded?: () => void;
   onDeleted?: () => void;
 }
@@ -119,6 +120,7 @@ export default function ImageUploader({
   currentImage,
   defaultCropPreset,
   hasImageStatus = true,
+  filename: filenameProp,
   onUploaded,
   onDeleted,
 }: ImageUploaderProps) {
