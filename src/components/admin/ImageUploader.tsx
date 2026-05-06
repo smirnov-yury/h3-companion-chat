@@ -83,7 +83,8 @@ interface ImageUploaderProps {
   defaultCropPreset?: CropPreset;
   hasImageStatus?: boolean;
   filename?: string;
-  onUploaded?: () => void;
+  skipDbUpdate?: boolean;
+  onUploaded?: (filename?: string) => void;
   onDeleted?: () => void;
 }
 
@@ -96,6 +97,7 @@ export default function ImageUploader({
   defaultCropPreset,
   hasImageStatus = true,
   filename: filenameProp,
+  skipDbUpdate = false,
   onUploaded,
   onDeleted,
 }: ImageUploaderProps) {
@@ -318,19 +320,21 @@ export default function ImageUploader({
       return;
     }
 
-    const updatePayload = hasImageStatus
-      ? { [imageField]: filename, image_status: "uploaded" }
-      : { [imageField]: filename };
-    const { error: dbErr } = await supabase
-      .from(table as never)
-      .update(updatePayload as never)
-      .eq("id", recordId);
-    if (dbErr) {
-      const msg = dbErr.message || "DB update failed (unknown error)";
-      setError(msg);
-      setStatus("error");
-      toast.error(`Database update failed: ${msg}`);
-      return;
+    if (!skipDbUpdate) {
+      const updatePayload = hasImageStatus
+        ? { [imageField]: filename, image_status: "uploaded" }
+        : { [imageField]: filename };
+      const { error: dbErr } = await supabase
+        .from(table as never)
+        .update(updatePayload as never)
+        .eq("id", recordId);
+      if (dbErr) {
+        const msg = dbErr.message || "DB update failed (unknown error)";
+        setError(msg);
+        setStatus("error");
+        toast.error(`Database update failed: ${msg}`);
+        return;
+      }
     }
 
     setStatus("done");
@@ -338,7 +342,7 @@ export default function ImageUploader({
     setPreview(null);
     setBlob(null);
     toast.success("Image uploaded");
-    onUploaded?.();
+    onUploaded?.(filename);
   };
 
   const handleDelete = async () => {
@@ -355,15 +359,17 @@ export default function ImageUploader({
       toast.error(`Storage delete failed: ${storageErr.message}`);
       return;
     }
-    const { error: dbErr } = await supabase
-      .from(table as never)
-      .update({ [imageField]: null } as never)
-      .eq("id", recordId);
-    if (dbErr) {
-      setError(dbErr.message);
-      setDeleting(false);
-      toast.error(`Database update failed: ${dbErr.message}`);
-      return;
+    if (!skipDbUpdate) {
+      const { error: dbErr } = await supabase
+        .from(table as never)
+        .update({ [imageField]: null } as never)
+        .eq("id", recordId);
+      if (dbErr) {
+        setError(dbErr.message);
+        setDeleting(false);
+        toast.error(`Database update failed: ${dbErr.message}`);
+        return;
+      }
     }
     setDeleting(false);
     toast.success("Image deleted");
