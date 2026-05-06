@@ -349,13 +349,24 @@ export default function ImageUploader({
     const { error: storageErr } = await supabase.storage
       .from("component-media")
       .remove([path]);
-    if (storageErr) { setError(storageErr.message); setDeleting(false); return; }
+    if (storageErr) {
+      setError(storageErr.message);
+      setDeleting(false);
+      toast.error(`Storage delete failed: ${storageErr.message}`);
+      return;
+    }
     const { error: dbErr } = await supabase
       .from(table as never)
       .update({ [imageField]: null } as never)
       .eq("id", recordId);
-    if (dbErr) { setError(dbErr.message); setDeleting(false); return; }
+    if (dbErr) {
+      setError(dbErr.message);
+      setDeleting(false);
+      toast.error(`Database update failed: ${dbErr.message}`);
+      return;
+    }
     setDeleting(false);
+    toast.success("Image deleted");
     onDeleted?.();
   };
 

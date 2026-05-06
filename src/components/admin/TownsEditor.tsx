@@ -557,6 +557,7 @@ export default function TownsEditor() {
                       filename={`towns-${selected.id}-empty.webp`}
                       currentImage={selected.image_empty}
                       onUploaded={() => refreshImages(selected.id)}
+                      onDeleted={() => refreshImages(selected.id)}
                     />
                   </div>
                   <div>
@@ -569,6 +570,7 @@ export default function TownsEditor() {
                       filename={`towns-${selected.id}-full.webp`}
                       currentImage={selected.image_full}
                       onUploaded={() => refreshImages(selected.id)}
+                      onDeleted={() => refreshImages(selected.id)}
                     />
                   </div>
                   <div>
@@ -581,6 +583,7 @@ export default function TownsEditor() {
                       filename={`towns-${selected.id}-back.webp`}
                       currentImage={selected.image_back}
                       onUploaded={() => refreshImages(selected.id)}
+                      onDeleted={() => refreshImages(selected.id)}
                     />
                   </div>
                 </div>
