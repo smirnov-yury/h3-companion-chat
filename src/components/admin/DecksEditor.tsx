@@ -452,6 +452,7 @@ export default function DecksEditor({ tab }: { tab: DeckTab }) {
                     imageField={cfg.imageField}
                     currentImage={selected[cfg.imageField] as string | null}
                     onUploaded={() => refreshImage(selected.id as string)}
+                    onDeleted={() => refreshImage(selected.id as string)}
                   />
                 </div>
               )}
