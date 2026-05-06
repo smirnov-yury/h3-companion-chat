@@ -46,7 +46,6 @@ function centerAspectCrop(width: number, height: number, aspect: number | undefi
 async function cropToWebp(
   img: HTMLImageElement,
   pixelCrop: PixelCrop,
-  rotation: number,
 ): Promise<Blob> {
   const scaleX = img.naturalWidth / img.width;
   const scaleY = img.naturalHeight / img.height;
@@ -60,35 +59,11 @@ async function cropToWebp(
   const outW = Math.round(nw * scale);
   const outH = Math.round(nh * scale);
 
-  const rotCanvas = document.createElement("canvas");
-  const rad = (rotation * Math.PI) / 180;
-  const sin = Math.abs(Math.sin(rad));
-  const cos = Math.abs(Math.cos(rad));
-  rotCanvas.width = Math.round(img.naturalWidth * cos + img.naturalHeight * sin);
-  rotCanvas.height = Math.round(img.naturalWidth * sin + img.naturalHeight * cos);
-  const rotCtx = rotCanvas.getContext("2d")!;
-  rotCtx.translate(rotCanvas.width / 2, rotCanvas.height / 2);
-  rotCtx.rotate(rad);
-  rotCtx.drawImage(img, -img.naturalWidth / 2, -img.naturalHeight / 2);
-
-  const offsetX = (rotCanvas.width - img.naturalWidth) / 2;
-  const offsetY = (rotCanvas.height - img.naturalHeight) / 2;
-
   const canvas = document.createElement("canvas");
   canvas.width = outW;
   canvas.height = outH;
   const ctx = canvas.getContext("2d")!;
-  ctx.drawImage(
-    rotCanvas,
-    nx + offsetX,
-    ny + offsetY,
-    nw,
-    nh,
-    0,
-    0,
-    outW,
-    outH,
-  );
+  ctx.drawImage(img, nx, ny, nw, nh, 0, 0, outW, outH);
 
   return new Promise<Blob>((resolve, reject) =>
     canvas.toBlob(
