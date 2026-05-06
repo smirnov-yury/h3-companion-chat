@@ -275,7 +275,7 @@ export default function ImageUploader({
 
     setStatus("uploading");
     setError(null);
-    const filename = `${recordId}.webp`;
+    const filename = filenameProp ?? `${recordId}.webp`;
     const path = `${folder}/${filename}`;
     const { error: storageErr } = await supabase.storage
       .from("component-media")
