@@ -611,6 +611,7 @@ export default function HeroesEditor() {
                     imageField="image"
                     currentImage={selectedHero.image}
                     onUploaded={() => refreshImage(selectedHero.id)}
+                    onDeleted={() => refreshImage(selectedHero.id)}
                   />
                 </div>
               )}
