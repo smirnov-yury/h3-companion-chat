@@ -452,6 +452,7 @@ export default function MapElementsEditor({ tab }: { tab: MapElementsTab }) {
                     imageField="image"
                     currentImage={(selected.image as string | null) ?? null}
                     onUploaded={() => refreshImage(selected.id)}
+                    onDeleted={() => refreshImage(selected.id)}
                   />
                 </div>
               )}
