@@ -172,12 +172,14 @@ export default function ImageUploader({
       };
     }
     try {
-      const webpBlob = await cropToWebp(img, pixelCrop, rotation);
+      const webpBlob = await cropToWebp(img, pixelCrop);
       if (preview) URL.revokeObjectURL(preview);
       if (rawSrc) URL.revokeObjectURL(rawSrc);
+      if (rotatedSrc) URL.revokeObjectURL(rotatedSrc);
       setBlob(webpBlob);
       setPreview(URL.createObjectURL(webpBlob));
       setRawSrc(null);
+      setRotatedSrc(null);
       setStatus("idle");
       setError(null);
     } catch {
