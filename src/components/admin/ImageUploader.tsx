@@ -225,6 +225,56 @@ export default function ImageUploader({
   };
 
   useEffect(() => {
+    if (!rawSrc) {
+      setRotatedSrc((prev) => {
+        if (prev) URL.revokeObjectURL(prev);
+        return null;
+      });
+      return;
+    }
+
+    let cancelled = false;
+    const timer = window.setTimeout(() => {
+      const img = new Image();
+      img.onload = () => {
+        if (cancelled) return;
+        const rad = (rotation * Math.PI) / 180;
+        const sin = Math.abs(Math.sin(rad));
+        const cos = Math.abs(Math.cos(rad));
+        const w = Math.max(1, Math.round(img.naturalWidth * cos + img.naturalHeight * sin));
+        const h = Math.max(1, Math.round(img.naturalWidth * sin + img.naturalHeight * cos));
+        const c = document.createElement("canvas");
+        c.width = w;
+        c.height = h;
+        const ctx = c.getContext("2d");
+        if (!ctx) return;
+        ctx.translate(w / 2, h / 2);
+        ctx.rotate(rad);
+        ctx.drawImage(img, -img.naturalWidth / 2, -img.naturalHeight / 2);
+        c.toBlob(
+          (blob) => {
+            if (cancelled || !blob) return;
+            const url = URL.createObjectURL(blob);
+            setRotatedSrc((prev) => {
+              if (prev) URL.revokeObjectURL(prev);
+              return url;
+            });
+            setCompletedCrop(null);
+          },
+          "image/webp",
+          0.95,
+        );
+      };
+      img.src = rawSrc;
+    }, 80);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [rawSrc, rotation]);
+
+  useEffect(() => {
     const container = cropContainerRef.current;
     if (!container || prevZoomRef.current === zoom) return;
 
