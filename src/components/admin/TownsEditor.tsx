@@ -554,6 +554,7 @@ export default function TownsEditor() {
                       recordId={selected.id}
                       folder="towns"
                       imageField="image_empty"
+                      filename={`towns-${selected.id}-empty.webp`}
                       currentImage={selected.image_empty}
                       onUploaded={() => refreshImages(selected.id)}
                     />
@@ -565,6 +566,7 @@ export default function TownsEditor() {
                       recordId={selected.id}
                       folder="towns"
                       imageField="image_full"
+                      filename={`towns-${selected.id}-full.webp`}
                       currentImage={selected.image_full}
                       onUploaded={() => refreshImages(selected.id)}
                     />
@@ -576,6 +578,7 @@ export default function TownsEditor() {
                       recordId={selected.id}
                       folder="towns"
                       imageField="image_back"
+                      filename={`towns-${selected.id}-back.webp`}
                       currentImage={selected.image_back}
                       onUploaded={() => refreshImages(selected.id)}
                     />
