@@ -694,6 +694,7 @@ export default function UnitsEditor() {
                     imageField="image"
                     currentImage={selectedUnit.image}
                     onUploaded={() => refreshImage(selectedUnit.id)}
+                    onDeleted={() => refreshImage(selectedUnit.id)}
                   />
                 </div>
               )}
