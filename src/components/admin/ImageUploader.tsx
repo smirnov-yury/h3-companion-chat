@@ -538,15 +538,13 @@ export default function ImageUploader({
                   >
                     <img
                       ref={imgRef}
-                      src={rawSrc}
+                      src={rotatedSrc ?? rawSrc ?? ""}
                       onLoad={onImageLoad}
                       alt=""
                       style={{
                         width: "100%",
                         maxWidth: "none",
                         display: "block",
-                        transform: `rotate(${rotation}deg)`,
-                        transition: "transform 0.15s ease",
                         pointerEvents: panMode ? "none" : "auto",
                       }}
                     />
