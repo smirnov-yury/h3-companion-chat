@@ -46,7 +46,6 @@ function centerAspectCrop(width: number, height: number, aspect: number | undefi
 async function cropToWebp(
   img: HTMLImageElement,
   pixelCrop: PixelCrop,
-  rotation: number,
 ): Promise<Blob> {
   const scaleX = img.naturalWidth / img.width;
   const scaleY = img.naturalHeight / img.height;
@@ -60,35 +59,11 @@ async function cropToWebp(
   const outW = Math.round(nw * scale);
   const outH = Math.round(nh * scale);
 
-  const rotCanvas = document.createElement("canvas");
-  const rad = (rotation * Math.PI) / 180;
-  const sin = Math.abs(Math.sin(rad));
-  const cos = Math.abs(Math.cos(rad));
-  rotCanvas.width = Math.round(img.naturalWidth * cos + img.naturalHeight * sin);
-  rotCanvas.height = Math.round(img.naturalWidth * sin + img.naturalHeight * cos);
-  const rotCtx = rotCanvas.getContext("2d")!;
-  rotCtx.translate(rotCanvas.width / 2, rotCanvas.height / 2);
-  rotCtx.rotate(rad);
-  rotCtx.drawImage(img, -img.naturalWidth / 2, -img.naturalHeight / 2);
-
-  const offsetX = (rotCanvas.width - img.naturalWidth) / 2;
-  const offsetY = (rotCanvas.height - img.naturalHeight) / 2;
-
   const canvas = document.createElement("canvas");
   canvas.width = outW;
   canvas.height = outH;
   const ctx = canvas.getContext("2d")!;
-  ctx.drawImage(
-    rotCanvas,
-    nx + offsetX,
-    ny + offsetY,
-    nw,
-    nh,
-    0,
-    0,
-    outW,
-    outH,
-  );
+  ctx.drawImage(img, nx, ny, nw, nh, 0, 0, outW, outH);
 
   return new Promise<Blob>((resolve, reject) =>
     canvas.toBlob(
@@ -134,6 +109,7 @@ export default function ImageUploader({
   const [crop, setCrop] = useState<Crop>({ unit: "%", x: 0, y: 0, width: 90, height: 90 });
   const [completedCrop, setCompletedCrop] = useState<PixelCrop | null>(null);
   const [rotation, setRotation] = useState(0);
+  const [rotatedSrc, setRotatedSrc] = useState<string | null>(null);
   const [zoom, setZoom] = useState(1);
   const [panMode, setPanMode] = useState(false);
   const [baseImgWidth, setBaseImgWidth] = useState(0);
@@ -196,12 +172,14 @@ export default function ImageUploader({
       };
     }
     try {
-      const webpBlob = await cropToWebp(img, pixelCrop, rotation);
+      const webpBlob = await cropToWebp(img, pixelCrop);
       if (preview) URL.revokeObjectURL(preview);
       if (rawSrc) URL.revokeObjectURL(rawSrc);
+      if (rotatedSrc) URL.revokeObjectURL(rotatedSrc);
       setBlob(webpBlob);
       setPreview(URL.createObjectURL(webpBlob));
       setRawSrc(null);
+      setRotatedSrc(null);
       setStatus("idle");
       setError(null);
     } catch {
@@ -211,7 +189,9 @@ export default function ImageUploader({
 
   const handleCropCancel = () => {
     if (rawSrc) URL.revokeObjectURL(rawSrc);
+    if (rotatedSrc) URL.revokeObjectURL(rotatedSrc);
     setRawSrc(null);
+    setRotatedSrc(null);
     setRotation(0);
     setZoom(1);
     prevZoomRef.current = 1;
@@ -243,6 +223,56 @@ export default function ImageUploader({
   const handlePanMouseUp = () => {
     panningRef.current = false;
   };
+
+  useEffect(() => {
+    if (!rawSrc) {
+      setRotatedSrc((prev) => {
+        if (prev) URL.revokeObjectURL(prev);
+        return null;
+      });
+      return;
+    }
+
+    let cancelled = false;
+    const timer = window.setTimeout(() => {
+      const img = new Image();
+      img.onload = () => {
+        if (cancelled) return;
+        const rad = (rotation * Math.PI) / 180;
+        const sin = Math.abs(Math.sin(rad));
+        const cos = Math.abs(Math.cos(rad));
+        const w = Math.max(1, Math.round(img.naturalWidth * cos + img.naturalHeight * sin));
+        const h = Math.max(1, Math.round(img.naturalWidth * sin + img.naturalHeight * cos));
+        const c = document.createElement("canvas");
+        c.width = w;
+        c.height = h;
+        const ctx = c.getContext("2d");
+        if (!ctx) return;
+        ctx.translate(w / 2, h / 2);
+        ctx.rotate(rad);
+        ctx.drawImage(img, -img.naturalWidth / 2, -img.naturalHeight / 2);
+        c.toBlob(
+          (blob) => {
+            if (cancelled || !blob) return;
+            const url = URL.createObjectURL(blob);
+            setRotatedSrc((prev) => {
+              if (prev) URL.revokeObjectURL(prev);
+              return url;
+            });
+            setCompletedCrop(null);
+          },
+          "image/webp",
+          0.95,
+        );
+      };
+      img.src = rawSrc;
+    }, 80);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [rawSrc, rotation]);
 
   useEffect(() => {
     const container = cropContainerRef.current;
@@ -508,15 +538,13 @@ export default function ImageUploader({
                   >
                     <img
                       ref={imgRef}
-                      src={rawSrc}
+                      src={rotatedSrc ?? rawSrc ?? ""}
                       onLoad={onImageLoad}
                       alt=""
                       style={{
                         width: "100%",
                         maxWidth: "none",
                         display: "block",
-                        transform: `rotate(${rotation}deg)`,
-                        transition: "transform 0.15s ease",
                         pointerEvents: panMode ? "none" : "auto",
                       }}
                     />
