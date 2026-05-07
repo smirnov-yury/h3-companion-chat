@@ -451,56 +451,90 @@ export default function ImageUploader({
               <span className="text-xs text-muted-foreground w-20 shrink-0">Rotation</span>
               <button
                 type="button"
-                onClick={() => setRotation((r) => Math.max(-180, r - 90))}
+                onClick={() =>
+                  setBakedRotation((r) => {
+                    const n = r - 90;
+                    return n <= -180 ? n + 360 : n;
+                  })
+                }
                 className="px-2 py-1 rounded border border-border text-xs text-foreground hover:bg-accent"
-                title="Rotate -90°"
+                title="Rotate -90° (baked into source)"
               >
                 -90°
               </button>
               <button
                 type="button"
-                onClick={() => setRotation((r) => Math.max(-180, Math.round((r - 0.125) * 1000) / 1000))}
+                onClick={() =>
+                  setFineRotation((r) =>
+                    Math.max(-180, Math.round((r - 0.125) * 1000) / 1000),
+                  )
+                }
                 className="px-2 py-1 rounded border border-border text-xs text-foreground hover:bg-accent"
-                title="Rotate left 0.125°"
+                title="Fine rotate left 0.125° (CSS only)"
               >
                 ◀
               </button>
               <input
                 type="range"
-                min={-180}
-                max={180}
+                min={-45}
+                max={45}
                 step={0.125}
-                value={rotation}
-                onChange={(e) => setRotation(Math.round(Number(e.target.value) * 1000) / 1000)}
+                value={fineRotation}
+                onChange={(e) =>
+                  setFineRotation(
+                    Math.round(Number(e.target.value) * 1000) / 1000,
+                  )
+                }
                 className="flex-1 accent-primary"
+                title="Fine rotation slider (CSS only, ±45°)"
               />
               <button
                 type="button"
-                onClick={() => setRotation((r) => Math.min(180, Math.round((r + 0.125) * 1000) / 1000))}
+                onClick={() =>
+                  setFineRotation((r) =>
+                    Math.min(180, Math.round((r + 0.125) * 1000) / 1000),
+                  )
+                }
                 className="px-2 py-1 rounded border border-border text-xs text-foreground hover:bg-accent"
-                title="Rotate right 0.125°"
+                title="Fine rotate right 0.125° (CSS only)"
               >
                 ▶
               </button>
               <button
                 type="button"
-                onClick={() => setRotation((r) => Math.min(180, r + 90))}
+                onClick={() =>
+                  setBakedRotation((r) => {
+                    const n = r + 90;
+                    return n >= 180 ? n - 360 : n;
+                  })
+                }
                 className="px-2 py-1 rounded border border-border text-xs text-foreground hover:bg-accent"
-                title="Rotate +90°"
+                title="Rotate +90° (baked into source)"
               >
                 +90°
               </button>
               <button
                 type="button"
-                onClick={() => setRotation(0)}
+                onClick={() => {
+                  setBakedRotation(0);
+                  setFineRotation(0);
+                }}
                 className="px-2 py-1 rounded border border-border text-xs text-muted-foreground hover:bg-accent"
                 title="Reset rotation"
               >
                 Reset
               </button>
-              <span className="text-xs text-muted-foreground w-16 text-right shrink-0 tabular-nums">
-                {Number.isInteger(rotation) ? rotation : rotation.toFixed(3).replace(/\.?0+$/, "")}°
-              </span>
+              {(() => {
+                const total = bakedRotation + fineRotation;
+                const display = Number.isInteger(total)
+                  ? `${total}`
+                  : total.toFixed(3).replace(/\.?0+$/, "");
+                return (
+                  <span className="text-xs text-muted-foreground w-16 text-right shrink-0 tabular-nums">
+                    {display}°
+                  </span>
+                );
+              })()}
             </div>
 
             <div className="flex items-center gap-3">
