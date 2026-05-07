@@ -631,6 +631,8 @@ export default function ImageUploader({
                         width: "100%",
                         maxWidth: "none",
                         display: "block",
+                        transform: `rotate(${fineRotation}deg)`,
+                        transition: "transform 0.12s ease",
                         pointerEvents: panMode ? "none" : "auto",
                       }}
                     />
