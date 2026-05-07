@@ -275,7 +275,7 @@ export default function ImageUploader({
       const img = new Image();
       img.onload = () => {
         if (cancelled) return;
-        const rad = (rotation * Math.PI) / 180;
+        const rad = (bakedRotation * Math.PI) / 180;
         const sin = Math.abs(Math.sin(rad));
         const cos = Math.abs(Math.cos(rad));
         const w = Math.max(1, Math.round(img.naturalWidth * cos + img.naturalHeight * sin));
@@ -303,13 +303,13 @@ export default function ImageUploader({
         );
       };
       img.src = rawSrc;
-    }, 80);
+    }, 30);
 
     return () => {
       cancelled = true;
       window.clearTimeout(timer);
     };
-  }, [rawSrc, rotation]);
+  }, [rawSrc, bakedRotation]);
 
   useEffect(() => {
     const container = cropContainerRef.current;
