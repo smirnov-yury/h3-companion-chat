@@ -142,7 +142,8 @@ export default function ImageUploader({
   );
   const [crop, setCrop] = useState<Crop>({ unit: "%", x: 0, y: 0, width: 90, height: 90 });
   const [completedCrop, setCompletedCrop] = useState<PixelCrop | null>(null);
-  const [rotation, setRotation] = useState(0);
+  const [bakedRotation, setBakedRotation] = useState(0);
+  const [fineRotation, setFineRotation] = useState(0);
   const [rotatedSrc, setRotatedSrc] = useState<string | null>(null);
   const [zoom, setZoom] = useState(1);
   const [panMode, setPanMode] = useState(false);
