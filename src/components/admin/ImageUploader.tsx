@@ -164,7 +164,8 @@ export default function ImageUploader({
     setRawSrc(url);
     setPreset(defaultCropPreset ?? folderToPreset(folder));
     setCompletedCrop(null);
-    setRotation(0);
+    setBakedRotation(0);
+    setFineRotation(0);
     setZoom(1);
     prevZoomRef.current = 1;
     setBaseImgWidth(0);
@@ -207,7 +208,7 @@ export default function ImageUploader({
       };
     }
     try {
-      const webpBlob = await cropToWebp(img, pixelCrop);
+      const webpBlob = await cropToWebp(img, pixelCrop, fineRotation);
       if (preview) URL.revokeObjectURL(preview);
       if (rawSrc) URL.revokeObjectURL(rawSrc);
       if (rotatedSrc) URL.revokeObjectURL(rotatedSrc);
@@ -227,7 +228,8 @@ export default function ImageUploader({
     if (rotatedSrc) URL.revokeObjectURL(rotatedSrc);
     setRawSrc(null);
     setRotatedSrc(null);
-    setRotation(0);
+    setBakedRotation(0);
+    setFineRotation(0);
     setZoom(1);
     prevZoomRef.current = 1;
     setPanMode(false);
