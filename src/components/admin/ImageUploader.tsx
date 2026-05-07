@@ -46,6 +46,7 @@ function centerAspectCrop(width: number, height: number, aspect: number | undefi
 async function cropToWebp(
   img: HTMLImageElement,
   pixelCrop: PixelCrop,
+  fineRotation: number,
 ): Promise<Blob> {
   const scaleX = img.naturalWidth / img.width;
   const scaleY = img.naturalHeight / img.height;
@@ -63,7 +64,38 @@ async function cropToWebp(
   canvas.width = outW;
   canvas.height = outH;
   const ctx = canvas.getContext("2d")!;
-  ctx.drawImage(img, nx, ny, nw, nh, 0, 0, outW, outH);
+
+  if (!fineRotation) {
+    ctx.drawImage(img, nx, ny, nw, nh, 0, 0, outW, outH);
+  } else {
+    const rad = (fineRotation * Math.PI) / 180;
+    const sin = Math.abs(Math.sin(rad));
+    const cos = Math.abs(Math.cos(rad));
+    const rotW = Math.round(img.naturalWidth * cos + img.naturalHeight * sin);
+    const rotH = Math.round(img.naturalWidth * sin + img.naturalHeight * cos);
+
+    const rotCanvas = document.createElement("canvas");
+    rotCanvas.width = rotW;
+    rotCanvas.height = rotH;
+    const rotCtx = rotCanvas.getContext("2d")!;
+    rotCtx.translate(rotW / 2, rotH / 2);
+    rotCtx.rotate(rad);
+    rotCtx.drawImage(img, -img.naturalWidth / 2, -img.naturalHeight / 2);
+
+    const offsetX = (rotW - img.naturalWidth) / 2;
+    const offsetY = (rotH - img.naturalHeight) / 2;
+    ctx.drawImage(
+      rotCanvas,
+      nx + offsetX,
+      ny + offsetY,
+      nw,
+      nh,
+      0,
+      0,
+      outW,
+      outH,
+    );
+  }
 
   return new Promise<Blob>((resolve, reject) =>
     canvas.toBlob(
@@ -110,7 +142,8 @@ export default function ImageUploader({
   );
   const [crop, setCrop] = useState<Crop>({ unit: "%", x: 0, y: 0, width: 90, height: 90 });
   const [completedCrop, setCompletedCrop] = useState<PixelCrop | null>(null);
-  const [rotation, setRotation] = useState(0);
+  const [bakedRotation, setBakedRotation] = useState(0);
+  const [fineRotation, setFineRotation] = useState(0);
   const [rotatedSrc, setRotatedSrc] = useState<string | null>(null);
   const [zoom, setZoom] = useState(1);
   const [panMode, setPanMode] = useState(false);
@@ -131,7 +164,8 @@ export default function ImageUploader({
     setRawSrc(url);
     setPreset(defaultCropPreset ?? folderToPreset(folder));
     setCompletedCrop(null);
-    setRotation(0);
+    setBakedRotation(0);
+    setFineRotation(0);
     setZoom(1);
     prevZoomRef.current = 1;
     setBaseImgWidth(0);
@@ -174,7 +208,7 @@ export default function ImageUploader({
       };
     }
     try {
-      const webpBlob = await cropToWebp(img, pixelCrop);
+      const webpBlob = await cropToWebp(img, pixelCrop, fineRotation);
       if (preview) URL.revokeObjectURL(preview);
       if (rawSrc) URL.revokeObjectURL(rawSrc);
       if (rotatedSrc) URL.revokeObjectURL(rotatedSrc);
@@ -194,7 +228,8 @@ export default function ImageUploader({
     if (rotatedSrc) URL.revokeObjectURL(rotatedSrc);
     setRawSrc(null);
     setRotatedSrc(null);
-    setRotation(0);
+    setBakedRotation(0);
+    setFineRotation(0);
     setZoom(1);
     prevZoomRef.current = 1;
     setPanMode(false);
@@ -240,7 +275,7 @@ export default function ImageUploader({
       const img = new Image();
       img.onload = () => {
         if (cancelled) return;
-        const rad = (rotation * Math.PI) / 180;
+        const rad = (bakedRotation * Math.PI) / 180;
         const sin = Math.abs(Math.sin(rad));
         const cos = Math.abs(Math.cos(rad));
         const w = Math.max(1, Math.round(img.naturalWidth * cos + img.naturalHeight * sin));
@@ -268,13 +303,13 @@ export default function ImageUploader({
         );
       };
       img.src = rawSrc;
-    }, 80);
+    }, 30);
 
     return () => {
       cancelled = true;
       window.clearTimeout(timer);
     };
-  }, [rawSrc, rotation]);
+  }, [rawSrc, bakedRotation]);
 
   useEffect(() => {
     const container = cropContainerRef.current;
@@ -416,56 +451,90 @@ export default function ImageUploader({
               <span className="text-xs text-muted-foreground w-20 shrink-0">Rotation</span>
               <button
                 type="button"
-                onClick={() => setRotation((r) => Math.max(-180, r - 90))}
+                onClick={() =>
+                  setBakedRotation((r) => {
+                    const n = r - 90;
+                    return n <= -180 ? n + 360 : n;
+                  })
+                }
                 className="px-2 py-1 rounded border border-border text-xs text-foreground hover:bg-accent"
-                title="Rotate -90°"
+                title="Rotate -90° (baked into source)"
               >
                 -90°
               </button>
               <button
                 type="button"
-                onClick={() => setRotation((r) => Math.max(-180, Math.round((r - 0.125) * 1000) / 1000))}
+                onClick={() =>
+                  setFineRotation((r) =>
+                    Math.max(-180, Math.round((r - 0.125) * 1000) / 1000),
+                  )
+                }
                 className="px-2 py-1 rounded border border-border text-xs text-foreground hover:bg-accent"
-                title="Rotate left 0.125°"
+                title="Fine rotate left 0.125° (CSS only)"
               >
                 ◀
               </button>
               <input
                 type="range"
-                min={-180}
-                max={180}
+                min={-45}
+                max={45}
                 step={0.125}
-                value={rotation}
-                onChange={(e) => setRotation(Math.round(Number(e.target.value) * 1000) / 1000)}
+                value={fineRotation}
+                onChange={(e) =>
+                  setFineRotation(
+                    Math.round(Number(e.target.value) * 1000) / 1000,
+                  )
+                }
                 className="flex-1 accent-primary"
+                title="Fine rotation slider (CSS only, ±45°)"
               />
               <button
                 type="button"
-                onClick={() => setRotation((r) => Math.min(180, Math.round((r + 0.125) * 1000) / 1000))}
+                onClick={() =>
+                  setFineRotation((r) =>
+                    Math.min(180, Math.round((r + 0.125) * 1000) / 1000),
+                  )
+                }
                 className="px-2 py-1 rounded border border-border text-xs text-foreground hover:bg-accent"
-                title="Rotate right 0.125°"
+                title="Fine rotate right 0.125° (CSS only)"
               >
                 ▶
               </button>
               <button
                 type="button"
-                onClick={() => setRotation((r) => Math.min(180, r + 90))}
+                onClick={() =>
+                  setBakedRotation((r) => {
+                    const n = r + 90;
+                    return n >= 180 ? n - 360 : n;
+                  })
+                }
                 className="px-2 py-1 rounded border border-border text-xs text-foreground hover:bg-accent"
-                title="Rotate +90°"
+                title="Rotate +90° (baked into source)"
               >
                 +90°
               </button>
               <button
                 type="button"
-                onClick={() => setRotation(0)}
+                onClick={() => {
+                  setBakedRotation(0);
+                  setFineRotation(0);
+                }}
                 className="px-2 py-1 rounded border border-border text-xs text-muted-foreground hover:bg-accent"
                 title="Reset rotation"
               >
                 Reset
               </button>
-              <span className="text-xs text-muted-foreground w-16 text-right shrink-0 tabular-nums">
-                {Number.isInteger(rotation) ? rotation : rotation.toFixed(3).replace(/\.?0+$/, "")}°
-              </span>
+              {(() => {
+                const total = bakedRotation + fineRotation;
+                const display = Number.isInteger(total)
+                  ? `${total}`
+                  : total.toFixed(3).replace(/\.?0+$/, "");
+                return (
+                  <span className="text-xs text-muted-foreground w-16 text-right shrink-0 tabular-nums">
+                    {display}°
+                  </span>
+                );
+              })()}
             </div>
 
             <div className="flex items-center gap-3">
@@ -562,6 +631,8 @@ export default function ImageUploader({
                         width: "100%",
                         maxWidth: "none",
                         display: "block",
+                        transform: `rotate(${fineRotation}deg)`,
+                        transition: "transform 0.12s ease",
                         pointerEvents: panMode ? "none" : "auto",
                       }}
                     />
