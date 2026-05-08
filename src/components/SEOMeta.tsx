@@ -30,6 +30,7 @@ const TITLES: Record<RouteKey, { en: string; ru: string }> = {
   },
   towns: { en: "Towns — Heroes III Companion", ru: "Города — Heroes III Companion" },
   ai: { en: "AI Game Master — Heroes III Companion", ru: "ИИ Мастер — Heroes III Companion" },
+  game_setup: { en: "Game Setup — Heroes III Companion", ru: "Подготовка партии — Heroes III Companion" },
 };
 
 interface SEOMetaProps {

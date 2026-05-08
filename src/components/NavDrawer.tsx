@@ -1,5 +1,5 @@
 import React from "react";
-import { BookOpen, Map, MapPin, CalendarDays, Layers, Swords, User, Castle, MessageCircle, Info, Sun, Moon, type LucideIcon } from "lucide-react";
+import { BookOpen, Map, MapPin, CalendarDays, Layers, Swords, User, Castle, MessageCircle, Info, Sun, Moon, Wand2, type LucideIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Separator } from "@/components/ui/separator";
 import { useLang } from "@/context/LanguageContext";
@@ -10,7 +10,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 
-export type TabId = "rules" | "scenarios" | "map_elements" | "global_events" | "decks" | "units" | "heroes" | "towns" | "ai";
+export type TabId = "rules" | "scenarios" | "map_elements" | "global_events" | "decks" | "units" | "heroes" | "towns" | "ai" | "game_setup";
 
 export const navItems: { id: TabId; labelRU: string; labelEN: string; icon: LucideIcon }[] = [
   { id: "rules",         labelRU: "Правила",            labelEN: "Rules",           icon: BookOpen },
@@ -22,6 +22,7 @@ export const navItems: { id: TabId; labelRU: string; labelEN: string; icon: Luci
   { id: "heroes",        labelRU: "Герои",              labelEN: "Heroes",          icon: User },
   { id: "towns",         labelRU: "Города",             labelEN: "Towns",           icon: Castle },
   { id: "ai",            labelRU: "ИИ Мастер игры",     labelEN: "AI Game Master",  icon: MessageCircle },
+  { id: "game_setup",    labelRU: "Подготовка партии",  labelEN: "Game Setup",      icon: Wand2 },
 ];
 
 interface NavDrawerProps {
