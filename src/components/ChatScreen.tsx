@@ -160,11 +160,14 @@ export default function ChatScreen() {
               }`}
             >
               {m.role === "assistant" ? (
-                <div
-                  className="prose prose-sm prose-invert max-w-none [&_p]:m-0"
-                  onClick={handleEntityClick}
-                  dangerouslySetInnerHTML={{ __html: renderGlyphs(m.content, glyphs) }}
-                />
+                <>
+                  <div
+                    className="prose prose-sm prose-invert max-w-none [&_p]:m-0"
+                    onClick={handleEntityClick}
+                    dangerouslySetInnerHTML={{ __html: renderGlyphs(m.content, glyphs) }}
+                  />
+                  <ChatSources content={m.content} lang={lang} />
+                </>
               ) : (
                 m.content
               )}
