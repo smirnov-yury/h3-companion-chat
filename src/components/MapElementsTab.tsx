@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Search } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
 import FieldsTab from "@/components/sections/FieldsTab";
@@ -24,8 +25,17 @@ interface Props {
 
 export default function MapElementsTab({ initialCardId, initialSearch, onCardOpen, onCardClose }: Props = {}) {
   const { lang } = useLang();
-  const [active, setActive] = useState<Section>("fields");
+  const [searchParams] = useSearchParams();
+  const [active, setActive] = useState<Section>(() => {
+    const s = searchParams.get("section") as Section | null;
+    return s && SECTIONS.some(x => x.id === s) ? s : "fields";
+  });
   const [searchQuery, setSearchQuery] = useState(initialSearch ?? "");
+
+  useEffect(() => {
+    const s = searchParams.get("section") as Section | null;
+    if (s && SECTIONS.some(x => x.id === s)) setActive(s);
+  }, [searchParams]);
 
   const handleSectionChange = (id: Section) => {
     setActive(id);

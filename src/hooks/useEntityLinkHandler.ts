@@ -23,7 +23,18 @@ export function entityLinkUrl(type: string, id: string): string | null {
       return `/events/${id}?section=astrologers`;
     case "war_machine":
       return `/decks/warmachines/${id}`;
-    case "town_building": {
+    case "ai_card":
+      return `/events?section=ai`;
+    case "morale":
+      return `/events?section=morale`;
+    case "map_event":
+      return `/map-elements?section=map_events`;
+    case "pandora":
+      return `/map-elements?section=pandora`;
+    case "statistic":
+      return `/decks/attributes/${id}`;
+    case "town_building":
+    case "building": {
       const townId = id.split("_")[0];
       return townId ? `/towns/${townId}` : null;
     }
