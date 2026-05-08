@@ -5,6 +5,7 @@ import { useGlyphs } from "@/context/GlyphsContext";
 import { renderGlyphs } from "@/utils/renderGlyphs";
 import { useEntityLinkHandler } from "@/hooks/useEntityLinkHandler";
 import { supabase } from "@/integrations/supabase/client";
+import ChatSources from "@/components/ChatSources";
 
 interface Message {
   role: "user" | "assistant";
