@@ -631,6 +631,47 @@ export type Database = {
         }
         Relationships: []
       }
+      game_sessions: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          ip_hash: string | null
+          name: string | null
+          payload: Json
+          player_count: number
+          scenario_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          ip_hash?: string | null
+          name?: string | null
+          payload: Json
+          player_count: number
+          scenario_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          ip_hash?: string | null
+          name?: string | null
+          payload?: Json
+          player_count?: number
+          scenario_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "game_sessions_scenario_id_fkey"
+            columns: ["scenario_id"]
+            isOneToOne: false
+            referencedRelation: "scenarios"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       glyphs: {
         Row: {
           category: string | null
@@ -1608,6 +1649,7 @@ export type Database = {
       town_buildings: {
         Row: {
           cost: string | null
+          dwelling_tier: string | null
           effect_en: string | null
           effect_ru: string | null
           embedding_en: string | null
@@ -1623,6 +1665,7 @@ export type Database = {
         }
         Insert: {
           cost?: string | null
+          dwelling_tier?: string | null
           effect_en?: string | null
           effect_ru?: string | null
           embedding_en?: string | null
@@ -1638,6 +1681,7 @@ export type Database = {
         }
         Update: {
           cost?: string | null
+          dwelling_tier?: string | null
           effect_en?: string | null
           effect_ru?: string | null
           embedding_en?: string | null
@@ -1908,6 +1952,7 @@ export type Database = {
       }
       cleanup_ai_rate_limits: { Args: never; Returns: undefined }
       cleanup_audit_log: { Args: never; Returns: undefined }
+      cleanup_expired_game_sessions: { Args: never; Returns: undefined }
       is_admin: { Args: never; Returns: boolean }
       match_all_en: {
         Args: {
