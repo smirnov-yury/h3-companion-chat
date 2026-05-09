@@ -197,7 +197,9 @@ export default function Step1Scenario({ form, setForm }: Props) {
             size="icon"
             onClick={() => {
               if (!filteredScenarios.length) return;
-              const pick = filteredScenarios[Math.floor(Math.random() * filteredScenarios.length)];
+              const pool = filteredScenarios.filter((s) => s.id !== form.scenarioId);
+              const list = pool.length > 0 ? pool : filteredScenarios;
+              const pick = list[Math.floor(Math.random() * list.length)];
               setForm((f) => ({ ...f, scenarioId: pick.id }));
             }}
             title={lang === "RU" ? "Случайный сценарий" : "Random scenario"}
