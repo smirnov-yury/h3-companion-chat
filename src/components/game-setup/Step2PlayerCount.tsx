@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { AlertTriangle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/context/LanguageContext";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import type { GameSetupForm, PlayerForm } from "./types";
 
 interface Props {
@@ -12,7 +11,7 @@ interface Props {
 
 const ALL = [2, 3, 4, 5, 6, 7, 8];
 
-function emptyPlayer(i: number): PlayerForm {
+function emptyPlayer(): PlayerForm {
   return { name: "", town: null, heroId: null };
 }
 
@@ -41,7 +40,7 @@ export default function Step2PlayerCount({ form, setForm }: Props) {
     setForm((f) => {
       const players = [...f.players];
       if (players.length > n) players.length = n;
-      while (players.length < n) players.push(emptyPlayer(players.length));
+      while (players.length < n) players.push(emptyPlayer());
       return { ...f, playerCount: n, players };
     });
   };
@@ -62,18 +61,19 @@ export default function Step2PlayerCount({ form, setForm }: Props) {
       <h2 className="text-sm font-semibold">
         {lang === "RU" ? "Количество игроков" : "Number of players"}
       </h2>
-      <div className="flex flex-wrap gap-2">
+      <div className="flex gap-2 overflow-x-auto -mx-4 px-4 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
         {ALL.map((n) => {
           const disabled = isDisabled(n);
           const native = isSupported(n);
           const warning = !native && !disabled;
           const active = form.playerCount === n;
-          const btn = (
+          return (
             <button
+              key={n}
               type="button"
               disabled={disabled}
               onClick={() => handleClick(n)}
-              className={`min-w-[56px] h-12 px-4 rounded-full text-sm font-semibold border-2 transition-colors flex items-center justify-center gap-1 ${
+              className={`min-w-[56px] h-12 px-4 rounded-full text-sm font-semibold border-2 transition-colors flex items-center justify-center gap-1 flex-shrink-0 ${
                 disabled
                   ? "opacity-30 cursor-not-allowed border-border bg-muted"
                   : active
@@ -88,25 +88,6 @@ export default function Step2PlayerCount({ form, setForm }: Props) {
               {warning && <AlertTriangle className="w-3 h-3 text-yellow-500" />}
               {n}
             </button>
-          );
-          const tip = disabled
-            ? lang === "RU"
-              ? `Сценарий рассчитан минимум на ${min} игроков`
-              : `Scenario requires at least ${min} players`
-            : native
-            ? lang === "RU"
-              ? "Нативный режим"
-              : "Native"
-            : lang === "RU"
-            ? "Карта будет автоматически масштабирована — проверьте баланс"
-            : "Map will be auto-scaled, verify balance";
-          return (
-            <Tooltip key={n}>
-              <TooltipTrigger asChild>
-                <span>{btn}</span>
-              </TooltipTrigger>
-              <TooltipContent>{tip}</TooltipContent>
-            </Tooltip>
           );
         })}
       </div>
