@@ -69,23 +69,28 @@ export default function Step3Players({ form, setForm }: Props) {
   const randomHero = (idx: number) => {
     const p = form.players[idx];
     if (!p?.town) return;
-    const list = heroesForTown(p.town);
-    if (!list.length) return;
+    const allHeroes = heroesForTown(p.town);
+    if (!allHeroes.length) return;
+    const pool = allHeroes.filter((h) => h.id !== p.heroId);
+    const list = pool.length > 0 ? pool : allHeroes;
     const pick = list[Math.floor(Math.random() * list.length)];
     updatePlayer(idx, { heroId: pick.id });
   };
 
   const randomFaction = (idx: number) => {
     const allTowns = (townsQ.data ?? []).map((t) => t.name_en);
-    const taken = new Set(
+    const currentTown = form.players[idx]?.town;
+    const takenByOthers = new Set(
       form.players
         .filter((_, i) => i !== idx)
         .map((p) => p.town)
         .filter((t): t is string => !!t),
     );
-    const available = allTowns.filter((t) => !taken.has(t));
+    const available = allTowns.filter((t) => !takenByOthers.has(t));
     if (!available.length) return;
-    const pickedTown = available[Math.floor(Math.random() * available.length)];
+    const pool = available.filter((t) => t !== currentTown);
+    const list = pool.length > 0 ? pool : available;
+    const pickedTown = list[Math.floor(Math.random() * list.length)];
     const heroes = (heroesQ.data ?? []).filter((h) => h.town === pickedTown);
     const pickedHero = heroes.length
       ? heroes[Math.floor(Math.random() * heroes.length)]
