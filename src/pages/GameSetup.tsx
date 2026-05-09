@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Wand2, ChevronLeft, ChevronRight } from "lucide-react";
 import TopAppBar from "@/components/TopAppBar";
 import NavDrawer, { type TabId } from "@/components/NavDrawer";
@@ -7,12 +7,18 @@ import { useNavigate } from "react-router-dom";
 import { useLang } from "@/context/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { findSectionByTabId } from "@/config/sectionRegistry";
+import { supabase } from "@/integrations/supabase/client";
 import StepProgress from "@/components/game-setup/StepProgress";
 import Step1Scenario from "@/components/game-setup/Step1Scenario";
 import Step2PlayerCount from "@/components/game-setup/Step2PlayerCount";
 import Step3Players from "@/components/game-setup/Step3Players";
 import Step4Review from "@/components/game-setup/Step4Review";
-import { INITIAL_FORM, type GameSetupForm } from "@/components/game-setup/types";
+import { INITIAL_FORM, type GameSetupForm, type PlayerForm } from "@/components/game-setup/types";
+import { useQuery } from "@tanstack/react-query";
+
+function emptyPlayer(): PlayerForm {
+  return { name: "", town: null, heroId: null };
+}
 
 export default function GameSetup() {
   const { lang } = useLang();
@@ -20,22 +26,44 @@ export default function GameSetup() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [form, setForm] = useState<GameSetupForm>(INITIAL_FORM);
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
-  const [countTouched, setCountTouched] = useState(false);
 
-  const setFormWrapped: React.Dispatch<React.SetStateAction<GameSetupForm>> = (updater) => {
-    setForm((prev) => {
-      const next = typeof updater === "function" ? (updater as (p: GameSetupForm) => GameSetupForm)(prev) : updater;
-      if (next.playerCount !== prev.playerCount) setCountTouched(true);
-      return next;
+  // Auto-set playerCount to scenario.min_players when scenario changes.
+  const scenarioMetaQ = useQuery({
+    queryKey: ["game-setup", "scenario-meta", form.scenarioId],
+    enabled: !!form.scenarioId,
+    staleTime: 5 * 60 * 1000,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("scenarios")
+        .select("id, min_players, supported_player_counts")
+        .eq("id", form.scenarioId!)
+        .single();
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const scenarioMin = scenarioMetaQ.data?.min_players ?? 2;
+
+  useEffect(() => {
+    if (!scenarioMetaQ.data) return;
+    const newCount = scenarioMetaQ.data.min_players ?? 2;
+    setForm((f) => {
+      if (f.playerCount === newCount && f.players.length === newCount) return f;
+      const players = [...f.players];
+      if (players.length > newCount) players.length = newCount;
+      while (players.length < newCount) players.push(emptyPlayer());
+      return { ...f, playerCount: newCount, players };
     });
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scenarioMetaQ.data?.id]);
 
   const stepValid = useMemo(() => {
     if (currentStep === 1) {
-      return form.mode === "clash" && !!form.bookId && !!form.scenarioId;
+      return form.mode === "clash" && !!form.scenarioId;
     }
     if (currentStep === 2) {
-      return countTouched && form.playerCount >= 2 && form.playerCount <= 8;
+      return form.playerCount >= scenarioMin && form.playerCount <= 8;
     }
     if (currentStep === 3) {
       if (form.players.length !== form.playerCount) return false;
@@ -48,7 +76,7 @@ export default function GameSetup() {
       return true;
     }
     return true;
-  }, [currentStep, form, countTouched]);
+  }, [currentStep, form, scenarioMin]);
 
   const handleTabChange = (tab: TabId) => {
     const def = findSectionByTabId(tab);
@@ -69,13 +97,17 @@ export default function GameSetup() {
         active={"game_setup" as TabId}
         onChange={handleTabChange}
       />
-      <div className="flex-1 flex flex-col overflow-y-auto pt-11 lg:ml-56">
+      <div className="fixed top-11 left-0 right-0 z-30 bg-background border-b border-border lg:left-56">
         <StepProgress current={currentStep} total={4} />
+      </div>
+      <div className="flex-1 flex flex-col overflow-y-auto pt-[calc(2.75rem+72px)] lg:ml-56">
         <div className="max-w-2xl w-full mx-auto p-4 flex-1">
-          {currentStep === 1 && <Step1Scenario form={form} setForm={setFormWrapped} />}
-          {currentStep === 2 && <Step2PlayerCount form={form} setForm={setFormWrapped} />}
-          {currentStep === 3 && <Step3Players form={form} setForm={setFormWrapped} />}
-          {currentStep === 4 && <Step4Review form={form} />}
+          <div className="mt-2">
+            {currentStep === 1 && <Step1Scenario form={form} setForm={setForm} />}
+            {currentStep === 2 && <Step2PlayerCount form={form} setForm={setForm} />}
+            {currentStep === 3 && <Step3Players form={form} setForm={setForm} />}
+            {currentStep === 4 && <Step4Review form={form} />}
+          </div>
 
           {currentStep < 4 && (
             <div className="flex justify-between gap-2 mt-8 pt-4 border-t border-border">

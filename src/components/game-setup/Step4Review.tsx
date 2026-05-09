@@ -15,18 +15,15 @@ export default function Step4Review({ form }: Props) {
   const navigate = useNavigate();
 
   const dataQ = useQuery({
-    queryKey: ["game-setup", "review", form.bookId, form.scenarioId, form.players.map((p) => `${p.town}:${p.heroId}`).join(",")],
+    queryKey: ["game-setup", "review", form.scenarioId, form.players.map((p) => `${p.town}:${p.heroId}`).join(",")],
     staleTime: 5 * 60 * 1000,
     queryFn: async () => {
       const heroIds = form.players.map((p) => p.heroId).filter(Boolean) as string[];
-      const [book, scen, heroes, towns] = await Promise.all([
-        form.bookId
-          ? supabase.from("scenario_books").select("id, title_en, title_ru").eq("id", form.bookId).single()
-          : Promise.resolve({ data: null, error: null } as const),
+      const [scen, heroes, towns] = await Promise.all([
         form.scenarioId
           ? supabase
               .from("scenarios")
-              .select("id, title_en, title_ru, summary_en, summary_ru, supported_player_counts")
+              .select("id, title_en, title_ru, summary_en, summary_ru, supported_player_counts, scenario_books!inner(id, title_en, title_ru)")
               .eq("id", form.scenarioId)
               .single()
           : Promise.resolve({ data: null, error: null } as const),
@@ -35,8 +32,9 @@ export default function Step4Review({ form }: Props) {
           : Promise.resolve({ data: [], error: null } as const),
         supabase.from("towns").select("name_en, name_ru"),
       ]);
+      const book = (scen.data as any)?.scenario_books ?? null;
       return {
-        book: book.data,
+        book,
         scenario: scen.data,
         heroes: heroes.data ?? [],
         towns: towns.data ?? [],
