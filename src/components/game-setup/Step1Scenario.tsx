@@ -67,7 +67,7 @@ export default function Step1Scenario({ form, setForm }: Props) {
           .eq("mode", "clash"),
         supabase
           .from("scenario_books")
-          .select("id, title_en, title_ru, release_order, sort_order"),
+          .select("id, title_en, title_ru, release_order"),
       ]);
       if (scenRes.error) throw scenRes.error;
       if (booksRes.error) throw booksRes.error;
