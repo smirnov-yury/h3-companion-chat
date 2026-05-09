@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { Dice5, RotateCcw } from "lucide-react";
+import { Dice5, Dices, RotateCcw } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/context/LanguageContext";
 import { Input } from "@/components/ui/input";
@@ -75,6 +75,24 @@ export default function Step3Players({ form, setForm }: Props) {
     updatePlayer(idx, { heroId: pick.id });
   };
 
+  const randomFaction = (idx: number) => {
+    const allTowns = (townsQ.data ?? []).map((t) => t.name_en);
+    const taken = new Set(
+      form.players
+        .filter((_, i) => i !== idx)
+        .map((p) => p.town)
+        .filter((t): t is string => !!t),
+    );
+    const available = allTowns.filter((t) => !taken.has(t));
+    if (!available.length) return;
+    const pickedTown = available[Math.floor(Math.random() * available.length)];
+    const heroes = (heroesQ.data ?? []).filter((h) => h.town === pickedTown);
+    const pickedHero = heroes.length
+      ? heroes[Math.floor(Math.random() * heroes.length)]
+      : null;
+    updatePlayer(idx, { town: pickedTown, heroId: pickedHero?.id ?? null });
+  };
+
   const randomFactionsAll = () => {
     const towns = (townsQ.data ?? []).map((t) => t.name_en);
     const shuffled = [...towns].sort(() => Math.random() - 0.5);
@@ -128,23 +146,34 @@ export default function Step3Players({ form, setForm }: Props) {
                 placeholder={lang === "RU" ? `Игрок ${idx + 1}` : `Player ${idx + 1}`}
               />
               <div>
-                <Select
-                  value={p.town ?? ""}
-                  onValueChange={(v) => updatePlayer(idx, { town: v, heroId: null })}
-                >
-                  <SelectTrigger className={dup !== null ? "border-destructive" : ""}>
-                    <SelectValue
-                      placeholder={lang === "RU" ? "Фракция" : "Faction"}
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {(townsQ.data ?? []).map((t) => (
-                      <SelectItem key={t.id} value={t.name_en}>
-                        {lang === "RU" ? t.name_ru || t.name_en : t.name_en}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <div className="flex gap-2">
+                  <Select
+                    value={p.town ?? ""}
+                    onValueChange={(v) => updatePlayer(idx, { town: v, heroId: null })}
+                  >
+                    <SelectTrigger className={`flex-1 ${dup !== null ? "border-destructive" : ""}`}>
+                      <SelectValue
+                        placeholder={lang === "RU" ? "Фракция" : "Faction"}
+                      />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {(townsQ.data ?? []).map((t) => (
+                        <SelectItem key={t.id} value={t.name_en}>
+                          {lang === "RU" ? t.name_ru || t.name_en : t.name_en}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="icon"
+                    onClick={() => randomFaction(idx)}
+                    title={lang === "RU" ? "Случайная фракция" : "Random faction"}
+                  >
+                    <Dices className="w-4 h-4" />
+                  </Button>
+                </div>
                 {dup !== null && (
                   <p className="text-xs text-destructive mt-1">
                     {lang === "RU"

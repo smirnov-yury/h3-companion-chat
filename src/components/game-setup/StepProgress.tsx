@@ -5,10 +5,17 @@ interface Props {
   total: number;
 }
 
+const STEP_NAMES: Record<number, { en: string; ru: string }> = {
+  1: { en: "Scenario", ru: "Сценарий" },
+  2: { en: "Player count", ru: "Количество игроков" },
+  3: { en: "Players", ru: "Игроки" },
+  4: { en: "Review", ru: "Проверка" },
+};
+
 export default function StepProgress({ current, total }: Props) {
   const { lang } = useLang();
   return (
-    <div className="sticky top-11 z-10 bg-background border-b border-border py-3 px-4">
+    <div className="pt-2 pb-2 px-4">
       <div className="flex items-center justify-center gap-2 max-w-md mx-auto">
         {Array.from({ length: total }).map((_, i) => {
           const step = i + 1;
@@ -34,8 +41,11 @@ export default function StepProgress({ current, total }: Props) {
           );
         })}
       </div>
-      <div className="text-center text-xs text-muted-foreground mt-2">
+      <div className="text-center text-xs text-muted-foreground mt-1">
         {lang === "RU" ? `Шаг ${current} из ${total}` : `Step ${current} of ${total}`}
+      </div>
+      <div className="text-center text-sm font-semibold mt-0.5">
+        {lang === "RU" ? STEP_NAMES[current].ru : STEP_NAMES[current].en}
       </div>
     </div>
   );

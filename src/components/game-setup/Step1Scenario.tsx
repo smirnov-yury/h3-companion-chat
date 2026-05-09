@@ -1,8 +1,10 @@
-import { useEffect } from "react";
+import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { Dices } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/context/LanguageContext";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -10,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { GameSetupForm, GameSetupMode } from "./types";
+import { formatPlayerRange, type GameSetupForm, type GameSetupMode } from "./types";
 
 interface Props {
   form: GameSetupForm;
@@ -27,60 +29,46 @@ const MODES: { id: GameSetupMode; ru: string; en: string; enabled: boolean }[] =
 
 export default function Step1Scenario({ form, setForm }: Props) {
   const { lang } = useLang();
-
-  const booksQ = useQuery({
-    queryKey: ["game-setup", "books", form.mode],
-    staleTime: 5 * 60 * 1000,
-    queryFn: async () => {
-      const { data: scens, error: e1 } = await supabase
-        .from("scenarios")
-        .select("book_id")
-        .eq("mode", form.mode);
-      if (e1) throw e1;
-      const ids = Array.from(new Set((scens ?? []).map((s) => s.book_id)));
-      if (!ids.length) return [];
-      const { data, error } = await supabase
-        .from("scenario_books")
-        .select("id, title_en, title_ru, release_order, source_type")
-        .in("id", ids)
-        .order("release_order", { ascending: true });
-      if (error) throw error;
-      return data ?? [];
-    },
-  });
+  const [bookFilter, setBookFilter] = useState<string | null>(null);
 
   const scenariosQ = useQuery({
-    queryKey: ["game-setup", "scenarios", form.bookId, form.mode],
-    enabled: !!form.bookId,
+    queryKey: ["game-setup", "all-clash-scenarios"],
     staleTime: 5 * 60 * 1000,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("scenarios")
-        .select("id, title_en, title_ru, summary_en, summary_ru, sort_order")
-        .eq("book_id", form.bookId!)
-        .eq("mode", form.mode)
+        .select(`
+          id, title_en, title_ru, summary_en, summary_ru,
+          sort_order, supported_player_counts, min_players, max_players,
+          rounds_min, rounds_max, book_id,
+          scenario_books!inner(id, title_en, title_ru, release_order, sort_order)
+        `)
+        .eq("mode", "clash")
         .order("sort_order", { ascending: true });
       if (error) throw error;
-      return data ?? [];
+      return (data ?? []).sort((a, b) => {
+        const ba = (a.scenario_books as any)?.release_order ?? 999;
+        const bb = (b.scenario_books as any)?.release_order ?? 999;
+        if (ba !== bb) return ba - bb;
+        return (a.sort_order ?? 0) - (b.sort_order ?? 0);
+      });
     },
   });
 
-  // Default first book
-  useEffect(() => {
-    if (!form.bookId && booksQ.data && booksQ.data.length > 0) {
-      setForm((f) => ({ ...f, bookId: booksQ.data![0].id }));
+  const books = useMemo(() => {
+    const map = new Map<string, any>();
+    for (const s of scenariosQ.data ?? []) {
+      const b = (s as any).scenario_books;
+      if (b && !map.has(b.id)) map.set(b.id, b);
     }
-  }, [booksQ.data, form.bookId, setForm]);
+    return Array.from(map.values()).sort(
+      (a, b) => (a.release_order ?? 999) - (b.release_order ?? 999),
+    );
+  }, [scenariosQ.data]);
 
-  // Reset scenario when book changes / default first scenario
-  useEffect(() => {
-    if (scenariosQ.data && scenariosQ.data.length > 0) {
-      const exists = scenariosQ.data.some((s) => s.id === form.scenarioId);
-      if (!exists) {
-        setForm((f) => ({ ...f, scenarioId: scenariosQ.data![0].id }));
-      }
-    }
-  }, [scenariosQ.data, form.scenarioId, setForm]);
+  const filteredScenarios = (scenariosQ.data ?? []).filter(
+    (s) => bookFilter === null || s.book_id === bookFilter,
+  );
 
   const selectedScenario = scenariosQ.data?.find((s) => s.id === form.scenarioId);
 
@@ -90,16 +78,16 @@ export default function Step1Scenario({ form, setForm }: Props) {
         <h2 className="text-sm font-semibold mb-2">
           {lang === "RU" ? "Режим игры" : "Game mode"}
         </h2>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex gap-2 overflow-x-auto -mx-4 px-4 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {MODES.map((m) => {
             const active = form.mode === m.id;
-            const btn = (
+            return (
               <button
                 key={m.id}
                 type="button"
                 disabled={!m.enabled}
                 onClick={() => m.enabled && setForm((f) => ({ ...f, mode: m.id }))}
-                className={`px-4 py-2 rounded-full text-sm font-medium border transition-colors ${
+                className={`px-4 py-2 rounded-full text-sm font-medium border transition-colors flex-shrink-0 whitespace-nowrap ${
                   active
                     ? "bg-primary text-primary-foreground border-primary"
                     : "bg-secondary text-secondary-foreground border-border hover:bg-muted"
@@ -108,69 +96,110 @@ export default function Step1Scenario({ form, setForm }: Props) {
                 {lang === "RU" ? m.ru : m.en}
               </button>
             );
-            if (m.enabled) return btn;
-            return (
-              <Tooltip key={m.id}>
-                <TooltipTrigger asChild><span>{btn}</span></TooltipTrigger>
-                <TooltipContent>{lang === "RU" ? "В разработке" : "In development"}</TooltipContent>
-              </Tooltip>
-            );
           })}
         </div>
       </div>
 
       <div>
         <h2 className="text-sm font-semibold mb-2">{lang === "RU" ? "Книга" : "Book"}</h2>
-        <Select
-          value={form.bookId ?? ""}
-          onValueChange={(v) => setForm((f) => ({ ...f, bookId: v, scenarioId: null }))}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder={lang === "RU" ? "Выберите книгу" : "Select book"} />
-          </SelectTrigger>
-          <SelectContent>
-            {(booksQ.data ?? []).map((b) => (
-              <SelectItem key={b.id} value={b.id}>
-                {lang === "RU" ? b.title_ru || b.title_en : b.title_en}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="flex gap-2 overflow-x-auto -mx-4 px-4 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <button
+            type="button"
+            onClick={() => setBookFilter(null)}
+            className={`px-3 py-1.5 rounded-full text-xs font-medium border flex-shrink-0 whitespace-nowrap ${
+              bookFilter === null
+                ? "bg-primary text-primary-foreground border-primary"
+                : "bg-secondary text-secondary-foreground border-border hover:bg-muted"
+            }`}
+          >
+            {lang === "RU" ? "Все" : "All"}
+          </button>
+          {books.map((b) => (
+            <button
+              key={b.id}
+              type="button"
+              onClick={() => setBookFilter(b.id)}
+              className={`px-3 py-1.5 rounded-full text-xs font-medium border flex-shrink-0 whitespace-nowrap ${
+                bookFilter === b.id
+                  ? "bg-primary text-primary-foreground border-primary"
+                  : "bg-secondary text-secondary-foreground border-border hover:bg-muted"
+              }`}
+            >
+              {lang === "RU" ? b.title_ru || b.title_en : b.title_en}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div>
         <h2 className="text-sm font-semibold mb-2">
           {lang === "RU" ? "Сценарий" : "Scenario"}
         </h2>
-        <Select
-          value={form.scenarioId ?? ""}
-          onValueChange={(v) => setForm((f) => ({ ...f, scenarioId: v }))}
-          disabled={!form.bookId}
-        >
-          <SelectTrigger>
-            <SelectValue placeholder={lang === "RU" ? "Выберите сценарий" : "Select scenario"} />
-          </SelectTrigger>
-          <SelectContent>
-            {(scenariosQ.data ?? []).map((s) => (
-              <SelectItem key={s.id} value={s.id}>
-                {lang === "RU" ? s.title_ru || s.title_en : s.title_en}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="flex gap-2">
+          <Select
+            value={form.scenarioId ?? ""}
+            onValueChange={(v) => setForm((f) => ({ ...f, scenarioId: v }))}
+          >
+            <SelectTrigger className="flex-1">
+              <SelectValue placeholder={lang === "RU" ? "Выберите сценарий" : "Select scenario"} />
+            </SelectTrigger>
+            <SelectContent>
+              {filteredScenarios.map((s) => {
+                const book = (s as any).scenario_books;
+                const bookTitle = lang === "RU" ? book?.title_ru || book?.title_en : book?.title_en;
+                const sName = lang === "RU" ? s.title_ru || s.title_en : s.title_en;
+                const range = formatPlayerRange(s.supported_player_counts as number[] | null, lang);
+                return (
+                  <SelectItem key={s.id} value={s.id}>
+                    <span className="text-muted-foreground">{bookTitle}</span>
+                    <span className="mx-1">·</span>
+                    <span className="font-medium">{sName}</span>
+                    <span className="text-muted-foreground ml-1">({range})</span>
+                  </SelectItem>
+                );
+              })}
+            </SelectContent>
+          </Select>
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            onClick={() => {
+              if (!filteredScenarios.length) return;
+              const pick = filteredScenarios[Math.floor(Math.random() * filteredScenarios.length)];
+              setForm((f) => ({ ...f, scenarioId: pick.id }));
+            }}
+            title={lang === "RU" ? "Случайный сценарий" : "Random scenario"}
+          >
+            <Dices className="w-4 h-4" />
+          </Button>
+        </div>
+
         {selectedScenario && (
-          <p className="text-xs text-muted-foreground mt-2 line-clamp-2">
-            {lang === "RU"
-              ? selectedScenario.summary_ru || selectedScenario.summary_en
-              : selectedScenario.summary_en}
-          </p>
+          <>
+            <div className="flex flex-wrap gap-2 mt-3">
+              <Badge variant="secondary">Clash</Badge>
+              <Badge variant="secondary">
+                {formatPlayerRange(selectedScenario.supported_player_counts as number[] | null, lang)}
+              </Badge>
+              {selectedScenario.rounds_min && (
+                <Badge variant="secondary">
+                  {selectedScenario.rounds_min}-{selectedScenario.rounds_max}{" "}
+                  {lang === "RU" ? "раундов" : "rounds"}
+                </Badge>
+              )}
+            </div>
+            <p className="text-xs text-muted-foreground mt-2 line-clamp-3">
+              {lang === "RU"
+                ? selectedScenario.summary_ru || selectedScenario.summary_en
+                : selectedScenario.summary_en}
+            </p>
+          </>
         )}
       </div>
 
       <p className="text-xs text-muted-foreground italic">
-        {lang === "RU"
-          ? "Если играете впервые — выберите Base → Monk's Retreat"
-          : "First time? Pick Base → Monk's Retreat"}
+        {lang === "RU" ? "🎲 Не знаешь что выбрать? Жми кубик" : "🎲 Not sure? Hit the dice"}
       </p>
     </div>
   );
