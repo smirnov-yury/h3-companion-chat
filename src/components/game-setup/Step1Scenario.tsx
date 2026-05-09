@@ -31,35 +31,67 @@ export default function Step1Scenario({ form, setForm }: Props) {
   const { lang } = useLang();
   const [bookFilter, setBookFilter] = useState<string | null>(null);
 
+  type ScenarioRow = {
+    id: string;
+    title_en: string;
+    title_ru: string | null;
+    summary_en: string | null;
+    summary_ru: string | null;
+    sort_order: number | null;
+    supported_player_counts: number[] | null;
+    min_players: number | null;
+    max_players: number | null;
+    rounds_min: number | null;
+    rounds_max: number | null;
+    book_id: string;
+  };
+
+  type BookRow = {
+    id: string;
+    title_en: string;
+    title_ru: string | null;
+    release_order: number | null;
+    sort_order: number | null;
+  };
+
+  type ScenarioWithBook = ScenarioRow & { book: BookRow | null };
+
   const scenariosQ = useQuery({
     queryKey: ["game-setup", "all-clash-scenarios"],
     staleTime: 5 * 60 * 1000,
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("scenarios")
-        .select(`
-          id, title_en, title_ru, summary_en, summary_ru,
-          sort_order, supported_player_counts, min_players, max_players,
-          rounds_min, rounds_max, book_id,
-          scenario_books!inner(id, title_en, title_ru, release_order, sort_order)
-        `)
-        .eq("mode", "clash")
-        .order("sort_order", { ascending: true });
-      if (error) throw error;
-      return (data ?? []).sort((a, b) => {
-        const ba = (a.scenario_books as any)?.release_order ?? 999;
-        const bb = (b.scenario_books as any)?.release_order ?? 999;
+    queryFn: async (): Promise<ScenarioWithBook[]> => {
+      const [scenRes, booksRes] = await Promise.all([
+        supabase
+          .from("scenarios")
+          .select("id, title_en, title_ru, summary_en, summary_ru, sort_order, supported_player_counts, min_players, max_players, rounds_min, rounds_max, book_id")
+          .eq("mode", "clash"),
+        supabase
+          .from("scenario_books")
+          .select("id, title_en, title_ru, release_order, sort_order"),
+      ]);
+      if (scenRes.error) throw scenRes.error;
+      if (booksRes.error) throw booksRes.error;
+      const booksMap = new Map<string, BookRow>(
+        (booksRes.data ?? []).map((b) => [b.id, b as BookRow]),
+      );
+      const merged: ScenarioWithBook[] = (scenRes.data ?? []).map((s) => ({
+        ...(s as ScenarioRow),
+        book: booksMap.get((s as ScenarioRow).book_id) ?? null,
+      }));
+      merged.sort((a, b) => {
+        const ba = a.book?.release_order ?? 999;
+        const bb = b.book?.release_order ?? 999;
         if (ba !== bb) return ba - bb;
         return (a.sort_order ?? 0) - (b.sort_order ?? 0);
       });
+      return merged;
     },
   });
 
   const books = useMemo(() => {
-    const map = new Map<string, any>();
+    const map = new Map<string, BookRow>();
     for (const s of scenariosQ.data ?? []) {
-      const b = (s as any).scenario_books;
-      if (b && !map.has(b.id)) map.set(b.id, b);
+      if (s.book && !map.has(s.book.id)) map.set(s.book.id, s.book);
     }
     return Array.from(map.values()).sort(
       (a, b) => (a.release_order ?? 999) - (b.release_order ?? 999),
