@@ -176,7 +176,7 @@ export default function Step1Scenario({ form, setForm }: Props) {
             </SelectTrigger>
             <SelectContent>
               {filteredScenarios.map((s) => {
-                const book = (s as any).scenario_books;
+                const book = s.book;
                 const bookTitle = lang === "RU" ? book?.title_ru || book?.title_en : book?.title_en;
                 const sName = lang === "RU" ? s.title_ru || s.title_en : s.title_en;
                 const range = formatPlayerRange(s.supported_player_counts as number[] | null, lang);
