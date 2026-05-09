@@ -19,22 +19,28 @@ export default function Step4Review({ form }: Props) {
     staleTime: 5 * 60 * 1000,
     queryFn: async () => {
       const heroIds = form.players.map((p) => p.heroId).filter(Boolean) as string[];
-      const [scen, heroes, towns] = await Promise.all([
-        form.scenarioId
-          ? supabase
-              .from("scenarios")
-              .select("id, title_en, title_ru, summary_en, summary_ru, supported_player_counts, scenario_books!inner(id, title_en, title_ru)")
-              .eq("id", form.scenarioId)
-              .single()
-          : Promise.resolve({ data: null, error: null } as const),
-        heroIds.length
-          ? supabase.from("heroes").select("id, name_en, name_ru").in("id", heroIds)
-          : Promise.resolve({ data: [], error: null } as const),
-        supabase.from("towns").select("name_en, name_ru"),
-      ]);
-      const book = (scen.data as any)?.scenario_books ?? null;
+      const scenP = form.scenarioId
+        ? supabase
+            .from("scenarios")
+            .select("id, title_en, title_ru, summary_en, summary_ru, supported_player_counts, book_id")
+            .eq("id", form.scenarioId)
+            .single()
+        : Promise.resolve({ data: null, error: null } as const);
+      const heroesP = heroIds.length
+        ? supabase.from("heroes").select("id, name_en, name_ru").in("id", heroIds)
+        : Promise.resolve({ data: [], error: null } as const);
+      const townsP = supabase.from("towns").select("name_en, name_ru");
+      const [scen, heroes, towns] = await Promise.all([scenP, heroesP, townsP]);
+      const bookId = (scen.data as { book_id?: string } | null)?.book_id;
+      const bookRes = bookId
+        ? await supabase
+            .from("scenario_books")
+            .select("id, title_en, title_ru")
+            .eq("id", bookId)
+            .single()
+        : { data: null, error: null };
       return {
-        book,
+        book: bookRes.data,
         scenario: scen.data,
         heroes: heroes.data ?? [],
         towns: towns.data ?? [],
