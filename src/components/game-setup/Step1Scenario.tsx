@@ -51,7 +51,6 @@ export default function Step1Scenario({ form, setForm }: Props) {
     title_en: string;
     title_ru: string | null;
     release_order: number | null;
-    sort_order: number | null;
   };
 
   type ScenarioWithBook = ScenarioRow & { book: BookRow | null };
