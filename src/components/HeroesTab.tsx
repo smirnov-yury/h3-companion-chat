@@ -469,7 +469,7 @@ export default function HeroesTab({ initialFilter, initialCardId, initialSearch,
                             <div key={idx} className="bg-muted rounded-lg p-3 space-y-2 transition-opacity duration-200 opacity-100">
                               {lvl.image && (
                                 <img
-                                  src={`${STORAGE}/heroes/${lvl.image}`}
+                                  src={componentImageUrl("heroes", lvl.image, selected.updated_at)}
                                   alt={lvl.level}
                                   className="w-[70%] max-w-[280px] mx-auto object-contain rounded-lg"
                                   onError={e => (e.currentTarget.style.display = "none")}
