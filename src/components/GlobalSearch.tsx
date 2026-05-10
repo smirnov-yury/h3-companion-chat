@@ -6,8 +6,8 @@ import { useLang } from "@/context/LanguageContext";
 import { toSlug } from "@/config/sectionRegistry";
 import { isHeroPortraitFilename } from "@/lib/heroImage";
 
-import { SUPABASE_URL } from "@/integrations/supabase/client";
-const STORAGE = `${SUPABASE_URL}/storage/v1/object/public/component-media`;
+import { componentImageUrl } from "@/lib/storage";
+
 const HIGHLIGHT_COLOR = "#E1BB3A";
 
 type Lang = "RU" | "EN";
