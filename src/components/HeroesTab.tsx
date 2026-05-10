@@ -300,7 +300,7 @@ export default function HeroesTab({ initialFilter, initialCardId, initialSearch,
                 <div className="relative aspect-square bg-muted">
                   {isHeroPortraitFilename(h.image) ? (
                     <img
-                      src={`${STORAGE}/heroes/${h.image}`}
+                      src={componentImageUrl("heroes", h.image, h.updated_at)}
                       alt={name(h)}
                       className="w-full h-full object-cover object-left"
                     />
