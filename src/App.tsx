@@ -21,7 +21,7 @@ const AdminLogin = lazy(() => import("./pages/AdminLogin.tsx"));
 const AdminPanel = lazy(() => import("./pages/AdminPanel.tsx"));
 const AdminGuard = lazy(() => import("./components/admin/AdminGuard.tsx"));
 const GameSetup  = lazy(() => import("./pages/GameSetup.tsx"));
-const GameSessionPreview = lazy(() => import("./pages/GameSessionPreview.tsx"));
+const GameSession = lazy(() => import("./pages/GameSession.tsx"));
 
 const queryClient = new QueryClient();
 
@@ -53,7 +53,7 @@ const App = () => (
             <Route path="/dragonutopia/login" element={<AdminAuthProvider><AdminLogin /></AdminAuthProvider>} />
             <Route path="/dragonutopia/*" element={<AdminAuthProvider><AdminGuard><AdminPanel /></AdminGuard></AdminAuthProvider>} />
             <Route path="/game-setup" element={<GameSetup />} />
-            <Route path="/game/preview" element={<GameSessionPreview />} />
+            <Route path="/game/:uuid" element={<GameSession />} />
             <Route path="/:section/*" element={<Index />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
