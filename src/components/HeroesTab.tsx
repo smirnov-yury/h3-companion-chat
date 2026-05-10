@@ -14,8 +14,7 @@ import { EmptyState, SkeletonGrid } from "@/components/ui/empty-state";
 import { useEntityLinkHandler, entityLinkUrl } from "@/hooks/useEntityLinkHandler";
 import { useEntityLinks } from "@/hooks/useEntityLinks";
 
-import { SUPABASE_URL } from "@/integrations/supabase/client";
-const STORAGE = `${SUPABASE_URL}/storage/v1/object/public/component-media`;
+import { componentImageUrl } from "@/lib/storage";
 
 interface Hero {
   id: string;
