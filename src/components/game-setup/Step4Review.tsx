@@ -201,12 +201,12 @@ export default function Step4Review({ form }: Props) {
 
             const insertRes = await supabase
               .from("game_sessions")
-              .insert({
+              .insert([{
                 scenario_id: form.scenarioId,
                 player_count: form.playerCount,
                 payload: payload as unknown as Record<string, unknown>,
                 ip_hash: ipHash,
-              })
+              }])
               .select("id")
               .single();
 
