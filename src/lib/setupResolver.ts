@@ -297,13 +297,17 @@ export function scaleMap(
   if (!baseline || !baseline.player_count) return null;
   const baseTC = baseline.tile_counts ?? {};
   const scaled: Record<string, number> = {};
-  const KEEP_AS_IS = new Set(["center"]);
   for (const [k, v] of Object.entries(baseTC)) {
-    if (k === "starting") {
+    // Any key starting with "starting" is one-per-player invariant (e.g. "starting", "starting_I").
+    if (k === "starting" || k.startsWith("starting_")) {
       scaled[k] = targetPlayerCount;
-    } else if (KEEP_AS_IS.has(k)) {
+    }
+    // Any key starting with "center" is a shared focal point — never scaled (e.g. "center", "center_VI_VII_grail").
+    else if (k === "center" || k.startsWith("center_")) {
       scaled[k] = v;
-    } else {
+    }
+    // Everything else scales by per-player ratio.
+    else {
       scaled[k] = Math.max(0, Math.round((v * targetPlayerCount) / baseline.player_count));
     }
   }
