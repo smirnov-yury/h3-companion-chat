@@ -567,7 +567,7 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
             {displayItems.map((item) => {
               const unit = item.unit;
-              const imgSrc = unit.image ? `${STORAGE}/units/${unit.image}` : null;
+              const imgSrc = unit.image ? componentImageUrl("unit_stats", unit.image, unit.updated_at) : null;
               return (
                 <button
                   key={item.key}
