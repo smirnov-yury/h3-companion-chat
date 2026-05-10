@@ -194,7 +194,7 @@ export default function Step4Review({ form }: Props) {
               setupBlocks: (blocksRes.data ?? []) as never,
               mapVariants: (mvRes.data ?? []) as never,
               timedEvents: (teRes.data ?? []) as never,
-              heroes: heroesRes.data ?? [],
+              heroes: (heroesRes.data ?? []) as never,
               units: (unitsRes.data ?? []) as never,
               buildings: (buildingsRes.data ?? []) as never,
             });
