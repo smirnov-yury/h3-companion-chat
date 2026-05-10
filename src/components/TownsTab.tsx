@@ -19,6 +19,7 @@ interface Town {
   image_empty: string | null;
   image_full: string | null;
   image_back: string | null;
+  updated_at: string | null;
   sort_order: number | null;
 }
 
