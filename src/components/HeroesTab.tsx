@@ -356,7 +356,7 @@ export default function HeroesTab({ initialFilter, initialCardId, initialSearch,
             <div className="p-4 shrink-0">
               {isHeroPortraitFilename(selected.image) ? (
                 <img
-                  src={`${STORAGE}/heroes/${selected.image}`}
+                  src={componentImageUrl("heroes", selected.image, selected.updated_at)}
                   alt={name(selected)}
                   className="max-h-[200px] object-contain mx-auto"
                 />
