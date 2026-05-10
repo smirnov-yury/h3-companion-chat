@@ -12,9 +12,7 @@ import { EmptyState, SkeletonGrid } from '@/components/ui/empty-state';
 import { useEntityLinkHandler as useEntityLinkHandlerImported } from '@/hooks/useEntityLinkHandler';
 import SeeAlso from '@/components/SeeAlso';
 
-import { SUPABASE_URL } from "@/integrations/supabase/client";
-import { componentMediaUrl } from "@/lib/storage";
-const STORAGE = `${SUPABASE_URL}/storage/v1/object/public/component-media`;
+import { componentMediaUrl, componentImageUrl } from "@/lib/storage";
 
 const FACTIONS = ['castle','necropolis','dungeon','tower','fortress','rampart','inferno','conflux','stronghold','cove'];
 const isNeutral = (unit: UnitStat) => !FACTIONS.includes(unit.town?.toLowerCase() ?? '');
@@ -63,6 +61,7 @@ interface UnitStat {
   errata_ru: string | null;
   content: string | null;
   image: string | null;
+  updated_at: string | null;
   sort_order: number;
 }
 
@@ -568,7 +567,7 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
             {displayItems.map((item) => {
               const unit = item.unit;
-              const imgSrc = unit.image ? `${STORAGE}/units/${unit.image}` : null;
+              const imgSrc = unit.image ? componentImageUrl("unit_stats", unit.image, unit.updated_at) : null;
               return (
                 <button
                   key={item.key}
@@ -619,7 +618,7 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
             const { variants } = selectedItem;
             const currentVariant = variants.find((v) => v.number === activeVariant) ? activeVariant : variants[0].number;
             const u = variants.find((v) => v.number === currentVariant) ?? variants[0];
-            const imgSrc = u.image ? `${STORAGE}/units/${u.image}` : null;
+            const imgSrc = u.image ? componentImageUrl("unit_stats", u.image, u.updated_at) : null;
             const abilities = lang === 'RU' && u.abilities_ru ? u.abilities_ru : u.abilities_en;
             const notes = lang === 'RU' && u.notes_ru ? u.notes_ru : u.notes_en;
             const notesStructured = lang === 'RU' && u.notes_structured_ru

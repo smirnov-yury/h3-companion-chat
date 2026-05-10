@@ -8,10 +8,8 @@ import { Dialog } from "@/components/ui/dialog";
 import { CardDialogContent } from "@/components/ui/card-dialog";
 import { EmptyState, SkeletonGrid } from "@/components/ui/empty-state";
 import SeeAlso from "@/components/SeeAlso";
-import { SUPABASE_URL } from "@/integrations/supabase/client";
 import { componentImageUrl } from "@/lib/storage";
 
-const STORAGE = `${SUPABASE_URL}/storage/v1/object/public/component-media`;
 
 const DIFFICULTY_LABEL: Record<string, { en: string; ru: string; color: string }> = {
   easy:       { en: "Easy",       ru: "Лёгкий",      color: "bg-green-500/20 text-green-400" },
@@ -30,6 +28,7 @@ interface AiCard {
   effect_en: string | null;
   effect_ru: string | null;
   image: string | null;
+  updated_at: string | null;
   sort_order: number | null;
 }
 

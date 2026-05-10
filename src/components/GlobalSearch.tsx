@@ -6,8 +6,8 @@ import { useLang } from "@/context/LanguageContext";
 import { toSlug } from "@/config/sectionRegistry";
 import { isHeroPortraitFilename } from "@/lib/heroImage";
 
-import { SUPABASE_URL } from "@/integrations/supabase/client";
-const STORAGE = `${SUPABASE_URL}/storage/v1/object/public/component-media`;
+import { componentImageUrl } from "@/lib/storage";
+
 const HIGHLIGHT_COLOR = "#E1BB3A";
 
 type Lang = "RU" | "EN";
@@ -162,35 +162,35 @@ async function searchAll(query: string, lang: Lang): Promise<SectionResult[]> {
     // Heroes
     supabase
       .from("heroes")
-      .select("id, name_en, name_ru, specialty_en, specialty_ru, image, town")
+      .select("id, name_en, name_ru, specialty_en, specialty_ru, image, town, updated_at")
       .or(buildOrFilter(["name_en", "name_ru", "specialty_en", "specialty_ru"], query))
       .order("sort_order")
       .limit(FETCH_LIMIT),
     // Units
     supabase
       .from("unit_stats")
-      .select("id, slug, name_en, name_ru, abilities_en, abilities_ru, image, town")
+      .select("id, slug, name_en, name_ru, abilities_en, abilities_ru, image, town, updated_at")
       .or(buildOrFilter(["name_en", "name_ru", "abilities_en", "abilities_ru"], query))
       .order("sort_order")
       .limit(FETCH_LIMIT),
     // Artifacts
     supabase
       .from("artifacts")
-      .select("id, name_en, name_ru, effect_en, effect_ru, description_en, description_ru, image, quality")
+      .select("id, name_en, name_ru, effect_en, effect_ru, description_en, description_ru, image, quality, updated_at")
       .or(buildOrFilter(["name_en", "name_ru", "effect_en", "effect_ru", "description_en", "description_ru"], query))
       .order("sort_order")
       .limit(FETCH_LIMIT),
     // Spells
     supabase
       .from("spells")
-      .select("id, name_en, name_ru, effect_en, effect_ru, notes_en, notes_ru, image, school")
+      .select("id, name_en, name_ru, effect_en, effect_ru, notes_en, notes_ru, image, school, updated_at")
       .or(buildOrFilter(["name_en", "name_ru", "effect_en", "effect_ru", "notes_en", "notes_ru"], query))
       .order("sort_order")
       .limit(FETCH_LIMIT),
     // Abilities
     supabase
       .from("abilities")
-      .select("id, name_en, name_ru, effect_en, effect_ru, notes_en, notes_ru, image_regular")
+      .select("id, name_en, name_ru, effect_en, effect_ru, notes_en, notes_ru, image_regular, updated_at")
       .or(buildOrFilter(["name_en", "name_ru", "effect_en", "effect_ru", "notes_en", "notes_ru"], query))
       .order("sort_order")
       .limit(FETCH_LIMIT),
@@ -211,21 +211,21 @@ async function searchAll(query: string, lang: Lang): Promise<SectionResult[]> {
     // Map Elements
     supabase
       .from("fields")
-      .select("id, name_en, name_ru, effect_en, effect_ru, image")
+      .select("id, name_en, name_ru, effect_en, effect_ru, image, updated_at")
       .or(buildOrFilter(["name_en", "name_ru", "effect_en", "effect_ru"], query))
       .order("sort_order")
       .limit(FETCH_LIMIT),
     // Events
     supabase
       .from("events")
-      .select("id, name_en, name_ru, effect_en, effect_ru, image")
+      .select("id, name_en, name_ru, effect_en, effect_ru, image, updated_at")
       .or(buildOrFilter(["name_en", "name_ru", "effect_en", "effect_ru"], query))
       .order("sort_order")
       .limit(FETCH_LIMIT),
     // War Machines
     supabase
       .from("war_machines")
-      .select("id, name_en, name_ru, ability_en, ability_ru, image")
+      .select("id, name_en, name_ru, ability_en, ability_ru, image, updated_at")
       .or(buildOrFilter(["name_en", "name_ru", "ability_en", "ability_ru"], query))
       .order("sort_order")
       .limit(FETCH_LIMIT),
@@ -240,7 +240,7 @@ async function searchAll(query: string, lang: Lang): Promise<SectionResult[]> {
 
   // Heroes
   if (heroes.data) {
-    const rows = sortByNameMatch(heroes.data as Array<{ id: string; name_en: string; name_ru: string | null; specialty_en: string | null; specialty_ru: string | null; image: string | null; town: string | null }>, query, lang);
+    const rows = sortByNameMatch(heroes.data as Array<{ id: string; name_en: string; name_ru: string | null; specialty_en: string | null; specialty_ru: string | null; image: string | null; town: string | null; updated_at: string | null }>, query, lang);
     sections.push({
       key: "heroes",
       labelEN: "Heroes",
@@ -251,14 +251,14 @@ async function searchAll(query: string, lang: Lang): Promise<SectionResult[]> {
         id: r.id,
         name: pick(r.name_en, r.name_ru, lang),
         snippet: buildSnippet(query, lang === "RU" ? [r.specialty_ru, r.specialty_en] : [r.specialty_en, r.specialty_ru]),
-        image: isHeroPortraitFilename(r.image) ? `${STORAGE}/heroes/${r.image}` : null,
+        image: isHeroPortraitFilename(r.image) ? componentImageUrl("heroes", r.image, r.updated_at) : null,
         url: r.town ? `/heroes/${toSlug(r.town)}/${r.id}` : `/heroes/${r.id}`,
       })),
     });
   }
   // Units
   if (units.data) {
-    const rows = sortByNameMatch(units.data as Array<{ id: string; slug: string | null; name_en: string; name_ru: string | null; abilities_en: string | null; abilities_ru: string | null; image: string | null; town: string | null }>, query, lang);
+    const rows = sortByNameMatch(units.data as Array<{ id: string; slug: string | null; name_en: string; name_ru: string | null; abilities_en: string | null; abilities_ru: string | null; image: string | null; town: string | null; updated_at: string | null }>, query, lang);
     sections.push({
       key: "units",
       labelEN: "Units",
@@ -269,7 +269,7 @@ async function searchAll(query: string, lang: Lang): Promise<SectionResult[]> {
         id: r.id,
         name: pick(r.name_en, r.name_ru, lang),
         snippet: buildSnippet(query, lang === "RU" ? [r.abilities_ru, r.abilities_en] : [r.abilities_en, r.abilities_ru]),
-        image: r.image ? `${STORAGE}/${r.image}` : null,
+        image: r.image ? componentImageUrl("unit_stats", r.image, r.updated_at) : null,
         url: r.town
           ? `/units/${toSlug(r.town)}/${r.slug ?? r.id}`
           : `/units/${r.slug ?? r.id}`,
@@ -278,7 +278,7 @@ async function searchAll(query: string, lang: Lang): Promise<SectionResult[]> {
   }
   // Artifacts
   if (artifacts.data) {
-    const rows = sortByNameMatch(artifacts.data as Array<{ id: string; name_en: string; name_ru: string | null; effect_en: string | null; effect_ru: string | null; description_en: string | null; description_ru: string | null; image: string | null; quality: string | null }>, query, lang);
+    const rows = sortByNameMatch(artifacts.data as Array<{ id: string; name_en: string; name_ru: string | null; effect_en: string | null; effect_ru: string | null; description_en: string | null; description_ru: string | null; image: string | null; quality: string | null; updated_at: string | null }>, query, lang);
     sections.push({
       key: "artifacts",
       labelEN: "Artifacts",
@@ -289,7 +289,7 @@ async function searchAll(query: string, lang: Lang): Promise<SectionResult[]> {
         id: r.id,
         name: pick(r.name_en, r.name_ru, lang),
         snippet: buildSnippet(query, lang === "RU" ? [r.effect_ru, r.description_ru, r.effect_en, r.description_en] : [r.effect_en, r.description_en, r.effect_ru, r.description_ru]),
-        image: r.image ? `${STORAGE}/${r.image}` : null,
+        image: r.image ? componentImageUrl("artifacts", r.image, r.updated_at) : null,
         url: r.quality
           ? `/decks/artifacts/${toSlug(r.quality)}/${r.id}`
           : `/decks/artifacts/${r.id}`,
@@ -298,7 +298,7 @@ async function searchAll(query: string, lang: Lang): Promise<SectionResult[]> {
   }
   // Spells
   if (spells.data) {
-    const rows = sortByNameMatch(spells.data as Array<{ id: string; name_en: string; name_ru: string | null; effect_en: string | null; effect_ru: string | null; notes_en: string | null; notes_ru: string | null; image: string | null; school: string | null }>, query, lang);
+    const rows = sortByNameMatch(spells.data as Array<{ id: string; name_en: string; name_ru: string | null; effect_en: string | null; effect_ru: string | null; notes_en: string | null; notes_ru: string | null; image: string | null; school: string | null; updated_at: string | null }>, query, lang);
     sections.push({
       key: "spells",
       labelEN: "Spells",
@@ -309,7 +309,7 @@ async function searchAll(query: string, lang: Lang): Promise<SectionResult[]> {
         id: r.id,
         name: pick(r.name_en, r.name_ru, lang),
         snippet: buildSnippet(query, lang === "RU" ? [r.effect_ru, r.notes_ru, r.effect_en, r.notes_en] : [r.effect_en, r.notes_en, r.effect_ru, r.notes_ru]),
-        image: r.image ? `${STORAGE}/${r.image}` : null,
+        image: r.image ? componentImageUrl("spells", r.image, r.updated_at) : null,
         url: r.school
           ? `/decks/spells/${toSlug(r.school)}/${r.id}`
           : `/decks/spells/${r.id}`,
@@ -318,7 +318,7 @@ async function searchAll(query: string, lang: Lang): Promise<SectionResult[]> {
   }
   // Abilities
   if (abilities.data) {
-    const rows = sortByNameMatch(abilities.data as Array<{ id: string; name_en: string; name_ru: string | null; effect_en: string | null; effect_ru: string | null; notes_en: string | null; notes_ru: string | null; image_regular: string | null }>, query, lang);
+    const rows = sortByNameMatch(abilities.data as Array<{ id: string; name_en: string; name_ru: string | null; effect_en: string | null; effect_ru: string | null; notes_en: string | null; notes_ru: string | null; image_regular: string | null; updated_at: string | null }>, query, lang);
     sections.push({
       key: "abilities",
       labelEN: "Abilities",
@@ -329,7 +329,7 @@ async function searchAll(query: string, lang: Lang): Promise<SectionResult[]> {
         id: r.id,
         name: pick(r.name_en, r.name_ru, lang),
         snippet: buildSnippet(query, lang === "RU" ? [r.effect_ru, r.notes_ru, r.effect_en, r.notes_en] : [r.effect_en, r.notes_en, r.effect_ru, r.notes_ru]),
-        image: r.image_regular ? `${STORAGE}/${r.image_regular}` : null,
+        image: r.image_regular ? componentImageUrl("abilities", r.image_regular, r.updated_at) : null,
         url: `/decks/abilities/${r.id}`,
       })),
     });
@@ -372,7 +372,7 @@ async function searchAll(query: string, lang: Lang): Promise<SectionResult[]> {
   }
   // Map Elements
   if (fields.data) {
-    const rows = sortByNameMatch(fields.data as Array<{ id: string; name_en: string; name_ru: string | null; effect_en: string | null; effect_ru: string | null; image: string | null }>, query, lang);
+    const rows = sortByNameMatch(fields.data as Array<{ id: string; name_en: string; name_ru: string | null; effect_en: string | null; effect_ru: string | null; image: string | null; updated_at: string | null }>, query, lang);
     sections.push({
       key: "map_elements",
       labelEN: "Map Elements",
@@ -383,14 +383,14 @@ async function searchAll(query: string, lang: Lang): Promise<SectionResult[]> {
         id: r.id,
         name: pick(r.name_en, r.name_ru, lang),
         snippet: buildSnippet(query, lang === "RU" ? [r.effect_ru, r.effect_en] : [r.effect_en, r.effect_ru]),
-        image: r.image ? `${STORAGE}/${r.image}` : null,
+        image: r.image ? componentImageUrl("fields", r.image, r.updated_at) : null,
         url: `/map-elements/${r.id}`,
       })),
     });
   }
   // Events
   if (events.data) {
-    const rows = sortByNameMatch(events.data as Array<{ id: string; name_en: string; name_ru: string | null; effect_en: string | null; effect_ru: string | null; image: string | null }>, query, lang);
+    const rows = sortByNameMatch(events.data as Array<{ id: string; name_en: string; name_ru: string | null; effect_en: string | null; effect_ru: string | null; image: string | null; updated_at: string | null }>, query, lang);
     sections.push({
       key: "events",
       labelEN: "Events",
@@ -401,14 +401,14 @@ async function searchAll(query: string, lang: Lang): Promise<SectionResult[]> {
         id: r.id,
         name: pick(r.name_en, r.name_ru, lang),
         snippet: buildSnippet(query, lang === "RU" ? [r.effect_ru, r.effect_en] : [r.effect_en, r.effect_ru]),
-        image: r.image ? `${STORAGE}/${r.image}` : null,
+        image: r.image ? componentImageUrl("events", r.image, r.updated_at) : null,
         url: `/events/${r.id}`,
       })),
     });
   }
   // War Machines
   if (warmachines.data) {
-    const rows = sortByNameMatch(warmachines.data as Array<{ id: string; name_en: string; name_ru: string | null; ability_en: string | null; ability_ru: string | null; image: string | null }>, query, lang);
+    const rows = sortByNameMatch(warmachines.data as Array<{ id: string; name_en: string; name_ru: string | null; ability_en: string | null; ability_ru: string | null; image: string | null; updated_at: string | null }>, query, lang);
     sections.push({
       key: "warmachines",
       labelEN: "War Machines",
@@ -419,7 +419,7 @@ async function searchAll(query: string, lang: Lang): Promise<SectionResult[]> {
         id: r.id,
         name: pick(r.name_en, r.name_ru, lang),
         snippet: buildSnippet(query, lang === "RU" ? [r.ability_ru, r.ability_en] : [r.ability_en, r.ability_ru]),
-        image: r.image ? `${STORAGE}/${r.image}` : null,
+        image: r.image ? componentImageUrl("war_machines", r.image, r.updated_at) : null,
         url: `/decks/warmachines/${r.id}`,
       })),
     });

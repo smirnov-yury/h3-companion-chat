@@ -38,9 +38,22 @@ export const COMPONENT_MEDIA_FOLDERS = {
 
 export type ComponentMediaTable = keyof typeof COMPONENT_MEDIA_FOLDERS;
 
-/** Public URL for an image stored under component-media for the given table. */
-export function componentImageUrl(table: ComponentMediaTable, filename: string): string {
-  return componentMediaUrl(`${COMPONENT_MEDIA_FOLDERS[table]}/${filename}`);
+/**
+ * Public URL for an image stored under component-media for the given table.
+ *
+ * If `updatedAt` is provided, a `?v=<updatedAt>` query parameter is appended
+ * to bust the browser / service worker cache whenever the row is updated.
+ * Pass the row's `updated_at` value directly — the column is `timestamptz`
+ * with a BEFORE UPDATE trigger, so any admin change rotates the cache key.
+ */
+export function componentImageUrl(
+  table: ComponentMediaTable,
+  filename: string,
+  updatedAt?: string | null,
+): string {
+  const base = componentMediaUrl(`${COMPONENT_MEDIA_FOLDERS[table]}/${filename}`);
+  if (!updatedAt) return base;
+  return `${base}?v=${encodeURIComponent(updatedAt)}`;
 }
 
 /** Storage path (relative to component-media bucket) for table + filename. */

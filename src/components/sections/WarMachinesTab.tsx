@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { componentImageUrl } from "@/lib/storage";
 import { useLang } from "@/context/LanguageContext";
 import { useGlyphs } from "@/context/GlyphsContext";
 import { renderGlyphs } from "@/utils/renderGlyphs";
@@ -9,8 +10,6 @@ import { CardDialogContent } from "@/components/ui/card-dialog";
 import { EmptyState, SkeletonGrid } from "@/components/ui/empty-state";
 import SeeAlso from "@/components/SeeAlso";
 
-import { SUPABASE_URL } from "@/integrations/supabase/client";
-const STORAGE = `${SUPABASE_URL}/storage/v1/object/public/component-media`;
 import { componentMediaUrl } from "@/lib/storage";
 const DECK_PLACEHOLDER = componentMediaUrl("artifacts/empty_art_ability_spec_spell.webp");
 
@@ -25,6 +24,7 @@ interface WarMachine {
   notes_en: string | null;
   notes_ru: string | null;
   image: string | null;
+  updated_at: string | null;
   sort_order: number | null;
 }
 
@@ -92,7 +92,7 @@ export default function WarMachinesTab({ searchQuery = "", initialCardId, onCard
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
             {filtered.map((item) => {
-              const imgSrc = item.image ? `${STORAGE}/war_machines/${item.image}` : null;
+              const imgSrc = item.image ? componentImageUrl("war_machines", item.image, item.updated_at) : null;
               return (
                 <button key={item.id} onClick={() => openCard(item)}
                   className="flex flex-col rounded-xl border border-border bg-card overflow-hidden text-left hover:border-primary transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg cursor-pointer">
@@ -118,7 +118,7 @@ export default function WarMachinesTab({ searchQuery = "", initialCardId, onCard
             return (
               <>
                 <div className="relative w-[85%] mx-auto pt-4 mb-0 shrink-0">
-                  <img src={selected.image ? `${STORAGE}/war_machines/${selected.image}` : DECK_PLACEHOLDER} alt={selected.name_en} className="w-full aspect-[5/7] object-contain rounded-lg shadow-lg" onError={(e) => { e.currentTarget.src = DECK_PLACEHOLDER; e.currentTarget.onerror = null; }} />
+                  <img src={selected.image ? componentImageUrl("war_machines", selected.image, selected.updated_at) : DECK_PLACEHOLDER} alt={selected.name_en} className="w-full aspect-[5/7] object-contain rounded-lg shadow-lg" onError={(e) => { e.currentTarget.src = DECK_PLACEHOLDER; e.currentTarget.onerror = null; }} />
                 </div>
                 <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
                   <h2 className="text-lg font-semibold leading-tight pr-8">{name(selected)}</h2>

@@ -8,8 +8,7 @@ import { renderGlyphs } from "@/utils/renderGlyphs";
 import { SkeletonList } from "@/components/ui/empty-state";
 import SeeAlso from "@/components/SeeAlso";
 
-import { SUPABASE_URL } from "@/integrations/supabase/client";
-const STORAGE = `${SUPABASE_URL}/storage/v1/object/public/component-media`;
+import { componentImageUrl } from "@/lib/storage";
 
 interface Town {
   id: string;
@@ -20,6 +19,7 @@ interface Town {
   image_empty: string | null;
   image_full: string | null;
   image_back: string | null;
+  updated_at: string | null;
   sort_order: number | null;
 }
 
@@ -116,7 +116,9 @@ export default function TownsTab({ initialCardId, onCardOpen }: Props = {}) {
     selectedTown && imageTab === "empty" ? selectedTown.image_empty :
     selectedTown && imageTab === "full" ? selectedTown.image_full : null;
 
-  const currentImageSrc = currentImageFile ? `${STORAGE}/towns/${currentImageFile}` : null;
+  const currentImageSrc = currentImageFile
+    ? componentImageUrl("towns", currentImageFile, selectedTown?.updated_at ?? null)
+    : null;
 
   const notes = selectedTown
     ? (lang === "RU" ? (selectedTown.notes_ru || selectedTown.notes_en) : selectedTown.notes_en)

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { componentImageUrl } from "@/lib/storage";
 import { useLang } from "@/context/LanguageContext";
 import { useGlyphs } from "@/context/GlyphsContext";
 import { renderGlyphs } from "@/utils/renderGlyphs";
@@ -9,8 +10,6 @@ import { CardDialogContent } from "@/components/ui/card-dialog";
 import { EmptyState, SkeletonGrid } from "@/components/ui/empty-state";
 import SeeAlso from "@/components/SeeAlso";
 
-import { SUPABASE_URL } from "@/integrations/supabase/client";
-const STORAGE = `${SUPABASE_URL}/storage/v1/object/public/component-media`;
 
 interface Field {
   id: string;
@@ -23,6 +22,7 @@ interface Field {
   notes_en: string | null;
   notes_ru: string | null;
   image: string | null;
+  updated_at: string | null;
   sort_order: number | null;
 }
 
@@ -94,7 +94,7 @@ export default function FieldsTab({ searchQuery = "", filterSlug, initialCardId,
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
             {filtered.map((item) => {
-              const imgSrc = item.image ? `${STORAGE}/fields/${item.image}` : null;
+              const imgSrc = item.image ? componentImageUrl("fields", item.image, item.updated_at) : null;
               return (
                 <button key={item.id} onClick={() => openCard(item)}
                   className="flex flex-col w-full overflow-hidden rounded-lg bg-muted text-left cursor-pointer transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg hover:ring-2 hover:ring-primary">
@@ -123,7 +123,7 @@ export default function FieldsTab({ searchQuery = "", filterSlug, initialCardId,
             <>
               {selected.image ? (
                 <div className="relative w-full shrink-0 flex justify-center bg-muted">
-                  <img src={`${STORAGE}/fields/${selected.image}`} alt={selected.name_en} className="w-full max-h-[280px] object-contain" />
+                  <img src={componentImageUrl("fields", selected.image, selected.updated_at)} alt={selected.name_en} className="w-full max-h-[280px] object-contain" />
                   {selected.type_en && (
                     <span className="absolute top-2 left-2 text-[11px] font-medium px-2 py-0.5 rounded bg-background/80 backdrop-blur-sm text-foreground">
                       {lang === "RU" ? (selected.type_ru || selected.type_en) : selected.type_en}

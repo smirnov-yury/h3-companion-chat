@@ -8,10 +8,8 @@ import { Dialog } from "@/components/ui/dialog";
 import { CardDialogContent } from "@/components/ui/card-dialog";
 import { EmptyState, SkeletonGrid } from "@/components/ui/empty-state";
 import SeeAlso from "@/components/SeeAlso";
-import { SUPABASE_URL } from "@/integrations/supabase/client";
 import { componentImageUrl } from "@/lib/storage";
 
-const STORAGE = `${SUPABASE_URL}/storage/v1/object/public/component-media`;
 
 interface MapEvent {
   id: string;
@@ -20,6 +18,7 @@ interface MapEvent {
   description_en: string | null;
   description_ru: string | null;
   image: string | null;
+  updated_at: string | null;
   sort_order: number | null;
 }
 

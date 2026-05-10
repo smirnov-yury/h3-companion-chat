@@ -14,8 +14,7 @@ import { EmptyState, SkeletonGrid } from "@/components/ui/empty-state";
 import { useEntityLinkHandler, entityLinkUrl } from "@/hooks/useEntityLinkHandler";
 import { useEntityLinks } from "@/hooks/useEntityLinks";
 
-import { SUPABASE_URL } from "@/integrations/supabase/client";
-const STORAGE = `${SUPABASE_URL}/storage/v1/object/public/component-media`;
+import { componentImageUrl } from "@/lib/storage";
 
 interface Hero {
   id: string;
@@ -37,6 +36,7 @@ interface Hero {
   biography_en: string | null;
   biography_ru: string | null;
   image: string | null;
+  updated_at: string | null;
   sort_order: number | null;
 }
 
@@ -300,7 +300,7 @@ export default function HeroesTab({ initialFilter, initialCardId, initialSearch,
                 <div className="relative aspect-square bg-muted">
                   {isHeroPortraitFilename(h.image) ? (
                     <img
-                      src={`${STORAGE}/heroes/${h.image}`}
+                      src={componentImageUrl("heroes", h.image, h.updated_at)}
                       alt={name(h)}
                       className="w-full h-full object-cover object-left"
                     />
@@ -356,7 +356,7 @@ export default function HeroesTab({ initialFilter, initialCardId, initialSearch,
             <div className="p-4 shrink-0">
               {isHeroPortraitFilename(selected.image) ? (
                 <img
-                  src={`${STORAGE}/heroes/${selected.image}`}
+                  src={componentImageUrl("heroes", selected.image, selected.updated_at)}
                   alt={name(selected)}
                   className="max-h-[200px] object-contain mx-auto"
                 />
@@ -469,7 +469,7 @@ export default function HeroesTab({ initialFilter, initialCardId, initialSearch,
                             <div key={idx} className="bg-muted rounded-lg p-3 space-y-2 transition-opacity duration-200 opacity-100">
                               {lvl.image && (
                                 <img
-                                  src={`${STORAGE}/heroes/${lvl.image}`}
+                                  src={componentImageUrl("heroes", lvl.image, selected.updated_at)}
                                   alt={lvl.level}
                                   className="w-[70%] max-w-[280px] mx-auto object-contain rounded-lg"
                                   onError={e => (e.currentTarget.style.display = "none")}

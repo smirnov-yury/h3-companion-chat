@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { componentImageUrl } from "@/lib/storage";
 import { useLang } from "@/context/LanguageContext";
 import { useGlyphs } from "@/context/GlyphsContext";
 import { renderGlyphs } from "@/utils/renderGlyphs";
@@ -9,8 +10,6 @@ import { CardDialogContent } from "@/components/ui/card-dialog";
 import { EmptyState, SkeletonGrid } from "@/components/ui/empty-state";
 import SeeAlso from "@/components/SeeAlso";
 
-import { SUPABASE_URL } from "@/integrations/supabase/client";
-const STORAGE = `${SUPABASE_URL}/storage/v1/object/public/component-media`;
 
 interface AstrologersProclaim {
   id: string;
@@ -23,6 +22,7 @@ interface AstrologersProclaim {
   notes_en: string | null;
   notes_ru: string | null;
   image: string | null;
+  updated_at: string | null;
   sort_order: number | null;
 }
 
@@ -90,7 +90,7 @@ export default function AstrologersTab({ searchQuery = "", initialCardId, onCard
         ) : (
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             {filtered.map((item) => {
-              const imgSrc = item.image ? `${STORAGE}/astrologers_proclaim/${item.image}` : null;
+              const imgSrc = item.image ? componentImageUrl("astrologers_proclaim", item.image, item.updated_at) : null;
               return (
                 <button key={item.id} onClick={() => openCard(item)}
                   className="flex flex-col w-full overflow-hidden rounded-lg bg-muted text-left cursor-pointer transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg hover:ring-2 hover:ring-primary">
@@ -111,7 +111,7 @@ export default function AstrologersTab({ searchQuery = "", initialCardId, onCard
             <>
               {selected.image && (
                 <div className="w-full shrink-0 flex justify-center bg-muted">
-                  <img src={`${STORAGE}/astrologers_proclaim/${selected.image}`} alt={selected.name_en} className="w-full max-h-[280px] object-contain" />
+                  <img src={componentImageUrl("astrologers_proclaim", selected.image, selected.updated_at)} alt={selected.name_en} className="w-full max-h-[280px] object-contain" />
                 </div>
               )}
               <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
