@@ -17,6 +17,7 @@ interface Props {
 export default function Step4Review({ form }: Props) {
   const { lang } = useLang();
   const navigate = useNavigate();
+  const [generating, setGenerating] = useState(false);
 
   const dataQ = useQuery({
     queryKey: ["game-setup", "review", form.scenarioId, form.players.map((p) => `${p.town}:${p.heroId}`).join(",")],
