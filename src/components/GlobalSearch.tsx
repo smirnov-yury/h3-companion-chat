@@ -534,8 +534,37 @@ export default function GlobalSearch({ mode, onClose, initialQuery = "", autoFoc
   );
 
   const placeholder = lang === "RU" ? "Поиск правил, карточек, героев…" : "Search rules, cards, heroes…";
-  const activeResults = semanticResults;
-  const activeLoading = semanticLoading;
+  const activeLoading = loading || semanticLoading;
+
+  const activeResults = useMemo<SectionResult[]>(() => {
+    const map = new Map<string, SectionResult>();
+
+    for (const sec of results) {
+      map.set(sec.key, { ...sec, hits: [...sec.hits] });
+    }
+
+    for (const sec of semanticResults) {
+      const canonicalKey = SEMANTIC_TO_SECTION_KEY[sec.key] ?? sec.key;
+      const existing = map.get(canonicalKey);
+      if (existing) {
+        const existingIds = new Set(existing.hits.map((h) => h.id));
+        for (const hit of sec.hits) {
+          if (!existingIds.has(hit.id)) {
+            existing.hits.push(hit);
+          }
+        }
+        existing.total = existing.hits.length;
+      } else {
+        map.set(canonicalKey, {
+          ...sec,
+          key: canonicalKey,
+          hits: [...sec.hits],
+        });
+      }
+    }
+
+    return Array.from(map.values()).filter((s) => s.hits.length > 0);
+  }, [results, semanticResults]);
   const showHint = query.trim().length < MIN_QUERY;
   const showEmpty = !showHint && !activeLoading && activeResults.length === 0;
 
