@@ -7,54 +7,68 @@ import { renderGlyphs } from "@/utils/renderGlyphs";
 import { scenarioMediaUrl } from "@/lib/storage";
 import type { ScaledMap } from "@/lib/setupResolver";
 
-type Group = "starting" | "near" | "center" | "far";
+type TileCategory = "starting" | "near" | "center" | "far";
 
-const GROUP_META: Record<Group, { ru: string; en: string; dot: string }> = {
-  starting: { ru: "Стартовые (I)", en: "Starting (I)", dot: "bg-cyan-500" },
-  near:     { ru: "Ближние (IV-V)", en: "Near (IV-V)", dot: "bg-green-500" },
-  center:   { ru: "Центр (VI-VII)", en: "Center (VI-VII)", dot: "bg-orange-500" },
-  far:      { ru: "Дальние (II-III)", en: "Far (II-III)", dot: "bg-red-500" },
+interface TileGroup {
+  category: TileCategory;
+  primaryCount: number;
+  qualifiers: Array<{ keySuffix: string; count: number }>;
+}
+
+const CATEGORY_LABELS: Record<TileCategory, { ru: string; en: string }> = {
+  starting: { ru: "Стартовые позиции (I)", en: "Starting (I)" },
+  near:     { ru: "Ближние (IV-V)",         en: "Near (IV-V)" },
+  center:   { ru: "Центральные (VI-VII)",   en: "Center (VI-VII)" },
+  far:      { ru: "Дальние (II-III)",       en: "Far (II-III)" },
 };
 
-function classifyKey(key: string): { group: Group | null; isParent: boolean; subSuffix: string | null } {
-  for (const g of Object.keys(GROUP_META) as Group[]) {
-    if (key === g) return { group: g, isParent: true, subSuffix: null };
-    if (key.startsWith(g + "_")) return { group: g, isParent: false, subSuffix: key.slice(g.length + 1) };
-  }
-  return { group: null, isParent: false, subSuffix: null };
-}
+const QUALIFIER_LABELS: Record<string, { ru: string; en: string }> = {
+  with_obelisk: { ru: "из них с обелиском", en: "of which with Obelisk" },
+  grail:        { ru: "из них с Граалем",   en: "of which with Grail" },
+};
 
-function subKeyLabel(key: string, lang: "RU" | "EN"): string {
-  if (key === "near_with_obelisk") return lang === "RU" ? "с обелиском" : "with obelisk";
-  if (key === "center_VI_VII_grail") return lang === "RU" ? "с Граалем" : "with Grail";
-  const cls = classifyKey(key);
-  const suffix = cls.subSuffix ?? key;
-  const cleaned = suffix.replace(/_/g, " ").trim();
-  return cleaned.replace(/\b\w/g, (c) => c.toUpperCase());
-}
-
-interface GroupedRow {
-  parentKey: string | null;
-  parentCount: number | null;
-  subs: Array<{ key: string; count: number }>;
-}
-
-function groupTiles(tc: Record<string, number>): Record<Group, GroupedRow> {
-  const out = {} as Record<Group, GroupedRow>;
-  (Object.keys(GROUP_META) as Group[]).forEach((g) => {
-    out[g] = { parentKey: null, parentCount: null, subs: [] };
-  });
+function groupTileCounts(tc: Record<string, number>): TileGroup[] {
+  const groups: Record<TileCategory, TileGroup> = {
+    starting: { category: "starting", primaryCount: 0, qualifiers: [] },
+    near:     { category: "near",     primaryCount: 0, qualifiers: [] },
+    center:   { category: "center",   primaryCount: 0, qualifiers: [] },
+    far:      { category: "far",      primaryCount: 0, qualifiers: [] },
+  };
+  const PRIMARY: Record<TileCategory, RegExp[]> = {
+    starting: [/^starting$/, /^starting_I$/i],
+    near:     [/^near$/, /^near_IV_V$/i, /^near_II_V$/i],
+    center:   [/^center$/, /^center_VI_VII$/i],
+    far:      [/^far$/, /^far_II_III$/i],
+  };
   for (const [k, v] of Object.entries(tc)) {
-    const { group, isParent } = classifyKey(k);
-    if (!group) continue;
-    if (isParent) {
-      out[group].parentKey = k;
-      out[group].parentCount = v;
-    } else {
-      out[group].subs.push({ key: k, count: v });
+    let assigned = false;
+    for (const cat of Object.keys(groups) as TileCategory[]) {
+      const isPrimary = PRIMARY[cat].some((rx) => rx.test(k));
+      if (isPrimary) {
+        groups[cat].primaryCount = v;
+        assigned = true;
+        break;
+      }
+      if (k === cat || k.startsWith(`${cat}_`)) {
+        let suffix = k.slice(cat.length + 1);
+        suffix = suffix.replace(/^[IVX_]+_/, "");
+        groups[cat].qualifiers.push({ keySuffix: suffix, count: v });
+        assigned = true;
+        break;
+      }
+    }
+    if (!assigned) {
+      // unknown prefix — ignore
     }
   }
-  return out;
+  return Object.values(groups);
+}
+
+function qualifierLabel(suffix: string, lang: "RU" | "EN"): string {
+  const known = QUALIFIER_LABELS[suffix];
+  if (known) return lang === "RU" ? known.ru : known.en;
+  const human = suffix.replace(/_/g, " ");
+  return human.charAt(0).toUpperCase() + human.slice(1);
 }
 
 export default function MapSection({ map, playerCount }: { map: ScaledMap | null; playerCount: number }) {
