@@ -8,8 +8,7 @@ import { renderGlyphs } from "@/utils/renderGlyphs";
 import { SkeletonList } from "@/components/ui/empty-state";
 import SeeAlso from "@/components/SeeAlso";
 
-import { SUPABASE_URL } from "@/integrations/supabase/client";
-const STORAGE = `${SUPABASE_URL}/storage/v1/object/public/component-media`;
+import { componentImageUrl } from "@/lib/storage";
 
 interface Town {
   id: string;
