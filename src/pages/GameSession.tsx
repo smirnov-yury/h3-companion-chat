@@ -7,6 +7,12 @@ import NavDrawer, { type TabId } from "@/components/NavDrawer";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/context/LanguageContext";
 import { findSectionByTabId } from "@/config/sectionRegistry";
+import SessionHeader from "@/components/game-session/SessionHeader";
+import MapSection from "@/components/game-session/MapSection";
+import CommonRulesSection from "@/components/game-session/CommonRulesSection";
+import TimedEventsSection from "@/components/game-session/TimedEventsSection";
+import PlayersGrid from "@/components/game-session/PlayersGrid";
+import type { Payload } from "@/lib/setupResolver";
 
 export default function GameSession() {
   const { uuid } = useParams<{ uuid: string }>();
@@ -45,42 +51,47 @@ export default function GameSession() {
         active={"game_setup" as TabId}
         onChange={handleTabChange}
       />
-      <div className="flex-1 overflow-y-auto p-4 lg:ml-56">
-        <div className="max-w-3xl mx-auto space-y-4">
-          {sessionQ.isLoading && (
-            <div className="text-sm text-muted-foreground">
-              {lang === "RU" ? "Загрузка..." : "Loading..."}
-            </div>
-          )}
-          {!sessionQ.isLoading && !sessionQ.data && (
-            <div className="space-y-3">
-              <h1 className="text-xl font-semibold">
-                {lang === "RU" ? "Партия завершена" : "Game session expired"}
-              </h1>
-              <p className="text-sm text-muted-foreground">
-                {lang === "RU"
-                  ? "Эта партия была сгенерирована более 24 часов назад и автоматически удалена."
-                  : "This session was generated more than 24 hours ago and has been removed."}
-              </p>
-              <Link to="/game-setup" className="text-primary underline text-sm">
-                {lang === "RU" ? "Создать новую партию" : "Create new session"}
-              </Link>
-            </div>
-          )}
-          {sessionQ.data && (
-            <div className="space-y-3">
-              <h1 className="text-xl font-semibold">
-                {sessionQ.data.name ?? (lang === "RU" ? "Без названия" : "Untitled")}
-              </h1>
-              <div className="text-xs text-muted-foreground">
-                ID: {sessionQ.data.id} · expires: {sessionQ.data.expires_at}
-              </div>
-              <pre className="text-xs bg-muted p-4 rounded overflow-auto">
-                {JSON.stringify(sessionQ.data.payload, null, 2)}
-              </pre>
-            </div>
-          )}
-        </div>
+      <div className="flex-1 overflow-y-auto lg:ml-56">
+        {sessionQ.isLoading && (
+          <div className="p-4 text-sm text-muted-foreground">
+            {lang === "RU" ? "Загрузка..." : "Loading..."}
+          </div>
+        )}
+        {!sessionQ.isLoading && !sessionQ.data && (
+          <div className="p-4 max-w-3xl mx-auto space-y-3">
+            <h1 className="text-xl font-semibold">
+              {lang === "RU" ? "Партия завершена" : "Game session expired"}
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              {lang === "RU"
+                ? "Эта партия была сгенерирована более 24 часов назад и автоматически удалена."
+                : "This session was generated more than 24 hours ago and has been removed."}
+            </p>
+            <Link to="/game-setup" className="text-primary underline text-sm">
+              {lang === "RU" ? "Создать новую партию" : "Create new session"}
+            </Link>
+          </div>
+        )}
+        {sessionQ.data && (
+          <SessionContent
+            payload={sessionQ.data.payload as unknown as Payload}
+            expiresAt={sessionQ.data.expires_at}
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+
+function SessionContent({ payload, expiresAt }: { payload: Payload; expiresAt: string }) {
+  return (
+    <div>
+      <SessionHeader payload={payload} expiresAt={expiresAt} />
+      <div className="px-4 py-6 max-w-5xl mx-auto space-y-6">
+        <MapSection map={payload.map} playerCount={payload.player_count} />
+        <CommonRulesSection common={payload.common} />
+        <TimedEventsSection events={payload.common.timed_events} />
+        <PlayersGrid players={payload.players} startingPlayerIndex={payload.starting_player_index} />
       </div>
     </div>
   );
