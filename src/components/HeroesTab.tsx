@@ -6,7 +6,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/context/LanguageContext";
 import { useGlyphs } from "@/context/GlyphsContext";
 import { renderGlyphs } from "@/utils/renderGlyphs";
+import { isHeroPortraitFilename } from "@/lib/heroImage";
 import { Dialog, DialogContent, DialogClose } from "@/components/ui/dialog";
+
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { EmptyState, SkeletonGrid } from "@/components/ui/empty-state";
 import { useEntityLinkHandler, entityLinkUrl } from "@/hooks/useEntityLinkHandler";
@@ -45,9 +47,6 @@ interface SpecialtyLevel {
   effect_ru?: string;
 }
 
-function hasPortrait(image: string | null): boolean {
-  return !!image && image.startsWith("heroes-") && image !== "player-deck-back.webp";
-}
 
 const FACTION_BADGE: Record<string, string> = {
   Castle:     "bg-[#E90000] text-white border-[#E90000]",
@@ -299,7 +298,7 @@ export default function HeroesTab({ initialFilter, initialCardId, initialSearch,
             {filtered.map(h => (
               <button key={h.id} onClick={() => openCard(h)} className="flex flex-col rounded-xl border border-border bg-card overflow-hidden text-left hover:border-primary transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg cursor-pointer">
                 <div className="relative aspect-square bg-muted">
-                  {hasPortrait(h.image) ? (
+                  {isHeroPortraitFilename(h.image) ? (
                     <img
                       src={`${STORAGE}/heroes/${h.image}`}
                       alt={name(h)}
@@ -355,7 +354,7 @@ export default function HeroesTab({ initialFilter, initialCardId, initialSearch,
             </DialogClose>
 
             <div className="p-4 shrink-0">
-              {hasPortrait(selected.image) ? (
+              {isHeroPortraitFilename(selected.image) ? (
                 <img
                   src={`${STORAGE}/heroes/${selected.image}`}
                   alt={name(selected)}
