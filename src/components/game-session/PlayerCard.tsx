@@ -8,6 +8,7 @@ import {
   Building2,
   Swords,
   AlertTriangle,
+  Layers,
 } from "lucide-react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -260,7 +261,89 @@ export default function PlayerCard({
             <div className="text-xs text-muted-foreground italic">—</div>
           )}
         </div>
+
+        {/* Starting deck */}
+        <section>
+          <h4 className="text-xs font-semibold uppercase text-muted-foreground tracking-wide flex items-center gap-1.5 mb-2">
+            <Layers className="w-3.5 h-3.5" />
+            {lang === "RU" ? "Стартовая колода" : "Starting deck"}
+          </h4>
+          <DeckComposition hero={player.hero} lang={lang} />
+        </section>
       </CardContent>
     </Card>
+  );
+}
+
+interface DeckCompositionProps {
+  hero: PayloadPlayer["hero"];
+  lang: "RU" | "EN";
+}
+
+function DeckComposition({ hero, lang }: DeckCompositionProps) {
+  if (!hero) {
+    return (
+      <div className="text-sm text-muted-foreground">
+        {lang === "RU" ? "Герой не выбран — колода недоступна" : "No hero — deck not available"}
+      </div>
+    );
+  }
+  const atk = hero.attack ?? 0;
+  const def = hero.defense ?? 0;
+  const pow = hero.power ?? 0;
+  const kno = hero.knowledge ?? 0;
+  const nStat = atk + def + pow + kno;
+  const nSpecialty = 1;
+  const isMagicHero = (hero.class_en ?? "").trim().toLowerCase().startsWith("<magic>");
+  const nArrow = isMagicHero ? 2 : 1;
+  const nAbility = Math.max(0, 9 - nStat - nSpecialty - nArrow);
+
+  const heroDisplayName = lang === "RU" ? (hero.name_ru || hero.name_en) : hero.name_en;
+
+  const rows: Array<{ label: string; count: number; detail?: string }> = [
+    {
+      label: lang === "RU" ? "Карты статистики" : "Statistic cards",
+      count: nStat,
+      detail: lang === "RU"
+        ? `${atk} атаки, ${def} защиты, ${pow} силы магии, ${kno} знания`
+        : `${atk} Attack, ${def} Defense, ${pow} Power, ${kno} Knowledge`,
+    },
+    {
+      label: lang === "RU" ? "Карта специальности героя" : "Hero specialty card",
+      count: nSpecialty,
+      detail: heroDisplayName,
+    },
+    {
+      label: lang === "RU" ? "Карты способностей" : "Ability cards",
+      count: nAbility,
+      detail: lang === "RU" ? "вытянуть случайно из колоды способностей" : "draw randomly from the Ability deck",
+    },
+    {
+      label: lang === "RU" ? "Карта Magic Arrow" : "Magic Arrow",
+      count: nArrow,
+      detail: isMagicHero
+        ? (lang === "RU" ? "герой магии — 2 копии" : "Hero of Magic — 2 copies")
+        : (lang === "RU" ? "герой силы — 1 копия" : "Hero of Might — 1 copy"),
+    },
+  ];
+
+  const total = rows.reduce((sum, r) => sum + r.count, 0);
+
+  return (
+    <div className="rounded-lg border border-border bg-card divide-y divide-border">
+      {rows.map((r) => (
+        <div key={r.label} className="px-3 py-2 flex items-baseline justify-between gap-3">
+          <div className="min-w-0">
+            <div className="font-medium text-sm">{r.label}</div>
+            {r.detail && <div className="text-xs text-muted-foreground">{r.detail}</div>}
+          </div>
+          <div className="text-base font-semibold tabular-nums">{r.count}</div>
+        </div>
+      ))}
+      <div className="px-3 py-2 flex items-baseline justify-between bg-muted/40">
+        <span className="font-semibold text-sm">{lang === "RU" ? "Всего карт" : "Total cards"}</span>
+        <span className="text-base font-bold tabular-nums">{total}</span>
+      </div>
+    </div>
   );
 }

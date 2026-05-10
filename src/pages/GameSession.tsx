@@ -51,7 +51,7 @@ export default function GameSession() {
         active={"game_setup" as TabId}
         onChange={handleTabChange}
       />
-      <div className="flex-1 overflow-y-auto lg:ml-56">
+      <div className="flex-1 overflow-y-auto lg:ml-56 pt-11">
         {sessionQ.isLoading && (
           <div className="p-4 text-sm text-muted-foreground">
             {lang === "RU" ? "Загрузка..." : "Loading..."}
@@ -86,8 +86,8 @@ export default function GameSession() {
 function SessionContent({ payload, expiresAt }: { payload: Payload; expiresAt: string }) {
   return (
     <div>
-      <SessionHeader payload={payload} expiresAt={expiresAt} />
-      <div className="px-4 py-6 max-w-5xl mx-auto space-y-6">
+      <div className="max-w-6xl mx-auto px-4 pt-2 pb-8 space-y-6">
+        <SessionHeader payload={payload} expiresAt={expiresAt} />
         <MapSection map={payload.map} playerCount={payload.player_count} />
         <CommonRulesSection common={payload.common} />
         <TimedEventsSection events={payload.common.timed_events} />

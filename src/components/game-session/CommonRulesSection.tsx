@@ -13,7 +13,7 @@ interface SubsectionProps {
   defaultOpen?: boolean;
 }
 
-function Subsection({ title, content, icon: Icon, defaultOpen = false }: SubsectionProps) {
+function Subsection({ title, content, icon: Icon, defaultOpen = true }: SubsectionProps) {
   const [open, setOpen] = useState(defaultOpen);
   const { glyphs } = useGlyphs();
   return (

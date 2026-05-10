@@ -7,54 +7,68 @@ import { renderGlyphs } from "@/utils/renderGlyphs";
 import { scenarioMediaUrl } from "@/lib/storage";
 import type { ScaledMap } from "@/lib/setupResolver";
 
-type Group = "starting" | "near" | "center" | "far";
+type TileCategory = "starting" | "near" | "center" | "far";
 
-const GROUP_META: Record<Group, { ru: string; en: string; dot: string }> = {
-  starting: { ru: "Стартовые (I)", en: "Starting (I)", dot: "bg-cyan-500" },
-  near:     { ru: "Ближние (IV-V)", en: "Near (IV-V)", dot: "bg-green-500" },
-  center:   { ru: "Центр (VI-VII)", en: "Center (VI-VII)", dot: "bg-orange-500" },
-  far:      { ru: "Дальние (II-III)", en: "Far (II-III)", dot: "bg-red-500" },
+interface TileGroup {
+  category: TileCategory;
+  primaryCount: number;
+  qualifiers: Array<{ keySuffix: string; count: number }>;
+}
+
+const CATEGORY_LABELS: Record<TileCategory, { ru: string; en: string }> = {
+  starting: { ru: "Стартовые позиции (I)", en: "Starting (I)" },
+  near:     { ru: "Ближние (IV-V)",         en: "Near (IV-V)" },
+  center:   { ru: "Центральные (VI-VII)",   en: "Center (VI-VII)" },
+  far:      { ru: "Дальние (II-III)",       en: "Far (II-III)" },
 };
 
-function classifyKey(key: string): { group: Group | null; isParent: boolean; subSuffix: string | null } {
-  for (const g of Object.keys(GROUP_META) as Group[]) {
-    if (key === g) return { group: g, isParent: true, subSuffix: null };
-    if (key.startsWith(g + "_")) return { group: g, isParent: false, subSuffix: key.slice(g.length + 1) };
-  }
-  return { group: null, isParent: false, subSuffix: null };
-}
+const QUALIFIER_LABELS: Record<string, { ru: string; en: string }> = {
+  with_obelisk: { ru: "из них с обелиском", en: "of which with Obelisk" },
+  grail:        { ru: "из них с Граалем",   en: "of which with Grail" },
+};
 
-function subKeyLabel(key: string, lang: "RU" | "EN"): string {
-  if (key === "near_with_obelisk") return lang === "RU" ? "с обелиском" : "with obelisk";
-  if (key === "center_VI_VII_grail") return lang === "RU" ? "с Граалем" : "with Grail";
-  const cls = classifyKey(key);
-  const suffix = cls.subSuffix ?? key;
-  const cleaned = suffix.replace(/_/g, " ").trim();
-  return cleaned.replace(/\b\w/g, (c) => c.toUpperCase());
-}
-
-interface GroupedRow {
-  parentKey: string | null;
-  parentCount: number | null;
-  subs: Array<{ key: string; count: number }>;
-}
-
-function groupTiles(tc: Record<string, number>): Record<Group, GroupedRow> {
-  const out = {} as Record<Group, GroupedRow>;
-  (Object.keys(GROUP_META) as Group[]).forEach((g) => {
-    out[g] = { parentKey: null, parentCount: null, subs: [] };
-  });
+function groupTileCounts(tc: Record<string, number>): TileGroup[] {
+  const groups: Record<TileCategory, TileGroup> = {
+    starting: { category: "starting", primaryCount: 0, qualifiers: [] },
+    near:     { category: "near",     primaryCount: 0, qualifiers: [] },
+    center:   { category: "center",   primaryCount: 0, qualifiers: [] },
+    far:      { category: "far",      primaryCount: 0, qualifiers: [] },
+  };
+  const PRIMARY: Record<TileCategory, RegExp[]> = {
+    starting: [/^starting$/, /^starting_I$/i],
+    near:     [/^near$/, /^near_IV_V$/i, /^near_II_V$/i],
+    center:   [/^center$/, /^center_VI_VII$/i],
+    far:      [/^far$/, /^far_II_III$/i],
+  };
   for (const [k, v] of Object.entries(tc)) {
-    const { group, isParent } = classifyKey(k);
-    if (!group) continue;
-    if (isParent) {
-      out[group].parentKey = k;
-      out[group].parentCount = v;
-    } else {
-      out[group].subs.push({ key: k, count: v });
+    let assigned = false;
+    for (const cat of Object.keys(groups) as TileCategory[]) {
+      const isPrimary = PRIMARY[cat].some((rx) => rx.test(k));
+      if (isPrimary) {
+        groups[cat].primaryCount = v;
+        assigned = true;
+        break;
+      }
+      if (k === cat || k.startsWith(`${cat}_`)) {
+        let suffix = k.slice(cat.length + 1);
+        suffix = suffix.replace(/^[IVX_]+_/, "");
+        groups[cat].qualifiers.push({ keySuffix: suffix, count: v });
+        assigned = true;
+        break;
+      }
+    }
+    if (!assigned) {
+      // unknown prefix — ignore
     }
   }
-  return out;
+  return Object.values(groups);
+}
+
+function qualifierLabel(suffix: string, lang: "RU" | "EN"): string {
+  const known = QUALIFIER_LABELS[suffix];
+  if (known) return lang === "RU" ? known.ru : known.en;
+  const human = suffix.replace(/_/g, " ");
+  return human.charAt(0).toUpperCase() + human.slice(1);
 }
 
 export default function MapSection({ map, playerCount }: { map: ScaledMap | null; playerCount: number }) {
@@ -73,7 +87,7 @@ export default function MapSection({ map, playerCount }: { map: ScaledMap | null
     );
   }
 
-  const grouped = groupTiles(map.tile_counts);
+  const groups = groupTileCounts(map.tile_counts);
   const setupText = (lang === "RU" ? map.map_setup_text_ru : map.map_setup_text_en) || "";
   const layoutNotes = (lang === "RU" ? map.layout_notes_ru : map.layout_notes_en) || "";
 
@@ -118,34 +132,39 @@ export default function MapSection({ map, playerCount }: { map: ScaledMap | null
         </div>
       )}
 
-      <div className="rounded-lg border bg-card p-4 space-y-3">
-        <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+      <div>
+        <h3 className="text-base font-semibold mb-3 flex items-center gap-2">
+          <MapPin className="w-4 h-4" />
           {lang === "RU" ? "Расстановка тайлов" : "Tile setup"}
         </h3>
-        <div className="space-y-3">
-          {(Object.keys(GROUP_META) as Group[]).map((g) => {
-            const row = grouped[g];
-            if (row.parentCount == null && row.subs.length === 0) return null;
-            const meta = GROUP_META[g];
-            return (
-              <div key={g} className="space-y-1">
-                {row.parentCount != null && (
-                  <div className="flex items-center gap-2 text-sm">
-                    <span className={`inline-block w-2.5 h-2.5 rounded-full ${meta.dot}`} />
-                    <span className="font-mono w-6 text-right">{row.parentCount}</span>
-                    <span>{lang === "RU" ? meta.ru : meta.en}</span>
+        <div className="rounded-lg border border-border divide-y divide-border bg-card">
+          {groups
+            .filter((g) => g.primaryCount > 0 || g.qualifiers.length > 0)
+            .map((g) => {
+              const display =
+                g.primaryCount > 0
+                  ? g.primaryCount
+                  : g.qualifiers.reduce((sum, q) => sum + q.count, 0);
+              const label = lang === "RU" ? CATEGORY_LABELS[g.category].ru : CATEGORY_LABELS[g.category].en;
+              return (
+                <div key={g.category} className="px-3 py-2">
+                  <div className="flex items-baseline justify-between">
+                    <span className="font-medium">{label}</span>
+                    <span className="font-semibold tabular-nums">{display}</span>
                   </div>
-                )}
-                {row.subs.map((s) => (
-                  <div key={s.key} className="flex items-center gap-2 text-xs text-muted-foreground ml-6">
-                    <span className={`inline-block w-1.5 h-1.5 rounded-full ${meta.dot} opacity-60`} />
-                    <span className="font-mono w-6 text-right">{s.count}</span>
-                    <span>{subKeyLabel(s.key, lang)}</span>
-                  </div>
-                ))}
-              </div>
-            );
-          })}
+                  {g.qualifiers.length > 0 && (
+                    <ul className="mt-1.5 ml-3 space-y-0.5 text-sm text-muted-foreground">
+                      {g.qualifiers.map((q) => (
+                        <li key={q.keySuffix} className="flex items-baseline justify-between">
+                          <span>— {qualifierLabel(q.keySuffix, lang)}</span>
+                          <span className="tabular-nums">{q.count}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              );
+            })}
         </div>
       </div>
 

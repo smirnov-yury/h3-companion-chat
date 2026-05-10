@@ -21,8 +21,8 @@ export default function SessionHeader({ payload, expiresAt }: { payload: Payload
   const modeLabel = sc.mode === "clash" || sc.mode === "Clash" ? "Clash" : sc.mode;
 
   return (
-    <div className="border-b bg-card">
-      <div className="px-4 py-5 md:flex md:items-start md:justify-between md:gap-6">
+    <div className="pt-2 pb-4 border-b border-border">
+      <div className="md:flex md:items-start md:justify-between md:gap-6">
         <div className="space-y-1 min-w-0">
           <h1 className="text-2xl md:text-3xl font-bold tracking-tight truncate">{title}</h1>
           <div className="text-sm text-muted-foreground">
