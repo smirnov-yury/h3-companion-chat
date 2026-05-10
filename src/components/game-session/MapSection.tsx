@@ -87,7 +87,7 @@ export default function MapSection({ map, playerCount }: { map: ScaledMap | null
     );
   }
 
-  const grouped = groupTiles(map.tile_counts);
+  const groups = groupTileCounts(map.tile_counts);
   const setupText = (lang === "RU" ? map.map_setup_text_ru : map.map_setup_text_en) || "";
   const layoutNotes = (lang === "RU" ? map.layout_notes_ru : map.layout_notes_en) || "";
 
@@ -132,34 +132,39 @@ export default function MapSection({ map, playerCount }: { map: ScaledMap | null
         </div>
       )}
 
-      <div className="rounded-lg border bg-card p-4 space-y-3">
-        <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+      <div>
+        <h3 className="text-base font-semibold mb-3 flex items-center gap-2">
+          <MapPin className="w-4 h-4" />
           {lang === "RU" ? "Расстановка тайлов" : "Tile setup"}
         </h3>
-        <div className="space-y-3">
-          {(Object.keys(GROUP_META) as Group[]).map((g) => {
-            const row = grouped[g];
-            if (row.parentCount == null && row.subs.length === 0) return null;
-            const meta = GROUP_META[g];
-            return (
-              <div key={g} className="space-y-1">
-                {row.parentCount != null && (
-                  <div className="flex items-center gap-2 text-sm">
-                    <span className={`inline-block w-2.5 h-2.5 rounded-full ${meta.dot}`} />
-                    <span className="font-mono w-6 text-right">{row.parentCount}</span>
-                    <span>{lang === "RU" ? meta.ru : meta.en}</span>
+        <div className="rounded-lg border border-border divide-y divide-border bg-card">
+          {groups
+            .filter((g) => g.primaryCount > 0 || g.qualifiers.length > 0)
+            .map((g) => {
+              const display =
+                g.primaryCount > 0
+                  ? g.primaryCount
+                  : g.qualifiers.reduce((sum, q) => sum + q.count, 0);
+              const label = lang === "RU" ? CATEGORY_LABELS[g.category].ru : CATEGORY_LABELS[g.category].en;
+              return (
+                <div key={g.category} className="px-3 py-2">
+                  <div className="flex items-baseline justify-between">
+                    <span className="font-medium">{label}</span>
+                    <span className="font-semibold tabular-nums">{display}</span>
                   </div>
-                )}
-                {row.subs.map((s) => (
-                  <div key={s.key} className="flex items-center gap-2 text-xs text-muted-foreground ml-6">
-                    <span className={`inline-block w-1.5 h-1.5 rounded-full ${meta.dot} opacity-60`} />
-                    <span className="font-mono w-6 text-right">{s.count}</span>
-                    <span>{subKeyLabel(s.key, lang)}</span>
-                  </div>
-                ))}
-              </div>
-            );
-          })}
+                  {g.qualifiers.length > 0 && (
+                    <ul className="mt-1.5 ml-3 space-y-0.5 text-sm text-muted-foreground">
+                      {g.qualifiers.map((q) => (
+                        <li key={q.keySuffix} className="flex items-baseline justify-between">
+                          <span>— {qualifierLabel(q.keySuffix, lang)}</span>
+                          <span className="tabular-nums">{q.count}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              );
+            })}
         </div>
       </div>
 
