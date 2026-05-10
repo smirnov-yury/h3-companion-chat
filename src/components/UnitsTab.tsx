@@ -618,7 +618,7 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
             const { variants } = selectedItem;
             const currentVariant = variants.find((v) => v.number === activeVariant) ? activeVariant : variants[0].number;
             const u = variants.find((v) => v.number === currentVariant) ?? variants[0];
-            const imgSrc = u.image ? `${STORAGE}/units/${u.image}` : null;
+            const imgSrc = u.image ? componentImageUrl("unit_stats", u.image, u.updated_at) : null;
             const abilities = lang === 'RU' && u.abilities_ru ? u.abilities_ru : u.abilities_en;
             const notes = lang === 'RU' && u.notes_ru ? u.notes_ru : u.notes_en;
             const notesStructured = lang === 'RU' && u.notes_structured_ru
