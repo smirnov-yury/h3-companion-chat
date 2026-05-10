@@ -236,7 +236,7 @@ async function searchAll(query: string, lang: Lang): Promise<SectionResult[]> {
         id: r.id,
         name: pick(r.name_en, r.name_ru, lang),
         snippet: buildSnippet(query, lang === "RU" ? [r.specialty_ru, r.specialty_en] : [r.specialty_en, r.specialty_ru]),
-        image: r.image && r.image.startsWith("heroes-") ? `${STORAGE}/heroes/${r.image}` : null,
+        image: isHeroPortraitFilename(r.image) ? `${STORAGE}/heroes/${r.image}` : null,
         url: r.town ? `/heroes/${toSlug(r.town)}/${r.id}` : `/heroes/${r.id}`,
       })),
     });
