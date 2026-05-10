@@ -12,9 +12,7 @@ import { EmptyState, SkeletonGrid } from '@/components/ui/empty-state';
 import { useEntityLinkHandler as useEntityLinkHandlerImported } from '@/hooks/useEntityLinkHandler';
 import SeeAlso from '@/components/SeeAlso';
 
-import { SUPABASE_URL } from "@/integrations/supabase/client";
-import { componentMediaUrl } from "@/lib/storage";
-const STORAGE = `${SUPABASE_URL}/storage/v1/object/public/component-media`;
+import { componentMediaUrl, componentImageUrl } from "@/lib/storage";
 
 const FACTIONS = ['castle','necropolis','dungeon','tower','fortress','rampart','inferno','conflux','stronghold','cove'];
 const isNeutral = (unit: UnitStat) => !FACTIONS.includes(unit.town?.toLowerCase() ?? '');
