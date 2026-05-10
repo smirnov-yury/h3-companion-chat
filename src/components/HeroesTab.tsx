@@ -36,6 +36,7 @@ interface Hero {
   biography_en: string | null;
   biography_ru: string | null;
   image: string | null;
+  updated_at: string | null;
   sort_order: number | null;
 }
 
