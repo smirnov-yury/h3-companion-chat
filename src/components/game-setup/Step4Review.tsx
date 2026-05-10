@@ -204,7 +204,7 @@ export default function Step4Review({ form }: Props) {
               .insert([{
                 scenario_id: form.scenarioId,
                 player_count: form.playerCount,
-                payload: payload as unknown as Record<string, unknown>,
+                payload: payload as never,
                 ip_hash: ipHash,
               }])
               .select("id")
