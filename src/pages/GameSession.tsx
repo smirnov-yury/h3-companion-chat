@@ -12,6 +12,7 @@ import MapSection from "@/components/game-session/MapSection";
 import CommonRulesSection from "@/components/game-session/CommonRulesSection";
 import TimedEventsSection from "@/components/game-session/TimedEventsSection";
 import PlayersGrid from "@/components/game-session/PlayersGrid";
+import GameSessionExpired from "@/components/game-session/GameSessionExpired";
 import type { Payload } from "@/lib/setupResolver";
 
 export default function GameSession() {
@@ -57,21 +58,7 @@ export default function GameSession() {
             {lang === "RU" ? "Загрузка..." : "Loading..."}
           </div>
         )}
-        {!sessionQ.isLoading && !sessionQ.data && (
-          <div className="p-4 max-w-3xl mx-auto space-y-3">
-            <h1 className="text-xl font-semibold">
-              {lang === "RU" ? "Партия завершена" : "Game session expired"}
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              {lang === "RU"
-                ? "Эта партия была сгенерирована более 24 часов назад и автоматически удалена."
-                : "This session was generated more than 24 hours ago and has been removed."}
-            </p>
-            <Link to="/game-setup" className="text-primary underline text-sm">
-              {lang === "RU" ? "Создать новую партию" : "Create new session"}
-            </Link>
-          </div>
-        )}
+        {!sessionQ.isLoading && !sessionQ.data && <GameSessionExpired />}
         {sessionQ.data && (
           <SessionContent
             payload={sessionQ.data.payload as unknown as Payload}

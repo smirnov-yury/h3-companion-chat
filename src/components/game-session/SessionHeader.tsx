@@ -53,7 +53,7 @@ export default function SessionHeader({ payload, expiresAt }: { payload: Payload
           <Button
             variant="outline"
             size="sm"
-            onClick={() => console.log("share TBD")}
+            onClick={handleShare}
           >
             <Share2 className="w-4 h-4" />
             {lang === "RU" ? "Поделиться" : "Share"}
@@ -63,6 +63,11 @@ export default function SessionHeader({ payload, expiresAt }: { payload: Payload
           </div>
         </div>
       </div>
+      <SessionShareDialog
+        open={shareOpen}
+        onOpenChange={setShareOpen}
+        url={typeof window !== "undefined" ? window.location.href : ""}
+      />
     </div>
   );
 }
