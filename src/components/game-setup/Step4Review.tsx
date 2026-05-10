@@ -156,7 +156,7 @@ export default function Step4Review({ form }: Props) {
               supabase.from("scenario_map_variants").select("id, scenario_id, player_count, variant_label_en, variant_label_ru, map_setup_text_en, map_setup_text_ru, tile_counts, layout_notes_en, layout_notes_ru, map_image, sort_order").eq("scenario_id", form.scenarioId),
               supabase.from("scenario_timed_events").select("id, scenario_id, player_count, trigger_type, trigger_round, trigger_label_en, trigger_label_ru, condition_en, condition_ru, effect_en, effect_ru").eq("scenario_id", form.scenarioId),
               heroIds.length
-                ? supabase.from("heroes").select("id, name_en, name_ru, image, attack, defense, power, knowledge").in("id", heroIds)
+                ? supabase.from("heroes").select("id, name_en, name_ru, image, attack, defense, power, knowledge, class_en, class_ru").in("id", heroIds)
                 : Promise.resolve({ data: [], error: null } as const),
               towns.length
                 ? supabase.from("unit_stats").select("id, name_en, name_ru, town, tier, number, cost, image").in("town", towns)

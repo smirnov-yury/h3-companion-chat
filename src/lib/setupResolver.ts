@@ -365,6 +365,8 @@ export interface PayloadPlayer {
     defense: number | null;
     power: number | null;
     knowledge: number | null;
+    class_en: string | null;
+    class_ru: string | null;
   } | null;
   starting_resources_text_en: string | null;
   starting_resources_text_ru: string | null;
@@ -442,6 +444,7 @@ export interface BuildPayloadInput {
   heroes: Array<{
     id: string; name_en: string; name_ru: string | null; image: string | null;
     attack: number | null; defense: number | null; power: number | null; knowledge: number | null;
+    class_en?: string | null; class_ru?: string | null;
   }>;
   units: UnitRow[];
   buildings: BuildingRow[];
@@ -486,6 +489,8 @@ export function buildPayload(input: BuildPayloadInput): Payload {
         ? {
             id: hero.id, name_en: hero.name_en, name_ru: hero.name_ru, image: hero.image,
             attack: hero.attack, defense: hero.defense, power: hero.power, knowledge: hero.knowledge,
+            class_en: hero.class_en ?? null,
+            class_ru: hero.class_ru ?? null,
           }
         : null,
       starting_resources_text_en: resourcesBlock?.content_en ?? null,
