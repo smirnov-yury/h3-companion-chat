@@ -51,7 +51,7 @@ export default function GameSession() {
         active={"game_setup" as TabId}
         onChange={handleTabChange}
       />
-      <div className="flex-1 overflow-y-auto lg:ml-56">
+      <div className="flex-1 overflow-y-auto lg:ml-56 pt-11">
         {sessionQ.isLoading && (
           <div className="p-4 text-sm text-muted-foreground">
             {lang === "RU" ? "Загрузка..." : "Loading..."}
