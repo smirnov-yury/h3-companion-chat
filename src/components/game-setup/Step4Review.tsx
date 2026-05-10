@@ -1,9 +1,13 @@
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { Wand2 } from "lucide-react";
+import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/context/LanguageContext";
 import { Button } from "@/components/ui/button";
+import { buildPayload } from "@/lib/setupResolver";
+import { getClientHash } from "@/lib/clientHash";
 import type { GameSetupForm } from "./types";
 
 interface Props {
