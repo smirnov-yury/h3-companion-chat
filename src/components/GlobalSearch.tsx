@@ -59,6 +59,21 @@ const ENTITY_META: Record<EntityType, { labelEN: string; labelRU: string; url: (
   astrologer:  { labelEN: 'Astrologers',  labelRU: 'Астрологи',      url: () => `/` },
 };
 
+const SEMANTIC_TO_SECTION_KEY: Record<string, string> = {
+  hero: "heroes",
+  unit: "units",
+  ability: "abilities",
+  spell: "spells",
+  artifact: "artifacts",
+  rule: "rules",
+  field: "map_elements",
+  event: "events",
+  war_machine: "warmachines",
+  building: "buildings",
+  statistic: "statistics",
+  astrologer: "astrologers",
+};
+
 function pick(en: string | null | undefined, ru: string | null | undefined, lang: Lang): string {
   if (lang === "RU") return (ru ?? en ?? "").toString();
   return (en ?? ru ?? "").toString();
