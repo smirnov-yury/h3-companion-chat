@@ -61,6 +61,7 @@ interface UnitStat {
   errata_ru: string | null;
   content: string | null;
   image: string | null;
+  updated_at: string | null;
   sort_order: number;
 }
 
