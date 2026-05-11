@@ -358,8 +358,14 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
     }
 
     // Add neutral units only when mode is 'neutral' or mode is 'all' with no specific faction filter
-    if (mode === 'neutral' || (mode === 'all' && filterFaction === 'all')) {
+    const showNeutralBucket =
+      mode === 'neutral'
+      || (mode === 'all' && filterFaction === 'all')
+      || (mode === 'all' && filterFactionIsPseudo);
+
+    if (showNeutralBucket) {
       for (const u of neutralUnits) {
+        if (filterFactionIsPseudo && u.town !== filterFaction) continue;
         if (filterTier !== 'all' && u.tier !== filterTier) continue;
         if (filterType !== 'all' && u.type !== filterType) continue;
         if (q) {
