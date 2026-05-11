@@ -12,10 +12,10 @@ import { componentImageUrl } from "@/lib/storage";
 
 
 const DIFFICULTY_LABEL: Record<string, { en: string; ru: string; color: string }> = {
-  easy:       { en: "Easy",       ru: "Лёгкий",      color: "bg-green-500/20 text-green-400" },
-  normal:     { en: "Normal",     ru: "Нормальный",  color: "bg-blue-500/20 text-blue-400" },
-  expert:     { en: "Expert",     ru: "Эксперт",     color: "bg-orange-500/20 text-orange-400" },
-  impossible: { en: "Impossible", ru: "Невозможный", color: "bg-red-500/20 text-red-400" },
+  easy:       { en: "Easy",       ru: "Лёгкий",      color: "bg-green-600 text-white" },
+  normal:     { en: "Normal",     ru: "Нормальный",  color: "bg-blue-600 text-white" },
+  expert:     { en: "Expert",     ru: "Эксперт",     color: "bg-orange-600 text-white" },
+  impossible: { en: "Impossible", ru: "Невозможный", color: "bg-red-600 text-white" },
 };
 
 interface AiCard {
@@ -87,21 +87,21 @@ export default function AiCardsTab({ searchQuery = "", initialCardId, onCardOpen
     <>
       <div className="p-3 overflow-y-auto h-full">
         {!loaded ? (
-          <SkeletonGrid className="grid grid-cols-2 lg:grid-cols-4 gap-3" />
+          <SkeletonGrid className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3" />
         ) : filtered.length === 0 ? (
           <EmptyState />
         ) : (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
             {filtered.map((item) => {
               const imgSrc = item.image ? componentImageUrl("ai_cards", item.image) : null;
               const diff = DIFFICULTY_LABEL[item.difficulty];
               return (
                 <button key={item.id} onClick={() => openCard(item)}
                   className="flex flex-col w-full overflow-hidden rounded-lg bg-muted text-left cursor-pointer transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg hover:ring-2 hover:ring-primary">
-                  <div className="relative w-full aspect-[3/4] overflow-hidden rounded-t-lg bg-muted">
+                  <div className="relative w-full aspect-[5/7] overflow-hidden rounded-t-lg bg-muted">
                     {imgSrc && <img src={imgSrc} alt={item.name_en} className="w-full h-full object-cover" />}
                     {diff && (
-                      <span className={`absolute top-1.5 right-1.5 px-1.5 py-0.5 rounded text-[10px] font-medium ${diff.color}`}>
+                      <span className={`absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded text-[10px] font-medium ${diff.color}`}>
                         {lang === "RU" ? diff.ru : diff.en}
                       </span>
                     )}
@@ -120,7 +120,7 @@ export default function AiCardsTab({ searchQuery = "", initialCardId, onCardOpen
             <>
               {selected.image && (
                 <div className="w-full shrink-0 flex justify-center bg-muted">
-                  <img src={componentImageUrl("ai_cards", selected.image as string)} alt={selected.name_en} className="w-full max-h-[280px] object-contain" />
+                  <img src={componentImageUrl("ai_cards", selected.image as string)} alt={selected.name_en} className="w-full aspect-[5/7] object-contain rounded-lg shadow-lg" />
                 </div>
               )}
               <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">

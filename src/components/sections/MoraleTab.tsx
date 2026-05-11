@@ -47,7 +47,7 @@ export default function MoraleTab({ searchQuery = "", initialCardId, onCardOpen,
   const closeCard = () => { setSelectedIndex(null); onCardClose?.(); };
 
   const typeBadgeClass = (t: string) =>
-    t === "positive" ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400";
+    t === "positive" ? "bg-green-600 text-white" : "bg-red-600 text-white";
 
   const typeLabel = (t: string) => {
     if (lang === "RU") return t === "positive" ? "Положительная" : "Отрицательная";
@@ -83,19 +83,19 @@ export default function MoraleTab({ searchQuery = "", initialCardId, onCardOpen,
     <>
       <div className="p-3 overflow-y-auto h-full">
         {!loaded ? (
-          <SkeletonGrid className="grid grid-cols-2 lg:grid-cols-4 gap-3" />
+          <SkeletonGrid className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3" />
         ) : filtered.length === 0 ? (
           <EmptyState />
         ) : (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
             {filtered.map((item) => {
               const imgSrc = item.image ? componentImageUrl("morale_cards", item.image) : null;
               return (
                 <button key={item.id} onClick={() => openCard(item)}
                   className="flex flex-col w-full overflow-hidden rounded-lg bg-muted text-left cursor-pointer transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg hover:ring-2 hover:ring-primary">
-                  <div className="relative w-full aspect-[3/4] overflow-hidden rounded-t-lg bg-muted">
+                  <div className="relative w-full aspect-[5/7] overflow-hidden rounded-t-lg bg-muted">
                     {imgSrc && <img src={imgSrc} alt={item.type} className="w-full h-full object-cover" />}
-                    <span className={`absolute top-1.5 right-1.5 px-1.5 py-0.5 rounded text-[10px] font-medium ${typeBadgeClass(item.type)}`}>
+                    <span className={`absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded text-[10px] font-medium ${typeBadgeClass(item.type)}`}>
                       {typeLabel(item.type)}
                     </span>
                   </div>
@@ -115,7 +115,7 @@ export default function MoraleTab({ searchQuery = "", initialCardId, onCardOpen,
             <>
               {selected.image && (
                 <div className="w-full shrink-0 flex justify-center bg-muted">
-                  <img src={componentImageUrl("morale_cards", selected.image as string)} alt={selected.type} className="w-full max-h-[280px] object-contain" />
+                  <img src={componentImageUrl("morale_cards", selected.image as string)} alt={selected.type} className="w-full aspect-[5/7] object-contain rounded-lg shadow-lg" />
                 </div>
               )}
               <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
