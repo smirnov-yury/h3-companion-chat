@@ -327,17 +327,13 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
     const items: DisplayItem[] = [];
     const q = searchQuery.toLowerCase();
 
-    // Add faction groups (when mode is 'all' or 'standard')
-    const FACTION_TOWNS_LC = ['castle','necropolis','dungeon','tower','fortress','rampart','inferno','conflux','stronghold','cove'];
-    const filterFactionIsPseudo = filterFaction !== 'all' && !FACTION_TOWNS_LC.includes(filterFaction.toLowerCase());
-
-    if (mode !== 'neutral' && !filterFactionIsPseudo) {
+    // Faction groups show only when mode is 'all' or 'standard'.
+    if (mode === 'all' || mode === 'standard') {
       for (const [slug, variants] of Object.entries(factionGroups)) {
         if (filterFaction !== 'all' && !variants.some((u) => u.town === filterFaction)) continue;
         if (filterTier !== 'all' && !variants.some((u) => u.tier === filterTier)) continue;
         if (filterType !== 'all' && !variants.some((u) => u.type === filterType)) continue;
 
-        // Pick preview: Few > Pack > first
         const preview =
           variants.find((u) => u.number === 'Few') ||
           variants.find((u) => u.number === 'Pack') ||
@@ -348,7 +344,6 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
           return n.toLowerCase().includes(q);
         })) continue;
 
-        // Sort variants by FACTION_VARIANT_ORDER
         const sorted = [...variants].sort(
           (a, b) => FACTION_VARIANT_ORDER.indexOf(a.number) - FACTION_VARIANT_ORDER.indexOf(b.number)
         );
@@ -357,15 +352,17 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
       }
     }
 
-    // Add neutral units only when mode is 'neutral' or mode is 'all' with no specific faction filter
-    const showNeutralBucket =
-      mode === 'neutral'
-      || (mode === 'all' && filterFaction === 'all')
-      || (mode === 'all' && filterFactionIsPseudo);
+    // Neutral-bucket (Neutral / Creature Bank / Summoned single-card units).
+    const showAllNeutralBucket = mode === 'all';
+    const requiredTown =
+      mode === 'neutral' ? 'Neutral'
+      : mode === 'creature_bank' ? 'Creature Bank'
+      : mode === 'summoned' ? 'Summoned'
+      : null;
 
-    if (showNeutralBucket) {
+    if (showAllNeutralBucket || requiredTown) {
       for (const u of neutralUnits) {
-        if (filterFactionIsPseudo && u.town !== filterFaction) continue;
+        if (requiredTown && u.town !== requiredTown) continue;
         if (filterTier !== 'all' && u.tier !== filterTier) continue;
         if (filterType !== 'all' && u.type !== filterType) continue;
         if (q) {
