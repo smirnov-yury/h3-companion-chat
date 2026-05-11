@@ -56,7 +56,7 @@ const EMPTY_FORM = {
 };
 
 const TIERS = ["", "bronze", "silver", "azure", "golden"];
-const TOWNS = ["", "Castle", "Conflux", "Cove", "Dungeon", "Fortress", "Inferno", "Necropolis", "Neutral", "Rampart", "Stronghold", "Tower"];
+const TOWNS = ["", "Castle", "Conflux", "Cove", "Creature Bank", "Dungeon", "Fortress", "Inferno", "Necropolis", "Neutral", "Rampart", "Stronghold", "Summoned", "Tower"];
 const UNIT_TYPES = ["", "unit_ground", "unit_flying", "unit_ranged"];
 const UNIT_NUMBERS = ["", "Few", "Pack", "Neutral"];
 
