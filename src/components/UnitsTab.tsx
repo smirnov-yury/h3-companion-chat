@@ -542,11 +542,11 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
             )}
           </div>
           <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
-            {(['all', 'standard', 'neutral'] as ModeFilter[]).map((m) => (
+            {(['all', 'standard', 'neutral', 'creature_bank', 'summoned'] as ModeFilter[]).map((m) => (
               <FilterChip key={m} label={modeLabels[m]} active={mode === m} onClick={() => setMode(m)} />
             ))}
           </div>
-          {mode !== 'neutral' && (
+          {mode !== 'neutral' && mode !== 'creature_bank' && mode !== 'summoned' && (
             <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
               {factions.map((f) => (
                 <FilterChip key={f} label={f === 'all' ? (lang === 'RU' ? 'Все' : 'All') : (lang === 'RU' ? FACTION_LABEL_RU[f] || f : f)} active={filterFaction === f} onClick={() => setFactionAndUrl(f)} />
