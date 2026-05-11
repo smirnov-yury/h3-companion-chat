@@ -268,13 +268,13 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
   useEffect(() => {
     if (!units.length || !initialCardId) return;
     // Try matching by slug (faction group), then by neutral id
-    const matchSlug = units.find(u => u.slug === initialCardId && u.town !== 'Neutral');
+    const matchSlug = units.find(u => u.slug === initialCardId && !isNeutral(u));
     if (matchSlug) { setSelectedKey(`faction-${matchSlug.slug}`); return; }
-    const matchNeutral = units.find(u => u.id === initialCardId && u.town === 'Neutral');
+    const matchNeutral = units.find(u => u.id === initialCardId && isNeutral(u));
     if (matchNeutral) { setSelectedKey(`neutral-${matchNeutral.id}`); return; }
     // Fallback: any unit by id
     const any = units.find(u => u.id === initialCardId);
-    if (any) setSelectedKey(any.town === 'Neutral' ? `neutral-${any.id}` : `faction-${any.slug}`);
+    if (any) setSelectedKey(isNeutral(any) ? `neutral-${any.id}` : `faction-${any.slug}`);
   }, [units, initialCardId]);
 
   const openCard = (key: string, cardSlug: string) => {
