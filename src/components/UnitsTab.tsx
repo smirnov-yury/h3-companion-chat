@@ -297,7 +297,7 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
     const nUnits: UnitStat[] = [];
 
     units.forEach((u) => {
-      if (u.town === 'Neutral') {
+      if (isNeutral(u)) {
         nUnits.push(u);
       } else {
         (fGroups[u.slug] ??= []).push(u);
