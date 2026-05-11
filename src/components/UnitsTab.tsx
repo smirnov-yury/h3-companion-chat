@@ -268,13 +268,13 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
   useEffect(() => {
     if (!units.length || !initialCardId) return;
     // Try matching by slug (faction group), then by neutral id
-    const matchSlug = units.find(u => u.slug === initialCardId && u.town !== 'Neutral');
+    const matchSlug = units.find(u => u.slug === initialCardId && !isNeutral(u));
     if (matchSlug) { setSelectedKey(`faction-${matchSlug.slug}`); return; }
-    const matchNeutral = units.find(u => u.id === initialCardId && u.town === 'Neutral');
+    const matchNeutral = units.find(u => u.id === initialCardId && isNeutral(u));
     if (matchNeutral) { setSelectedKey(`neutral-${matchNeutral.id}`); return; }
     // Fallback: any unit by id
     const any = units.find(u => u.id === initialCardId);
-    if (any) setSelectedKey(any.town === 'Neutral' ? `neutral-${any.id}` : `faction-${any.slug}`);
+    if (any) setSelectedKey(isNeutral(any) ? `neutral-${any.id}` : `faction-${any.slug}`);
   }, [units, initialCardId]);
 
   const openCard = (key: string, cardSlug: string) => {
@@ -297,7 +297,7 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
     const nUnits: UnitStat[] = [];
 
     units.forEach((u) => {
-      if (u.town === 'Neutral') {
+      if (isNeutral(u)) {
         nUnits.push(u);
       } else {
         (fGroups[u.slug] ??= []).push(u);
@@ -328,7 +328,10 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
     const q = searchQuery.toLowerCase();
 
     // Add faction groups (when mode is 'all' or 'standard')
-    if (mode !== 'neutral') {
+    const FACTION_TOWNS_LC = ['castle','necropolis','dungeon','tower','fortress','rampart','inferno','conflux','stronghold','cove'];
+    const filterFactionIsPseudo = filterFaction !== 'all' && !FACTION_TOWNS_LC.includes(filterFaction.toLowerCase());
+
+    if (mode !== 'neutral' && !filterFactionIsPseudo) {
       for (const [slug, variants] of Object.entries(factionGroups)) {
         if (filterFaction !== 'all' && !variants.some((u) => u.town === filterFaction)) continue;
         if (filterTier !== 'all' && !variants.some((u) => u.tier === filterTier)) continue;
@@ -355,8 +358,14 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
     }
 
     // Add neutral units only when mode is 'neutral' or mode is 'all' with no specific faction filter
-    if (mode === 'neutral' || (mode === 'all' && filterFaction === 'all')) {
+    const showNeutralBucket =
+      mode === 'neutral'
+      || (mode === 'all' && filterFaction === 'all')
+      || (mode === 'all' && filterFactionIsPseudo);
+
+    if (showNeutralBucket) {
       for (const u of neutralUnits) {
+        if (filterFactionIsPseudo && u.town !== filterFaction) continue;
         if (filterTier !== 'all' && u.tier !== filterTier) continue;
         if (filterType !== 'all' && u.type !== filterType) continue;
         if (q) {
