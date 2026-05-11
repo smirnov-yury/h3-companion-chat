@@ -399,8 +399,8 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
 
   const modeLabels: Record<ModeFilter, string> =
     lang === 'RU'
-      ? { all: 'Все', standard: 'Обычные', neutral: 'Нейтралы' }
-      : { all: 'All', standard: 'Standard', neutral: 'Neutral' };
+      ? { all: 'Все', standard: 'Обычные', neutral: 'Нейтралы', creature_bank: 'Банк существ', summoned: 'Призванные' }
+      : { all: 'All', standard: 'Standard', neutral: 'Neutral', creature_bank: 'Creature Bank', summoned: 'Summoned' };
 
   const hasFilters = mode !== 'all' || filterFaction !== 'all' || filterTier !== 'all' || filterType !== 'all' || !!searchQuery;
   const resetAllFilters = () => {
