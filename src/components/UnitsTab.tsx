@@ -311,7 +311,7 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
   const factions = useMemo(() => {
     const towns = new Set<string>();
     units.forEach((u) => {
-      if (u.town && u.town !== 'Neutral') towns.add(u.town);
+      if (u.town && u.town !== 'Neutral' && u.town !== 'Creature Bank' && u.town !== 'Summoned') towns.add(u.town);
     });
     return ['all', ...Array.from(towns).sort()];
   }, [units]);
