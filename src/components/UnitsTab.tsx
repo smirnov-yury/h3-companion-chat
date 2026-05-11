@@ -65,7 +65,7 @@ interface UnitStat {
   sort_order: number;
 }
 
-type ModeFilter = 'all' | 'standard' | 'neutral';
+type ModeFilter = 'all' | 'standard' | 'neutral' | 'creature_bank' | 'summoned';
 
 // Faction variant order (no Neutral here)
 const FACTION_VARIANT_ORDER = ['Few', 'Pack', 'Few (Alternate)', 'Pack (Alternate)'];
