@@ -30,9 +30,9 @@ const QUALIFIER_LABELS: Record<string, { ru: string; en: string }> = {
 function groupTileCounts(tc: Record<string, number>): TileGroup[] {
   const groups: Record<TileCategory, TileGroup> = {
     starting: { category: "starting", primaryCount: 0, qualifiers: [] },
+    far:      { category: "far",      primaryCount: 0, qualifiers: [] },
     near:     { category: "near",     primaryCount: 0, qualifiers: [] },
     center:   { category: "center",   primaryCount: 0, qualifiers: [] },
-    far:      { category: "far",      primaryCount: 0, qualifiers: [] },
   };
   const PRIMARY: Record<TileCategory, RegExp[]> = {
     starting: [/^starting$/, /^starting_I$/i],

@@ -1067,6 +1067,65 @@ export type Database = {
         }
         Relationships: []
       }
+      rules_extended: {
+        Row: {
+          created_at: string | null
+          embedding_en: string | null
+          embedding_ru: string | null
+          id: number
+          page_end: number | null
+          page_start: number | null
+          rule_id: string | null
+          search_text_en: string | null
+          search_text_ru: string | null
+          section_title: string
+          source: string
+          text_en: string
+          text_ru: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          embedding_en?: string | null
+          embedding_ru?: string | null
+          id?: number
+          page_end?: number | null
+          page_start?: number | null
+          rule_id?: string | null
+          search_text_en?: string | null
+          search_text_ru?: string | null
+          section_title: string
+          source?: string
+          text_en: string
+          text_ru?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          embedding_en?: string | null
+          embedding_ru?: string | null
+          id?: number
+          page_end?: number | null
+          page_start?: number | null
+          rule_id?: string | null
+          search_text_en?: string | null
+          search_text_ru?: string | null
+          section_title?: string
+          source?: string
+          text_en?: string
+          text_ru?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rules_extended_rule_id_fkey"
+            columns: ["rule_id"]
+            isOneToOne: false
+            referencedRelation: "rules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       scenario_ai_setup: {
         Row: {
           ai_faction_en: string | null
@@ -1768,6 +1827,7 @@ export type Database = {
           image: string | null
           image_status: Database["public"]["Enums"]["image_status_enum"]
           initiative: number | null
+          is_summon: boolean
           name_en: string
           name_ru: string | null
           notes_en: string | null
@@ -1801,6 +1861,7 @@ export type Database = {
           image?: string | null
           image_status?: Database["public"]["Enums"]["image_status_enum"]
           initiative?: number | null
+          is_summon?: boolean
           name_en: string
           name_ru?: string | null
           notes_en?: string | null
@@ -1834,6 +1895,7 @@ export type Database = {
           image?: string | null
           image_status?: Database["public"]["Enums"]["image_status_enum"]
           initiative?: number | null
+          is_summon?: boolean
           name_en?: string
           name_ru?: string | null
           notes_en?: string | null
