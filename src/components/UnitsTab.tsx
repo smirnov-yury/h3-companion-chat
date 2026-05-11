@@ -328,7 +328,10 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
     const q = searchQuery.toLowerCase();
 
     // Add faction groups (when mode is 'all' or 'standard')
-    if (mode !== 'neutral') {
+    const FACTION_TOWNS_LC = ['castle','necropolis','dungeon','tower','fortress','rampart','inferno','conflux','stronghold','cove'];
+    const filterFactionIsPseudo = filterFaction !== 'all' && !FACTION_TOWNS_LC.includes(filterFaction.toLowerCase());
+
+    if (mode !== 'neutral' && !filterFactionIsPseudo) {
       for (const [slug, variants] of Object.entries(factionGroups)) {
         if (filterFaction !== 'all' && !variants.some((u) => u.town === filterFaction)) continue;
         if (filterTier !== 'all' && !variants.some((u) => u.tier === filterTier)) continue;
