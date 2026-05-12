@@ -25,6 +25,22 @@ export default function GameSetup() {
   const navigate = useNavigate();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [form, setForm] = useState<GameSetupForm>(INITIAL_FORM);
+  interface RecentEntry {
+    uuid: string;
+    title: string;
+    playerCount: number;
+    createdAt: string;
+  }
+  const [recentSessions, setRecentSessions] = useState<RecentEntry[]>([]);
+
+  useEffect(() => {
+    try {
+      const stored = JSON.parse(localStorage.getItem("h3_recent_sessions") ?? "[]");
+      setRecentSessions(Array.isArray(stored) ? stored : []);
+    } catch {
+      setRecentSessions([]);
+    }
+  }, []);
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
 
   // Auto-set playerCount to scenario.min_players when scenario changes.
