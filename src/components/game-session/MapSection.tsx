@@ -71,6 +71,56 @@ function qualifierLabel(suffix: string, lang: "RU" | "EN"): string {
   return human.charAt(0).toUpperCase() + human.slice(1);
 }
 
+function baselineLabel(rawKey: string, lang: "RU" | "EN"): string {
+  // Strip trailing roman numeral group (II_III, IV_V, VI_VII, I) — we re-add it in parentheses.
+  const m = rawKey.match(/^([a-z_]+?)(?:_(I|II_III|IV_V|VI_VII|II_V))?$/i);
+  const stem = (m?.[1] ?? rawKey).toLowerCase();
+  const numerals = m?.[2]?.replace(/_/g, "-");
+
+  // Category roots
+  const ROOTS_RU: Record<string, string> = {
+    starting: "Стартовые",
+    far: "Дальние",
+    near: "Ближние",
+    center: "Центральные",
+  };
+  const ROOTS_EN: Record<string, string> = {
+    starting: "Starting",
+    far: "Far",
+    near: "Near",
+    center: "Center",
+  };
+
+  // Qualifier suffix mapping
+  const QUALIFIERS_RU: Record<string, string> = {
+    with_obelisk: "с обелиском",
+    grail: "с Граалем",
+    subterranean: "подземные",
+  };
+  const QUALIFIERS_EN: Record<string, string> = {
+    with_obelisk: "with Obelisk",
+    grail: "with Grail",
+    subterranean: "subterranean",
+  };
+
+  // Parse stem: e.g. "near_subterranean", "near_with_obelisk", "center", "starting"
+  const parts = stem.split("_");
+  const category = parts[0];
+  const qualifierKey = parts.slice(1).join("_");
+
+  const root = lang === "RU" ? ROOTS_RU[category] ?? category : ROOTS_EN[category] ?? category;
+  let label = root;
+
+  if (qualifierKey) {
+    const q = lang === "RU" ? QUALIFIERS_RU[qualifierKey] : QUALIFIERS_EN[qualifierKey];
+    if (q) label = `${root} ${q}`;
+    else label = `${root} (${qualifierKey})`;
+  }
+
+  if (numerals) label += ` (${numerals})`;
+  return label;
+}
+
 export default function MapSection({ map, playerCount }: { map: ScaledMap | null; playerCount: number }) {
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
@@ -122,9 +172,9 @@ export default function MapSection({ map, playerCount }: { map: ScaledMap | null
             </CollapsibleTrigger>
             <CollapsibleContent className="mt-2 ml-4 text-xs space-y-0.5">
               {Object.entries(map.baseline_tile_counts).map(([k, v]) => (
-                <div key={k} className="flex justify-between max-w-xs">
-                  <span className="text-muted-foreground">{k}</span>
-                  <span className="font-mono">{v}</span>
+                <div key={k} className="flex justify-between max-w-xs gap-2">
+                  <span className="text-muted-foreground">{baselineLabel(k, lang)}</span>
+                  <span className="font-mono tabular-nums">{v}</span>
                 </div>
               ))}
             </CollapsibleContent>
