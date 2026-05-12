@@ -174,7 +174,7 @@ export default function Step1Scenario({ form, setForm }: Props) {
             <SelectTrigger className="flex-1">
               <SelectValue placeholder={lang === "RU" ? "Выберите сценарий" : "Select scenario"} />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="max-h-[min(60vh,400px)]">
               {filteredScenarios.map((s) => {
                 const book = s.book;
                 const bookTitle = lang === "RU" ? book?.title_ru || book?.title_en : book?.title_en;
@@ -182,10 +182,10 @@ export default function Step1Scenario({ form, setForm }: Props) {
                 const range = formatPlayerRange(s.supported_player_counts as number[] | null, lang);
                 return (
                   <SelectItem key={s.id} value={s.id}>
-                    <span className="text-muted-foreground">{bookTitle}</span>
-                    <span className="mx-1">·</span>
                     <span className="font-medium">{sName}</span>
                     <span className="text-muted-foreground ml-1">({range})</span>
+                    <span className="mx-1 text-muted-foreground">·</span>
+                    <span className="text-muted-foreground">{bookTitle}</span>
                   </SelectItem>
                 );
               })}
