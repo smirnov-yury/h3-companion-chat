@@ -34,6 +34,17 @@ export default function SessionHeader({ payload, expiresAt }: { payload: Payload
     }
     setShareOpen(true);
   };
+  const handleCopy = async () => {
+    const url = window.location.href;
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      toast.success(lang === "RU" ? "Ссылка скопирована" : "Link copied");
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast.error(lang === "RU" ? "Не удалось скопировать" : "Copy failed");
+    }
+  };
   const title = (lang === "RU" ? sc.title_ru : sc.title_en) || sc.title_en;
   const bookTitle = (lang === "RU" ? sc.book_title_ru : sc.book_title_en) || sc.book_title_en || "—";
   const playersLabel = lang === "RU" ? "игроков" : "players";
