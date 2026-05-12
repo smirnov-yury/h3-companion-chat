@@ -18,6 +18,7 @@ function formatExpires(expiresAt: string, lang: "RU" | "EN"): string {
 export default function SessionHeader({ payload, expiresAt }: { payload: Payload; expiresAt: string }) {
   const { lang } = useLang();
   const [shareOpen, setShareOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
   const sc = payload.scenario;
 
   const handleShare = async () => {
