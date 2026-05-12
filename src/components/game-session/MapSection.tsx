@@ -172,9 +172,9 @@ export default function MapSection({ map, playerCount }: { map: ScaledMap | null
             </CollapsibleTrigger>
             <CollapsibleContent className="mt-2 ml-4 text-xs space-y-0.5">
               {Object.entries(map.baseline_tile_counts).map(([k, v]) => (
-                <div key={k} className="flex justify-between max-w-xs">
-                  <span className="text-muted-foreground">{k}</span>
-                  <span className="font-mono">{v}</span>
+                <div key={k} className="flex justify-between max-w-xs gap-2">
+                  <span className="text-muted-foreground">{baselineLabel(k, lang)}</span>
+                  <span className="font-mono tabular-nums">{v}</span>
                 </div>
               ))}
             </CollapsibleContent>
