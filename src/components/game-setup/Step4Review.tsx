@@ -211,6 +211,24 @@ export default function Step4Review({ form }: Props) {
               .single();
 
             if (insertRes.error) throw insertRes.error;
+            try {
+              const historyEntry = {
+                uuid: insertRes.data.id,
+                title: (lang === "RU" ? scenRes.data.title_ru : null) || scenRes.data.title_en || "",
+                playerCount: form.playerCount,
+                createdAt: new Date().toISOString(),
+              };
+              const prev: typeof historyEntry[] = JSON.parse(
+                localStorage.getItem("h3_recent_sessions") ?? "[]"
+              );
+              const deduped = prev.filter((e) => e.uuid !== historyEntry.uuid);
+              localStorage.setItem(
+                "h3_recent_sessions",
+                JSON.stringify([historyEntry, ...deduped].slice(0, 5))
+              );
+            } catch {
+              // localStorage unavailable — silently ignore
+            }
             navigate(`/game/${insertRes.data.id}`);
           } catch (e: unknown) {
             const msg = e instanceof Error ? e.message : String(e);
