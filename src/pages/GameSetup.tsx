@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Wand2, ChevronLeft, ChevronRight } from "lucide-react";
+import { Wand2, ChevronLeft, ChevronRight, Clock, ExternalLink } from "lucide-react";
 import TopAppBar from "@/components/TopAppBar";
 import NavDrawer, { type TabId } from "@/components/NavDrawer";
 import BackToTop from "@/components/BackToTop";
@@ -25,6 +25,22 @@ export default function GameSetup() {
   const navigate = useNavigate();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [form, setForm] = useState<GameSetupForm>(INITIAL_FORM);
+  interface RecentEntry {
+    uuid: string;
+    title: string;
+    playerCount: number;
+    createdAt: string;
+  }
+  const [recentSessions, setRecentSessions] = useState<RecentEntry[]>([]);
+
+  useEffect(() => {
+    try {
+      const stored = JSON.parse(localStorage.getItem("h3_recent_sessions") ?? "[]");
+      setRecentSessions(Array.isArray(stored) ? stored : []);
+    } catch {
+      setRecentSessions([]);
+    }
+  }, []);
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
 
   // Auto-set playerCount to scenario.min_players when scenario changes.
@@ -104,6 +120,44 @@ export default function GameSetup() {
         <div className="max-w-2xl w-full mx-auto p-4 flex-1">
           <div className="mt-2">
             {currentStep === 1 && <Step1Scenario form={form} setForm={setForm} />}
+            {currentStep === 1 && recentSessions.length > 0 && (
+              <div className="mt-6">
+                <div className="flex items-center gap-2 text-sm font-semibold mb-2">
+                  <Clock className="w-4 h-4" />
+                  {lang === "RU" ? "Последние партии" : "Recent sessions"}
+                </div>
+                <div className="space-y-2">
+                  {recentSessions.map((s) => {
+                    const date = new Date(s.createdAt);
+                    const dateLabel = isNaN(date.getTime())
+                      ? ""
+                      : date.toLocaleDateString(lang === "RU" ? "ru-RU" : "en-GB", {
+                          day: "numeric",
+                          month: "short",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        });
+                    return (
+                      <button
+                        key={s.uuid}
+                        type="button"
+                        onClick={() => navigate(`/game/${s.uuid}`)}
+                        className="w-full text-left flex items-center justify-between gap-3 rounded-lg border border-border bg-card px-3 py-2 text-sm hover:bg-muted/50 transition-colors"
+                      >
+                        <div className="min-w-0">
+                          <div className="font-medium truncate">{s.title}</div>
+                          <div className="text-xs text-muted-foreground">
+                            {s.playerCount} {lang === "RU" ? "игроков" : "players"}
+                            {dateLabel ? ` · ${dateLabel}` : ""}
+                          </div>
+                        </div>
+                        <ExternalLink className="w-4 h-4 text-muted-foreground shrink-0" />
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
             {currentStep === 2 && <Step2PlayerCount form={form} setForm={setForm} />}
             {currentStep === 3 && <Step3Players form={form} setForm={setForm} />}
             {currentStep === 4 && <Step4Review form={form} />}

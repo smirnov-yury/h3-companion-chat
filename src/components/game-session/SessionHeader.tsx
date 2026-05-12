@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Share2 } from "lucide-react";
+import { Share2, Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLang } from "@/context/LanguageContext";
+import { toast } from "sonner";
 import type { Payload } from "@/lib/setupResolver";
 import SessionShareDialog from "./SessionShareDialog";
 
@@ -17,6 +18,7 @@ function formatExpires(expiresAt: string, lang: "RU" | "EN"): string {
 export default function SessionHeader({ payload, expiresAt }: { payload: Payload; expiresAt: string }) {
   const { lang } = useLang();
   const [shareOpen, setShareOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
   const sc = payload.scenario;
 
   const handleShare = async () => {
@@ -31,6 +33,17 @@ export default function SessionHeader({ payload, expiresAt }: { payload: Payload
       }
     }
     setShareOpen(true);
+  };
+  const handleCopy = async () => {
+    const url = window.location.href;
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      toast.success(lang === "RU" ? "Ссылка скопирована" : "Link copied");
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast.error(lang === "RU" ? "Не удалось скопировать" : "Copy failed");
+    }
   };
   const title = (lang === "RU" ? sc.title_ru : sc.title_en) || sc.title_en;
   const bookTitle = (lang === "RU" ? sc.book_title_ru : sc.book_title_en) || sc.book_title_en || "—";
@@ -50,14 +63,16 @@ export default function SessionHeader({ payload, expiresAt }: { payload: Payload
           </div>
         </div>
         <div className="flex items-center gap-3 mt-3 md:mt-0 md:flex-col md:items-end">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleShare}
-          >
-            <Share2 className="w-4 h-4" />
-            {lang === "RU" ? "Поделиться" : "Share"}
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={handleCopy}>
+              {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+              {lang === "RU" ? "Копировать" : "Copy link"}
+            </Button>
+            <Button variant="outline" size="sm" onClick={handleShare}>
+              <Share2 className="w-4 h-4" />
+              {lang === "RU" ? "Поделиться" : "Share"}
+            </Button>
+          </div>
           <div className="hidden md:block text-xs text-muted-foreground">
             {formatExpires(expiresAt, lang)}
           </div>
