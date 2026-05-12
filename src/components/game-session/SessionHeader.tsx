@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Share2 } from "lucide-react";
+import { Share2, Copy, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLang } from "@/context/LanguageContext";
+import { toast } from "sonner";
 import type { Payload } from "@/lib/setupResolver";
 import SessionShareDialog from "./SessionShareDialog";
 
