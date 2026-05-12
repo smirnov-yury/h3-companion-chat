@@ -346,6 +346,8 @@ export default function HeroesTab({ initialFilter, initialCardId, initialSearch,
       <Dialog open={!!selected} onOpenChange={open => { if (!open) closeCard(); }} >
         {selected && (
           <DialogContent className="w-[95vw] max-w-md max-h-[90dvh] grid grid-rows-[auto_auto_minmax(320px,1fr)] overflow-hidden p-0 rounded-xl gap-0">
+            <DialogTitle className="sr-only">Hero details</DialogTitle>
+            <DialogDescription className="sr-only">Hero information</DialogDescription>
             <DialogClose
               aria-label="Close"
               className="card-dialog-accent absolute top-3 right-3 z-20 inline-flex h-8 w-8 items-center justify-center rounded-full border-2 bg-background/80 backdrop-blur-sm text-foreground transition-colors hover:bg-background focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background"
