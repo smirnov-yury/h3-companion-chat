@@ -46,12 +46,12 @@ export default defineConfig(({ mode }) => ({
             urlPattern: ({ url }) =>
               url.hostname.endsWith("supabase.co") &&
               url.pathname.startsWith("/storage/"),
-            handler: "CacheFirst",
+            handler: "StaleWhileRevalidate",
             options: {
               cacheName: "component-images",
               expiration: {
                 maxEntries: 500,
-                // No maxAgeSeconds — keep cached images indefinitely
+                maxAgeSeconds: 60 * 60 * 24 * 7, // 7 days
               },
               cacheableResponse: { statuses: [0, 200] },
             },
