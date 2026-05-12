@@ -7,7 +7,7 @@ import { useLang } from "@/context/LanguageContext";
 import { useGlyphs } from "@/context/GlyphsContext";
 import { renderGlyphs } from "@/utils/renderGlyphs";
 import { isHeroPortraitFilename } from "@/lib/heroImage";
-import { Dialog, DialogContent, DialogClose } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogClose, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { EmptyState, SkeletonGrid } from "@/components/ui/empty-state";
