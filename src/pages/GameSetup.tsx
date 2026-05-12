@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Wand2, ChevronLeft, ChevronRight } from "lucide-react";
+import { Wand2, ChevronLeft, ChevronRight, Clock, ExternalLink } from "lucide-react";
 import TopAppBar from "@/components/TopAppBar";
 import NavDrawer, { type TabId } from "@/components/NavDrawer";
 import BackToTop from "@/components/BackToTop";
