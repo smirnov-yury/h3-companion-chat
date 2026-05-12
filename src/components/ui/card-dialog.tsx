@@ -66,6 +66,8 @@ const CardDialogContent = React.forwardRef<
         )}
         {...props}
       >
+        <DialogPrimitive.Title className="sr-only">Card details</DialogPrimitive.Title>
+        <DialogPrimitive.Description className="sr-only">Card information</DialogPrimitive.Description>
         {children}
         <button
           type="button"
