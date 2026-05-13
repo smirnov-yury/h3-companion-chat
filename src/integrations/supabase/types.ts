@@ -149,6 +149,51 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_chat_logs: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          id: number
+          input_tokens: number
+          ip_hash: string | null
+          lang: string | null
+          latency_ms: number | null
+          model: string
+          output_tokens: number
+          question_text: string | null
+          response_status: number | null
+          used_tool: boolean
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          id?: number
+          input_tokens?: number
+          ip_hash?: string | null
+          lang?: string | null
+          latency_ms?: number | null
+          model: string
+          output_tokens?: number
+          question_text?: string | null
+          response_status?: number | null
+          used_tool?: boolean
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          id?: number
+          input_tokens?: number
+          ip_hash?: string | null
+          lang?: string | null
+          latency_ms?: number | null
+          model?: string
+          output_tokens?: number
+          question_text?: string | null
+          response_status?: number | null
+          used_tool?: boolean
+        }
+        Relationships: []
+      }
       ai_rate_limits: {
         Row: {
           count: number
@@ -188,6 +233,27 @@ export type Database = {
           updated_at?: string | null
           value_en?: string | null
           value_ru?: string | null
+        }
+        Relationships: []
+      }
+      app_settings: {
+        Row: {
+          key: string
+          updated_at: string
+          updated_by: string | null
+          value: Json
+        }
+        Insert: {
+          key: string
+          updated_at?: string
+          updated_by?: string | null
+          value: Json
+        }
+        Update: {
+          key?: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: Json
         }
         Relationships: []
       }
@@ -2056,6 +2122,54 @@ export type Database = {
       }
     }
     Views: {
+      v_ai_chat_logs_with_cost: {
+        Row: {
+          cost_usd: number | null
+          created_at: string | null
+          error_message: string | null
+          id: number | null
+          input_tokens: number | null
+          ip_hash: string | null
+          lang: string | null
+          latency_ms: number | null
+          model: string | null
+          output_tokens: number | null
+          question_text: string | null
+          response_status: number | null
+          used_tool: boolean | null
+        }
+        Insert: {
+          cost_usd?: never
+          created_at?: string | null
+          error_message?: string | null
+          id?: number | null
+          input_tokens?: number | null
+          ip_hash?: string | null
+          lang?: string | null
+          latency_ms?: number | null
+          model?: string | null
+          output_tokens?: number | null
+          question_text?: string | null
+          response_status?: number | null
+          used_tool?: boolean | null
+        }
+        Update: {
+          cost_usd?: never
+          created_at?: string | null
+          error_message?: string | null
+          id?: number | null
+          input_tokens?: number | null
+          ip_hash?: string | null
+          lang?: string | null
+          latency_ms?: number | null
+          model?: string | null
+          output_tokens?: number | null
+          question_text?: string | null
+          response_status?: number | null
+          used_tool?: boolean | null
+        }
+        Relationships: []
+      }
       v_entity_searchable: {
         Row: {
           entity_id: string | null
