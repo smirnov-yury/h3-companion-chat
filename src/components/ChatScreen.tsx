@@ -208,6 +208,7 @@ export default function ChatScreen() {
     };
   }, []);
 
+  const sendMessage = useCallback(async () => {
     const text = input.trim();
     if (!text || loading) return;
 
