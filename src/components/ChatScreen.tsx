@@ -51,6 +51,14 @@ export default function ChatScreen() {
   const [online, setOnline] = useState(navigator.onLine);
   const [savedAt, setSavedAt] = useState<Date | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const [recording, setRecording] = useState(false);
+  const [transcribing, setTranscribing] = useState(false);
+  const [recordSeconds, setRecordSeconds] = useState(0);
+  const [voiceError, setVoiceError] = useState<string | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+  const recordTimerRef = useRef<number | null>(null);
+  const recordStartRef = useRef<number>(0);
 
   useEffect(() => {
     const restored = loadChat();
