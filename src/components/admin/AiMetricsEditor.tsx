@@ -4,7 +4,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, RefreshCw, Wrench, Zap } from "lucide-react";
+import { Loader2, RefreshCw, Wrench, Zap, Mic, MessageSquare } from "lucide-react";
 
 type LogRow = {
   id: number;
@@ -20,6 +20,8 @@ type LogRow = {
   latency_ms: number | null;
   error_message: string | null;
   cost_usd: number | null;
+  request_type: "chat" | "transcribe" | null;
+  audio_duration_sec: number | null;
 };
 
 const MODELS = ["gpt-4o", "gpt-4o-mini"] as const;
@@ -213,6 +215,7 @@ export default function AiMetricsEditor() {
               <thead className="bg-muted/40 text-xs uppercase tracking-wide text-muted-foreground">
                 <tr>
                   <th className="text-left px-3 py-2 font-medium">Time</th>
+                  <th className="text-left px-3 py-2 font-medium">Type</th>
                   <th className="text-left px-3 py-2 font-medium">Lang</th>
                   <th className="text-left px-3 py-2 font-medium">Tool</th>
                   <th className="text-left px-3 py-2 font-medium">Model</th>
@@ -230,9 +233,22 @@ export default function AiMetricsEditor() {
                     <td className="px-3 py-2 whitespace-nowrap text-muted-foreground">
                       {new Date(r.created_at).toLocaleString()}
                     </td>
+                    <td className="px-3 py-2">
+                      {r.request_type === "transcribe" ? (
+                        <Badge variant="secondary" className="gap-1" title={r.audio_duration_sec ? `${r.audio_duration_sec.toFixed(1)}s` : undefined}>
+                          <Mic className="w-3 h-3" /> voice
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline" className="gap-1">
+                          <MessageSquare className="w-3 h-3" /> chat
+                        </Badge>
+                      )}
+                    </td>
                     <td className="px-3 py-2">{r.lang ?? "—"}</td>
                     <td className="px-3 py-2">
-                      {r.used_tool ? (
+                      {r.request_type === "transcribe" ? (
+                        <span className="text-muted-foreground text-xs">—</span>
+                      ) : r.used_tool ? (
                         <Badge variant="secondary" className="gap-1">
                           <Wrench className="w-3 h-3" /> tool
                         </Badge>

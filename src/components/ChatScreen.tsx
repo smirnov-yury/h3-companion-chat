@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Send, Trash2 } from "lucide-react";
+import { Send, Trash2, Mic, Square, Loader2 } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
 import { useGlyphs } from "@/context/GlyphsContext";
 import { renderGlyphs } from "@/utils/renderGlyphs";
@@ -29,6 +29,17 @@ const SAVED_BANNER = {
   EN: (hours: number) => `Chat saved locally, expires in ${hours}h`,
 };
 const CLEAR_LABEL = { RU: "Очистить", EN: "Clear" };
+const MIC_LABEL = { RU: "Записать голосом", EN: "Record voice" };
+const STOP_LABEL = { RU: "Остановить", EN: "Stop" };
+const VOICE_PERMISSION_ERROR = {
+  RU: "Не удалось получить доступ к микрофону",
+  EN: "Microphone access denied",
+};
+const VOICE_TRANSCRIBE_ERROR = {
+  RU: "Не удалось распознать речь. Попробуйте ещё раз.",
+  EN: "Failed to transcribe audio. Try again.",
+};
+const MAX_RECORD_SECONDS = 60;
 
 export default function ChatScreen() {
   const { lang } = useLang();
@@ -40,6 +51,14 @@ export default function ChatScreen() {
   const [online, setOnline] = useState(navigator.onLine);
   const [savedAt, setSavedAt] = useState<Date | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const [recording, setRecording] = useState(false);
+  const [transcribing, setTranscribing] = useState(false);
+  const [recordSeconds, setRecordSeconds] = useState(0);
+  const [voiceError, setVoiceError] = useState<string | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+  const recordTimerRef = useRef<number | null>(null);
+  const recordStartRef = useRef<number>(0);
 
   useEffect(() => {
     const restored = loadChat();
@@ -78,6 +97,115 @@ export default function ChatScreen() {
     setMessages([]);
     clearChat();
     setSavedAt(null);
+  }, []);
+
+  const stopRecording = useCallback(() => {
+    if (recordTimerRef.current !== null) {
+      window.clearInterval(recordTimerRef.current);
+      recordTimerRef.current = null;
+    }
+    const mr = mediaRecorderRef.current;
+    if (mr && mr.state !== "inactive") {
+      try { mr.stop(); } catch { /* already stopped */ }
+    }
+    setRecording(false);
+  }, []);
+
+  const handleTranscribe = useCallback(async (blob: Blob) => {
+    setTranscribing(true);
+    setVoiceError(null);
+    try {
+      const fileName = `voice-${Date.now()}.webm`;
+      const file = new File([blob], fileName, { type: blob.type || "audio/webm" });
+      const form = new FormData();
+      form.append("audio", file);
+      form.append("lang", lang);
+
+      const { data: { session } } = await supabase.auth.getSession();
+      const supaUrl = (supabase as any).supabaseUrl ?? (supabase as any).restUrl?.replace(/\/rest\/v1\/?$/, "");
+      const url = `${supaUrl}/functions/v1/transcribe`;
+      const anonKey = (supabase as any).supabaseKey ?? "";
+      const resp = await fetch(url, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${session?.access_token ?? anonKey}`,
+          apikey: anonKey,
+        },
+        body: form,
+      });
+      if (!resp.ok) {
+        const err = await resp.json().catch(() => ({}));
+        throw new Error(err?.error || `HTTP ${resp.status}`);
+      }
+      const json = await resp.json();
+      const text = (json?.text ?? "").trim();
+      if (text) {
+        setInput((prev) => (prev ? `${prev} ${text}` : text));
+      } else {
+        setVoiceError(VOICE_TRANSCRIBE_ERROR[lang]);
+      }
+    } catch (e) {
+      console.error("transcribe failed", e);
+      setVoiceError(VOICE_TRANSCRIBE_ERROR[lang]);
+    } finally {
+      setTranscribing(false);
+    }
+  }, [lang]);
+
+  const startRecording = useCallback(async () => {
+    if (recording || transcribing) return;
+    setVoiceError(null);
+    if (typeof navigator === "undefined" || !navigator.mediaDevices?.getUserMedia) {
+      setVoiceError(VOICE_PERMISSION_ERROR[lang]);
+      return;
+    }
+    let stream: MediaStream;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    } catch {
+      setVoiceError(VOICE_PERMISSION_ERROR[lang]);
+      return;
+    }
+    audioChunksRef.current = [];
+    let mr: MediaRecorder;
+    try {
+      mr = new MediaRecorder(stream);
+    } catch {
+      stream.getTracks().forEach((t) => t.stop());
+      setVoiceError(VOICE_PERMISSION_ERROR[lang]);
+      return;
+    }
+    mediaRecorderRef.current = mr;
+    mr.ondataavailable = (e) => {
+      if (e.data && e.data.size > 0) audioChunksRef.current.push(e.data);
+    };
+    mr.onstop = () => {
+      stream.getTracks().forEach((t) => t.stop());
+      const blob = new Blob(audioChunksRef.current, { type: mr.mimeType || "audio/webm" });
+      audioChunksRef.current = [];
+      if (blob.size > 0) {
+        void handleTranscribe(blob);
+      }
+    };
+    recordStartRef.current = Date.now();
+    setRecordSeconds(0);
+    recordTimerRef.current = window.setInterval(() => {
+      const elapsed = Math.floor((Date.now() - recordStartRef.current) / 1000);
+      setRecordSeconds(elapsed);
+      if (elapsed >= MAX_RECORD_SECONDS) stopRecording();
+    }, 250);
+    mr.start();
+    setRecording(true);
+  }, [recording, transcribing, lang, handleTranscribe, stopRecording]);
+
+  useEffect(() => {
+    return () => {
+      if (recordTimerRef.current !== null) window.clearInterval(recordTimerRef.current);
+      const mr = mediaRecorderRef.current;
+      if (mr && mr.state !== "inactive") {
+        try { mr.stop(); } catch { /* noop */ }
+      }
+    };
   }, []);
 
   const sendMessage = useCallback(async () => {
@@ -238,7 +366,21 @@ export default function ChatScreen() {
           {OFFLINE_MSG[lang]}
         </div>
       ) : (
-        <div className="px-3 py-3 border-t border-border shrink-0">
+        <div className="px-3 py-3 border-t border-border shrink-0 space-y-2">
+          {voiceError && (
+            <div className="text-xs text-destructive">{voiceError}</div>
+          )}
+          {recording && (
+            <div className="flex items-center gap-2 text-xs text-destructive">
+              <span className="relative inline-flex">
+                <span className="absolute inline-flex h-2.5 w-2.5 rounded-full bg-destructive opacity-60 animate-ping" />
+                <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-destructive" />
+              </span>
+              <span>
+                {STOP_LABEL[lang]} · {recordSeconds}s / {MAX_RECORD_SECONDS}s
+              </span>
+            </div>
+          )}
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -250,11 +392,32 @@ export default function ChatScreen() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder={PLACEHOLDER[lang]}
-              className="flex-1 rounded-xl bg-input px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-ring"
+              disabled={transcribing}
+              className="flex-1 rounded-xl bg-input px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-ring disabled:opacity-60"
             />
             <button
+              type="button"
+              onClick={recording ? stopRecording : startRecording}
+              disabled={transcribing || loading}
+              aria-label={recording ? STOP_LABEL[lang] : MIC_LABEL[lang]}
+              title={recording ? STOP_LABEL[lang] : MIC_LABEL[lang]}
+              className={`shrink-0 w-10 h-10 flex items-center justify-center rounded-xl transition-colors disabled:opacity-40 ${
+                recording
+                  ? "bg-destructive text-destructive-foreground"
+                  : "bg-accent text-foreground hover:bg-accent/80"
+              }`}
+            >
+              {transcribing ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : recording ? (
+                <Square className="w-4 h-4" />
+              ) : (
+                <Mic className="w-4 h-4" />
+              )}
+            </button>
+            <button
               type="submit"
-              disabled={!input.trim() || loading}
+              disabled={!input.trim() || loading || transcribing}
               className="shrink-0 w-10 h-10 flex items-center justify-center rounded-xl bg-primary text-primary-foreground disabled:opacity-40 transition-opacity"
             >
               <Send className="w-4 h-4" />
