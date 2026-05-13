@@ -20,6 +20,8 @@ type LogRow = {
   latency_ms: number | null;
   error_message: string | null;
   cost_usd: number | null;
+  request_type: "chat" | "transcribe" | null;
+  audio_duration_sec: number | null;
 };
 
 const MODELS = ["gpt-4o", "gpt-4o-mini"] as const;
