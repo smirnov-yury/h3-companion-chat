@@ -1,11 +1,12 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Send } from "lucide-react";
+import { Send, Trash2 } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
 import { useGlyphs } from "@/context/GlyphsContext";
 import { renderGlyphs } from "@/utils/renderGlyphs";
 import { useEntityLinkHandler } from "@/hooks/useEntityLinkHandler";
 import { supabase } from "@/integrations/supabase/client";
 import ChatSources from "@/components/ChatSources";
+import { loadChat, saveChat, clearChat, hoursLeft } from "@/lib/chatPersistence";
 
 interface Message {
   role: "user" | "assistant";
