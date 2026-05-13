@@ -180,6 +180,20 @@ export default function ChatScreen() {
         <h1 className="text-lg font-semibold text-foreground">{TITLE[lang]}</h1>
       </header>
 
+      {savedAt && messages.length > 0 && (
+        <div className="flex items-center justify-between gap-2 px-4 py-2 bg-muted/40 border-b border-border text-xs text-muted-foreground shrink-0">
+          <span>{SAVED_BANNER[lang](hoursLeft(savedAt))}</span>
+          <button
+            type="button"
+            onClick={handleClearChat}
+            className="inline-flex items-center gap-1 text-foreground hover:text-primary transition-colors"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+            {CLEAR_LABEL[lang]}
+          </button>
+        </div>
+      )}
+
       <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
         {messages.map((m, i) => (
           <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
