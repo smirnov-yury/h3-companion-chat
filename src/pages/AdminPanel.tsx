@@ -219,6 +219,7 @@ export default function AdminPanel() {
             <Route path="about-page" element={<AboutPageEditor />} />
             <Route path="filter-groups" element={<FilterGroupsEditor />} />
             <Route path="audit-log" element={<AuditLog />} />
+            <Route path="ai-metrics" element={<AiMetricsEditor />} />
             <Route path="*" element={<Navigate to="" replace />} />
           </Routes>
         </main>
