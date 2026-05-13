@@ -99,7 +99,115 @@ export default function ChatScreen() {
     setSavedAt(null);
   }, []);
 
-  const sendMessage = useCallback(async () => {
+  const stopRecording = useCallback(() => {
+    if (recordTimerRef.current !== null) {
+      window.clearInterval(recordTimerRef.current);
+      recordTimerRef.current = null;
+    }
+    const mr = mediaRecorderRef.current;
+    if (mr && mr.state !== "inactive") {
+      try { mr.stop(); } catch { /* already stopped */ }
+    }
+    setRecording(false);
+  }, []);
+
+  const handleTranscribe = useCallback(async (blob: Blob) => {
+    setTranscribing(true);
+    setVoiceError(null);
+    try {
+      const fileName = `voice-${Date.now()}.webm`;
+      const file = new File([blob], fileName, { type: blob.type || "audio/webm" });
+      const form = new FormData();
+      form.append("audio", file);
+      form.append("lang", lang);
+
+      const { data: { session } } = await supabase.auth.getSession();
+      const supaUrl = (supabase as any).supabaseUrl ?? (supabase as any).restUrl?.replace(/\/rest\/v1\/?$/, "");
+      const url = `${supaUrl}/functions/v1/transcribe`;
+      const anonKey = (supabase as any).supabaseKey ?? "";
+      const resp = await fetch(url, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${session?.access_token ?? anonKey}`,
+          apikey: anonKey,
+        },
+        body: form,
+      });
+      if (!resp.ok) {
+        const err = await resp.json().catch(() => ({}));
+        throw new Error(err?.error || `HTTP ${resp.status}`);
+      }
+      const json = await resp.json();
+      const text = (json?.text ?? "").trim();
+      if (text) {
+        setInput((prev) => (prev ? `${prev} ${text}` : text));
+      } else {
+        setVoiceError(VOICE_TRANSCRIBE_ERROR[lang]);
+      }
+    } catch (e) {
+      console.error("transcribe failed", e);
+      setVoiceError(VOICE_TRANSCRIBE_ERROR[lang]);
+    } finally {
+      setTranscribing(false);
+    }
+  }, [lang]);
+
+  const startRecording = useCallback(async () => {
+    if (recording || transcribing) return;
+    setVoiceError(null);
+    if (typeof navigator === "undefined" || !navigator.mediaDevices?.getUserMedia) {
+      setVoiceError(VOICE_PERMISSION_ERROR[lang]);
+      return;
+    }
+    let stream: MediaStream;
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    } catch {
+      setVoiceError(VOICE_PERMISSION_ERROR[lang]);
+      return;
+    }
+    audioChunksRef.current = [];
+    let mr: MediaRecorder;
+    try {
+      mr = new MediaRecorder(stream);
+    } catch {
+      stream.getTracks().forEach((t) => t.stop());
+      setVoiceError(VOICE_PERMISSION_ERROR[lang]);
+      return;
+    }
+    mediaRecorderRef.current = mr;
+    mr.ondataavailable = (e) => {
+      if (e.data && e.data.size > 0) audioChunksRef.current.push(e.data);
+    };
+    mr.onstop = () => {
+      stream.getTracks().forEach((t) => t.stop());
+      const blob = new Blob(audioChunksRef.current, { type: mr.mimeType || "audio/webm" });
+      audioChunksRef.current = [];
+      if (blob.size > 0) {
+        void handleTranscribe(blob);
+      }
+    };
+    recordStartRef.current = Date.now();
+    setRecordSeconds(0);
+    recordTimerRef.current = window.setInterval(() => {
+      const elapsed = Math.floor((Date.now() - recordStartRef.current) / 1000);
+      setRecordSeconds(elapsed);
+      if (elapsed >= MAX_RECORD_SECONDS) stopRecording();
+    }, 250);
+    mr.start();
+    setRecording(true);
+  }, [recording, transcribing, lang, handleTranscribe, stopRecording]);
+
+  useEffect(() => {
+    return () => {
+      if (recordTimerRef.current !== null) window.clearInterval(recordTimerRef.current);
+      const mr = mediaRecorderRef.current;
+      if (mr && mr.state !== "inactive") {
+        try { mr.stop(); } catch { /* noop */ }
+      }
+    };
+  }, []);
+
     const text = input.trim();
     if (!text || loading) return;
 
