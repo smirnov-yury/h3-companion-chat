@@ -61,6 +61,7 @@ const NAV_ITEMS: Array<
   { path: "about-page", label: "About Page", icon: FileText },
   { path: "filter-groups", label: "Filter Groups", icon: ListFilter },
   { path: "audit-log", label: "Audit Log", icon: ScrollText },
+  { path: "ai-metrics", label: "AI Metrics", icon: BarChart3 },
 ];
 
 function SidebarLink({ path, label, icon: Icon, onNavigate }: { path: string; label: string; icon?: React.ElementType; onNavigate?: () => void }) {
