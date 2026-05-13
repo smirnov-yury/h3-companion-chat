@@ -4,7 +4,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, RefreshCw, Wrench, Zap } from "lucide-react";
+import { Loader2, RefreshCw, Wrench, Zap, Mic, MessageSquare } from "lucide-react";
 
 type LogRow = {
   id: number;
