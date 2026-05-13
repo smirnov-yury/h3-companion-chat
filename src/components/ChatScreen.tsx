@@ -38,7 +38,16 @@ export default function ChatScreen() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [online, setOnline] = useState(navigator.onLine);
+  const [savedAt, setSavedAt] = useState<Date | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const restored = loadChat();
+    if (restored) {
+      setMessages(restored.messages);
+      setSavedAt(restored.savedAt);
+    }
+  }, []);
 
   useEffect(() => {
     const on = () => setOnline(true);
@@ -54,6 +63,22 @@ export default function ChatScreen() {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
+
+  useEffect(() => {
+    if (loading) return;
+    if (messages.length === 0) {
+      setSavedAt(null);
+      return;
+    }
+    saveChat(messages, lang);
+    setSavedAt(new Date());
+  }, [messages, loading, lang]);
+
+  const handleClearChat = useCallback(() => {
+    setMessages([]);
+    clearChat();
+    setSavedAt(null);
+  }, []);
 
   const sendMessage = useCallback(async () => {
     const text = input.trim();
