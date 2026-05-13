@@ -29,6 +29,17 @@ const SAVED_BANNER = {
   EN: (hours: number) => `Chat saved locally, expires in ${hours}h`,
 };
 const CLEAR_LABEL = { RU: "Очистить", EN: "Clear" };
+const MIC_LABEL = { RU: "Записать голосом", EN: "Record voice" };
+const STOP_LABEL = { RU: "Остановить", EN: "Stop" };
+const VOICE_PERMISSION_ERROR = {
+  RU: "Не удалось получить доступ к микрофону",
+  EN: "Microphone access denied",
+};
+const VOICE_TRANSCRIBE_ERROR = {
+  RU: "Не удалось распознать речь. Попробуйте ещё раз.",
+  EN: "Failed to transcribe audio. Try again.",
+};
+const MAX_RECORD_SECONDS = 60;
 
 export default function ChatScreen() {
   const { lang } = useLang();
