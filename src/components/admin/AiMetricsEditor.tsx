@@ -215,6 +215,7 @@ export default function AiMetricsEditor() {
               <thead className="bg-muted/40 text-xs uppercase tracking-wide text-muted-foreground">
                 <tr>
                   <th className="text-left px-3 py-2 font-medium">Time</th>
+                  <th className="text-left px-3 py-2 font-medium">Type</th>
                   <th className="text-left px-3 py-2 font-medium">Lang</th>
                   <th className="text-left px-3 py-2 font-medium">Tool</th>
                   <th className="text-left px-3 py-2 font-medium">Model</th>
