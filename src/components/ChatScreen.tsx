@@ -24,6 +24,11 @@ const GENERIC_ERROR = {
   RU: "Ошибка соединения. Попробуйте позже.",
   EN: "Connection error. Please try again.",
 };
+const SAVED_BANNER = {
+  RU: (hours: number) => `Чат сохранён локально, очистится через ${hours} ч`,
+  EN: (hours: number) => `Chat saved locally, expires in ${hours}h`,
+};
+const CLEAR_LABEL = { RU: "Очистить", EN: "Clear" };
 
 export default function ChatScreen() {
   const { lang } = useLang();
