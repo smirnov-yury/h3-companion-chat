@@ -366,7 +366,21 @@ export default function ChatScreen() {
           {OFFLINE_MSG[lang]}
         </div>
       ) : (
-        <div className="px-3 py-3 border-t border-border shrink-0">
+        <div className="px-3 py-3 border-t border-border shrink-0 space-y-2">
+          {voiceError && (
+            <div className="text-xs text-destructive">{voiceError}</div>
+          )}
+          {recording && (
+            <div className="flex items-center gap-2 text-xs text-destructive">
+              <span className="relative inline-flex">
+                <span className="absolute inline-flex h-2.5 w-2.5 rounded-full bg-destructive opacity-60 animate-ping" />
+                <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-destructive" />
+              </span>
+              <span>
+                {STOP_LABEL[lang]} · {recordSeconds}s / {MAX_RECORD_SECONDS}s
+              </span>
+            </div>
+          )}
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -378,11 +392,32 @@ export default function ChatScreen() {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder={PLACEHOLDER[lang]}
-              className="flex-1 rounded-xl bg-input px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-ring"
+              disabled={transcribing}
+              className="flex-1 rounded-xl bg-input px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-ring disabled:opacity-60"
             />
             <button
+              type="button"
+              onClick={recording ? stopRecording : startRecording}
+              disabled={transcribing || loading}
+              aria-label={recording ? STOP_LABEL[lang] : MIC_LABEL[lang]}
+              title={recording ? STOP_LABEL[lang] : MIC_LABEL[lang]}
+              className={`shrink-0 w-10 h-10 flex items-center justify-center rounded-xl transition-colors disabled:opacity-40 ${
+                recording
+                  ? "bg-destructive text-destructive-foreground"
+                  : "bg-accent text-foreground hover:bg-accent/80"
+              }`}
+            >
+              {transcribing ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : recording ? (
+                <Square className="w-4 h-4" />
+              ) : (
+                <Mic className="w-4 h-4" />
+              )}
+            </button>
+            <button
               type="submit"
-              disabled={!input.trim() || loading}
+              disabled={!input.trim() || loading || transcribing}
               className="shrink-0 w-10 h-10 flex items-center justify-center rounded-xl bg-primary text-primary-foreground disabled:opacity-40 transition-opacity"
             >
               <Send className="w-4 h-4" />
