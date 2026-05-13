@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   LayoutDashboard, BookOpen, Map, Zap, Layers, Users, Crown,
   Building2, FileText, ListFilter, ScrollText, LogOut, Menu, X,
-  ChevronDown, ChevronRight,
+  ChevronDown, ChevronRight, BarChart3,
 } from "lucide-react";
 import AdminDashboard from "@/components/admin/AdminDashboard";
 import RulesEditor from "@/components/admin/RulesEditor";
@@ -18,6 +18,8 @@ import GlobalEventsEditor from "@/components/admin/GlobalEventsEditor";
 import AboutPageEditor from "@/components/admin/AboutPageEditor";
 import AuditLog from "@/components/admin/AuditLog";
 import ScenariosEditor from "@/components/admin/ScenariosEditor";
+
+import AiMetricsEditor from "@/components/admin/AiMetricsEditor";
 
 const NAV_ITEMS: Array<
   | { path: string; label: string; icon: React.ElementType }
@@ -59,6 +61,7 @@ const NAV_ITEMS: Array<
   { path: "about-page", label: "About Page", icon: FileText },
   { path: "filter-groups", label: "Filter Groups", icon: ListFilter },
   { path: "audit-log", label: "Audit Log", icon: ScrollText },
+  { path: "ai-metrics", label: "AI Metrics", icon: BarChart3 },
 ];
 
 function SidebarLink({ path, label, icon: Icon, onNavigate }: { path: string; label: string; icon?: React.ElementType; onNavigate?: () => void }) {
@@ -216,6 +219,7 @@ export default function AdminPanel() {
             <Route path="about-page" element={<AboutPageEditor />} />
             <Route path="filter-groups" element={<FilterGroupsEditor />} />
             <Route path="audit-log" element={<AuditLog />} />
+            <Route path="ai-metrics" element={<AiMetricsEditor />} />
             <Route path="*" element={<Navigate to="" replace />} />
           </Routes>
         </main>
