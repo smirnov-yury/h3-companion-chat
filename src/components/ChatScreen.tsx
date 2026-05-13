@@ -1,11 +1,12 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Send } from "lucide-react";
+import { Send, Trash2 } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
 import { useGlyphs } from "@/context/GlyphsContext";
 import { renderGlyphs } from "@/utils/renderGlyphs";
 import { useEntityLinkHandler } from "@/hooks/useEntityLinkHandler";
 import { supabase } from "@/integrations/supabase/client";
 import ChatSources from "@/components/ChatSources";
+import { loadChat, saveChat, clearChat, hoursLeft } from "@/lib/chatPersistence";
 
 interface Message {
   role: "user" | "assistant";
@@ -23,6 +24,11 @@ const GENERIC_ERROR = {
   RU: "Ошибка соединения. Попробуйте позже.",
   EN: "Connection error. Please try again.",
 };
+const SAVED_BANNER = {
+  RU: (hours: number) => `Чат сохранён локально, очистится через ${hours} ч`,
+  EN: (hours: number) => `Chat saved locally, expires in ${hours}h`,
+};
+const CLEAR_LABEL = { RU: "Очистить", EN: "Clear" };
 
 export default function ChatScreen() {
   const { lang } = useLang();
@@ -32,7 +38,16 @@ export default function ChatScreen() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [online, setOnline] = useState(navigator.onLine);
+  const [savedAt, setSavedAt] = useState<Date | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const restored = loadChat();
+    if (restored) {
+      setMessages(restored.messages);
+      setSavedAt(restored.savedAt);
+    }
+  }, []);
 
   useEffect(() => {
     const on = () => setOnline(true);
@@ -48,6 +63,22 @@ export default function ChatScreen() {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
+
+  useEffect(() => {
+    if (loading) return;
+    if (messages.length === 0) {
+      setSavedAt(null);
+      return;
+    }
+    saveChat(messages, lang);
+    setSavedAt(new Date());
+  }, [messages, loading, lang]);
+
+  const handleClearChat = useCallback(() => {
+    setMessages([]);
+    clearChat();
+    setSavedAt(null);
+  }, []);
 
   const sendMessage = useCallback(async () => {
     const text = input.trim();
@@ -148,6 +179,20 @@ export default function ChatScreen() {
       <header className="flex items-center justify-between px-4 py-3 border-b border-border shrink-0">
         <h1 className="text-lg font-semibold text-foreground">{TITLE[lang]}</h1>
       </header>
+
+      {savedAt && messages.length > 0 && (
+        <div className="flex items-center justify-between gap-2 px-4 py-2 bg-muted/40 border-b border-border text-xs text-muted-foreground shrink-0">
+          <span>{SAVED_BANNER[lang](hoursLeft(savedAt))}</span>
+          <button
+            type="button"
+            onClick={handleClearChat}
+            className="inline-flex items-center gap-1 text-foreground hover:text-primary transition-colors"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+            {CLEAR_LABEL[lang]}
+          </button>
+        </div>
+      )}
 
       <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
         {messages.map((m, i) => (

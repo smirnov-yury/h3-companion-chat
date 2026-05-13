@@ -455,6 +455,65 @@ export type Database = {
         }
         Relationships: []
       }
+      dev_eval_questions: {
+        Row: {
+          comment: string | null
+          expect_any_of: Json | null
+          expect_dont_know: boolean | null
+          id: number
+          lang: string
+          q: string
+        }
+        Insert: {
+          comment?: string | null
+          expect_any_of?: Json | null
+          expect_dont_know?: boolean | null
+          id?: number
+          lang: string
+          q: string
+        }
+        Update: {
+          comment?: string | null
+          expect_any_of?: Json | null
+          expect_dont_know?: boolean | null
+          id?: number
+          lang?: string
+          q?: string
+        }
+        Relationships: []
+      }
+      dev_eval_runs: {
+        Row: {
+          fired_at: string | null
+          id: number
+          question_id: number
+          request_id: number | null
+          run_id: string
+        }
+        Insert: {
+          fired_at?: string | null
+          id?: number
+          question_id: number
+          request_id?: number | null
+          run_id: string
+        }
+        Update: {
+          fired_at?: string | null
+          id?: number
+          question_id?: number
+          request_id?: number | null
+          run_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dev_eval_runs_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "dev_eval_questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       entity_links: {
         Row: {
           context_text: string | null
@@ -2003,6 +2062,8 @@ export type Database = {
           entity_type: string | null
           name_en: string | null
           name_ru: string | null
+          search_text_en: string | null
+          search_text_ru: string | null
         }
         Relationships: []
       }
@@ -2015,6 +2076,33 @@ export type Database = {
       cleanup_ai_rate_limits: { Args: never; Returns: undefined }
       cleanup_audit_log: { Args: never; Returns: undefined }
       cleanup_expired_game_sessions: { Args: never; Returns: undefined }
+      dev_eval_collect: { Args: { p_run_id: string }; Returns: Json }
+      dev_eval_extract_citations: { Args: { answer: string }; Returns: Json }
+      dev_eval_fire_all: { Args: { p_anon_key: string }; Returns: string }
+      dev_eval_fire_batch: {
+        Args: {
+          p_anon_key: string
+          p_end: number
+          p_run_id: string
+          p_start: number
+        }
+        Returns: number
+      }
+      dev_eval_parse_sse: { Args: { body: string }; Returns: string }
+      dev_eval_run_full: {
+        Args: {
+          p_anon_key: string
+          p_batch_size?: number
+          p_pause_sec?: number
+          p_run_id: string
+        }
+        Returns: Json
+      }
+      dev_eval_score: {
+        Args: { answer: string; expect_any_of: Json; expect_dont_know: boolean }
+        Returns: Json
+      }
+      dev_eval_start_run: { Args: never; Returns: string }
       is_admin: { Args: never; Returns: boolean }
       match_all_en: {
         Args: {
@@ -2075,6 +2163,24 @@ export type Database = {
         }[]
       }
       parse_unit_notes: { Args: { notes: string }; Returns: Json }
+      query_units_filtered: {
+        Args: { filters: Json }
+        Returns: {
+          abilities_en: string
+          abilities_ru: string
+          attack: number
+          cost: string
+          defense: number
+          health_points: number
+          id: string
+          initiative: number
+          name_en: string
+          name_ru: string
+          tier: string
+          town: string
+          type: string
+        }[]
+      }
       refresh_embeddings_async: { Args: never; Returns: undefined }
     }
     Enums: {
