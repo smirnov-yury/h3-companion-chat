@@ -151,6 +151,7 @@ export type Database = {
       }
       ai_chat_logs: {
         Row: {
+          audio_duration_sec: number | null
           created_at: string
           error_message: string | null
           id: number
@@ -161,10 +162,12 @@ export type Database = {
           model: string
           output_tokens: number
           question_text: string | null
+          request_type: string
           response_status: number | null
           used_tool: boolean
         }
         Insert: {
+          audio_duration_sec?: number | null
           created_at?: string
           error_message?: string | null
           id?: number
@@ -175,10 +178,12 @@ export type Database = {
           model: string
           output_tokens?: number
           question_text?: string | null
+          request_type?: string
           response_status?: number | null
           used_tool?: boolean
         }
         Update: {
+          audio_duration_sec?: number | null
           created_at?: string
           error_message?: string | null
           id?: number
@@ -189,6 +194,7 @@ export type Database = {
           model?: string
           output_tokens?: number
           question_text?: string | null
+          request_type?: string
           response_status?: number | null
           used_tool?: boolean
         }
@@ -2124,6 +2130,7 @@ export type Database = {
     Views: {
       v_ai_chat_logs_with_cost: {
         Row: {
+          audio_duration_sec: number | null
           cost_usd: number | null
           created_at: string | null
           error_message: string | null
@@ -2135,10 +2142,12 @@ export type Database = {
           model: string | null
           output_tokens: number | null
           question_text: string | null
+          request_type: string | null
           response_status: number | null
           used_tool: boolean | null
         }
         Insert: {
+          audio_duration_sec?: number | null
           cost_usd?: never
           created_at?: string | null
           error_message?: string | null
@@ -2150,10 +2159,12 @@ export type Database = {
           model?: string | null
           output_tokens?: number | null
           question_text?: string | null
+          request_type?: string | null
           response_status?: number | null
           used_tool?: boolean | null
         }
         Update: {
+          audio_duration_sec?: number | null
           cost_usd?: never
           created_at?: string | null
           error_message?: string | null
@@ -2165,6 +2176,7 @@ export type Database = {
           model?: string | null
           output_tokens?: number | null
           question_text?: string | null
+          request_type?: string | null
           response_status?: number | null
           used_tool?: boolean | null
         }
