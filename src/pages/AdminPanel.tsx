@@ -19,6 +19,8 @@ import AboutPageEditor from "@/components/admin/AboutPageEditor";
 import AuditLog from "@/components/admin/AuditLog";
 import ScenariosEditor from "@/components/admin/ScenariosEditor";
 
+import AiMetricsEditor from "@/components/admin/AiMetricsEditor";
+
 const NAV_ITEMS: Array<
   | { path: string; label: string; icon: React.ElementType }
   | { label: string; icon: React.ElementType; children: { path: string; label: string }[] }
