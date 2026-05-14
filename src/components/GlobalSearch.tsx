@@ -1,6 +1,12 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, X, Loader2 } from "lucide-react";
+import {
+  Search, X, Loader2,
+  Swords, Crown, Sparkles, Zap, Gem, BookOpen, BarChart3,
+  Map as MapIcon, Hexagon, CalendarDays, Wrench, Star, Bot,
+  MapPin, Smile, Package, Building2, FileText,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/context/LanguageContext";
 import { toSlug } from "@/config/sectionRegistry";
@@ -43,6 +49,28 @@ const VISIBLE_LIMIT = 3;
 const MIN_QUERY = 2;
 
 type EntityType = 'unit'|'ability'|'spell'|'artifact'|'rule'|'hero'|'building'|'field'|'statistic'|'event'|'war_machine'|'astrologer';
+const SECTION_ICON: Record<string, LucideIcon> = {
+  units:        Swords,
+  heroes:       Crown,
+  spells:       Sparkles,
+  abilities:    Zap,
+  artifacts:    Gem,
+  rules:        BookOpen,
+  statistics:   BarChart3,
+  map_elements: MapIcon,
+  events:       CalendarDays,
+  warmachines:  Wrench,
+  astrologers:  Star,
+  buildings:    Building2,
+  scenarios:    FileText,
+  glyph:        Hexagon,
+  ai_card:      Bot,
+  map_event:    MapPin,
+  morale:       Smile,
+  pandora:      Package,
+  rule_ext:     BookOpen,
+};
+
 const ENTITY_META: Record<EntityType, { labelEN: string; labelRU: string; url: (id: string) => string }> = {
   unit:        { labelEN: 'Units',        labelRU: 'Юниты',          url: (id) => `/units/${id}` },
   ability:     { labelEN: 'Abilities',    labelRU: 'Способности',    url: (id) => `/decks/abilities/${id}` },
@@ -627,9 +655,10 @@ export default function GlobalSearch({ mode, onClose, initialQuery = "", autoFoc
                           (e.currentTarget as HTMLImageElement).style.display = "none";
                         }}
                       />
-                    ) : (
-                      <Search size={14} className="text-muted-foreground/50" />
-                    )}
+                    ) : (() => {
+                      const Icon = SECTION_ICON[section.key] ?? Search;
+                      return <Icon size={14} className="text-muted-foreground/60" />;
+                    })()}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p
