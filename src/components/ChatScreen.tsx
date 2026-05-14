@@ -432,39 +432,9 @@ export default function ChatScreen() {
           {OFFLINE_MSG[lang]}
         </div>
       ) : (
-        <div className="px-3 py-3 border-t border-border shrink-0 space-y-2">
+        <div className="px-3 py-3 border-t border-border shrink-0 space-y-1">
           {voiceError && (
             <div className="text-xs text-destructive">{voiceError}</div>
-          )}
-          {recording && (
-            <div className="flex items-center gap-3 text-xs text-destructive">
-              <div className="flex items-end gap-[3px] h-5">
-                {bars.map((v, i) => (
-                  <span
-                    key={i}
-                    className="w-[3px] rounded-full bg-destructive transition-[height] duration-75"
-                    style={{ height: `${Math.max(15, Math.round(v * 100))}%` }}
-                  />
-                ))}
-              </div>
-              <span>
-                {STOP_LABEL[lang]} · {recordSeconds}s / {MAX_RECORD_SECONDS}s
-              </span>
-            </div>
-          )}
-          {transcribing && !recording && (
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <div className="flex items-end gap-[3px] h-5">
-                {[0, 1, 2, 3, 4].map((i) => (
-                  <span
-                    key={i}
-                    className="w-[3px] rounded-full bg-primary/70 animate-pulse"
-                    style={{ height: `${30 + (i % 3) * 20}%`, animationDelay: `${i * 120}ms` }}
-                  />
-                ))}
-              </div>
-              <span>{TRANSCRIBING_LABEL[lang]}</span>
-            </div>
           )}
           <form
             onSubmit={(e) => {
@@ -473,13 +443,51 @@ export default function ChatScreen() {
             }}
             className="flex gap-2"
           >
-            <input
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder={PLACEHOLDER[lang]}
-              disabled={transcribing}
-              className="flex-1 rounded-xl bg-input px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-ring disabled:opacity-60"
-            />
+            <div className="relative flex-1">
+              <input
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder={PLACEHOLDER[lang]}
+                disabled={transcribing || recording}
+                className="w-full rounded-xl bg-input px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-ring disabled:opacity-60"
+              />
+              {(recording || transcribing) && (
+                <div className="absolute inset-0 flex items-center gap-3 px-4 rounded-xl bg-background/95 backdrop-blur-sm border-2 border-primary text-primary text-sm font-medium">
+                  {recording ? (
+                    <>
+                      <div className="flex items-center gap-[2px] h-6 flex-1 min-w-0 overflow-hidden">
+                        {bars.map((v, i) => (
+                          <span
+                            key={i}
+                            className="w-[2px] rounded-full bg-primary shrink-0"
+                            style={{ height: `${Math.max(15, Math.round(v * 100))}%`, transition: "height 100ms linear" }}
+                          />
+                        ))}
+                      </div>
+                      <span className="tabular-nums text-xs shrink-0">
+                        {recordSeconds}s
+                      </span>
+                      <span className="text-xs text-muted-foreground shrink-0">
+                        {STOP_LABEL[lang]}
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <div className="flex items-center gap-1.5">
+                        {[0, 1, 2].map((i) => (
+                          <span
+                            key={i}
+                            className="w-2 h-2 rounded-full bg-primary animate-pulse"
+                            style={{ animationDelay: `${i * 150}ms` }}
+                          />
+                        ))}
+                      </div>
+                      <span>{TRANSCRIBING_LABEL[lang]}</span>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
             <button
               type="button"
               onClick={recording ? stopRecording : startRecording}
@@ -488,7 +496,7 @@ export default function ChatScreen() {
               title={recording ? STOP_LABEL[lang] : MIC_LABEL[lang]}
               className={`shrink-0 w-10 h-10 flex items-center justify-center rounded-xl transition-colors disabled:opacity-40 ${
                 recording
-                  ? "bg-destructive text-destructive-foreground"
+                  ? "bg-primary text-primary-foreground"
                   : "bg-accent text-foreground hover:bg-accent/80"
               }`}
             >
