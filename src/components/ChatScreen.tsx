@@ -430,14 +430,33 @@ export default function ChatScreen() {
             <div className="text-xs text-destructive">{voiceError}</div>
           )}
           {recording && (
-            <div className="flex items-center gap-2 text-xs text-destructive">
-              <span className="relative inline-flex">
-                <span className="absolute inline-flex h-2.5 w-2.5 rounded-full bg-destructive opacity-60 animate-ping" />
-                <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-destructive" />
-              </span>
+            <div className="flex items-center gap-3 text-xs text-destructive">
+              <div className="flex items-end gap-[3px] h-5">
+                {bars.map((v, i) => (
+                  <span
+                    key={i}
+                    className="w-[3px] rounded-full bg-destructive transition-[height] duration-75"
+                    style={{ height: `${Math.max(15, Math.round(v * 100))}%` }}
+                  />
+                ))}
+              </div>
               <span>
                 {STOP_LABEL[lang]} · {recordSeconds}s / {MAX_RECORD_SECONDS}s
               </span>
+            </div>
+          )}
+          {transcribing && !recording && (
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <div className="flex items-end gap-[3px] h-5">
+                {[0, 1, 2, 3, 4].map((i) => (
+                  <span
+                    key={i}
+                    className="w-[3px] rounded-full bg-primary/70 animate-pulse"
+                    style={{ height: `${30 + (i % 3) * 20}%`, animationDelay: `${i * 120}ms` }}
+                  />
+                ))}
+              </div>
+              <span>{TRANSCRIBING_LABEL[lang]}</span>
             </div>
           )}
           <form
