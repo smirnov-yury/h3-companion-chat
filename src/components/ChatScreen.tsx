@@ -254,7 +254,7 @@ export default function ChatScreen() {
     }, 250);
     mr.start();
     setRecording(true);
-  }, [recording, transcribing, lang, handleTranscribe, stopRecording]);
+  }, [recording, transcribing, lang, handleTranscribe, stopRecording, teardownAudioVisualizer]);
 
   useEffect(() => {
     return () => {
