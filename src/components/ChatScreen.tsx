@@ -64,7 +64,7 @@ export default function ChatScreen() {
   const analyserRef = useRef<AnalyserNode | null>(null);
   const visualizerFrameRef = useRef<number | null>(null);
   const sourceNodeRef = useRef<MediaStreamAudioSourceNode | null>(null);
-  const BAR_COUNT = 5;
+  const BAR_COUNT = 22;
   const [bars, setBars] = useState<number[]>(() => Array(BAR_COUNT).fill(0));
 
   const teardownAudioVisualizer = useCallback(() => {
@@ -207,26 +207,33 @@ export default function ChatScreen() {
       const ctx = new AC();
       const source = ctx.createMediaStreamSource(stream);
       const analyser = ctx.createAnalyser();
-      analyser.fftSize = 256;
-      analyser.smoothingTimeConstant = 0.7;
+      analyser.fftSize = 1024;
+      analyser.smoothingTimeConstant = 0;
       source.connect(analyser);
       audioContextRef.current = ctx;
       analyserRef.current = analyser;
       sourceNodeRef.current = source;
-      const buf = new Uint8Array(analyser.frequencyBinCount);
-      const binSize = Math.floor(analyser.frequencyBinCount / BAR_COUNT);
+      const timeBuf = new Uint8Array(analyser.fftSize);
+      const history: number[] = Array(BAR_COUNT).fill(0);
+      let frameCounter = 0;
+      const SAMPLE_EVERY_N_FRAMES = 2;
       const draw = () => {
         if (!analyserRef.current) return;
-        analyserRef.current.getByteFrequencyData(buf);
-        const next: number[] = [];
-        for (let i = 0; i < BAR_COUNT; i++) {
-          let sum = 0;
-          const start = i * binSize;
-          for (let j = 0; j < binSize; j++) sum += buf[start + j] ?? 0;
-          const avg = sum / binSize;
-          next.push(Math.min(1, avg / 160));
+        analyserRef.current.getByteTimeDomainData(timeBuf);
+        let sumSq = 0;
+        for (let i = 0; i < timeBuf.length; i++) {
+          const v = (timeBuf[i] - 128) / 128;
+          sumSq += v * v;
         }
-        setBars(next);
+        const rms = Math.sqrt(sumSq / timeBuf.length);
+        const amplitude = Math.min(1, Math.sqrt(rms * 6));
+        frameCounter++;
+        if (frameCounter >= SAMPLE_EVERY_N_FRAMES) {
+          frameCounter = 0;
+          history.shift();
+          history.push(amplitude);
+          setBars([...history]);
+        }
         visualizerFrameRef.current = requestAnimationFrame(draw);
       };
       visualizerFrameRef.current = requestAnimationFrame(draw);

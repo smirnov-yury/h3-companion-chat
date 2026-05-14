@@ -1210,6 +1210,7 @@ export type Database = {
           search_text_en: string | null
           search_text_ru: string | null
           section_title: string
+          section_title_ru: string | null
           source: string
           text_en: string
           text_ru: string | null
@@ -1226,6 +1227,7 @@ export type Database = {
           search_text_en?: string | null
           search_text_ru?: string | null
           section_title: string
+          section_title_ru?: string | null
           source?: string
           text_en: string
           text_ru?: string | null
@@ -1242,6 +1244,7 @@ export type Database = {
           search_text_en?: string | null
           search_text_ru?: string | null
           section_title?: string
+          section_title_ru?: string | null
           source?: string
           text_en?: string
           text_ru?: string | null
