@@ -263,8 +263,9 @@ export default function ChatScreen() {
       if (mr && mr.state !== "inactive") {
         try { mr.stop(); } catch { /* noop */ }
       }
+      teardownAudioVisualizer();
     };
-  }, []);
+  }, [teardownAudioVisualizer]);
 
   const sendMessage = useCallback(async () => {
     const text = input.trim();
