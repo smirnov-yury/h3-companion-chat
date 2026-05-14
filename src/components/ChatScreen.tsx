@@ -39,6 +39,7 @@ const VOICE_TRANSCRIBE_ERROR = {
   RU: "Не удалось распознать речь. Попробуйте ещё раз.",
   EN: "Failed to transcribe audio. Try again.",
 };
+const TRANSCRIBING_LABEL = { RU: "Распознаю речь…", EN: "Transcribing…" };
 const MAX_RECORD_SECONDS = 60;
 
 export default function ChatScreen() {
@@ -59,6 +60,30 @@ export default function ChatScreen() {
   const audioChunksRef = useRef<Blob[]>([]);
   const recordTimerRef = useRef<number | null>(null);
   const recordStartRef = useRef<number>(0);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const visualizerFrameRef = useRef<number | null>(null);
+  const sourceNodeRef = useRef<MediaStreamAudioSourceNode | null>(null);
+  const BAR_COUNT = 5;
+  const [bars, setBars] = useState<number[]>(() => Array(BAR_COUNT).fill(0));
+
+  const teardownAudioVisualizer = useCallback(() => {
+    if (visualizerFrameRef.current !== null) {
+      cancelAnimationFrame(visualizerFrameRef.current);
+      visualizerFrameRef.current = null;
+    }
+    if (sourceNodeRef.current) {
+      try { sourceNodeRef.current.disconnect(); } catch { /* noop */ }
+      sourceNodeRef.current = null;
+    }
+    if (audioContextRef.current) {
+      const ctx = audioContextRef.current;
+      audioContextRef.current = null;
+      void ctx.close().catch(() => { /* noop */ });
+    }
+    analyserRef.current = null;
+    setBars(Array(BAR_COUNT).fill(0));
+  }, []);
 
   useEffect(() => {
     const restored = loadChat();
@@ -176,10 +201,43 @@ export default function ChatScreen() {
       return;
     }
     mediaRecorderRef.current = mr;
+    // Audio visualizer
+    try {
+      const AC: typeof AudioContext = (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext);
+      const ctx = new AC();
+      const source = ctx.createMediaStreamSource(stream);
+      const analyser = ctx.createAnalyser();
+      analyser.fftSize = 256;
+      analyser.smoothingTimeConstant = 0.7;
+      source.connect(analyser);
+      audioContextRef.current = ctx;
+      analyserRef.current = analyser;
+      sourceNodeRef.current = source;
+      const buf = new Uint8Array(analyser.frequencyBinCount);
+      const binSize = Math.floor(analyser.frequencyBinCount / BAR_COUNT);
+      const draw = () => {
+        if (!analyserRef.current) return;
+        analyserRef.current.getByteFrequencyData(buf);
+        const next: number[] = [];
+        for (let i = 0; i < BAR_COUNT; i++) {
+          let sum = 0;
+          const start = i * binSize;
+          for (let j = 0; j < binSize; j++) sum += buf[start + j] ?? 0;
+          const avg = sum / binSize;
+          next.push(Math.min(1, avg / 160));
+        }
+        setBars(next);
+        visualizerFrameRef.current = requestAnimationFrame(draw);
+      };
+      visualizerFrameRef.current = requestAnimationFrame(draw);
+    } catch {
+      // Visualizer is optional; ignore failures, recording still works
+    }
     mr.ondataavailable = (e) => {
       if (e.data && e.data.size > 0) audioChunksRef.current.push(e.data);
     };
     mr.onstop = () => {
+      teardownAudioVisualizer();
       stream.getTracks().forEach((t) => t.stop());
       const blob = new Blob(audioChunksRef.current, { type: mr.mimeType || "audio/webm" });
       audioChunksRef.current = [];

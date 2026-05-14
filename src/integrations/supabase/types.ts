@@ -2308,6 +2308,8 @@ export type Database = {
         }[]
       }
       refresh_embeddings_async: { Args: never; Returns: undefined }
+      show_limit: { Args: never; Returns: number }
+      show_trgm: { Args: { "": string }; Returns: string[] }
     }
     Enums: {
       image_status_enum: "missing" | "uploaded" | "verified"
