@@ -61,6 +61,9 @@ export default function AiMetricsEditor() {
   const [savingModel, setSavingModel] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [rateLimit, setRateLimit] = useState<string>("");
+  const [savingRateLimit, setSavingRateLimit] = useState(false);
+  const [rateLimitError, setRateLimitError] = useState<string | null>(null);
 
   const loadAll = async () => {
     setLoading(true);
