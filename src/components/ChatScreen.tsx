@@ -65,7 +65,10 @@ export default function ChatScreen() {
   const analyserRef = useRef<AnalyserNode | null>(null);
   const visualizerFrameRef = useRef<number | null>(null);
   const sourceNodeRef = useRef<MediaStreamAudioSourceNode | null>(null);
-  const BAR_COUNT = 40;
+  const BAR_COUNT =
+    typeof window !== "undefined" && window.matchMedia("(min-width: 1024px)").matches
+      ? 120
+      : 40;
   const [bars, setBars] = useState<number[]>(() => Array(BAR_COUNT).fill(0));
 
   const teardownAudioVisualizer = useCallback(() => {
