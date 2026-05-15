@@ -253,6 +253,7 @@ export default function ChatScreen() {
     mr.onstop = () => {
       teardownAudioVisualizer();
       stream.getTracks().forEach((t) => t.stop());
+      recordedDurationRef.current = (Date.now() - recordStartRef.current) / 1000;
       const blob = new Blob(audioChunksRef.current, { type: mr.mimeType || "audio/webm" });
       audioChunksRef.current = [];
       if (blob.size > 0) {
