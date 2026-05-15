@@ -62,6 +62,7 @@ const App = () => (
       <BrowserRouter>
         <SEOMeta />
         <CookieConsent />
+        <AnalyticsBoot />
         <Suspense fallback={<RouteFallback />}>
           <Routes>
             <Route path="/" element={<HomePage />} />
