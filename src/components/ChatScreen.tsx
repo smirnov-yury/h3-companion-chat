@@ -172,6 +172,7 @@ export default function ChatScreen() {
       const text = (json?.text ?? "").trim();
       if (text) {
         setInput((prev) => (prev ? `${prev} ${text}` : text));
+        trackVoiceInputRecorded({ lang, duration_sec: recordedDurationRef.current });
       } else {
         setVoiceError(VOICE_TRANSCRIBE_ERROR[lang]);
       }
