@@ -23,6 +23,8 @@ const AdminPanel = lazy(() => import("./pages/AdminPanel.tsx"));
 const AdminGuard = lazy(() => import("./components/admin/AdminGuard.tsx"));
 const GameSetup  = lazy(() => import("./pages/GameSetup.tsx"));
 const GameSession = lazy(() => import("./pages/GameSession.tsx"));
+const PrivacyPage = lazy(() => import("@/pages/PrivacyPage"));
+const TermsPage = lazy(() => import("@/pages/TermsPage"));
 
 const queryClient = new QueryClient();
 
