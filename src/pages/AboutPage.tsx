@@ -267,6 +267,8 @@ export default function AboutPage() {
                 : "Unofficial fan-made companion. Not affiliated with Ubisoft Entertainment or Archon Studio. All game content is based on official rulebook PDFs and provided for educational and reference purposes only. Heroes of Might & Magic is a trademark of Ubisoft Entertainment."}
             </p>
           </section>
+
+          <Footer />
         </div>
       </main>
     </div>

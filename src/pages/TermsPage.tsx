@@ -4,6 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import TopAppBar from "@/components/TopAppBar";
 import NavDrawer from "@/components/NavDrawer";
 import SEOMeta from "@/components/SEOMeta";
+import Footer from "@/components/Footer";
 import { useLang } from "@/context/LanguageContext";
 import { findSectionByTabId, type SectionDef } from "@/config/sectionRegistry";
 import type { TabId } from "@/components/NavDrawer";
@@ -232,6 +233,8 @@ export default function TermsPage() {
               )}
             </p>
           </section>
+
+          <Footer />
         </div>
       </main>
     </div>
