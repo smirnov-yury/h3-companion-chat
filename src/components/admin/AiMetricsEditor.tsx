@@ -61,6 +61,9 @@ export default function AiMetricsEditor() {
   const [savingModel, setSavingModel] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [rateLimit, setRateLimit] = useState<string>("");
+  const [savingRateLimit, setSavingRateLimit] = useState(false);
+  const [rateLimitError, setRateLimitError] = useState<string | null>(null);
 
   const loadAll = async () => {
     setLoading(true);
@@ -75,6 +78,16 @@ export default function AiMetricsEditor() {
       const raw = settingRow?.value;
       const m = (typeof raw === "string" ? raw : "gpt-4o") as ModelOption;
       setModel((MODELS as readonly string[]).includes(m) ? m : "gpt-4o");
+
+      const { data: rateLimitRow } = await supabase
+        .from("app_settings")
+        .select("value")
+        .eq("key", "ai_rate_limit_per_hour")
+        .maybeSingle();
+      if (rateLimitRow && rateLimitRow.value !== null && rateLimitRow.value !== undefined) {
+        const v = rateLimitRow.value;
+        setRateLimit(typeof v === "string" ? v : String(v));
+      }
 
       const { data: logsData, error: logsErr } = await supabase
         .from("v_ai_chat_logs_with_cost" as never)
@@ -109,6 +122,30 @@ export default function AiMetricsEditor() {
       setError((e as Error).message);
     } finally {
       setSavingModel(false);
+    }
+  };
+
+  const handleSaveRateLimit = async () => {
+    const parsed = parseInt(rateLimit, 10);
+    if (!Number.isFinite(parsed) || parsed < 1 || parsed > 10000) {
+      setRateLimitError("Введите число от 1 до 10000");
+      return;
+    }
+    setSavingRateLimit(true);
+    setRateLimitError(null);
+    try {
+      const { error: upErr } = await supabase
+        .from("app_settings")
+        .upsert({ key: "ai_rate_limit_per_hour", value: String(parsed) }, { onConflict: "key" });
+      if (upErr) {
+        setRateLimitError(upErr.message);
+      } else {
+        setRateLimit(String(parsed));
+      }
+    } catch (e) {
+      setRateLimitError(e instanceof Error ? e.message : "Save failed");
+    } finally {
+      setSavingRateLimit(false);
     }
   };
 
@@ -176,6 +213,35 @@ export default function AiMetricsEditor() {
             Applies on the next request. All users share this setting.
           </span>
         </div>
+
+        <div className="flex items-center gap-3 flex-wrap">
+          <label className="text-sm text-muted-foreground min-w-[180px]">
+            Rate limit per hour
+          </label>
+          <input
+            type="number"
+            min={1}
+            max={10000}
+            value={rateLimit}
+            onChange={(e) => setRateLimit(e.target.value)}
+            disabled={savingRateLimit}
+            className="rounded-md bg-input px-3 py-1.5 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring w-24"
+          />
+          <button
+            type="button"
+            onClick={handleSaveRateLimit}
+            disabled={savingRateLimit || !rateLimit}
+            className="inline-flex items-center gap-1 rounded-md bg-primary text-primary-foreground px-3 py-1.5 text-sm disabled:opacity-50"
+          >
+            {savingRateLimit ? "Сохранение…" : "Сохранить"}
+          </button>
+          {rateLimitError && (
+            <span className="text-xs text-destructive">{rateLimitError}</span>
+          )}
+        </div>
+        <p className="text-xs text-muted-foreground">
+          Maximum AI chat requests per IP per hour. Default 60. Increase for development or high-traffic scenarios.
+        </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
