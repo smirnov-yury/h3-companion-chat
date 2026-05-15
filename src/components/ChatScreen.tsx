@@ -65,7 +65,10 @@ export default function ChatScreen() {
   const analyserRef = useRef<AnalyserNode | null>(null);
   const visualizerFrameRef = useRef<number | null>(null);
   const sourceNodeRef = useRef<MediaStreamAudioSourceNode | null>(null);
-  const BAR_COUNT = 40;
+  const BAR_COUNT =
+    typeof window !== "undefined" && window.matchMedia("(min-width: 1024px)").matches
+      ? 120
+      : 40;
   const [bars, setBars] = useState<number[]>(() => Array(BAR_COUNT).fill(0));
 
   const teardownAudioVisualizer = useCallback(() => {
@@ -470,15 +473,7 @@ export default function ChatScreen() {
                     </>
                   ) : (
                     <>
-                      <div className="flex items-center gap-1.5">
-                        {[0, 1, 2].map((i) => (
-                          <span
-                            key={i}
-                            className="w-2 h-2 rounded-full bg-primary animate-pulse"
-                            style={{ animationDelay: `${i * 150}ms` }}
-                          />
-                        ))}
-                      </div>
+                      <H3MasterSpinner variant="draw" size={20} className="text-primary" ariaLabel={TRANSCRIBING_LABEL[lang]} />
                       <span>{TRANSCRIBING_LABEL[lang]}</span>
                     </>
                   )}

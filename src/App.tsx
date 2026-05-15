@@ -12,6 +12,7 @@ import HomePage from "./pages/HomePage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import PWAUpdateBanner from "./components/PWAUpdateBanner";
 import SEOMeta from "./components/SEOMeta";
+import H3MasterSpinner from "@/components/H3MasterSpinner";
 import { AdminAuthProvider } from "@/context/AdminAuthContext";
 
 // Lazy-loaded routes. Heavy or rarely visited.
@@ -27,8 +28,8 @@ const queryClient = new QueryClient();
 
 function RouteFallback() {
   return (
-    <div className="min-h-screen flex items-center justify-center text-sm text-muted-foreground">
-      Loading...
+    <div className="min-h-screen flex items-center justify-center text-foreground">
+      <H3MasterSpinner variant="draw" size={64} className="text-foreground" ariaLabel="Loading" />
     </div>
   );
 }
