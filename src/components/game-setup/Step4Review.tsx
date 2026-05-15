@@ -212,6 +212,11 @@ export default function Step4Review({ form }: Props) {
               .single();
 
             if (insertRes.error) throw insertRes.error;
+            trackGameSetupGenerated({
+              scenario_id: form.scenarioId,
+              player_count: form.playerCount,
+              mode: form.mode,
+            });
             try {
               const historyEntry = {
                 uuid: insertRes.data.id,
