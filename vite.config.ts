@@ -73,6 +73,7 @@ export default defineConfig(({ mode }) => ({
         ],
       },
     }),
+    h3masterSitemapPlugin(),
   ].filter(Boolean),
   resolve: {
     alias: {
