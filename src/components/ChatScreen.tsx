@@ -6,6 +6,7 @@ import { renderGlyphs } from "@/utils/renderGlyphs";
 import { useEntityLinkHandler } from "@/hooks/useEntityLinkHandler";
 import { supabase } from "@/integrations/supabase/client";
 import ChatSources from "@/components/ChatSources";
+import H3MasterSpinner from "@/components/H3MasterSpinner";
 import { loadChat, saveChat, clearChat, hoursLeft } from "@/lib/chatPersistence";
 
 interface Message {
