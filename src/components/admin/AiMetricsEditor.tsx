@@ -125,6 +125,30 @@ export default function AiMetricsEditor() {
     }
   };
 
+  const handleSaveRateLimit = async () => {
+    const parsed = parseInt(rateLimit, 10);
+    if (!Number.isFinite(parsed) || parsed < 1 || parsed > 10000) {
+      setRateLimitError("Введите число от 1 до 10000");
+      return;
+    }
+    setSavingRateLimit(true);
+    setRateLimitError(null);
+    try {
+      const { error: upErr } = await supabase
+        .from("app_settings")
+        .upsert({ key: "ai_rate_limit_per_hour", value: String(parsed) }, { onConflict: "key" });
+      if (upErr) {
+        setRateLimitError(upErr.message);
+      } else {
+        setRateLimit(String(parsed));
+      }
+    } catch (e) {
+      setRateLimitError(e instanceof Error ? e.message : "Save failed");
+    } finally {
+      setSavingRateLimit(false);
+    }
+  };
+
   const stats = useMemo(() => {
     const ranges = [
       { label: "Last 24h", days: 1 },
