@@ -509,6 +509,13 @@ export default function ChatScreen() {
               <Send className="w-4 h-4" />
             </button>
           </form>
+          {input.length >= 1000 && (
+            <div className="flex justify-end">
+              <span className={`text-xs tabular-nums ${input.length >= 1800 ? "text-destructive font-medium" : "text-muted-foreground"}`}>
+                {input.length} / 2000
+              </span>
+            </div>
+          )}
         </div>
       )}
     </div>
