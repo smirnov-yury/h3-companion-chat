@@ -473,15 +473,7 @@ export default function ChatScreen() {
                     </>
                   ) : (
                     <>
-                      <div className="flex items-center gap-1.5">
-                        {[0, 1, 2].map((i) => (
-                          <span
-                            key={i}
-                            className="w-2 h-2 rounded-full bg-primary animate-pulse"
-                            style={{ animationDelay: `${i * 150}ms` }}
-                          />
-                        ))}
-                      </div>
+                      <H3MasterSpinner variant="draw" size={20} className="text-primary" ariaLabel={TRANSCRIBING_LABEL[lang]} />
                       <span>{TRANSCRIBING_LABEL[lang]}</span>
                     </>
                   )}
