@@ -79,6 +79,16 @@ export default function AiMetricsEditor() {
       const m = (typeof raw === "string" ? raw : "gpt-4o") as ModelOption;
       setModel((MODELS as readonly string[]).includes(m) ? m : "gpt-4o");
 
+      const { data: rateLimitRow } = await supabase
+        .from("app_settings")
+        .select("value")
+        .eq("key", "ai_rate_limit_per_hour")
+        .maybeSingle();
+      if (rateLimitRow && rateLimitRow.value !== null && rateLimitRow.value !== undefined) {
+        const v = rateLimitRow.value;
+        setRateLimit(typeof v === "string" ? v : String(v));
+      }
+
       const { data: logsData, error: logsErr } = await supabase
         .from("v_ai_chat_logs_with_cost" as never)
         .select("*")
