@@ -40,12 +40,14 @@ export default function HomePage() {
           <div className="w-full max-w-2xl text-center space-y-2 mb-8">
             <h1
               className="text-4xl sm:text-5xl font-bold tracking-tight"
-              style={{ color: "#E1BB3A" }}
+              style={{ color: "#E8B147" }}
             >
-              Heroes III Board Game
+              H3 Master
             </h1>
             <p className="text-base sm:text-lg text-muted-foreground">
-              {lang === "RU" ? "Приложение‑компаньон" : "Companion App"}
+              {lang === "RU"
+                ? "Компаньон для настольной игры «Герои Меча и Магии III»"
+                : "Companion for Heroes of Might & Magic III: The Board Game"}
             </p>
           </div>
           <div className="w-full max-w-2xl">
