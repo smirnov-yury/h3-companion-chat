@@ -105,7 +105,7 @@ function AboutLink({ onSelect }: { onSelect?: () => void }) {
         className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-foreground hover:bg-muted transition-colors"
       >
         <Info className="w-5 h-5 shrink-0" />
-        {lang === "RU" ? "О проекте" : "About"}
+        {lang === "RU" ? "О приложении" : "About"}
       </button>
     </>
   );
@@ -125,12 +125,15 @@ export default function NavDrawer({ open, onOpenChange, active, onChange }: NavD
           <button
             onClick={goHome}
             className="flex items-center gap-2 text-base font-semibold cursor-pointer hover:text-primary transition-colors text-left"
+            aria-label="H3 Master — go to home"
           >
-            <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0" aria-hidden="true">
-              <polygon points="12,2 21,7 21,17 12,22 3,17 3,7" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
-              <polygon points="12,8 16,16 8,16" fill="#E8B147" />
-            </svg>
-            H3 Master
+            <img
+              src="/favicon.svg"
+              alt=""
+              aria-hidden="true"
+              className="w-7 h-7 shrink-0"
+            />
+            <span>H3 Master</span>
           </button>
         </div>
         <nav className="flex-1 overflow-y-auto py-2">
@@ -145,12 +148,18 @@ export default function NavDrawer({ open, onOpenChange, active, onChange }: NavD
         <SheetContent side="left" className="w-72 p-0 flex flex-col lg:hidden">
           <SheetHeader className="p-4 border-b border-border">
             <SheetTitle className="text-base text-left">
-              <button onClick={goHome} className="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors">
-                <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0" aria-hidden="true">
-                  <polygon points="12,2 21,7 21,17 12,22 3,17 3,7" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
-                  <polygon points="12,8 16,16 8,16" fill="#E8B147" />
-                </svg>
-                H3 Master
+              <button
+                onClick={goHome}
+                className="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors"
+                aria-label="H3 Master — go to home"
+              >
+                <img
+                  src="/favicon.svg"
+                  alt=""
+                  aria-hidden="true"
+                  className="w-7 h-7 shrink-0"
+                />
+                <span>H3 Master</span>
               </button>
             </SheetTitle>
           </SheetHeader>
