@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024" role="img" aria-label="H3 Master — Board Game Companion (dark theme)">
+  <!-- Flat-top hex outline (parchment cream for dark backgrounds) -->
+  <polygon points="457.9,152.4 566.1,152.4 620.1,245.8 566.1,339.2 457.9,339.2 403.9,245.8"
+           fill="none" stroke="#F5F0E8" stroke-width="20" stroke-linejoin="round"/>
+  <!-- Brass triangle (amber gold, persists across modes) -->
+  <polygon points="492.3,216.3 492.3,275.3 541.5,245.8" fill="#E8B147"/>
+  <!-- H3 wordmark -->
+  <text x="512" y="722" text-anchor="middle"
+        font-family="'Roboto Slab', 'Times New Roman', serif"
+        font-weight="900" font-size="435" letter-spacing="-5"
+        fill="#F5F0E8">H3</text>
+  <!-- Subtitle -->
+  <text x="512" y="829" text-anchor="middle"
+        font-family="'Inter', 'Helvetica Neue', Arial, sans-serif"
+        font-weight="600" font-size="36" letter-spacing="11.5"
+        fill="#F5F0E8">BOARD GAME COMPANION</text>
+</svg>
