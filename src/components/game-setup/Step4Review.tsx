@@ -8,6 +8,7 @@ import { useLang } from "@/context/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { buildPayload } from "@/lib/setupResolver";
 import { getClientHash } from "@/lib/clientHash";
+import { trackGameSetupGenerated } from "@/lib/analytics";
 import type { GameSetupForm } from "./types";
 
 interface Props {
