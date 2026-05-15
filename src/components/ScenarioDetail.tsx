@@ -10,8 +10,7 @@ import { useLang } from "@/context/LanguageContext";
 import { useGlyphs } from "@/context/GlyphsContext";
 import { renderGlyphs } from "@/utils/renderGlyphs";
 import type { Json } from "@/integrations/supabase/types";
-
-import { SUPABASE_URL } from "@/integrations/supabase/client";
+import { componentImageUrl } from "@/lib/storage";
 
 const MODE_LABELS_EN: Record<string, string> = { clash: "Clash", cooperative: "Cooperative", campaign: "Campaign" };
 const MODE_LABELS_RU: Record<string, string> = { clash: "Столкновение", cooperative: "Кооператив", campaign: "Кампания" };
