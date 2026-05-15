@@ -38,6 +38,60 @@
       })();
     </script>
 
+    <!-- JSON-LD: WebApplication schema (h3master app) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "H3 Master",
+      "alternateName": "H3 Master — Companion for Heroes of Might & Magic III: The Board Game",
+      "url": "https://h3master.app/",
+      "description": "Unofficial companion app for Heroes of Might & Magic III: The Board Game. Rules, scenarios, units, heroes, spells, artifacts, AI Game Master. Offline-ready PWA.",
+      "applicationCategory": "GameApplication",
+      "applicationSubCategory": "Companion",
+      "operatingSystem": "Web, Android, iOS",
+      "browserRequirements": "Modern browser with PWA support (Chrome, Edge, Safari, Firefox)",
+      "isAccessibleForFree": true,
+      "inLanguage": ["en", "ru"],
+      "image": "https://h3master.app/og-image.png",
+      "screenshot": "https://h3master.app/og-image.png",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "EUR"
+      },
+      "about": {
+        "@type": "Game",
+        "name": "Heroes of Might & Magic III: The Board Game",
+        "genre": ["Strategy", "Fantasy"],
+        "publisher": {
+          "@type": "Organization",
+          "name": "Archon Studio",
+          "url": "https://archon-studio.com/"
+        }
+      }
+    }
+    </script>
+
+    <!-- JSON-LD: WebSite + SearchAction (enables Google sitelinks search box) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "H3 Master",
+      "url": "https://h3master.app/",
+      "inLanguage": ["en", "ru"],
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://h3master.app/?q={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+
     <!-- Google Consent Mode v2 default (denied until user opts in) -->
     <script>
       window.dataLayer = window.dataLayer || [];
