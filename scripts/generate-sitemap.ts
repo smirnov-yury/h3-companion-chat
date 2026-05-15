@@ -1,10 +1,14 @@
 /**
  * Generates dist/sitemap.xml at build time by fetching public entity tables
- * from Supabase. Called from vite.config.ts via the closeBundle hook.
+ * from Supabase REST API (PostgREST). Called from vite.config.ts via the
+ * closeBundle hook.
  *
  * URL conventions match src/config/sectionRegistry.ts.
+ *
+ * IMPORTANT: do not import @supabase/supabase-js here — it pulls in
+ * @supabase/realtime-js which requires native WebSocket support that Node 20
+ * does not provide (build would fail in GitHub Actions).
  */
-import { createClient } from "@supabase/supabase-js";
 import { writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { loadEnv } from "vite";
@@ -45,26 +49,45 @@ function urlXml(u: UrlEntry, lastmod: string): string {
   ].join("\n");
 }
 
+async function fetchTable(
+  supabaseUrl: string,
+  anonKey: string,
+  table: string,
+  select: string,
+): Promise<Array<Record<string, unknown>>> {
+  const url = `${supabaseUrl.replace(/\/$/, "")}/rest/v1/${table}?select=${encodeURIComponent(select)}`;
+  const res = await fetch(url, {
+    headers: {
+      apikey: anonKey,
+      Authorization: `Bearer ${anonKey}`,
+      Accept: "application/json",
+      Range: "0-9999",
+      "Range-Unit": "items",
+    },
+  });
+  if (!res.ok) {
+    const body = await res.text().catch(() => "");
+    throw new Error(`Supabase ${table}: ${res.status} ${res.statusText} ${body}`);
+  }
+  return (await res.json()) as Array<Record<string, unknown>>;
+}
+
 export async function generateSitemap(outDir: string): Promise<void> {
   const env = loadEnv("production", process.cwd(), "VITE_");
   const supabaseUrl = env.VITE_SUPABASE_URL;
-  const supabaseAnonKey =
-    env.VITE_SUPABASE_ANON_KEY || env.VITE_SUPABASE_PUBLISHABLE_KEY;
+  const supabaseAnonKey = env.VITE_SUPABASE_ANON_KEY;
 
   if (!supabaseUrl || !supabaseAnonKey) {
     console.warn(
-      "[sitemap] Missing VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY — skipping generation."
+      "[sitemap] Missing VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY — skipping generation.",
     );
     return;
   }
 
-  const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-    auth: { persistSession: false },
-  });
-
   const lastmod = new Date().toISOString().split("T")[0];
   const urls: UrlEntry[] = [];
 
+  // Static routes
   const staticRoutes: UrlEntry[] = [
     { loc: `${SITE_URL}/`, changefreq: "weekly", priority: "1.0" },
     { loc: `${SITE_URL}/about`, changefreq: "monthly", priority: "0.5" },
@@ -90,85 +113,151 @@ export async function generateSitemap(outDir: string): Promise<void> {
     changefreq: string,
     priority: string,
   ): Promise<void> {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data, error } = await (supabase.from(table as any) as any).select(select);
-    if (error) {
-      console.warn(`[sitemap] Failed to fetch ${table}: ${error.message}`);
-      return;
-    }
-    if (!data) return;
-    for (const row of data) {
-      const path = builder(row as Record<string, unknown>);
-      if (path) urls.push({ loc: `${SITE_URL}${path}`, changefreq, priority });
+    try {
+      const rows = await fetchTable(supabaseUrl!, supabaseAnonKey!, table, select);
+      for (const row of rows) {
+        const path = builder(row);
+        if (path) urls.push({ loc: `${SITE_URL}${path}`, changefreq, priority });
+      }
+    } catch (err) {
+      console.warn(
+        `[sitemap] Skipped ${table}: ${err instanceof Error ? err.message : String(err)}`,
+      );
     }
   }
 
-  await pushEntity("heroes", "id,town", (r) => {
-    const id = r.id as string | null;
-    const town = r.town as string | null;
-    if (!id || !town) return null;
-    return `/heroes/${toSlug(town)}/${id}`;
-  }, "monthly", "0.7");
+  // heroes: /heroes/{town_slug}/{id}
+  await pushEntity(
+    "heroes",
+    "id,town",
+    (r) => {
+      const id = r.id as string | null;
+      const town = r.town as string | null;
+      if (!id || !town) return null;
+      return `/heroes/${toSlug(town)}/${id}`;
+    },
+    "monthly",
+    "0.7",
+  );
 
-  await pushEntity("unit_stats", "id,town", (r) => {
-    const id = r.id as string | null;
-    const town = r.town as string | null;
-    if (!id || !town) return null;
-    return `/units/${toSlug(town)}/${id}`;
-  }, "monthly", "0.7");
+  // unit_stats: /units/{town_slug}/{id}
+  await pushEntity(
+    "unit_stats",
+    "id,town",
+    (r) => {
+      const id = r.id as string | null;
+      const town = r.town as string | null;
+      if (!id || !town) return null;
+      return `/units/${toSlug(town)}/${id}`;
+    },
+    "monthly",
+    "0.7",
+  );
 
-  await pushEntity("scenarios", "id", (r) => {
-    const id = r.id as string | null;
-    return id ? `/scenarios/${id}` : null;
-  }, "monthly", "0.8");
+  // scenarios: /scenarios/{id}
+  await pushEntity(
+    "scenarios",
+    "id",
+    (r) => {
+      const id = r.id as string | null;
+      return id ? `/scenarios/${id}` : null;
+    },
+    "monthly",
+    "0.8",
+  );
 
-  await pushEntity("rules", "id,category", (r) => {
-    const id = r.id as string | null;
-    const category = r.category as string | null;
-    if (!id || !category) return null;
-    return `/rules/${toSlug(category)}/${id}`;
-  }, "monthly", "0.7");
+  // rules: /rules/{category_slug}/{id}
+  await pushEntity(
+    "rules",
+    "id,category",
+    (r) => {
+      const id = r.id as string | null;
+      const category = r.category as string | null;
+      if (!id || !category) return null;
+      return `/rules/${toSlug(category)}/${id}`;
+    },
+    "monthly",
+    "0.7",
+  );
 
-  await pushEntity("fields", "id", (r) => {
-    const id = r.id as string | null;
-    return id ? `/map-elements/${id}` : null;
-  }, "monthly", "0.6");
+  // fields (map-elements): /map-elements/{id}
+  await pushEntity(
+    "fields",
+    "id",
+    (r) => {
+      const id = r.id as string | null;
+      return id ? `/map-elements/${id}` : null;
+    },
+    "monthly",
+    "0.6",
+  );
 
-  await pushEntity("events", "id", (r) => {
-    const id = r.id as string | null;
-    return id ? `/events/${id}` : null;
-  }, "monthly", "0.6");
+  // events: /events/{id}
+  await pushEntity(
+    "events",
+    "id",
+    (r) => {
+      const id = r.id as string | null;
+      return id ? `/events/${id}` : null;
+    },
+    "monthly",
+    "0.6",
+  );
 
-  await pushEntity("towns", "id", (r) => {
-    const id = r.id as string | null;
-    return id ? `/towns/${id}` : null;
-  }, "monthly", "0.7");
+  // towns: /towns/{id}
+  await pushEntity(
+    "towns",
+    "id",
+    (r) => {
+      const id = r.id as string | null;
+      return id ? `/towns/${id}` : null;
+    },
+    "monthly",
+    "0.7",
+  );
 
-  await pushEntity("artifacts", "id", (r) => {
-    const id = r.id as string | null;
-    return id ? `/decks/artifacts/${id}` : null;
-  }, "monthly", "0.6");
+  // decks subtypes
+  await pushEntity(
+    "artifacts",
+    "id",
+    (r) => (r.id ? `/decks/artifacts/${r.id as string}` : null),
+    "monthly",
+    "0.6",
+  );
 
-  await pushEntity("spells", "id", (r) => {
-    const id = r.id as string | null;
-    return id ? `/decks/spells/${id}` : null;
-  }, "monthly", "0.6");
+  await pushEntity(
+    "spells",
+    "id",
+    (r) => (r.id ? `/decks/spells/${r.id as string}` : null),
+    "monthly",
+    "0.6",
+  );
 
-  await pushEntity("abilities", "id", (r) => {
-    const id = r.id as string | null;
-    return id ? `/decks/abilities/${id}` : null;
-  }, "monthly", "0.6");
+  await pushEntity(
+    "abilities",
+    "id",
+    (r) => (r.id ? `/decks/abilities/${r.id as string}` : null),
+    "monthly",
+    "0.6",
+  );
 
-  await pushEntity("war_machines", "id", (r) => {
-    const id = r.id as string | null;
-    return id ? `/decks/warmachines/${id}` : null;
-  }, "monthly", "0.6");
+  await pushEntity(
+    "war_machines",
+    "id",
+    (r) => (r.id ? `/decks/warmachines/${r.id as string}` : null),
+    "monthly",
+    "0.6",
+  );
 
-  await pushEntity("statistics", "id", (r) => {
-    const id = r.id as string | null;
-    return id ? `/decks/attributes/${id}` : null;
-  }, "monthly", "0.5");
+  await pushEntity(
+    "statistics",
+    "id",
+    (r) => (r.id ? `/decks/attributes/${r.id as string}` : null),
+    "monthly",
+    "0.5",
+  );
 
+  // De-duplicate
   const seen = new Set<string>();
   const unique = urls.filter((u) => {
     if (seen.has(u.loc)) return false;
