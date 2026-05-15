@@ -124,9 +124,13 @@ export default function NavDrawer({ open, onOpenChange, active, onChange }: NavD
         <div className="p-4 border-b border-border">
           <button
             onClick={goHome}
-            className="text-base font-semibold cursor-pointer hover:text-primary transition-colors text-left"
+            className="flex items-center gap-2 text-base font-semibold cursor-pointer hover:text-primary transition-colors text-left"
           >
-            Heroes 3 Companion
+            <svg viewBox="0 0 24 24" className="w-5 h-5 shrink-0" aria-hidden="true">
+              <polygon points="12,2 21,7 21,17 12,22 3,17 3,7" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+              <polygon points="12,8 16,16 8,16" fill="#E8B147" />
+            </svg>
+            H3 Master
           </button>
         </div>
         <nav className="flex-1 overflow-y-auto py-2">
