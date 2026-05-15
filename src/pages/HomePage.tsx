@@ -8,6 +8,7 @@ import { useLang } from "@/context/LanguageContext";
 import { useNavigate } from "react-router-dom";
 import { findSectionByTabId, type SectionDef } from "@/config/sectionRegistry";
 import type { TabId } from "@/components/NavDrawer";
+import Footer from "@/components/Footer";
 
 export default function HomePage() {
   const { lang } = useLang();
@@ -52,13 +53,8 @@ export default function HomePage() {
           </div>
           <div className="w-full max-w-2xl">
             <GlobalSearch mode="inline" autoFocus initialQuery={initialQuery} />
-            <div className="mt-4 text-center">
-              <Link
-                to="/about"
-                className="text-sm text-muted-foreground hover:text-primary transition-colors"
-              >
-                {lang === "RU" ? "О приложении" : "About"}
-              </Link>
+            <div className="mt-6 text-center">
+              <Footer variant="minimal" />
             </div>
           </div>
         </div>

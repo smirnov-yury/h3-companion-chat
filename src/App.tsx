@@ -12,6 +12,7 @@ import HomePage from "./pages/HomePage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import PWAUpdateBanner from "./components/PWAUpdateBanner";
 import SEOMeta from "./components/SEOMeta";
+import CookieConsent from "./components/CookieConsent";
 import H3MasterSpinner from "@/components/H3MasterSpinner";
 import { AdminAuthProvider } from "@/context/AdminAuthContext";
 
@@ -43,11 +44,12 @@ const App = () => (
     <GlyphsProvider>
     <RulesProvider>
     <TooltipProvider>
-      <SEOMeta />
       <Toaster />
       <Sonner position="top-center" richColors theme="dark" />
       <PWAUpdateBanner />
       <BrowserRouter>
+        <SEOMeta />
+        <CookieConsent />
         <Suspense fallback={<RouteFallback />}>
           <Routes>
             <Route path="/" element={<HomePage />} />

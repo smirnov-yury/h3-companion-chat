@@ -27,6 +27,7 @@ import { findSectionByTabId, type SectionDef } from "@/config/sectionRegistry";
 import type { TabId } from "@/components/NavDrawer";
 import { checkForPWAUpdate } from "@/pwa/registerSW";
 import SEOMeta from "@/components/SEOMeta";
+import Footer from "@/components/Footer";
 
 interface FeatureRow {
   icon: LucideIcon;
