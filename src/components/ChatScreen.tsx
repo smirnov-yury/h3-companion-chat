@@ -6,6 +6,7 @@ import { renderGlyphs } from "@/utils/renderGlyphs";
 import { useEntityLinkHandler } from "@/hooks/useEntityLinkHandler";
 import { supabase } from "@/integrations/supabase/client";
 import ChatSources from "@/components/ChatSources";
+import H3MasterSpinner from "@/components/H3MasterSpinner";
 import { loadChat, saveChat, clearChat, hoursLeft } from "@/lib/chatPersistence";
 
 interface Message {
@@ -416,11 +417,7 @@ export default function ChatScreen() {
         {loading && messages[messages.length - 1]?.content === "" && (
           <div className="flex justify-start">
             <div className="bg-card text-card-foreground rounded-2xl rounded-bl-md px-4 py-3">
-              <span className="text-lg font-bold tracking-widest">
-                <span className="dot-1">.</span>
-                <span className="dot-2">.</span>
-                <span className="dot-3">.</span>
-              </span>
+              <H3MasterSpinner variant="draw" size={32} className="text-foreground" ariaLabel="Thinking" />
             </div>
           </div>
         )}

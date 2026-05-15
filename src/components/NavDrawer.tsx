@@ -9,6 +9,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import H3MasterSpinner from "@/components/H3MasterSpinner";
 
 export type TabId = "rules" | "scenarios" | "map_elements" | "global_events" | "decks" | "units" | "heroes" | "towns" | "ai" | "game_setup";
 
@@ -124,16 +125,10 @@ export default function NavDrawer({ open, onOpenChange, active, onChange }: NavD
         <div className="p-4 border-b border-border">
           <button
             onClick={goHome}
-            className="flex items-center gap-2 text-base font-semibold cursor-pointer hover:text-primary transition-colors text-left"
+            className="cursor-pointer hover:opacity-70 transition-opacity text-foreground"
             aria-label="H3 Master — go to home"
           >
-            <img
-              src="/favicon.svg"
-              alt=""
-              aria-hidden="true"
-              className="w-7 h-7 shrink-0"
-            />
-            <span>H3 Master</span>
+            <H3MasterSpinner variant="static" size={36} ariaLabel="H3 Master" />
           </button>
         </div>
         <nav className="flex-1 overflow-y-auto py-2">
@@ -150,16 +145,10 @@ export default function NavDrawer({ open, onOpenChange, active, onChange }: NavD
             <SheetTitle className="text-base text-left">
               <button
                 onClick={goHome}
-                className="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors"
+                className="cursor-pointer hover:opacity-70 transition-opacity text-foreground"
                 aria-label="H3 Master — go to home"
               >
-                <img
-                  src="/favicon.svg"
-                  alt=""
-                  aria-hidden="true"
-                  className="w-7 h-7 shrink-0"
-                />
-                <span>H3 Master</span>
+                <H3MasterSpinner variant="static" size={32} ariaLabel="H3 Master" />
               </button>
             </SheetTitle>
           </SheetHeader>

@@ -37,29 +37,18 @@ export default function HomePage() {
       />
       <main className="flex-1 overflow-y-auto pt-11 lg:ml-56">
         <div className="min-h-full flex flex-col items-center justify-center px-4 py-10">
-          <div className="w-full max-w-2xl text-center space-y-4 mb-8">
+          <div className="w-full max-w-md sm:max-w-lg text-center mb-8">
             <img
-              src="/h3master-lockup-light.svg"
+              src="/h3master-lockup-horizontal-A-light.svg"
               alt="H3 Master — Board Game Companion"
-              className="block dark:hidden w-72 h-72 sm:w-96 sm:h-96 mx-auto"
+              className="block dark:hidden w-full h-auto mx-auto"
             />
             <img
-              src="/h3master-lockup-dark.svg"
+              src="/h3master-lockup-horizontal-A-dark.svg"
               alt=""
               aria-hidden="true"
-              className="hidden dark:block w-72 h-72 sm:w-96 sm:h-96 mx-auto"
+              className="hidden dark:block w-full h-auto mx-auto"
             />
-            <h1
-              className="text-4xl sm:text-5xl font-bold tracking-tight"
-              style={{ color: "#E8B147" }}
-            >
-              H3 Master
-            </h1>
-            <p className="text-base sm:text-lg text-muted-foreground">
-              {lang === "RU"
-                ? "Компаньон для настольной игры «Герои Меча и Магии III»"
-                : "Companion for Heroes of Might & Magic III: The Board Game"}
-            </p>
           </div>
           <div className="w-full max-w-2xl">
             <GlobalSearch mode="inline" autoFocus initialQuery={initialQuery} />
