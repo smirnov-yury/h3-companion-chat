@@ -9,6 +9,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import H3MasterSpinner from "@/components/H3MasterSpinner";
 
 export type TabId = "rules" | "scenarios" | "map_elements" | "global_events" | "decks" | "units" | "heroes" | "towns" | "ai" | "game_setup";
 
