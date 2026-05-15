@@ -360,12 +360,12 @@ export default function ChatScreen() {
                 return copy;
               });
             }
-      trackAiChatMessage(lang);
-    } catch {
+          } catch {
             // ignore malformed chunk
           }
         }
       }
+      trackAiChatMessage(lang);
     } catch {
       setMessages((prev) => {
         const copy = [...prev];
