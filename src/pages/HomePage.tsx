@@ -37,7 +37,7 @@ export default function HomePage() {
       />
       <main className="flex-1 overflow-y-auto pt-11 lg:ml-56">
         <div className="min-h-full flex flex-col items-center justify-center px-4 py-10">
-          <div className="w-full max-w-md sm:max-w-lg text-center mb-8">
+          <div className="w-full max-w-[290px] sm:max-w-[330px] text-center mb-8">
             <img
               src="/h3master-lockup-horizontal-A-light.svg"
               alt="H3 Master — Board Game Companion"

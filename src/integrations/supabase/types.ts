@@ -157,12 +157,14 @@ export type Database = {
           id: number
           input_tokens: number
           ip_hash: string | null
+          is_dont_know: boolean | null
           lang: string | null
           latency_ms: number | null
           model: string
           output_tokens: number
           question_text: string | null
           request_type: string
+          response_excerpt: string | null
           response_status: number | null
           used_tool: boolean
         }
@@ -173,12 +175,14 @@ export type Database = {
           id?: number
           input_tokens?: number
           ip_hash?: string | null
+          is_dont_know?: boolean | null
           lang?: string | null
           latency_ms?: number | null
           model: string
           output_tokens?: number
           question_text?: string | null
           request_type?: string
+          response_excerpt?: string | null
           response_status?: number | null
           used_tool?: boolean
         }
@@ -189,12 +193,14 @@ export type Database = {
           id?: number
           input_tokens?: number
           ip_hash?: string | null
+          is_dont_know?: boolean | null
           lang?: string | null
           latency_ms?: number | null
           model?: string
           output_tokens?: number
           question_text?: string | null
           request_type?: string
+          response_excerpt?: string | null
           response_status?: number | null
           used_tool?: boolean
         }
@@ -585,6 +591,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      entity_aliases: {
+        Row: {
+          alias_text: string
+          created_at: string
+          entity_id: string
+          entity_type: string
+          id: number
+          lang: string | null
+          note: string | null
+        }
+        Insert: {
+          alias_text: string
+          created_at?: string
+          entity_id: string
+          entity_type: string
+          id?: number
+          lang?: string | null
+          note?: string | null
+        }
+        Update: {
+          alias_text?: string
+          created_at?: string
+          entity_id?: string
+          entity_type?: string
+          id?: number
+          lang?: string | null
+          note?: string | null
+        }
+        Relationships: []
       }
       entity_links: {
         Row: {
@@ -2182,6 +2218,18 @@ export type Database = {
           request_type?: string | null
           response_status?: number | null
           used_tool?: boolean | null
+        }
+        Relationships: []
+      }
+      v_ai_chat_quality: {
+        Row: {
+          avg_latency_ms: number | null
+          dont_know_count: number | null
+          dont_know_pct: number | null
+          error_count: number | null
+          lang: string | null
+          total_requests: number | null
+          window_label: string | null
         }
         Relationships: []
       }
