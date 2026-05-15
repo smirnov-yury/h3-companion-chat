@@ -46,7 +46,12 @@ export default defineConfig(({ mode }) => ({
         clientsClaim: true,
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff,woff2,ttf,otf}"],
         cleanupOutdatedCaches: true,
-        navigateFallbackDenylist: [/^\/~oauth/, /^\/admin/],
+        navigateFallbackDenylist: [
+          /^\/~oauth/,
+          /^\/admin/,
+          /^\/sitemap\.xml$/,
+          /^\/robots\.txt$/,
+        ],
         runtimeCaching: [
           {
             // Supabase REST API responses (data tables)
