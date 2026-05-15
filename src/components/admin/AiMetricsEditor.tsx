@@ -213,6 +213,35 @@ export default function AiMetricsEditor() {
             Applies on the next request. All users share this setting.
           </span>
         </div>
+
+        <div className="flex items-center gap-3 flex-wrap">
+          <label className="text-sm text-muted-foreground min-w-[180px]">
+            Rate limit per hour
+          </label>
+          <input
+            type="number"
+            min={1}
+            max={10000}
+            value={rateLimit}
+            onChange={(e) => setRateLimit(e.target.value)}
+            disabled={savingRateLimit}
+            className="rounded-md bg-input px-3 py-1.5 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring w-24"
+          />
+          <button
+            type="button"
+            onClick={handleSaveRateLimit}
+            disabled={savingRateLimit || !rateLimit}
+            className="inline-flex items-center gap-1 rounded-md bg-primary text-primary-foreground px-3 py-1.5 text-sm disabled:opacity-50"
+          >
+            {savingRateLimit ? "Сохранение…" : "Сохранить"}
+          </button>
+          {rateLimitError && (
+            <span className="text-xs text-destructive">{rateLimitError}</span>
+          )}
+        </div>
+        <p className="text-xs text-muted-foreground">
+          Maximum AI chat requests per IP per hour. Default 60. Increase for development or high-traffic scenarios.
+        </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
