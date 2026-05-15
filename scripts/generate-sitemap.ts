@@ -75,11 +75,12 @@ async function fetchTable(
 export async function generateSitemap(outDir: string): Promise<void> {
   const env = loadEnv("production", process.cwd(), "VITE_");
   const supabaseUrl = env.VITE_SUPABASE_URL;
-  const supabaseAnonKey = env.VITE_SUPABASE_ANON_KEY;
+  const supabaseAnonKey =
+    env.VITE_SUPABASE_PUBLISHABLE_KEY || env.VITE_SUPABASE_ANON_KEY;
 
   if (!supabaseUrl || !supabaseAnonKey) {
     console.warn(
-      "[sitemap] Missing VITE_SUPABASE_URL / VITE_SUPABASE_ANON_KEY — skipping generation.",
+      "[sitemap] Missing VITE_SUPABASE_URL / VITE_SUPABASE_PUBLISHABLE_KEY — skipping generation.",
     );
     return;
   }
