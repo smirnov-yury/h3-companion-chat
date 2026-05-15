@@ -360,7 +360,8 @@ export default function ChatScreen() {
                 return copy;
               });
             }
-          } catch {
+      trackAiChatMessage(lang);
+    } catch {
             // ignore malformed chunk
           }
         }
