@@ -64,7 +64,7 @@ export default function ChatScreen() {
   const analyserRef = useRef<AnalyserNode | null>(null);
   const visualizerFrameRef = useRef<number | null>(null);
   const sourceNodeRef = useRef<MediaStreamAudioSourceNode | null>(null);
-  const BAR_COUNT = 22;
+  const BAR_COUNT = 40;
   const [bars, setBars] = useState<number[]>(() => Array(BAR_COUNT).fill(0));
 
   const teardownAudioVisualizer = useCallback(() => {
@@ -455,7 +455,7 @@ export default function ChatScreen() {
                 <div className="absolute inset-0 flex items-center gap-3 px-4 rounded-xl bg-background/95 backdrop-blur-sm border-2 border-primary text-primary text-sm font-medium">
                   {recording ? (
                     <>
-                      <div className="flex items-center gap-[2px] h-6 flex-1 min-w-0 overflow-hidden">
+                      <div className="flex items-center justify-between h-6 flex-1 min-w-0 overflow-hidden">
                         {bars.map((v, i) => (
                           <span
                             key={i}
