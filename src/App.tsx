@@ -38,6 +38,17 @@ function RouteFallback() {
   );
 }
 
+function AnalyticsBoot() {
+  const location = useLocation();
+  useEffect(() => {
+    initAnalytics();
+  }, []);
+  useEffect(() => {
+    trackPageView(location.pathname + location.search);
+  }, [location.pathname, location.search]);
+  return null;
+}
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <HelmetProvider>
