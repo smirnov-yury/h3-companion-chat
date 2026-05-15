@@ -260,8 +260,8 @@ export default function AboutPage() {
           <section>
             <p className="text-xs text-muted-foreground leading-relaxed">
               {isRu
-                ? "Это неофициальное фанатское приложение. Не аффилировано с Archon Studio или Ubisoft и не одобрено ими. Весь игровой контент основан на официальных PDF-файлах правил. Heroes of Might & Magic является торговой маркой Ubisoft Entertainment."
-                : "This is an unofficial fan-made application. Not affiliated with or endorsed by Archon Studio or Ubisoft. All game content is based on official rulebook PDFs. Heroes of Might & Magic is a trademark of Ubisoft Entertainment."}
+                ? "Неофициальное фанатское приложение-компаньон. Не аффилировано с Ubisoft Entertainment или Archon Studio и не одобрено ими. Весь игровой контент основан на официальных PDF-файлах правил. Heroes of Might & Magic является торговой маркой Ubisoft Entertainment."
+                : "Unofficial fan-made companion. Not affiliated with Ubisoft Entertainment or Archon Studio. All game content is based on official rulebook PDFs. Heroes of Might & Magic is a trademark of Ubisoft Entertainment."}
             </p>
           </section>
         </div>
