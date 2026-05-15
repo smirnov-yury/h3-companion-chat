@@ -10,8 +10,15 @@ function h3masterSitemapPlugin(): Plugin {
     name: "h3master-sitemap",
     apply: "build",
     async closeBundle() {
-      const { generateSitemap } = await import("./scripts/generate-sitemap");
-      await generateSitemap("dist");
+      try {
+        const { generateSitemap } = await import("./scripts/generate-sitemap");
+        await generateSitemap("dist");
+      } catch (err) {
+        console.warn(
+          "[sitemap] Generation failed, continuing build without sitemap.xml:",
+          err instanceof Error ? err.message : err,
+        );
+      }
     },
   };
 }
