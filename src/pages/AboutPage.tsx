@@ -249,22 +249,55 @@ export default function AboutPage() {
             <h2 className="text-2xl font-semibold">
               {isRu ? "Контакты" : "Contact"}
             </h2>
-            <div className="rounded-lg border border-border bg-muted/40 p-6 text-center opacity-70">
-              <Mail className="w-10 h-10 mx-auto text-muted-foreground" />
-              <p className="mt-3 text-sm">
+            <div className="rounded-lg border border-border bg-card p-6 text-center">
+              <Mail className="w-10 h-10 mx-auto text-primary" />
+              <a
+                href="mailto:privacy@h3master.app"
+                className="mt-3 inline-block text-base font-semibold text-foreground hover:text-primary transition-colors"
+              >
+                privacy@h3master.app
+              </a>
+              <p className="mt-2 text-xs text-muted-foreground">
                 {isRu
-                  ? "Скоро — GitHub Issues и форма обратной связи"
-                  : "Coming Soon — GitHub Issues & feedback form"}
+                  ? "Для любых вопросов: конфиденциальность, GDPR-запросы, сообщения об ошибках, обратная связь."
+                  : "For anything: privacy questions, GDPR requests, bug reports, feedback."}
               </p>
             </div>
           </section>
 
           {/* 7. Disclaimer */}
-          <section>
+          <section className="space-y-2">
             <p className="text-xs text-muted-foreground leading-relaxed">
               {isRu
-                ? "Неофициальное фанатское приложение-компаньон. Не аффилировано с Ubisoft Entertainment или Archon Studio и не одобрено ими. Весь игровой контент основан на официальных PDF-файлах правил и предоставляется исключительно для образовательных и справочных целей. Heroes of Might & Magic является торговой маркой Ubisoft Entertainment."
-                : "Unofficial fan-made companion. Not affiliated with Ubisoft Entertainment or Archon Studio. All game content is based on official rulebook PDFs and provided for educational and reference purposes only. Heroes of Might & Magic is a trademark of Ubisoft Entertainment."}
+                ? "Неофициальное фанатское приложение-компаньон. Не аффилировано с Ubisoft Entertainment или Archon Studio и не одобрено ими. Весь игровой контент основан на официальных PDF-файлах правил и предоставляется исключительно для образовательных и справочных целей. Heroes of Might & Magic является торговой маркой Ubisoft Entertainment. Heroes of Might & Magic III: The Board Game является продуктом Archon Studio и используется в рамках принципов добросовестного использования для фанатского сопровождения."
+                : "Unofficial fan-made companion. Not affiliated with or endorsed by Ubisoft Entertainment or Archon Studio. All game content is based on official rulebook PDFs and provided for educational and reference purposes only. Heroes of Might & Magic is a trademark of Ubisoft Entertainment. Heroes of Might & Magic III: The Board Game is a product of Archon Studio and is used under principles of fair use for fan companionship."}
+            </p>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              {isRu ? (
+                <>
+                  Используя H3 Master, вы принимаете{" "}
+                  <Link to="/terms" className="underline hover:text-primary transition-colors">
+                    Условия использования
+                  </Link>{" "}
+                  и подтверждаете ознакомление с{" "}
+                  <Link to="/privacy" className="underline hover:text-primary transition-colors">
+                    Политикой конфиденциальности
+                  </Link>
+                  .
+                </>
+              ) : (
+                <>
+                  By using H3 Master, you accept our{" "}
+                  <Link to="/terms" className="underline hover:text-primary transition-colors">
+                    Terms of Service
+                  </Link>{" "}
+                  and acknowledge our{" "}
+                  <Link to="/privacy" className="underline hover:text-primary transition-colors">
+                    Privacy Policy
+                  </Link>
+                  .
+                </>
+              )}
             </p>
           </section>
 
