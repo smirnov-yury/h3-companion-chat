@@ -47,6 +47,9 @@ export function setConsent(analytics: boolean): ConsentState {
       analytics_storage: analytics ? "granted" : "denied",
     });
   }
+  if (analytics && typeof window !== "undefined") {
+    import("@/lib/analytics").then((m) => m.initAnalytics()).catch(() => {});
+  }
   return state;
 }
 

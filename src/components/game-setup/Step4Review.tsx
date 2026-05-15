@@ -8,6 +8,7 @@ import { useLang } from "@/context/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { buildPayload } from "@/lib/setupResolver";
 import { getClientHash } from "@/lib/clientHash";
+import { trackGameSetupGenerated } from "@/lib/analytics";
 import type { GameSetupForm } from "./types";
 
 interface Props {
@@ -211,6 +212,11 @@ export default function Step4Review({ form }: Props) {
               .single();
 
             if (insertRes.error) throw insertRes.error;
+            trackGameSetupGenerated({
+              scenario_id: form.scenarioId,
+              player_count: form.playerCount,
+              mode: form.mode,
+            });
             try {
               const historyEntry = {
                 uuid: insertRes.data.id,

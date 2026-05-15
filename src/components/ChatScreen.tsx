@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import ChatSources from "@/components/ChatSources";
 import H3MasterSpinner from "@/components/H3MasterSpinner";
 import { loadChat, saveChat, clearChat, hoursLeft } from "@/lib/chatPersistence";
+import { trackAiChatMessage, trackVoiceInputRecorded } from "@/lib/analytics";
 
 interface Message {
   role: "user" | "assistant";
@@ -61,6 +62,7 @@ export default function ChatScreen() {
   const audioChunksRef = useRef<Blob[]>([]);
   const recordTimerRef = useRef<number | null>(null);
   const recordStartRef = useRef<number>(0);
+  const recordedDurationRef = useRef<number>(0);
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
   const visualizerFrameRef = useRef<number | null>(null);
@@ -170,6 +172,7 @@ export default function ChatScreen() {
       const text = (json?.text ?? "").trim();
       if (text) {
         setInput((prev) => (prev ? `${prev} ${text}` : text));
+        trackVoiceInputRecorded({ lang, duration_sec: recordedDurationRef.current });
       } else {
         setVoiceError(VOICE_TRANSCRIBE_ERROR[lang]);
       }
@@ -250,6 +253,7 @@ export default function ChatScreen() {
     mr.onstop = () => {
       teardownAudioVisualizer();
       stream.getTracks().forEach((t) => t.stop());
+      recordedDurationRef.current = (Date.now() - recordStartRef.current) / 1000;
       const blob = new Blob(audioChunksRef.current, { type: mr.mimeType || "audio/webm" });
       audioChunksRef.current = [];
       if (blob.size > 0) {
@@ -356,7 +360,8 @@ export default function ChatScreen() {
                 return copy;
               });
             }
-          } catch {
+      trackAiChatMessage(lang);
+    } catch {
             // ignore malformed chunk
           }
         }
