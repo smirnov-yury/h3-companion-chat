@@ -14,6 +14,7 @@ import {
   Coffee,
   Mail,
   Smartphone,
+  Wand2,
   RefreshCw,
   type LucideIcon,
 } from "lucide-react";
@@ -43,6 +44,7 @@ const features: FeatureRow[] = [
   { icon: Star, en: "Heroes", ru: "Герои" },
   { icon: Building2, en: "Towns", ru: "Города" },
   { icon: Bot, en: "AI Game Master", ru: "ИИ Мастер игры" },
+  { icon: Wand2, en: "Game Setup", ru: "Подготовка партии" },
 ];
 
 export default function AboutPage() {
@@ -138,10 +140,10 @@ export default function AboutPage() {
                   H3 Master — неофициальное фанатское приложение-компаньон для игроков в настольную игру «Герои Меча и Магии III» от Archon Studio.
                 </p>
                 <p className="text-sm leading-relaxed text-foreground/90">
-                  Полные правила, все книги миссий (MB1–MB9), карточки юнитов и героев, артефакты, заклинания, умения, городские постройки, элементы карты и глобальные события — всё в одном месте. Поддержка русского языка и ИИ Мастер игры для мгновенных ответов по правилам.
+                  Полные правила, все книги миссий (MB1–MB9), карточки юнитов и героев, артефакты, заклинания, умения, городские постройки, элементы карты и глобальные события — всё в одном месте. Поддержка русского языка, ИИ Мастер игры с голосовым вводом и многоходовым диалогом с памятью, генератор подготовки партии для быстрого старта.
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  Ключевые слова: H3 Master, настольная игра Герои Меча и Магии 3, HoMM3BG, приложение-компаньон, правила игры, Archon Studio, просмотр сценариев, карточки юнитов.
+                  Ключевые слова: H3 Master, настольная игра Герои Меча и Магии 3, HoMM3BG, приложение-компаньон, правила игры, Archon Studio, просмотр сценариев, карточки юнитов, голосовой ввод, ИИ Мастер игры, подготовка партии.
                 </p>
               </>
             ) : (
@@ -150,10 +152,10 @@ export default function AboutPage() {
                   H3 Master is an unofficial fan-made companion app for players of Heroes of Might & Magic III: The Board Game by Archon Studio.
                 </p>
                 <p className="text-sm leading-relaxed text-foreground/90">
-                  Covers the full rulebook, all mission books (MB1–MB9), unit and hero cards, artifact, spell and ability decks, town buildings, map elements, and global events — all in one place. Includes Russian language support and an AI Game Master for instant rules answers.
+                  Covers the full rulebook, all mission books (MB1–MB9), unit and hero cards, artifact, spell and ability decks, town buildings, map elements, and global events — all in one place. Russian language support, an AI Game Master with voice input and multi-turn conversation memory, plus a Game Setup generator for quick game configuration.
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  Keywords: H3 Master, Heroes of Might and Magic III board game, HoMM3BG, companion app, rules reference, offline rulebook, Archon Studio, scenario viewer, unit cards.
+                  Keywords: H3 Master, Heroes of Might and Magic III board game, HoMM3BG, companion app, rules reference, offline rulebook, Archon Studio, scenario viewer, unit cards, voice input, AI Game Master, game setup generator.
                 </p>
               </>
             )}
@@ -260,8 +262,8 @@ export default function AboutPage() {
           <section>
             <p className="text-xs text-muted-foreground leading-relaxed">
               {isRu
-                ? "Неофициальное фанатское приложение-компаньон. Не аффилировано с Ubisoft Entertainment или Archon Studio и не одобрено ими. Весь игровой контент основан на официальных PDF-файлах правил. Heroes of Might & Magic является торговой маркой Ubisoft Entertainment."
-                : "Unofficial fan-made companion. Not affiliated with Ubisoft Entertainment or Archon Studio. All game content is based on official rulebook PDFs. Heroes of Might & Magic is a trademark of Ubisoft Entertainment."}
+                ? "Неофициальное фанатское приложение-компаньон. Не аффилировано с Ubisoft Entertainment или Archon Studio и не одобрено ими. Весь игровой контент основан на официальных PDF-файлах правил и предоставляется исключительно для образовательных и справочных целей. Heroes of Might & Magic является торговой маркой Ubisoft Entertainment."
+                : "Unofficial fan-made companion. Not affiliated with Ubisoft Entertainment or Archon Studio. All game content is based on official rulebook PDFs and provided for educational and reference purposes only. Heroes of Might & Magic is a trademark of Ubisoft Entertainment."}
             </p>
           </section>
         </div>
