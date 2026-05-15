@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import ChatSources from "@/components/ChatSources";
 import H3MasterSpinner from "@/components/H3MasterSpinner";
 import { loadChat, saveChat, clearChat, hoursLeft } from "@/lib/chatPersistence";
+import { trackAiChatMessage, trackVoiceInputRecorded } from "@/lib/analytics";
 
 interface Message {
   role: "user" | "assistant";
