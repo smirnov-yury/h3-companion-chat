@@ -28,8 +28,8 @@ const queryClient = new QueryClient();
 
 function RouteFallback() {
   return (
-    <div className="min-h-screen flex items-center justify-center text-sm text-muted-foreground">
-      Loading...
+    <div className="min-h-screen flex items-center justify-center text-foreground">
+      <H3MasterSpinner variant="draw" size={64} className="text-foreground" ariaLabel="Loading" />
     </div>
   );
 }
