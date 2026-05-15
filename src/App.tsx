@@ -23,6 +23,8 @@ const AdminPanel = lazy(() => import("./pages/AdminPanel.tsx"));
 const AdminGuard = lazy(() => import("./components/admin/AdminGuard.tsx"));
 const GameSetup  = lazy(() => import("./pages/GameSetup.tsx"));
 const GameSession = lazy(() => import("./pages/GameSession.tsx"));
+const PrivacyPage = lazy(() => import("@/pages/PrivacyPage"));
+const TermsPage = lazy(() => import("@/pages/TermsPage"));
 
 const queryClient = new QueryClient();
 
@@ -50,6 +52,8 @@ const App = () => (
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/about" element={<AboutPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/terms" element={<TermsPage />} />
             <Route path="/admin" element={<AdminAuthProvider><AdminGuard><AdminPanel /></AdminGuard></AdminAuthProvider>} />
             <Route path="/dragonutopia/login" element={<AdminAuthProvider><AdminLogin /></AdminAuthProvider>} />
             <Route path="/dragonutopia/*" element={<AdminAuthProvider><AdminGuard><AdminPanel /></AdminGuard></AdminAuthProvider>} />

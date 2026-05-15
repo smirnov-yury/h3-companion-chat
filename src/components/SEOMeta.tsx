@@ -11,11 +11,13 @@ const DESCRIPTIONS = {
   RU: "H3 Master — неофициальное приложение-компаньон для настольной игры «Герои Меча и Магии III». Правила, сценарии, юниты, герои, заклинания, артефакты. Работает офлайн.",
 } as const;
 
-type RouteKey = TabId | "home" | "about";
+type RouteKey = TabId | "home" | "about" | "privacy" | "terms";
 
 const TITLES: Record<RouteKey, { en: string; ru: string }> = {
   home:          { en: "H3 Master — HoMM III Board Game Companion", ru: "H3 Master — Компаньон для «Герои Меча и Магии III»" },
   about:         { en: "About — H3 Master",                          ru: "О приложении — H3 Master" },
+  privacy:       { en: "Privacy Policy — H3 Master",                 ru: "Политика конфиденциальности — H3 Master" },
+  terms:         { en: "Terms of Service — H3 Master",               ru: "Условия использования — H3 Master" },
   rules:         { en: "Rules — H3 Master",                          ru: "Правила — H3 Master" },
   scenarios:     { en: "Scenarios — H3 Master",                      ru: "Сценарии — H3 Master" },
   units:         { en: "Units — H3 Master",                          ru: "Юниты — H3 Master" },
