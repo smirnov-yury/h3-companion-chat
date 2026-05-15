@@ -146,10 +146,11 @@ export default function NavDrawer({ open, onOpenChange, active, onChange }: NavD
             <SheetTitle className="text-base text-left">
               <button
                 onClick={goHome}
-                className="cursor-pointer hover:opacity-70 transition-opacity text-foreground"
+                className="flex items-center gap-2 cursor-pointer hover:opacity-70 transition-opacity text-foreground"
                 aria-label="H3 Master — go to home"
               >
-                <H3MasterSpinner variant="static" size={32} ariaLabel="H3 Master" />
+                <H3MasterSpinner variant="static" size={28} ariaLabel="H3 Master" />
+                <span className="text-base font-semibold">H3 Master</span>
               </button>
             </SheetTitle>
           </SheetHeader>
