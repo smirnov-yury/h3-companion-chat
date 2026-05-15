@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 930 350" width="930" height="350" role="img" aria-label="H3 Master — Board Game Companion (dark theme)">
+  <g transform="translate(4.96, -16.76) scale(0.3745)">
+    <polygon points="296,138 728,138 944,512 728,886 296,886 80,512" fill="none" stroke="#F5F0E8" stroke-width="69" stroke-linejoin="round"/>
+    <polygon points="443,408 443,616 616,512" fill="#E8B147"/>
+  </g>
+  <text x="408" y="286" font-family="'Roboto Slab','Times New Roman',serif" font-weight="900" font-size="372" letter-spacing="-8" fill="#F5F0E8">H3</text>
+  <text x="408" y="327.5" font-family="Inter,'Helvetica Neue',Arial,sans-serif" font-weight="600" font-size="24" letter-spacing="6" textLength="501" fill="#F5F0E8">BOARD GAME COMPANION</text>
+</svg>
