@@ -101,14 +101,14 @@ export default function AboutPage() {
           <section className="text-center space-y-3">
             <h1
               className="text-3xl sm:text-4xl font-bold tracking-tight"
-              style={{ color: "#E1BB3A" }}
+              style={{ color: "#E8B147" }}
             >
-              Heroes III Board Game Companion
+              H3 Master
             </h1>
             <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
               {isRu
-                ? "Цифровой помощник для настольной игры «Герои Меча и Магии III». Правила, сценарии, карточки — всегда под рукой."
-                : "Digital companion for the Heroes of Might & Magic III Board Game. Rules, scenarios, cards — always at hand."}
+                ? "Неофициальный компаньон для настольной игры «Герои Меча и Магии III». Правила, сценарии, карточки — всегда под рукой."
+                : "Unofficial companion for Heroes of Might & Magic III: The Board Game. Rules, scenarios, cards — always at hand."}
             </p>
           </section>
 
