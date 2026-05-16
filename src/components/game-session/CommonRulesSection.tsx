@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronDown, Crown, XCircle, Scroll } from "lucide-react";
+import { ChevronDown, Crown, XCircle, Scroll, Sparkles, UserCog } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useLang } from "@/context/LanguageContext";
 import { useGlyphs } from "@/context/GlyphsContext";
