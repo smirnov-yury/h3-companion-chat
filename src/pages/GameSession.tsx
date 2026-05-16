@@ -12,6 +12,8 @@ import MapSection from "@/components/game-session/MapSection";
 import CommonRulesSection from "@/components/game-session/CommonRulesSection";
 import TimedEventsSection from "@/components/game-session/TimedEventsSection";
 import PlayersGrid from "@/components/game-session/PlayersGrid";
+import StorySection from "@/components/game-session/StorySection";
+import AISetupSection from "@/components/game-session/AISetupSection";
 import GameSessionExpired from "@/components/game-session/GameSessionExpired";
 import type { Payload } from "@/lib/setupResolver";
 
