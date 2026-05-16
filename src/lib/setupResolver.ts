@@ -532,6 +532,8 @@ export function buildPayload(input: BuildPayloadInput): Payload {
   const incomeBlock = pickSetupBlock(setupBlocks, "player_income", baselinePlayerCount);
   const buildingsBlock = pickSetupBlock(setupBlocks, "starting_buildings", baselinePlayerCount);
   const unitsBlock = pickSetupBlock(setupBlocks, "starting_units", baselinePlayerCount);
+  const bonusBlock = pickSetupBlock(setupBlocks, "bonus", baselinePlayerCount);
+  const playerSetupBlock = pickSetupBlock(setupBlocks, "player_setup", baselinePlayerCount);
 
   const players: PayloadPlayer[] = form.players.map((p, i) => {
     const hero = heroes.find((h) => h.id === p.heroId) ?? null;
