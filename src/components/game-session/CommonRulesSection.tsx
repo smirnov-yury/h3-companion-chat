@@ -73,6 +73,22 @@ export default function CommonRulesSection({ common }: { common: Payload["common
           icon={Scroll}
         />
       )}
+      {playerSetup && (
+        <Subsection
+          title={lang === "RU" ? "Подготовка игроков" : "Player setup"}
+          content={playerSetup}
+          icon={UserCog}
+          defaultOpen
+        />
+      )}
+      {bonus && (
+        <Subsection
+          title={lang === "RU" ? "Бонус" : "Bonus"}
+          content={bonus}
+          icon={Sparkles}
+          defaultOpen={false}
+        />
+      )}
     </section>
   );
 }
