@@ -603,6 +603,10 @@ export function buildPayload(input: BuildPayloadInput): Payload {
       lose_ru: loseBlock?.content_ru ?? null,
       additional_rules_en: additionalBlock?.content_en ?? null,
       additional_rules_ru: additionalBlock?.content_ru ?? null,
+      bonus_en: bonusBlock?.content_en ?? null,
+      bonus_ru: bonusBlock?.content_ru ?? null,
+      player_setup_en: playerSetupBlock?.content_en ?? null,
+      player_setup_ru: playerSetupBlock?.content_ru ?? null,
       timed_events: timedEvents
         .filter((e) => e.player_count === form.playerCount || e.player_count === null)
         .sort((a, b) => (a.trigger_round ?? 0) - (b.trigger_round ?? 0))
@@ -618,5 +622,35 @@ export function buildPayload(input: BuildPayloadInput): Payload {
     },
     players,
     starting_player_index: form.startingPlayerIndex,
+    ai_setup: aiSetup
+      ? {
+          ai_faction_en: aiSetup.ai_faction_en,
+          ai_faction_ru: aiSetup.ai_faction_ru,
+          enemy_heroes_en: aiSetup.enemy_heroes_en ?? [],
+          enemy_heroes_ru: aiSetup.enemy_heroes_ru ?? [],
+          enemy_armies_en: aiSetup.enemy_armies_en ?? [],
+          enemy_armies_ru: aiSetup.enemy_armies_ru ?? [],
+          enemy_decks_en: aiSetup.enemy_decks_en ?? [],
+          enemy_decks_ru: aiSetup.enemy_decks_ru ?? [],
+          enemy_spell_deck_en: aiSetup.enemy_spell_deck_en ?? [],
+          enemy_spell_deck_ru: aiSetup.enemy_spell_deck_ru ?? [],
+          special_setup_en: aiSetup.special_setup_en,
+          special_setup_ru: aiSetup.special_setup_ru,
+          notes_en: aiSetup.notes_en,
+          notes_ru: aiSetup.notes_ru,
+        }
+      : null,
+    story_sections: (storySections ?? [])
+      .map((s) => ({
+        section_key: s.section_key,
+        title_en: s.title_en,
+        title_ru: s.title_ru,
+        trigger_text_en: s.trigger_text_en,
+        trigger_text_ru: s.trigger_text_ru,
+        content_en: s.content_en,
+        content_ru: s.content_ru,
+        sort_order: s.sort_order ?? 0,
+      }))
+      .sort((a, b) => a.sort_order - b.sort_order),
   };
 }
