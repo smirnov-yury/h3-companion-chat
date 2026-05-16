@@ -99,6 +99,68 @@ export interface TimedEventRow {
 }
 
 // ============================================================
+// Campaign / solo extension types
+// ============================================================
+
+export interface AISetupRow {
+  scenario_id: string;
+  ai_faction_en: string | null;
+  ai_faction_ru: string | null;
+  enemy_heroes_en: string[] | null;
+  enemy_heroes_ru: string[] | null;
+  enemy_armies_en: Array<{ name: string; units: string }> | null;
+  enemy_armies_ru: Array<{ name: string; units: string }> | null;
+  enemy_decks_en: Array<{ name: string; cards: string }> | null;
+  enemy_decks_ru: Array<{ name: string; cards: string }> | null;
+  enemy_spell_deck_en: Array<{ name: string; cards: string }> | null;
+  enemy_spell_deck_ru: Array<{ name: string; cards: string }> | null;
+  special_setup_en: string | null;
+  special_setup_ru: string | null;
+  notes_en: string | null;
+  notes_ru: string | null;
+}
+
+export interface StorySectionRow {
+  scenario_id: string;
+  section_key: string;
+  title_en: string | null;
+  title_ru: string | null;
+  trigger_text_en: string | null;
+  trigger_text_ru: string | null;
+  content_en: string | null;
+  content_ru: string | null;
+  sort_order: number | null;
+}
+
+export interface PayloadAISetup {
+  ai_faction_en: string | null;
+  ai_faction_ru: string | null;
+  enemy_heroes_en: string[];
+  enemy_heroes_ru: string[];
+  enemy_armies_en: Array<{ name: string; units: string }>;
+  enemy_armies_ru: Array<{ name: string; units: string }>;
+  enemy_decks_en: Array<{ name: string; cards: string }>;
+  enemy_decks_ru: Array<{ name: string; cards: string }>;
+  enemy_spell_deck_en: Array<{ name: string; cards: string }>;
+  enemy_spell_deck_ru: Array<{ name: string; cards: string }>;
+  special_setup_en: string | null;
+  special_setup_ru: string | null;
+  notes_en: string | null;
+  notes_ru: string | null;
+}
+
+export interface PayloadStorySection {
+  section_key: string;
+  title_en: string | null;
+  title_ru: string | null;
+  trigger_text_en: string | null;
+  trigger_text_ru: string | null;
+  content_en: string | null;
+  content_ru: string | null;
+  sort_order: number;
+}
+
+// ============================================================
 // Parsers
 // ============================================================
 
