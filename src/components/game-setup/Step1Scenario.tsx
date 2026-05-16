@@ -180,7 +180,7 @@ export default function Step1Scenario({ form, setForm }: Props) {
             <SelectTrigger className="flex-1">
               <SelectValue placeholder={lang === "RU" ? "Выберите сценарий" : "Select scenario"} />
             </SelectTrigger>
-            <SelectContent className="max-h-[min(60vh,400px)]">
+            <SelectContent className="max-h-[var(--radix-select-content-available-height)]">
               {filteredScenarios.map((s) => {
                 const book = s.book;
                 const bookTitle = lang === "RU" ? book?.title_ru || book?.title_en : book?.title_en;
