@@ -81,6 +81,8 @@ function SessionContent({ payload, expiresAt }: { payload: Payload; expiresAt: s
         <CommonRulesSection common={payload.common} />
         <TimedEventsSection events={payload.common.timed_events} />
         <PlayersGrid players={payload.players} startingPlayerIndex={payload.starting_player_index} />
+        <StorySection sections={payload.story_sections} />
+        {payload.ai_setup && <AISetupSection aiSetup={payload.ai_setup} />}
       </div>
     </div>
   );
