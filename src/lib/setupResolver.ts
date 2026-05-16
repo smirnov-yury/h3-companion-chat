@@ -516,10 +516,12 @@ export interface BuildPayloadInput {
   }>;
   units: UnitRow[];
   buildings: BuildingRow[];
+  aiSetup?: AISetupRow | null;
+  storySections?: StorySectionRow[];
 }
 
 export function buildPayload(input: BuildPayloadInput): Payload {
-  const { form, scenario, book, setupBlocks, mapVariants, timedEvents, heroes, units, buildings } = input;
+  const { form, scenario, book, setupBlocks, mapVariants, timedEvents, heroes, units, buildings, aiSetup, storySections } = input;
   const map = scaleMap(mapVariants, form.playerCount);
   const baselinePlayerCount = map?.baseline_player_count ?? form.playerCount;
 
