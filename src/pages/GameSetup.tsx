@@ -76,7 +76,7 @@ export default function GameSetup() {
 
   const stepValid = useMemo(() => {
     if (currentStep === 1) {
-      return form.mode === "clash" && !!form.scenarioId;
+      return !!form.scenarioId;
     }
     if (currentStep === 2) {
       return form.playerCount >= scenarioMin && form.playerCount <= 8;

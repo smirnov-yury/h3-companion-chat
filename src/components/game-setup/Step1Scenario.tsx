@@ -21,10 +21,10 @@ interface Props {
 
 const MODES: { id: GameSetupMode; ru: string; en: string; enabled: boolean }[] = [
   { id: "clash", ru: "Битва", en: "Clash", enabled: true },
-  { id: "campaign", ru: "Кампания", en: "Campaign", enabled: false },
-  { id: "alliance", ru: "Альянс", en: "Alliance", enabled: false },
-  { id: "cooperative", ru: "Кооператив", en: "Co-op", enabled: false },
-  { id: "solo", ru: "Соло", en: "Solo", enabled: false },
+  { id: "campaign", ru: "Кампания", en: "Campaign", enabled: true },
+  { id: "alliance", ru: "Альянс", en: "Alliance", enabled: true },
+  { id: "cooperative", ru: "Кооператив", en: "Co-op", enabled: true },
+  { id: "solo", ru: "Соло", en: "Solo", enabled: true },
 ];
 
 export default function Step1Scenario({ form, setForm }: Props) {
@@ -56,14 +56,14 @@ export default function Step1Scenario({ form, setForm }: Props) {
   type ScenarioWithBook = ScenarioRow & { book: BookRow | null };
 
   const scenariosQ = useQuery({
-    queryKey: ["game-setup", "all-clash-scenarios"],
+    queryKey: ["game-setup", "scenarios-by-mode", form.mode],
     staleTime: 5 * 60 * 1000,
     queryFn: async (): Promise<ScenarioWithBook[]> => {
       const [scenRes, booksRes] = await Promise.all([
         supabase
           .from("scenarios")
           .select("id, title_en, title_ru, summary_en, summary_ru, sort_order, supported_player_counts, min_players, max_players, rounds_min, rounds_max, book_id")
-          .eq("mode", "clash"),
+          .eq("mode", form.mode),
         supabase
           .from("scenario_books")
           .select("id, title_en, title_ru, release_order"),
@@ -117,7 +117,13 @@ export default function Step1Scenario({ form, setForm }: Props) {
                 key={m.id}
                 type="button"
                 disabled={!m.enabled}
-                onClick={() => m.enabled && setForm((f) => ({ ...f, mode: m.id }))}
+                onClick={() => {
+                  if (!m.enabled) return;
+                  if (m.id !== form.mode) {
+                    setForm((f) => ({ ...f, mode: m.id, scenarioId: null }));
+                    setBookFilter(null);
+                  }
+                }}
                 className={`px-4 py-2 rounded-full text-sm font-medium border transition-colors flex-shrink-0 whitespace-nowrap ${
                   active
                     ? "bg-primary text-primary-foreground border-primary"
@@ -211,7 +217,12 @@ export default function Step1Scenario({ form, setForm }: Props) {
         {selectedScenario && (
           <>
             <div className="flex flex-wrap gap-2 mt-3">
-              <Badge variant="secondary">Clash</Badge>
+              <Badge variant="secondary">
+                {(() => {
+                  const m = MODES.find((x) => x.id === form.mode);
+                  return lang === "RU" ? (m?.ru ?? form.mode) : (m?.en ?? form.mode);
+                })()}
+              </Badge>
               <Badge variant="secondary">
                 {formatPlayerRange(selectedScenario.supported_player_counts as number[] | null, lang)}
               </Badge>
