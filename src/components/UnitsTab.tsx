@@ -353,7 +353,7 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
     }
 
     // Neutral-bucket (Neutral / Creature Bank / Summoned single-card units).
-    const showAllNeutralBucket = mode === 'all';
+    const showAllNeutralBucket = mode === 'all' && filterFaction === 'all';
     const requiredTown =
       mode === 'neutral' ? 'Neutral'
       : mode === 'creature_bank' ? 'Creature Bank'
