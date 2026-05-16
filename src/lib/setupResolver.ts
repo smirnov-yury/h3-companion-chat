@@ -467,6 +467,10 @@ export interface Payload {
     lose_ru: string | null;
     additional_rules_en: string | null;
     additional_rules_ru: string | null;
+    bonus_en: string | null;
+    bonus_ru: string | null;
+    player_setup_en: string | null;
+    player_setup_ru: string | null;
     timed_events: Array<{
       round: number | null;
       label_en: string | null;
@@ -479,6 +483,8 @@ export interface Payload {
   };
   players: PayloadPlayer[];
   starting_player_index: number | null;
+  ai_setup: PayloadAISetup | null;
+  story_sections: PayloadStorySection[];
 }
 
 export interface BuildPayloadInput {
