@@ -206,6 +206,8 @@ export default function Step4Review({ form }: Props) {
               heroes: (heroesRes.data ?? []) as never,
               units: (unitsRes.data ?? []) as never,
               buildings: (buildingsRes.data ?? []) as never,
+              aiSetup: (aiSetupRes.data ?? null) as never,
+              storySections: (storySectionsRes.data ?? []) as never,
             });
 
             const insertRes = await supabase
