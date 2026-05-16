@@ -48,7 +48,16 @@ export default function SessionHeader({ payload, expiresAt }: { payload: Payload
   const title = (lang === "RU" ? sc.title_ru : sc.title_en) || sc.title_en;
   const bookTitle = (lang === "RU" ? sc.book_title_ru : sc.book_title_en) || sc.book_title_en || "—";
   const playersLabel = lang === "RU" ? "игроков" : "players";
-  const modeLabel = sc.mode === "clash" || sc.mode === "Clash" ? "Clash" : sc.mode;
+  const MODE_LABELS_LOCAL: Record<string, { ru: string; en: string }> = {
+    clash: { ru: "Битва", en: "Clash" },
+    campaign: { ru: "Кампания", en: "Campaign" },
+    alliance: { ru: "Альянс", en: "Alliance" },
+    cooperative: { ru: "Кооператив", en: "Co-op" },
+    solo: { ru: "Соло", en: "Solo" },
+  };
+  const modeKey = (sc.mode ?? "").toLowerCase();
+  const modeEntry = MODE_LABELS_LOCAL[modeKey];
+  const modeLabel = modeEntry ? (lang === "RU" ? modeEntry.ru : modeEntry.en) : sc.mode;
 
   return (
     <div className="pt-2 pb-4 border-b border-border">

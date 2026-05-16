@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronDown, Crown, XCircle, Scroll } from "lucide-react";
+import { ChevronDown, Crown, XCircle, Scroll, Sparkles, UserCog } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useLang } from "@/context/LanguageContext";
 import { useGlyphs } from "@/context/GlyphsContext";
@@ -40,8 +40,10 @@ export default function CommonRulesSection({ common }: { common: Payload["common
   const victory = (lang === "RU" ? common.victory_ru : common.victory_en) || "";
   const lose = (lang === "RU" ? common.lose_ru : common.lose_en) || "";
   const additional = (lang === "RU" ? common.additional_rules_ru : common.additional_rules_en) || "";
+  const bonus = (lang === "RU" ? common.bonus_ru : common.bonus_en) || "";
+  const playerSetup = (lang === "RU" ? common.player_setup_ru : common.player_setup_en) || "";
 
-  if (!victory && !lose && !additional) return null;
+  if (!victory && !lose && !additional && !bonus && !playerSetup) return null;
 
   return (
     <section className="space-y-3">
@@ -69,6 +71,22 @@ export default function CommonRulesSection({ common }: { common: Payload["common
           title={lang === "RU" ? "Особые правила" : "Special rules"}
           content={additional}
           icon={Scroll}
+        />
+      )}
+      {playerSetup && (
+        <Subsection
+          title={lang === "RU" ? "Подготовка игроков" : "Player setup"}
+          content={playerSetup}
+          icon={UserCog}
+          defaultOpen
+        />
+      )}
+      {bonus && (
+        <Subsection
+          title={lang === "RU" ? "Бонус" : "Bonus"}
+          content={bonus}
+          icon={Sparkles}
+          defaultOpen={false}
         />
       )}
     </section>

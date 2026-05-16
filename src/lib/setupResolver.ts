@@ -99,6 +99,68 @@ export interface TimedEventRow {
 }
 
 // ============================================================
+// Campaign / solo extension types
+// ============================================================
+
+export interface AISetupRow {
+  scenario_id: string;
+  ai_faction_en: string | null;
+  ai_faction_ru: string | null;
+  enemy_heroes_en: string[] | null;
+  enemy_heroes_ru: string[] | null;
+  enemy_armies_en: Array<{ name: string; units: string }> | null;
+  enemy_armies_ru: Array<{ name: string; units: string }> | null;
+  enemy_decks_en: Array<{ name: string; cards: string }> | null;
+  enemy_decks_ru: Array<{ name: string; cards: string }> | null;
+  enemy_spell_deck_en: Array<{ name: string; cards: string }> | null;
+  enemy_spell_deck_ru: Array<{ name: string; cards: string }> | null;
+  special_setup_en: string | null;
+  special_setup_ru: string | null;
+  notes_en: string | null;
+  notes_ru: string | null;
+}
+
+export interface StorySectionRow {
+  scenario_id: string;
+  section_key: string;
+  title_en: string | null;
+  title_ru: string | null;
+  trigger_text_en: string | null;
+  trigger_text_ru: string | null;
+  content_en: string | null;
+  content_ru: string | null;
+  sort_order: number | null;
+}
+
+export interface PayloadAISetup {
+  ai_faction_en: string | null;
+  ai_faction_ru: string | null;
+  enemy_heroes_en: string[];
+  enemy_heroes_ru: string[];
+  enemy_armies_en: Array<{ name: string; units: string }>;
+  enemy_armies_ru: Array<{ name: string; units: string }>;
+  enemy_decks_en: Array<{ name: string; cards: string }>;
+  enemy_decks_ru: Array<{ name: string; cards: string }>;
+  enemy_spell_deck_en: Array<{ name: string; cards: string }>;
+  enemy_spell_deck_ru: Array<{ name: string; cards: string }>;
+  special_setup_en: string | null;
+  special_setup_ru: string | null;
+  notes_en: string | null;
+  notes_ru: string | null;
+}
+
+export interface PayloadStorySection {
+  section_key: string;
+  title_en: string | null;
+  title_ru: string | null;
+  trigger_text_en: string | null;
+  trigger_text_ru: string | null;
+  content_en: string | null;
+  content_ru: string | null;
+  sort_order: number;
+}
+
+// ============================================================
 // Parsers
 // ============================================================
 
@@ -405,6 +467,10 @@ export interface Payload {
     lose_ru: string | null;
     additional_rules_en: string | null;
     additional_rules_ru: string | null;
+    bonus_en: string | null;
+    bonus_ru: string | null;
+    player_setup_en: string | null;
+    player_setup_ru: string | null;
     timed_events: Array<{
       round: number | null;
       label_en: string | null;
@@ -417,6 +483,8 @@ export interface Payload {
   };
   players: PayloadPlayer[];
   starting_player_index: number | null;
+  ai_setup: PayloadAISetup | null;
+  story_sections: PayloadStorySection[];
 }
 
 export interface BuildPayloadInput {
@@ -448,10 +516,12 @@ export interface BuildPayloadInput {
   }>;
   units: UnitRow[];
   buildings: BuildingRow[];
+  aiSetup?: AISetupRow | null;
+  storySections?: StorySectionRow[];
 }
 
 export function buildPayload(input: BuildPayloadInput): Payload {
-  const { form, scenario, book, setupBlocks, mapVariants, timedEvents, heroes, units, buildings } = input;
+  const { form, scenario, book, setupBlocks, mapVariants, timedEvents, heroes, units, buildings, aiSetup, storySections } = input;
   const map = scaleMap(mapVariants, form.playerCount);
   const baselinePlayerCount = map?.baseline_player_count ?? form.playerCount;
 
@@ -462,6 +532,8 @@ export function buildPayload(input: BuildPayloadInput): Payload {
   const incomeBlock = pickSetupBlock(setupBlocks, "player_income", baselinePlayerCount);
   const buildingsBlock = pickSetupBlock(setupBlocks, "starting_buildings", baselinePlayerCount);
   const unitsBlock = pickSetupBlock(setupBlocks, "starting_units", baselinePlayerCount);
+  const bonusBlock = pickSetupBlock(setupBlocks, "bonus", baselinePlayerCount);
+  const playerSetupBlock = pickSetupBlock(setupBlocks, "player_setup", baselinePlayerCount);
 
   const players: PayloadPlayer[] = form.players.map((p, i) => {
     const hero = heroes.find((h) => h.id === p.heroId) ?? null;
@@ -531,6 +603,10 @@ export function buildPayload(input: BuildPayloadInput): Payload {
       lose_ru: loseBlock?.content_ru ?? null,
       additional_rules_en: additionalBlock?.content_en ?? null,
       additional_rules_ru: additionalBlock?.content_ru ?? null,
+      bonus_en: bonusBlock?.content_en ?? null,
+      bonus_ru: bonusBlock?.content_ru ?? null,
+      player_setup_en: playerSetupBlock?.content_en ?? null,
+      player_setup_ru: playerSetupBlock?.content_ru ?? null,
       timed_events: timedEvents
         .filter((e) => e.player_count === form.playerCount || e.player_count === null)
         .sort((a, b) => (a.trigger_round ?? 0) - (b.trigger_round ?? 0))
@@ -546,5 +622,35 @@ export function buildPayload(input: BuildPayloadInput): Payload {
     },
     players,
     starting_player_index: form.startingPlayerIndex,
+    ai_setup: aiSetup
+      ? {
+          ai_faction_en: aiSetup.ai_faction_en,
+          ai_faction_ru: aiSetup.ai_faction_ru,
+          enemy_heroes_en: aiSetup.enemy_heroes_en ?? [],
+          enemy_heroes_ru: aiSetup.enemy_heroes_ru ?? [],
+          enemy_armies_en: aiSetup.enemy_armies_en ?? [],
+          enemy_armies_ru: aiSetup.enemy_armies_ru ?? [],
+          enemy_decks_en: aiSetup.enemy_decks_en ?? [],
+          enemy_decks_ru: aiSetup.enemy_decks_ru ?? [],
+          enemy_spell_deck_en: aiSetup.enemy_spell_deck_en ?? [],
+          enemy_spell_deck_ru: aiSetup.enemy_spell_deck_ru ?? [],
+          special_setup_en: aiSetup.special_setup_en,
+          special_setup_ru: aiSetup.special_setup_ru,
+          notes_en: aiSetup.notes_en,
+          notes_ru: aiSetup.notes_ru,
+        }
+      : null,
+    story_sections: (storySections ?? [])
+      .map((s) => ({
+        section_key: s.section_key,
+        title_en: s.title_en,
+        title_ru: s.title_ru,
+        trigger_text_en: s.trigger_text_en,
+        trigger_text_ru: s.trigger_text_ru,
+        content_en: s.content_en,
+        content_ru: s.content_ru,
+        sort_order: s.sort_order ?? 0,
+      }))
+      .sort((a, b) => a.sort_order - b.sort_order),
   };
 }

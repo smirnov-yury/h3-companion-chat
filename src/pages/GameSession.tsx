@@ -12,6 +12,8 @@ import MapSection from "@/components/game-session/MapSection";
 import CommonRulesSection from "@/components/game-session/CommonRulesSection";
 import TimedEventsSection from "@/components/game-session/TimedEventsSection";
 import PlayersGrid from "@/components/game-session/PlayersGrid";
+import StorySection from "@/components/game-session/StorySection";
+import AISetupSection from "@/components/game-session/AISetupSection";
 import GameSessionExpired from "@/components/game-session/GameSessionExpired";
 import type { Payload } from "@/lib/setupResolver";
 
@@ -79,6 +81,8 @@ function SessionContent({ payload, expiresAt }: { payload: Payload; expiresAt: s
         <CommonRulesSection common={payload.common} />
         <TimedEventsSection events={payload.common.timed_events} />
         <PlayersGrid players={payload.players} startingPlayerIndex={payload.starting_player_index} />
+        <StorySection sections={payload.story_sections} />
+        {payload.ai_setup && <AISetupSection aiSetup={payload.ai_setup} />}
       </div>
     </div>
   );

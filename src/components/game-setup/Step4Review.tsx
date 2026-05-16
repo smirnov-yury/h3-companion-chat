@@ -151,7 +151,7 @@ export default function Step4Review({ form }: Props) {
             const towns = Array.from(new Set(form.players.map((p) => p.town).filter((x): x is string => !!x)));
             const townIdsLower = Array.from(new Set(form.players.map((p) => p.town?.toLowerCase()).filter((x): x is string => !!x)));
 
-            const [scenRes, blocksRes, mvRes, teRes, heroesRes, unitsRes, buildingsRes, ipHash] = await Promise.all([
+            const [scenRes, blocksRes, mvRes, teRes, heroesRes, unitsRes, buildingsRes, aiSetupRes, storySectionsRes, ipHash] = await Promise.all([
               supabase.from("scenarios").select("id, title_en, title_ru, summary_en, summary_ru, mode, rounds_min, rounds_max, book_id").eq("id", form.scenarioId).single(),
               supabase.from("scenario_setup_blocks").select("id, scenario_id, player_count, block_type, title_en, title_ru, content_en, content_ru, sort_order").eq("scenario_id", form.scenarioId),
               supabase.from("scenario_map_variants").select("id, scenario_id, player_count, variant_label_en, variant_label_ru, map_setup_text_en, map_setup_text_ru, tile_counts, layout_notes_en, layout_notes_ru, map_image, sort_order").eq("scenario_id", form.scenarioId),
@@ -165,6 +165,12 @@ export default function Step4Review({ form }: Props) {
               townIdsLower.length
                 ? supabase.from("town_buildings").select("id, town_id, name_en, name_ru, cost, dwelling_tier").in("town_id", townIdsLower)
                 : Promise.resolve({ data: [], error: null } as const),
+              ["campaign", "solo"].includes(form.mode)
+                ? supabase.from("scenario_ai_setup").select("*").eq("scenario_id", form.scenarioId).maybeSingle()
+                : Promise.resolve({ data: null, error: null } as const),
+              ["campaign", "solo"].includes(form.mode)
+                ? supabase.from("scenario_story_sections").select("*").eq("scenario_id", form.scenarioId)
+                : Promise.resolve({ data: [], error: null } as const),
               getClientHash(),
             ]);
 
@@ -175,6 +181,8 @@ export default function Step4Review({ form }: Props) {
             if (heroesRes.error) throw heroesRes.error;
             if (unitsRes.error) throw unitsRes.error;
             if (buildingsRes.error) throw buildingsRes.error;
+            if (aiSetupRes.error) throw aiSetupRes.error;
+            if (storySectionsRes.error) throw storySectionsRes.error;
 
             const bookId = scenRes.data.book_id;
             const { data: bookData } = await supabase
@@ -198,6 +206,8 @@ export default function Step4Review({ form }: Props) {
               heroes: (heroesRes.data ?? []) as never,
               units: (unitsRes.data ?? []) as never,
               buildings: (buildingsRes.data ?? []) as never,
+              aiSetup: (aiSetupRes.data ?? null) as never,
+              storySections: (storySectionsRes.data ?? []) as never,
             });
 
             const insertRes = await supabase
