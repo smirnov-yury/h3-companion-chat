@@ -117,17 +117,46 @@ export default function Step4Review({ form }: Props) {
         <h2 className="text-sm font-semibold mb-2">
           {lang === "RU" ? "Игроки" : "Players"}
         </h2>
-        <ol className="space-y-1">
-          {form.players.map((p, i) => (
-            <li key={i} className="text-sm">
-              <span className="text-muted-foreground">{i + 1}.</span>{" "}
-              <span className="font-medium">
-                {p.name || (lang === "RU" ? `Игрок ${i + 1}` : `Player ${i + 1}`)}
-              </span>{" "}
-              — {townName(p.town)} — {heroName(p.heroId)}
-            </li>
-          ))}
-        </ol>
+        {form.mode === "alliance" ? (
+          <div className="space-y-3">
+            {(["A", "B"] as const).map((team) => {
+              const teamPlayers = form.players
+                .map((p, i) => ({ p, i }))
+                .filter(({ p }) => p.team === team);
+              if (teamPlayers.length === 0) return null;
+              return (
+                <div key={team}>
+                  <div className="text-xs font-semibold text-muted-foreground mb-1">
+                    {lang === "RU" ? `Команда ${team}` : `Team ${team}`}
+                  </div>
+                  <ol className="space-y-1">
+                    {teamPlayers.map(({ p, i }) => (
+                      <li key={i} className="text-sm">
+                        <span className="text-muted-foreground">{i + 1}.</span>{" "}
+                        <span className="font-medium">
+                          {p.name || (lang === "RU" ? `Игрок ${i + 1}` : `Player ${i + 1}`)}
+                        </span>{" "}
+                        — {townName(p.town)} — {heroName(p.heroId)}
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <ol className="space-y-1">
+            {form.players.map((p, i) => (
+              <li key={i} className="text-sm">
+                <span className="text-muted-foreground">{i + 1}.</span>{" "}
+                <span className="font-medium">
+                  {p.name || (lang === "RU" ? `Игрок ${i + 1}` : `Player ${i + 1}`)}
+                </span>{" "}
+                — {townName(p.town)} — {heroName(p.heroId)}
+              </li>
+            ))}
+          </ol>
+        )}
       </section>
 
       <section>
