@@ -117,8 +117,12 @@ export default function Step3Players({ form, setForm }: Props) {
   const reset = () => {
     setForm((f) => ({
       ...f,
-      players: f.players.map(() => ({ name: "", town: null, heroId: null })),
+      players: f.players.map(() => ({ name: "", town: null, heroId: null, team: null })),
     }));
+  };
+
+  const setTeam = (idx: number, team: "A" | "B") => {
+    updatePlayer(idx, { team });
   };
 
   const duplicateOf = (idx: number): number | null => {
@@ -130,6 +134,13 @@ export default function Step3Players({ form, setForm }: Props) {
 
   return (
     <div className="space-y-4">
+      {form.mode === "alliance" && (
+        <div className="text-xs text-muted-foreground border border-border rounded-md p-2 bg-muted/30">
+          {lang === "RU"
+            ? "Альянс 2 на 2: распределите игроков по командам A и B (по 2 в каждой)."
+            : "Alliance 2 vs 2: assign players to Team A and Team B (2 in each)."}
+        </div>
+      )}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {form.players.map((p, idx) => {
           const dup = duplicateOf(idx);
@@ -144,6 +155,28 @@ export default function Step3Players({ form, setForm }: Props) {
               <div className="text-xs font-semibold text-muted-foreground">
                 {lang === "RU" ? `Игрок ${idx + 1}` : `Player ${idx + 1}`}
               </div>
+              {form.mode === "alliance" && (
+                <div className="flex gap-1">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant={p.team === "A" ? "default" : "outline"}
+                    className="flex-1 h-8"
+                    onClick={() => setTeam(idx, "A")}
+                  >
+                    {lang === "RU" ? "Команда A" : "Team A"}
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant={p.team === "B" ? "default" : "outline"}
+                    className="flex-1 h-8"
+                    onClick={() => setTeam(idx, "B")}
+                  >
+                    {lang === "RU" ? "Команда B" : "Team B"}
+                  </Button>
+                </div>
+              )}
               <Input
                 maxLength={30}
                 value={p.name}

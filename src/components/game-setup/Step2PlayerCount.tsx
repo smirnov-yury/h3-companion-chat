@@ -12,7 +12,7 @@ interface Props {
 const ALL = [1, 2, 3, 4, 5, 6, 7, 8];
 
 function emptyPlayer(): PlayerForm {
-  return { name: "", town: null, heroId: null };
+  return { name: "", town: null, heroId: null, team: null };
 }
 
 export default function Step2PlayerCount({ form, setForm }: Props) {

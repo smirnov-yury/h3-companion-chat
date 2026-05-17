@@ -17,7 +17,7 @@ import { INITIAL_FORM, type GameSetupForm, type PlayerForm } from "@/components/
 import { useQuery } from "@tanstack/react-query";
 
 function emptyPlayer(): PlayerForm {
-  return { name: "", town: null, heroId: null };
+  return { name: "", town: null, heroId: null, team: null };
 }
 
 export default function GameSetup() {
@@ -88,6 +88,11 @@ export default function GameSetup() {
         if (!p.name.trim() || !p.town || !p.heroId) return false;
         if (towns.has(p.town)) return false;
         towns.add(p.town);
+      }
+      if (form.mode === "alliance") {
+        const aCount = form.players.filter((p) => p.team === "A").length;
+        const bCount = form.players.filter((p) => p.team === "B").length;
+        if (aCount !== 2 || bCount !== 2) return false;
       }
       return true;
     }
