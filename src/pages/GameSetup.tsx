@@ -89,6 +89,11 @@ export default function GameSetup() {
         if (towns.has(p.town)) return false;
         towns.add(p.town);
       }
+      if (form.mode === "alliance") {
+        const aCount = form.players.filter((p) => p.team === "A").length;
+        const bCount = form.players.filter((p) => p.team === "B").length;
+        if (aCount !== 2 || bCount !== 2) return false;
+      }
       return true;
     }
     return true;
