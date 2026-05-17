@@ -91,7 +91,17 @@ export default function Step4Review({ form }: Props) {
               : ""}
           </div>
           <span className="inline-block mt-1 px-2 py-0.5 text-xs rounded bg-primary/20 text-foreground">
-            {form.mode}
+            {(() => {
+              const labels: Record<string, { ru: string; en: string }> = {
+                clash: { ru: "Битва", en: "Clash" },
+                campaign: { ru: "Кампания", en: "Campaign" },
+                alliance: { ru: "Альянс", en: "Alliance" },
+                cooperative: { ru: "Кооператив", en: "Co-op" },
+                solo: { ru: "Соло", en: "Solo" },
+              };
+              const entry = labels[form.mode];
+              return entry ? (lang === "RU" ? entry.ru : entry.en) : form.mode;
+            })()}
           </span>
           {dataQ.data?.scenario && (
             <p className="text-xs text-muted-foreground mt-2">
