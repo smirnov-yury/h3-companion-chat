@@ -9,7 +9,7 @@ interface Props {
   setForm: React.Dispatch<React.SetStateAction<GameSetupForm>>;
 }
 
-const ALL = [2, 3, 4, 5, 6, 7, 8];
+const ALL = [1, 2, 3, 4, 5, 6, 7, 8];
 
 function emptyPlayer(): PlayerForm {
   return { name: "", town: null, heroId: null };
@@ -33,7 +33,7 @@ export default function Step2PlayerCount({ form, setForm }: Props) {
     },
   });
 
-  const min = scenarioQ.data?.min_players ?? 2;
+  const min = scenarioQ.data?.min_players ?? 1;
   const supported: number[] = (scenarioQ.data?.supported_player_counts as number[] | null) ?? [];
 
   const handleClick = (n: number) => {
