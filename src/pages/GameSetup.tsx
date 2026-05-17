@@ -17,7 +17,7 @@ import { INITIAL_FORM, type GameSetupForm, type PlayerForm } from "@/components/
 import { useQuery } from "@tanstack/react-query";
 
 function emptyPlayer(): PlayerForm {
-  return { name: "", town: null, heroId: null };
+  return { name: "", town: null, heroId: null, team: null };
 }
 
 export default function GameSetup() {
