@@ -4,6 +4,7 @@ export interface PlayerForm {
   name: string;
   town: string | null;
   heroId: string | null;
+  team: "A" | "B" | null;
 }
 
 export interface GameSetupForm {
