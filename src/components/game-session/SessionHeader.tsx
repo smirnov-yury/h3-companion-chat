@@ -47,7 +47,14 @@ export default function SessionHeader({ payload, expiresAt }: { payload: Payload
   };
   const title = (lang === "RU" ? sc.title_ru : sc.title_en) || sc.title_en;
   const bookTitle = (lang === "RU" ? sc.book_title_ru : sc.book_title_en) || sc.book_title_en || "—";
-  const playersLabel = lang === "RU" ? "игроков" : "players";
+  const playersLabel = (n: number): string => {
+    if (lang === "EN") return n === 1 ? "player" : "players";
+    const mod10 = n % 10;
+    const mod100 = n % 100;
+    if (mod10 === 1 && mod100 !== 11) return "игрок";
+    if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return "игрока";
+    return "игроков";
+  };
   const MODE_LABELS_LOCAL: Record<string, { ru: string; en: string }> = {
     clash: { ru: "Битва", en: "Clash" },
     campaign: { ru: "Кампания", en: "Campaign" },
@@ -65,7 +72,7 @@ export default function SessionHeader({ payload, expiresAt }: { payload: Payload
         <div className="space-y-1 min-w-0">
           <h1 className="text-2xl md:text-3xl font-bold tracking-tight truncate">{title}</h1>
           <div className="text-sm text-muted-foreground">
-            {bookTitle} · {modeLabel} · {payload.player_count} {playersLabel}
+            {bookTitle} · {modeLabel} · {payload.player_count} {playersLabel(payload.player_count)}
           </div>
           <div className="text-xs text-muted-foreground md:hidden mt-1">
             {formatExpires(expiresAt, lang)}

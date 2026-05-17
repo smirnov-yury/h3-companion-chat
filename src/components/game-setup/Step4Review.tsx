@@ -286,7 +286,18 @@ export default function Step4Review({ form }: Props) {
             }
             navigate(`/game/${insertRes.data.id}`);
           } catch (e: unknown) {
-            const msg = e instanceof Error ? e.message : String(e);
+            let msg: string;
+            if (e instanceof Error) {
+              msg = e.message;
+            } else if (e && typeof e === "object" && "message" in e && typeof (e as { message: unknown }).message === "string") {
+              msg = (e as { message: string }).message;
+            } else {
+              try {
+                msg = JSON.stringify(e);
+              } catch {
+                msg = String(e);
+              }
+            }
             toast.error(lang === "RU" ? `Ошибка: ${msg}` : `Error: ${msg}`);
             setGenerating(false);
           }

@@ -93,7 +93,11 @@ export default function Step2PlayerCount({ form, setForm }: Props) {
       </div>
 
       <div className="text-xs">
-        {selectedNative ? (
+        {scenarioQ.isLoading ? (
+          <span className="text-muted-foreground">
+            {lang === "RU" ? "Загрузка..." : "Loading..."}
+          </span>
+        ) : selectedNative ? (
           <span className="text-muted-foreground">
             {lang === "RU" ? "Нативный режим" : "Native"}
           </span>
