@@ -117,8 +117,12 @@ export default function Step3Players({ form, setForm }: Props) {
   const reset = () => {
     setForm((f) => ({
       ...f,
-      players: f.players.map(() => ({ name: "", town: null, heroId: null })),
+      players: f.players.map(() => ({ name: "", town: null, heroId: null, team: null })),
     }));
+  };
+
+  const setTeam = (idx: number, team: "A" | "B") => {
+    updatePlayer(idx, { team });
   };
 
   const duplicateOf = (idx: number): number | null => {
