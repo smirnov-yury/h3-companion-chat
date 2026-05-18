@@ -61,7 +61,7 @@ export default function Step2PlayerCount({ form, setForm }: Props) {
       <h2 className="text-sm font-semibold">
         {lang === "RU" ? "Количество игроков" : "Number of players"}
       </h2>
-      <div className="flex gap-2 overflow-x-auto -mx-4 px-4 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+      <div className="flex gap-2 overflow-x-auto -mx-4 px-4 pb-2 scrollbar-none">
         {ALL.map((n) => {
           const disabled = isDisabled(n);
           const native = isSupported(n);
