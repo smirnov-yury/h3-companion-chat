@@ -1,6 +1,7 @@
 import { Helmet } from "react-helmet-async";
 import { useLang } from "@/context/LanguageContext";
 import type { TabId } from "@/components/NavDrawer";
+import { buildBreadcrumbs } from "@/seo/buildBreadcrumbs";
 
 const SITE_URL = "https://h3master.app";
 const APP_NAME = "H3 Master";
