@@ -13,7 +13,7 @@ import Step1Scenario from "@/components/game-setup/Step1Scenario";
 import Step2PlayerCount from "@/components/game-setup/Step2PlayerCount";
 import Step3Players from "@/components/game-setup/Step3Players";
 import Step4Review from "@/components/game-setup/Step4Review";
-import { INITIAL_FORM, type GameSetupForm, type PlayerForm } from "@/components/game-setup/types";
+import { INITIAL_FORM, pluralizePlayers, type GameSetupForm, type PlayerForm } from "@/components/game-setup/types";
 import { useQuery } from "@tanstack/react-query";
 
 function emptyPlayer(): PlayerForm {
@@ -152,7 +152,7 @@ export default function GameSetup() {
                         <div className="min-w-0">
                           <div className="font-medium truncate">{s.title}</div>
                           <div className="text-xs text-muted-foreground">
-                            {s.playerCount} {lang === "RU" ? "игроков" : "players"}
+                            {s.playerCount} {pluralizePlayers(s.playerCount, lang)}
                             {dateLabel ? ` · ${dateLabel}` : ""}
                           </div>
                         </div>
