@@ -109,7 +109,7 @@ export default function Step1Scenario({ form, setForm }: Props) {
         <h2 className="text-sm font-semibold mb-2">
           {lang === "RU" ? "Режим игры" : "Game mode"}
         </h2>
-        <div className="flex gap-2 overflow-x-auto -mx-4 px-4 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="flex gap-2 overflow-x-auto -mx-4 px-4 pb-2 scrollbar-none">
           {MODES.map((m) => {
             const active = form.mode === m.id;
             return (
@@ -139,7 +139,7 @@ export default function Step1Scenario({ form, setForm }: Props) {
 
       <div>
         <h2 className="text-sm font-semibold mb-2">{lang === "RU" ? "Книга" : "Book"}</h2>
-        <div className="flex gap-2 overflow-x-auto -mx-4 px-4 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="flex gap-2 overflow-x-auto -mx-4 px-4 pb-2 scrollbar-none">
           <button
             type="button"
             onClick={() => setBookFilter(null)}
