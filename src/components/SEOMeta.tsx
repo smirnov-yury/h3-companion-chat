@@ -1,6 +1,7 @@
 import { Helmet } from "react-helmet-async";
 import { useLang } from "@/context/LanguageContext";
 import type { TabId } from "@/components/NavDrawer";
+import { buildBreadcrumbs } from "@/seo/buildBreadcrumbs";
 
 const SITE_URL = "https://h3master.app";
 const APP_NAME = "H3 Master";
@@ -43,6 +44,22 @@ export default function SEOMeta({ routeKey }: SEOMetaProps) {
   const description = isRu ? DESCRIPTIONS.RU : DESCRIPTIONS.EN;
   const url =
     typeof window !== "undefined" ? window.location.origin + window.location.pathname : SITE_URL;
+  const pathname =
+    typeof window !== "undefined" ? window.location.pathname : "/";
+  const crumbs = buildBreadcrumbs(pathname, isRu);
+  const breadcrumbJsonLd =
+    crumbs.length >= 2
+      ? {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: crumbs.map((c, idx) => ({
+            "@type": "ListItem",
+            position: idx + 1,
+            name: c.name,
+            item: c.url,
+          })),
+        }
+      : null;
 
   return (
     <Helmet>
@@ -57,6 +74,11 @@ export default function SEOMeta({ routeKey }: SEOMetaProps) {
       <meta property="og:url" content={url} />
       <meta name="twitter:title" content={APP_FULL_NAME} />
       <meta name="twitter:description" content={description} />
+      {breadcrumbJsonLd && (
+        <script type="application/ld+json">
+          {JSON.stringify(breadcrumbJsonLd)}
+        </script>
+      )}
     </Helmet>
   );
 }
