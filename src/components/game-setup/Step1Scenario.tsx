@@ -143,7 +143,7 @@ export default function Step1Scenario({ form, setForm }: Props) {
           <button
             type="button"
             onClick={() => setBookFilter(null)}
-            className={`px-3 py-1.5 rounded-full text-xs font-medium border flex-shrink-0 whitespace-nowrap ${
+            className={`px-4 py-2 rounded-full text-sm font-medium border flex-shrink-0 whitespace-nowrap ${
               bookFilter === null
                 ? "bg-primary text-primary-foreground border-primary"
                 : "bg-secondary text-secondary-foreground border-border hover:bg-muted"
@@ -156,7 +156,7 @@ export default function Step1Scenario({ form, setForm }: Props) {
               key={b.id}
               type="button"
               onClick={() => setBookFilter(b.id)}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium border flex-shrink-0 whitespace-nowrap ${
+              className={`px-4 py-2 rounded-full text-sm font-medium border flex-shrink-0 whitespace-nowrap ${
                 bookFilter === b.id
                   ? "bg-primary text-primary-foreground border-primary"
                   : "bg-secondary text-secondary-foreground border-border hover:bg-muted"
