@@ -8,6 +8,7 @@ import { Dialog } from "@/components/ui/dialog";
 import { CardDialogContent } from "@/components/ui/card-dialog";
 import { EmptyState, SkeletonGrid } from "@/components/ui/empty-state";
 import SeeAlso from "@/components/SeeAlso";
+import ImageWithSpinner from "@/components/ImageWithSpinner";
 import { componentImageUrl } from "@/lib/storage";
 
 
@@ -107,7 +108,7 @@ export default function PandoraTab({ searchQuery = "", initialCardId, onCardOpen
             <>
               {selected.image && (
                 <div className="w-full shrink-0 flex justify-center bg-muted">
-                  <img src={componentImageUrl("pandora_box", selected.image as string)} alt="Pandora's Box" className="w-full aspect-[5/7] object-contain rounded-lg shadow-lg" />
+                  <ImageWithSpinner src={componentImageUrl("pandora_box", selected.image as string)} alt="Pandora's Box" className="w-full aspect-[5/7] object-contain rounded-lg shadow-lg" />
                 </div>
               )}
               <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">

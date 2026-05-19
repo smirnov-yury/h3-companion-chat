@@ -9,6 +9,7 @@ import { Dialog } from "@/components/ui/dialog";
 import { CardDialogContent } from "@/components/ui/card-dialog";
 import { EmptyState, SkeletonGrid } from "@/components/ui/empty-state";
 import SeeAlso from "@/components/SeeAlso";
+import ImageWithSpinner from "@/components/ImageWithSpinner";
 
 
 interface GameEvent {
@@ -109,7 +110,7 @@ export default function EventsTab({ searchQuery = "", initialCardId, onCardOpen,
             <>
               {selected.image && (
                 <div className="w-full shrink-0 flex justify-center bg-muted">
-                  <img src={componentImageUrl("events", selected.image, selected.updated_at)} alt={selected.name_en} className="w-full max-h-[280px] object-contain" />
+                  <ImageWithSpinner src={componentImageUrl("events", selected.image, selected.updated_at)} alt={selected.name_en} className="w-full max-h-[280px] object-contain" />
                 </div>
               )}
               <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">

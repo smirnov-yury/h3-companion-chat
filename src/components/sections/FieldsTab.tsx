@@ -9,6 +9,7 @@ import { Dialog } from "@/components/ui/dialog";
 import { CardDialogContent } from "@/components/ui/card-dialog";
 import { EmptyState, SkeletonGrid } from "@/components/ui/empty-state";
 import SeeAlso from "@/components/SeeAlso";
+import ImageWithSpinner from "@/components/ImageWithSpinner";
 
 
 interface Field {
@@ -123,7 +124,7 @@ export default function FieldsTab({ searchQuery = "", filterSlug, initialCardId,
             <>
               {selected.image ? (
                 <div className="relative w-full shrink-0 flex justify-center bg-muted">
-                  <img src={componentImageUrl("fields", selected.image, selected.updated_at)} alt={selected.name_en} className="w-full max-h-[280px] object-contain" />
+                  <ImageWithSpinner src={componentImageUrl("fields", selected.image, selected.updated_at)} alt={selected.name_en} className="w-full max-h-[280px] object-contain" />
                   {selected.type_en && (
                     <span className="absolute top-2 left-2 text-[11px] font-medium px-2 py-0.5 rounded bg-background/80 backdrop-blur-sm text-foreground">
                       {lang === "RU" ? (selected.type_ru || selected.type_en) : selected.type_en}

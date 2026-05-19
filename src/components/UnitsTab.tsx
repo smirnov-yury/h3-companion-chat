@@ -11,6 +11,7 @@ import { Swords, Shield, Heart, Zap, Search, X, ChevronDown, SlidersHorizontal }
 import { EmptyState, SkeletonGrid } from '@/components/ui/empty-state';
 import { useEntityLinkHandler as useEntityLinkHandlerImported } from '@/hooks/useEntityLinkHandler';
 import SeeAlso from '@/components/SeeAlso';
+import ImageWithSpinner from '@/components/ImageWithSpinner';
 
 import { componentMediaUrl, componentImageUrl } from "@/lib/storage";
 
@@ -636,11 +637,11 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
               <>
                 {/* TOP: Image section */}
                 <div className="relative w-[85%] mx-auto pt-4 mb-0 shrink-0">
-                  <img
+                  <ImageWithSpinner
                     src={imgSrc ?? getUnitPlaceholder(u)}
                     alt={u.name_en}
                     className="w-full aspect-[5/7] object-contain rounded-lg shadow-lg"
-                    onError={(e) => { e.currentTarget.src = getUnitPlaceholder(u); e.currentTarget.onerror = null; }}
+                    fallbackSrc={getUnitPlaceholder(u)}
                   />
                   {/* Badges on image top-left */}
                   <div className="absolute top-5 left-5 flex flex-col gap-1">

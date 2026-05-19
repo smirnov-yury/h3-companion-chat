@@ -7,6 +7,7 @@ import { useGlyphs } from "@/context/GlyphsContext";
 import { renderGlyphs } from "@/utils/renderGlyphs";
 import { SkeletonList } from "@/components/ui/empty-state";
 import SeeAlso from "@/components/SeeAlso";
+import ImageWithSpinner from "@/components/ImageWithSpinner";
 
 import { componentImageUrl } from "@/lib/storage";
 
@@ -151,7 +152,7 @@ export default function TownsTab({ initialCardId, onCardOpen }: Props = {}) {
           <div className="md:w-[45%] md:shrink-0 space-y-3">
             <div className="relative">
               {currentImageSrc && !imgError ? (
-                <img
+                <ImageWithSpinner
                   src={currentImageSrc}
                   alt={selectedTown ? name(selectedTown) : ""}
                   className="w-full max-h-[55vh] rounded-lg object-contain"

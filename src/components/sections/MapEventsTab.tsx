@@ -8,6 +8,7 @@ import { Dialog } from "@/components/ui/dialog";
 import { CardDialogContent } from "@/components/ui/card-dialog";
 import { EmptyState, SkeletonGrid } from "@/components/ui/empty-state";
 import SeeAlso from "@/components/SeeAlso";
+import ImageWithSpinner from "@/components/ImageWithSpinner";
 import { componentImageUrl } from "@/lib/storage";
 
 
@@ -104,7 +105,7 @@ export default function MapEventsTab({ searchQuery = "", initialCardId, onCardOp
             <>
               {selected.image && (
                 <div className="w-full shrink-0 flex justify-center bg-muted">
-                  <img src={componentImageUrl("map_events", selected.image as string)} alt={selected.name_en} className="w-full aspect-[5/7] object-contain rounded-lg shadow-lg" />
+                  <ImageWithSpinner src={componentImageUrl("map_events", selected.image as string)} alt={selected.name_en} className="w-full aspect-[5/7] object-contain rounded-lg shadow-lg" />
                 </div>
               )}
               <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">

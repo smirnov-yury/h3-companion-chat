@@ -11,6 +11,7 @@ import { useGlyphs } from "@/context/GlyphsContext";
 import { renderGlyphs } from "@/utils/renderGlyphs";
 import type { Json } from "@/integrations/supabase/types";
 import { componentImageUrl } from "@/lib/storage";
+import ImageWithSpinner from "@/components/ImageWithSpinner";
 
 const MODE_LABELS_EN: Record<string, string> = { clash: "Clash", cooperative: "Cooperative", campaign: "Campaign" };
 const MODE_LABELS_RU: Record<string, string> = { clash: "Столкновение", cooperative: "Кооператив", campaign: "Кампания" };
@@ -257,7 +258,7 @@ function MapPane({ scenarioId }: { scenarioId: string }) {
               <p className="text-xs font-semibold text-foreground">{label || `${v.player_count}P`}</p>
             </div>
             {v.map_image && (
-              <img
+              <ImageWithSpinner
                 src={componentImageUrl("scenario_map_variants", v.map_image, v.updated_at)}
                 alt="map"
                 className="w-full rounded-lg border border-border mb-2 cursor-zoom-in object-contain max-h-64"

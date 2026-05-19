@@ -10,6 +10,7 @@ import { CardDialogContent } from "@/components/ui/card-dialog";
 import { EmptyState, SkeletonGrid } from "@/components/ui/empty-state";
 import { useEntityLinkHandler } from "@/hooks/useEntityLinkHandler";
 import SeeAlso from "@/components/SeeAlso";
+import ImageWithSpinner from "@/components/ImageWithSpinner";
 
 import { componentMediaUrl } from "@/lib/storage";
 const DECK_PLACEHOLDER = componentMediaUrl("artifacts/empty_art_ability_spec_spell.webp");
@@ -163,7 +164,7 @@ export default function ArtifactsTab({ searchQuery = "", initialFilter, initialC
           {selected && (
             <>
               <div className="relative w-[85%] mx-auto pt-4 mb-0 shrink-0">
-                <img src={selected.image ? componentImageUrl("artifacts", selected.image, selected.updated_at) : DECK_PLACEHOLDER} alt={selected.name_en} className="w-full aspect-[5/7] object-contain rounded-lg shadow-lg" onError={(e) => { e.currentTarget.src = DECK_PLACEHOLDER; e.currentTarget.onerror = null; }} />
+                <ImageWithSpinner src={selected.image ? componentImageUrl("artifacts", selected.image, selected.updated_at) : DECK_PLACEHOLDER} alt={selected.name_en} className="w-full aspect-[5/7] object-contain rounded-lg shadow-lg" fallbackSrc={DECK_PLACEHOLDER} />
                 {selected.quality && (
                   <span className={`absolute top-2 left-2 text-[11px] px-2 py-0.5 rounded-full font-medium ${QUALITY_COLORS[selected.quality] || "bg-muted text-muted-foreground"}`}>
                     {QUALITY_LABELS[selected.quality] || selected.quality}

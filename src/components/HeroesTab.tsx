@@ -13,6 +13,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { EmptyState, SkeletonGrid } from "@/components/ui/empty-state";
 import { useEntityLinkHandler, entityLinkUrl } from "@/hooks/useEntityLinkHandler";
 import { useEntityLinks } from "@/hooks/useEntityLinks";
+import ImageWithSpinner from "@/components/ImageWithSpinner";
 
 import { componentImageUrl } from "@/lib/storage";
 
@@ -357,10 +358,11 @@ export default function HeroesTab({ initialFilter, initialCardId, initialSearch,
 
             <div className="p-4 shrink-0">
               {isHeroPortraitFilename(selected.image) ? (
-                <img
+                <ImageWithSpinner
                   src={componentImageUrl("heroes", selected.image, selected.updated_at)}
                   alt={name(selected)}
                   className="max-h-[200px] object-contain mx-auto"
+                  containerClassName="max-h-[200px] mx-auto flex justify-center"
                 />
               ) : (
                 <div className="max-h-[200px] h-[200px] aspect-square mx-auto">
