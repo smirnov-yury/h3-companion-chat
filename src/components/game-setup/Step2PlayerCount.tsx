@@ -95,7 +95,13 @@ export default function Step2PlayerCount({ form, setForm }: Props) {
 
       <div className="text-xs">
         {scenarioQ.isLoading ? (
-          <span className="text-muted-foreground">
+          <span className="text-muted-foreground inline-flex items-center gap-1.5">
+            <H3MasterSpinner
+              variant="rotate"
+              size={12}
+              className="text-muted-foreground"
+              ariaLabel={lang === "RU" ? "Загрузка" : "Loading"}
+            />
             {lang === "RU" ? "Загрузка..." : "Loading..."}
           </span>
         ) : selectedNative ? (
