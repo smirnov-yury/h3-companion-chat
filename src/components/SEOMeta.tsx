@@ -75,9 +75,13 @@ export default function SEOMeta({ routeKey }: SEOMetaProps) {
       <meta name="twitter:title" content={APP_FULL_NAME} />
       <meta name="twitter:description" content={description} />
       {breadcrumbJsonLd && (
-        <script type="application/ld+json">
-          {JSON.stringify(breadcrumbJsonLd)}
-        </script>
+        <script
+          type="application/ld+json"
+          data-rh-key="breadcrumb-jsonld"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(breadcrumbJsonLd),
+          }}
+        />
       )}
     </Helmet>
   );
