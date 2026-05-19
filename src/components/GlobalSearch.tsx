@@ -606,10 +606,12 @@ export default function GlobalSearch({ mode, onClose, initialQuery = "", autoFoc
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder={placeholder}
-        className="w-full bg-muted rounded-xl pl-10 pr-10 py-3 text-base text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary transition-all"
+        className={`w-full bg-muted rounded-xl pl-10 pr-10 py-3 text-base text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary transition-all ${semanticLoading ? "ring-2 ring-primary" : ""}`}
       />
       {semanticLoading ? (
-        <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground animate-spin" size={16} />
+        <span className="absolute right-3 top-1/2 -translate-y-1/2 leading-none">
+          <H3MasterSpinner variant="rotate" size={16} className="text-primary" ariaLabel={lang === "RU" ? "Поиск" : "Searching"} />
+        </span>
       ) : query ? (
         <button onClick={() => setQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground hover:text-foreground transition-colors">
           {lang === "RU" ? "Очистить" : "Clear"}
