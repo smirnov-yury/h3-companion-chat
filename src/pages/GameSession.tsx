@@ -15,6 +15,7 @@ import PlayersGrid from "@/components/game-session/PlayersGrid";
 import StorySection from "@/components/game-session/StorySection";
 import AISetupSection from "@/components/game-session/AISetupSection";
 import GameSessionExpired from "@/components/game-session/GameSessionExpired";
+import H3MasterSpinner from "@/components/H3MasterSpinner";
 import type { Payload } from "@/lib/setupResolver";
 
 export default function GameSession() {
@@ -56,8 +57,8 @@ export default function GameSession() {
       />
       <div className="flex-1 overflow-y-auto lg:ml-56 pt-11">
         {sessionQ.isLoading && (
-          <div className="p-4 text-sm text-muted-foreground">
-            {lang === "RU" ? "Загрузка..." : "Loading..."}
+          <div className="flex items-center justify-center min-h-[60vh]">
+            <H3MasterSpinner size={48} variant="draw" className="text-primary" />
           </div>
         )}
         {!sessionQ.isLoading && !sessionQ.data && <GameSessionExpired />}
