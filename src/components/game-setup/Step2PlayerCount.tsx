@@ -3,6 +3,7 @@ import { AlertTriangle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/context/LanguageContext";
 import type { GameSetupForm, PlayerForm } from "./types";
+import H3MasterSpinner from "@/components/H3MasterSpinner";
 
 interface Props {
   form: GameSetupForm;
