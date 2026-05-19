@@ -101,7 +101,7 @@ export default function FieldsTab({ searchQuery = "", filterSlug, initialCardId,
                   className="flex flex-col w-full overflow-hidden rounded-lg bg-muted text-left cursor-pointer transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg hover:ring-2 hover:ring-primary">
                   <div className="aspect-[4/3] w-full bg-muted overflow-hidden relative">
                     {imgSrc
-                      ? <img src={imgSrc} alt={item.name_en} className="w-full h-full object-cover rounded-t-lg" />
+                      ? <img loading="lazy" decoding="async" src={imgSrc} alt={item.name_en} className="w-full h-full object-cover rounded-t-lg" />
                       : <div className="w-full h-full flex items-center justify-center"><p className="text-[10px] text-muted-foreground text-center px-1">{item.name_en}</p></div>
                     }
                     {item.type_en && (

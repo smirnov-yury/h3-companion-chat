@@ -107,7 +107,7 @@ export default function StatisticsTab({ searchQuery = "", initialCardId, onCardO
                   <div key={item.id} onClick={() => openCard(item)}
                     className="relative aspect-[5/7] bg-muted rounded-lg overflow-hidden cursor-pointer transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg">
                     {imgSrc
-                      ? <img src={imgSrc} alt={item.name_en || ""} className="absolute inset-0 w-full h-full object-cover rounded-lg" />
+                      ? <img loading="lazy" decoding="async" src={imgSrc} alt={item.name_en || ""} className="absolute inset-0 w-full h-full object-cover rounded-lg" />
                       : <div className="absolute inset-0 flex items-center justify-center"><p className="text-[10px] text-muted-foreground text-center px-1">{item.name_en}</p></div>
                     }
                   </div>
