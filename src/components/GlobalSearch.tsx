@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Search, X, Loader2,
+  Search, X,
   Swords, Crown, Sparkles, Zap, Gem, BookOpen, BarChart3,
   Map as MapIcon, Hexagon, CalendarDays, Wrench, Star, Bot,
   MapPin, Smile, Package, Building2, FileText,
 } from "lucide-react";
+import H3MasterSpinner from "@/components/H3MasterSpinner";
 import type { LucideIcon } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang } from "@/context/LanguageContext";
