@@ -13,6 +13,7 @@ const GlobalEventsTab = lazy(() => import("@/components/GlobalEventsTab"));
 const MapElementsTab  = lazy(() => import("@/components/MapElementsTab"));
 import BackToTop from "@/components/BackToTop";
 import SEOMeta from "@/components/SEOMeta";
+import H3MasterSpinner from "@/components/H3MasterSpinner";
 import { useLang } from "@/context/LanguageContext";
 import {
   DEFAULT_SLUG,
@@ -23,8 +24,8 @@ import {
 
 function TabFallback() {
   return (
-    <div className="flex-1 flex items-center justify-center text-sm text-muted-foreground">
-      Loading...
+    <div className="flex-1 flex items-center justify-center min-h-[60vh]">
+      <H3MasterSpinner size={48} variant="draw" className="text-primary" />
     </div>
   );
 }

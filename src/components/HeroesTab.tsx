@@ -303,6 +303,8 @@ export default function HeroesTab({ initialFilter, initialCardId, initialSearch,
                     <img
                       src={componentImageUrl("heroes", h.image, h.updated_at)}
                       alt={name(h)}
+                      loading="lazy"
+                      decoding="async"
                       className="w-full h-full object-cover object-left"
                     />
                   ) : (
@@ -475,6 +477,8 @@ export default function HeroesTab({ initialFilter, initialCardId, initialSearch,
                                 <img
                                   src={componentImageUrl("heroes", lvl.image, selected.updated_at)}
                                   alt={lvl.level}
+                                  loading="lazy"
+                                  decoding="async"
                                   className="w-[70%] max-w-[280px] mx-auto object-contain rounded-lg"
                                   onError={e => (e.currentTarget.style.display = "none")}
                                 />

@@ -141,7 +141,7 @@ export default function ArtifactsTab({ searchQuery = "", initialFilter, initialC
                   <button key={item.id} onClick={() => openCard(item)}
                     className="flex flex-col rounded-xl border border-border bg-card overflow-hidden text-left hover:border-primary transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg cursor-pointer">
                     <div className="aspect-[5/7] w-full bg-muted flex items-center justify-center overflow-hidden relative rounded-lg">
-                      <img src={imgSrc || DECK_PLACEHOLDER} alt={item.name_en} className="w-full h-full object-cover rounded-lg" onError={(e) => { e.currentTarget.src = DECK_PLACEHOLDER; e.currentTarget.onerror = null; }} />
+                      <img loading="lazy" decoding="async" src={imgSrc || DECK_PLACEHOLDER} alt={item.name_en} className="w-full h-full object-cover rounded-lg" onError={(e) => { e.currentTarget.src = DECK_PLACEHOLDER; e.currentTarget.onerror = null; }} />
                       {item.quality && (
                       <span className={`absolute top-1 left-1 text-xs px-2 py-0.5 rounded-full font-medium ${QUALITY_COLORS[item.quality] || "bg-muted text-muted-foreground"}`}>
                           {QUALITY_LABELS[item.quality] || item.quality}

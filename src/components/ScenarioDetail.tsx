@@ -290,6 +290,8 @@ function MapPane({ scenarioId }: { scenarioId: string }) {
           <img
             src={zoomedImg}
             alt="map zoomed"
+            loading="lazy"
+            decoding="async"
             className="max-w-full max-h-full rounded-lg shadow-2xl object-contain"
           />
         </div>

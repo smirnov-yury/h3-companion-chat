@@ -95,7 +95,7 @@ export default function MoraleTab({ searchQuery = "", initialCardId, onCardOpen,
                 <button key={item.id} onClick={() => openCard(item)}
                   className="flex flex-col w-full overflow-hidden rounded-lg bg-muted text-left cursor-pointer transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg hover:ring-2 hover:ring-primary">
                   <div className="relative w-full aspect-[5/7] overflow-hidden rounded-t-lg bg-muted">
-                    {imgSrc && <img src={imgSrc} alt={item.type} className="w-full h-full object-cover" />}
+                    {imgSrc && <img loading="lazy" decoding="async" src={imgSrc} alt={item.type} className="w-full h-full object-cover" />}
                     <span className={`absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded text-[10px] font-medium ${typeBadgeClass(item.type)}`}>
                       {typeLabel(item.type)}
                     </span>
