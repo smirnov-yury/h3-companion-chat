@@ -9,6 +9,7 @@ import { Dialog } from "@/components/ui/dialog";
 import { CardDialogContent } from "@/components/ui/card-dialog";
 import { EmptyState, SkeletonGrid } from "@/components/ui/empty-state";
 import { useEntityLinkHandler } from "@/hooks/useEntityLinkHandler";
+import ImageWithSpinner from "@/components/ImageWithSpinner";
 
 
 interface Statistic {
@@ -123,7 +124,7 @@ export default function StatisticsTab({ searchQuery = "", initialCardId, onCardO
             <>
               {selected.image && (
                 <div className="relative w-[85%] mx-auto pt-4 mb-0 shrink-0">
-                  <img src={componentImageUrl("statistics", selected.image, selected.updated_at)} alt={selected.name_en || ""} className="w-full aspect-[5/7] object-contain rounded-lg shadow-lg" />
+                  <ImageWithSpinner src={componentImageUrl("statistics", selected.image, selected.updated_at)} alt={selected.name_en || ""} className="w-full aspect-[5/7] object-contain rounded-lg shadow-lg" />
                 </div>
               )}
               <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3" onClick={handleEntityClick}>

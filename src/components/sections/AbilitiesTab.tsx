@@ -10,6 +10,7 @@ import { CardDialogContent } from "@/components/ui/card-dialog";
 import { EmptyState, SkeletonGrid } from "@/components/ui/empty-state";
 import { useEntityLinkHandler } from "@/hooks/useEntityLinkHandler";
 import SeeAlso from "@/components/SeeAlso";
+import ImageWithSpinner from "@/components/ImageWithSpinner";
 
 import { componentMediaUrl } from "@/lib/storage";
 const DECK_PLACEHOLDER = componentMediaUrl("artifacts/empty_art_ability_spec_spell.webp");
@@ -118,7 +119,7 @@ export default function AbilitiesTab({ searchQuery = "", initialCardId, onCardOp
           {selected && (
             <>
               <div className="relative w-[85%] mx-auto pt-4 mb-0 shrink-0 bg-muted/50 rounded-lg">
-                <img src={selected.image_regular ? componentImageUrl("abilities", selected.image_regular, selected.updated_at) : DECK_PLACEHOLDER} alt={selected.name_en} className="w-full aspect-[5/7] object-contain rounded-lg shadow-lg" onError={(e) => { e.currentTarget.src = DECK_PLACEHOLDER; e.currentTarget.onerror = null; }} />
+                <ImageWithSpinner src={selected.image_regular ? componentImageUrl("abilities", selected.image_regular, selected.updated_at) : DECK_PLACEHOLDER} alt={selected.name_en} className="w-full aspect-[5/7] object-contain rounded-lg shadow-lg" fallbackSrc={DECK_PLACEHOLDER} />
               </div>
               <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3" onClick={handleEntityClick}>
                 <h2 className="text-lg font-semibold leading-tight pr-8">{name(selected)}</h2>
