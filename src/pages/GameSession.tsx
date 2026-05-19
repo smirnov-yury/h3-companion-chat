@@ -15,6 +15,7 @@ import PlayersGrid from "@/components/game-session/PlayersGrid";
 import StorySection from "@/components/game-session/StorySection";
 import AISetupSection from "@/components/game-session/AISetupSection";
 import GameSessionExpired from "@/components/game-session/GameSessionExpired";
+import H3MasterSpinner from "@/components/H3MasterSpinner";
 import type { Payload } from "@/lib/setupResolver";
 
 export default function GameSession() {
