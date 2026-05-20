@@ -29,6 +29,7 @@ const MULTICOLOR_TOKENS = new Set<string>([
   "damage",
   "health_points",
   "valuables",
+  "pay",
 ]);
 
 // Tokens whose PNG should render dark gray
