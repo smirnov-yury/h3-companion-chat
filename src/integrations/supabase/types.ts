@@ -2280,6 +2280,12 @@ export type Database = {
         Returns: Json
       }
       dev_eval_start_run: { Args: never; Returns: string }
+      get_chat_suggestions: {
+        Args: { p_lang: string }
+        Returns: {
+          question_text: string
+        }[]
+      }
       is_admin: { Args: never; Returns: boolean }
       match_all_en: {
         Args: {
