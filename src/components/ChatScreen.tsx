@@ -427,12 +427,13 @@ export default function ChatScreen() {
     }
   }, [input, loading, messages, lang]);
 
+  const handleSuggestionTap = useCallback((question: string) => {
+    setInput(question);
+    void sendMessage(question);
+  }, [sendMessage]);
+
   return (
     <div className="flex flex-col h-full">
-      <header className="flex items-center justify-between px-4 py-3 border-b border-border shrink-0">
-        <h1 className="text-lg font-semibold text-foreground">{TITLE[lang]}</h1>
-      </header>
-
       {savedAt && messages.length > 0 && (
         <div className="flex items-center justify-between gap-2 px-4 py-2 bg-muted/40 border-b border-border text-xs text-muted-foreground shrink-0">
           <span>{SAVED_BANNER[lang](hoursLeft(savedAt))}</span>
@@ -448,7 +449,36 @@ export default function ChatScreen() {
       )}
 
       <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
-        {messages.map((m, i) => (
+        {messages.length === 0 && !loading && (
+          <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4 px-4">
+            <H3MasterSpinner variant="static" size={64} className="text-primary opacity-60" />
+            <div className="text-sm font-semibold text-foreground">
+              {SUGGESTIONS_HEADING[lang]}
+            </div>
+            <div className="flex flex-col gap-2 w-full max-w-md">
+              {shownSuggestions.map((q) => (
+                <button
+                  key={q}
+                  type="button"
+                  onClick={() => handleSuggestionTap(q)}
+                  className="text-left rounded-xl border border-border bg-card hover:bg-muted/50 transition-colors px-4 py-3 text-sm text-foreground"
+                >
+                  {q}
+                </button>
+              ))}
+            </div>
+            {suggestionPool.length > 4 && (
+              <button
+                type="button"
+                onClick={() => setShownSuggestions(pickRandom(suggestionPool, 4))}
+                className="text-xs text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1"
+              >
+                <RefreshCw className="w-3.5 h-3.5" />
+                {SUGGESTIONS_REFRESH_LABEL[lang]}
+              </button>
+            )}
+          </div>
+        )}
           <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
             <div
               className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
