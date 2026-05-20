@@ -332,8 +332,8 @@ export default function ChatScreen() {
     };
   }, [teardownAudioVisualizer]);
 
-  const sendMessage = useCallback(async () => {
-    const text = input.trim();
+  const sendMessage = useCallback(async (overrideInput?: string) => {
+    const text = (overrideInput ?? input).trim();
     if (!text || loading) return;
 
     const userMsg: Message = { role: "user", content: text };
