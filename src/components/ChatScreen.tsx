@@ -128,6 +128,28 @@ export default function ChatScreen() {
   }, []);
 
   useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data, error } = await supabase.rpc("get_chat_suggestions", { p_lang: lang });
+        if (cancelled) return;
+        const pool = Array.isArray(data) && data.length > 0
+          ? data.map((r: { question_text: string }) => r.question_text).filter(Boolean)
+          : (lang === "RU" ? SUGGESTIONS_FALLBACK_RU : SUGGESTIONS_FALLBACK_EN);
+        setSuggestionPool(pool);
+        setShownSuggestions(pickRandom(pool, 4));
+        if (error) console.warn("get_chat_suggestions failed:", error.message);
+      } catch {
+        if (cancelled) return;
+        const fb = lang === "RU" ? SUGGESTIONS_FALLBACK_RU : SUGGESTIONS_FALLBACK_EN;
+        setSuggestionPool(fb);
+        setShownSuggestions(pickRandom(fb, 4));
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [lang]);
+
+  useEffect(() => {
     const on = () => setOnline(true);
     const off = () => setOnline(false);
     window.addEventListener("online", on);
