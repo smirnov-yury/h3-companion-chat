@@ -82,7 +82,10 @@ export function renderGlyphs(text: string | null | undefined, glyphs: GlyphMap):
       const naturalClass = NATURAL_TOKENS.has(key) ? 'glyph-natural' : '';
       const multicolorClass = MULTICOLOR_TOKENS.has(key) ? 'glyph-multicolor' : '';
       const extraClass = tierClass || naturalClass || multicolorClass;
-      const baseClass = key === 'or' ? 'glyph-svg glyph-or' : 'glyph-svg';
+      const baseClass =
+        key === 'or' ? 'glyph-svg glyph-or' :
+        key === 'pay' ? 'glyph-svg glyph-pay' :
+        'glyph-svg';
       const spanClass = extraClass ? `${baseClass} ${extraClass}` : baseClass;
       return `<span class="${spanClass}" aria-label="${key}">${GLYPH_SVGS[key]}</span>`;
     }
