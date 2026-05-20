@@ -269,6 +269,7 @@ export default function Step4Review({ form }: Props) {
             try {
               const historyEntry = {
                 uuid: insertRes.data.id,
+                scenarioId: form.scenarioId,
                 title: (lang === "RU" ? scenRes.data.title_ru : null) || scenRes.data.title_en || "",
                 playerCount: form.playerCount,
                 createdAt: new Date().toISOString(),
