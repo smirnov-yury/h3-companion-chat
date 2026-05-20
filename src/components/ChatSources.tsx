@@ -74,12 +74,14 @@ export default function ChatSources({ content, lang }: Props) {
       const key = `${type}:${id}`;
       if (seen.has(key)) continue;
       const url = entityLinkUrl(type, id);
-      if (!url) continue;
+      const labelsMap = lang === "RU" ? TYPE_LABEL_RU : TYPE_LABEL_EN;
+      // Skip only if both no URL AND no known label (truly unknown type).
+      if (!url && !labelsMap[type]) continue;
       seen.add(key);
       result.push({ type, id, name, url });
     }
     return result;
-  }, [content]);
+  }, [content, lang]);
 
   if (sources.length === 0) return null;
 
