@@ -27,6 +27,7 @@ export default function GameSetup() {
   const [form, setForm] = useState<GameSetupForm>(INITIAL_FORM);
   interface RecentEntry {
     uuid: string;
+    scenarioId?: string;
     title: string;
     playerCount: number;
     createdAt: string;
@@ -41,6 +42,33 @@ export default function GameSetup() {
       setRecentSessions([]);
     }
   }, []);
+
+  const scenarioIdsForRecent = useMemo(
+    () => Array.from(new Set(recentSessions.map((s) => s.scenarioId).filter(Boolean) as string[])),
+    [recentSessions],
+  );
+
+  const recentTitlesQ = useQuery({
+    queryKey: ["game-setup", "recent-scenario-titles", scenarioIdsForRecent],
+    enabled: scenarioIdsForRecent.length > 0,
+    staleTime: 5 * 60 * 1000,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("scenarios")
+        .select("id, title_ru, title_en")
+        .in("id", scenarioIdsForRecent);
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  const recentTitleMap = useMemo(() => {
+    const m = new Map<string, { title_ru: string | null; title_en: string | null }>();
+    for (const s of recentTitlesQ.data ?? []) {
+      m.set(s.id, { title_ru: s.title_ru, title_en: s.title_en });
+    }
+    return m;
+  }, [recentTitlesQ.data]);
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
 
   // Auto-set playerCount to scenario.min_players when scenario changes.
@@ -142,6 +170,10 @@ export default function GameSetup() {
                           hour: "2-digit",
                           minute: "2-digit",
                         });
+                    const meta = s.scenarioId ? recentTitleMap.get(s.scenarioId) : undefined;
+                    const localizedTitle = meta
+                      ? (lang === "RU" ? (meta.title_ru || meta.title_en || s.title) : (meta.title_en || s.title))
+                      : s.title;
                     return (
                       <button
                         key={s.uuid}
@@ -150,7 +182,7 @@ export default function GameSetup() {
                         className="w-full text-left flex items-center justify-between gap-3 rounded-lg border border-border bg-card px-3 py-2 text-sm hover:bg-muted/50 transition-colors"
                       >
                         <div className="min-w-0">
-                          <div className="font-medium truncate">{s.title}</div>
+                          <div className="font-medium truncate">{localizedTitle}</div>
                           <div className="text-xs text-muted-foreground">
                             {s.playerCount} {pluralizePlayers(s.playerCount, lang)}
                             {dateLabel ? ` · ${dateLabel}` : ""}
