@@ -16,6 +16,7 @@ interface Source {
 
 const TYPE_LABEL_EN: Record<string, string> = {
   rule: "rule",
+  rule_ext: "rule",
   unit: "unit",
   hero: "hero",
   spell: "spell",
@@ -32,10 +33,12 @@ const TYPE_LABEL_EN: Record<string, string> = {
   map_event: "map event",
   morale: "morale",
   pandora: "Pandora",
+  glyph: "icon",
 };
 
 const TYPE_LABEL_RU: Record<string, string> = {
   rule: "правило",
+  rule_ext: "правило",
   unit: "отряд",
   hero: "герой",
   spell: "заклинание",
@@ -52,6 +55,7 @@ const TYPE_LABEL_RU: Record<string, string> = {
   map_event: "событие карты",
   morale: "мораль",
   pandora: "Ящик Пандоры",
+  glyph: "иконка",
 };
 
 const SOURCE_REGEX = /\[([^\]]+)\]\(([a-z_]+):([^)]+)\)/g;
