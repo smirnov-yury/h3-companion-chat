@@ -43,6 +43,32 @@ const VOICE_TRANSCRIBE_ERROR = {
 };
 const TRANSCRIBING_LABEL = { RU: "Распознаю речь…", EN: "Transcribing…" };
 const MAX_RECORD_SECONDS = 60;
+const SUGGESTIONS_HEADING = {
+  RU: "Спросите про любое правило",
+  EN: "Ask about any rule",
+};
+const SUGGESTIONS_FALLBACK_RU = [
+  "Расскажи правила осады города.",
+  "Как работают карты морали в игре?",
+  "Что такое Свиток заклинания?",
+  "Какие типы юнитов существуют в игре?",
+];
+const SUGGESTIONS_FALLBACK_EN = [
+  "What is a Spell Scroll?",
+  "Tell me about Empowered ability cards.",
+  "What stats do Gold Dragons have?",
+  "What is the Difficulty system in this game?",
+];
+const SUGGESTIONS_REFRESH_LABEL = { RU: "Обновить", EN: "Refresh" };
+
+function pickRandom<T>(arr: T[], n: number): T[] {
+  const copy = [...arr];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy.slice(0, Math.min(n, copy.length));
+}
 
 export default function ChatScreen() {
   const { lang } = useLang();
