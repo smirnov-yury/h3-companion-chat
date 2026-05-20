@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { Send, Trash2, Mic, Square, Loader2 } from "lucide-react";
+import { Send, Trash2, Mic, Square, Loader2, RefreshCw } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
 import { useGlyphs } from "@/context/GlyphsContext";
 import { renderGlyphs } from "@/utils/renderGlyphs";
@@ -43,6 +43,32 @@ const VOICE_TRANSCRIBE_ERROR = {
 };
 const TRANSCRIBING_LABEL = { RU: "Распознаю речь…", EN: "Transcribing…" };
 const MAX_RECORD_SECONDS = 60;
+const SUGGESTIONS_HEADING = {
+  RU: "Спросите про любое правило",
+  EN: "Ask about any rule",
+};
+const SUGGESTIONS_FALLBACK_RU = [
+  "Расскажи правила осады города.",
+  "Как работают карты морали в игре?",
+  "Что такое Свиток заклинания?",
+  "Какие типы юнитов существуют в игре?",
+];
+const SUGGESTIONS_FALLBACK_EN = [
+  "What is a Spell Scroll?",
+  "Tell me about Empowered ability cards.",
+  "What stats do Gold Dragons have?",
+  "What is the Difficulty system in this game?",
+];
+const SUGGESTIONS_REFRESH_LABEL = { RU: "Обновить", EN: "Refresh" };
+
+function pickRandom<T>(arr: T[], n: number): T[] {
+  const copy = [...arr];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy.slice(0, Math.min(n, copy.length));
+}
 
 export default function ChatScreen() {
   const { lang } = useLang();
@@ -72,6 +98,8 @@ export default function ChatScreen() {
       ? 120
       : 40;
   const [bars, setBars] = useState<number[]>(() => Array(BAR_COUNT).fill(0));
+  const [suggestionPool, setSuggestionPool] = useState<string[]>([]);
+  const [shownSuggestions, setShownSuggestions] = useState<string[]>([]);
 
   const teardownAudioVisualizer = useCallback(() => {
     if (visualizerFrameRef.current !== null) {
@@ -98,6 +126,28 @@ export default function ChatScreen() {
       setSavedAt(restored.savedAt);
     }
   }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data, error } = await supabase.rpc("get_chat_suggestions", { p_lang: lang });
+        if (cancelled) return;
+        const pool = Array.isArray(data) && data.length > 0
+          ? data.map((r: { question_text: string }) => r.question_text).filter(Boolean)
+          : (lang === "RU" ? SUGGESTIONS_FALLBACK_RU : SUGGESTIONS_FALLBACK_EN);
+        setSuggestionPool(pool);
+        setShownSuggestions(pickRandom(pool, 4));
+        if (error) console.warn("get_chat_suggestions failed:", error.message);
+      } catch {
+        if (cancelled) return;
+        const fb = lang === "RU" ? SUGGESTIONS_FALLBACK_RU : SUGGESTIONS_FALLBACK_EN;
+        setSuggestionPool(fb);
+        setShownSuggestions(pickRandom(fb, 4));
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [lang]);
 
   useEffect(() => {
     const on = () => setOnline(true);
@@ -282,8 +332,8 @@ export default function ChatScreen() {
     };
   }, [teardownAudioVisualizer]);
 
-  const sendMessage = useCallback(async () => {
-    const text = input.trim();
+  const sendMessage = useCallback(async (overrideInput?: string) => {
+    const text = (overrideInput ?? input).trim();
     if (!text || loading) return;
 
     const userMsg: Message = { role: "user", content: text };
@@ -377,12 +427,13 @@ export default function ChatScreen() {
     }
   }, [input, loading, messages, lang]);
 
+  const handleSuggestionTap = useCallback((question: string) => {
+    setInput(question);
+    void sendMessage(question);
+  }, [sendMessage]);
+
   return (
     <div className="flex flex-col h-full">
-      <header className="flex items-center justify-between px-4 py-3 border-b border-border shrink-0">
-        <h1 className="text-lg font-semibold text-foreground">{TITLE[lang]}</h1>
-      </header>
-
       {savedAt && messages.length > 0 && (
         <div className="flex items-center justify-between gap-2 px-4 py-2 bg-muted/40 border-b border-border text-xs text-muted-foreground shrink-0">
           <span>{SAVED_BANNER[lang](hoursLeft(savedAt))}</span>
@@ -398,6 +449,36 @@ export default function ChatScreen() {
       )}
 
       <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
+        {messages.length === 0 && !loading && (
+          <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4 px-4">
+            <H3MasterSpinner variant="static" size={64} className="text-primary opacity-60" />
+            <div className="text-sm font-semibold text-foreground">
+              {SUGGESTIONS_HEADING[lang]}
+            </div>
+            <div className="flex flex-col gap-2 w-full max-w-md">
+              {shownSuggestions.map((q) => (
+                <button
+                  key={q}
+                  type="button"
+                  onClick={() => handleSuggestionTap(q)}
+                  className="text-left rounded-xl border border-border bg-card hover:bg-muted/50 transition-colors px-4 py-3 text-sm text-foreground"
+                >
+                  {q}
+                </button>
+              ))}
+            </div>
+            {suggestionPool.length > 4 && (
+              <button
+                type="button"
+                onClick={() => setShownSuggestions(pickRandom(suggestionPool, 4))}
+                className="text-xs text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1"
+              >
+                <RefreshCw className="w-3.5 h-3.5" />
+                {SUGGESTIONS_REFRESH_LABEL[lang]}
+              </button>
+            )}
+          </div>
+        )}
         {messages.map((m, i) => (
           <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
             <div
