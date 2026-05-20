@@ -11,7 +11,7 @@ interface Source {
   type: string;
   id: string;
   name: string;
-  url: string;
+  url: string | null;
 }
 
 const TYPE_LABEL_EN: Record<string, string> = {
