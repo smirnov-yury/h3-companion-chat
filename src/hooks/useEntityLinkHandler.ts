@@ -38,6 +38,12 @@ export function entityLinkUrl(type: string, id: string): string | null {
       const townId = id.split("_")[0];
       return townId ? `/towns/${townId}` : null;
     }
+    case "rule_ext":
+      // rule_ext entries have no dedicated FE page yet — RAG-only.
+      return null;
+    case "glyph":
+      // glyph entries are icons, not pages.
+      return null;
     default:
       return null;
   }

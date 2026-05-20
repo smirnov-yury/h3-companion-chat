@@ -45,8 +45,9 @@ const TIER_CLASSES: Record<string, string> = {
 };
 
 const ENTITY_LINK_TYPES = new Set([
-  "spell", "ability", "artifact", "unit", "hero", "rule",
-  "war_machine", "town_building", "astrologer", "field", "event",
+  "spell", "ability", "artifact", "unit", "hero", "rule", "rule_ext",
+  "war_machine", "town_building", "building", "astrologer", "field", "event",
+  "glyph", "statistic", "ai_card", "map_event", "morale", "pandora",
 ]);
 
 export function renderGlyphs(text: string | null | undefined, glyphs: GlyphMap): string {
@@ -102,8 +103,10 @@ export function renderGlyphs(text: string | null | undefined, glyphs: GlyphMap):
     ALLOWED_TAGS: ["span", "img", "br"],
     ALLOWED_ATTR: ["class", "src", "alt", "aria-label", "style",
                    "data-entity-type", "data-entity-id"],
-    ADD_TAGS: ["svg", "path"],
-    ADD_ATTR: ["viewBox", "xmlns", "fill", "d"],
+    ADD_TAGS: ["svg", "path", "text", "circle"],
+    ADD_ATTR: ["viewBox", "xmlns", "fill", "d",
+               "x", "y", "cx", "cy", "r",
+               "dominant-baseline", "font-family", "font-size", "text-anchor"],
   });
 }
 

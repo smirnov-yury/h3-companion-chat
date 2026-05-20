@@ -11,11 +11,12 @@ interface Source {
   type: string;
   id: string;
   name: string;
-  url: string;
+  url: string | null;
 }
 
 const TYPE_LABEL_EN: Record<string, string> = {
   rule: "rule",
+  rule_ext: "rule",
   unit: "unit",
   hero: "hero",
   spell: "spell",
@@ -32,10 +33,12 @@ const TYPE_LABEL_EN: Record<string, string> = {
   map_event: "map event",
   morale: "morale",
   pandora: "Pandora",
+  glyph: "icon",
 };
 
 const TYPE_LABEL_RU: Record<string, string> = {
   rule: "правило",
+  rule_ext: "правило",
   unit: "отряд",
   hero: "герой",
   spell: "заклинание",
@@ -52,6 +55,7 @@ const TYPE_LABEL_RU: Record<string, string> = {
   map_event: "событие карты",
   morale: "мораль",
   pandora: "Ящик Пандоры",
+  glyph: "иконка",
 };
 
 const SOURCE_REGEX = /\[([^\]]+)\]\(([a-z_]+):([^)]+)\)/g;
@@ -70,12 +74,14 @@ export default function ChatSources({ content, lang }: Props) {
       const key = `${type}:${id}`;
       if (seen.has(key)) continue;
       const url = entityLinkUrl(type, id);
-      if (!url) continue;
+      const labelsMap = lang === "RU" ? TYPE_LABEL_RU : TYPE_LABEL_EN;
+      // Skip only if both no URL AND no known label (truly unknown type).
+      if (!url && !labelsMap[type]) continue;
       seen.add(key);
       result.push({ type, id, name, url });
     }
     return result;
-  }, [content]);
+  }, [content, lang]);
 
   if (sources.length === 0) return null;
 
@@ -90,11 +96,13 @@ export default function ChatSources({ content, lang }: Props) {
         </span>
         {sources.map((s) => {
           const typeLabel = labels[s.type] ?? s.type;
+          const clickable = !!s.url;
           return (
             <button
               key={`${s.type}:${s.id}`}
-              onClick={() => navigate(s.url)}
-              className="text-[11px] px-2 py-0.5 rounded-full border border-primary text-primary bg-primary/10 hover:bg-primary/20 transition-colors font-medium inline-flex items-center gap-1"
+              onClick={clickable ? () => navigate(s.url!) : undefined}
+              disabled={!clickable}
+              className={`text-[11px] px-2 py-0.5 rounded-full border border-primary text-primary bg-primary/10 font-medium inline-flex items-center gap-1 transition-colors ${clickable ? "hover:bg-primary/20 cursor-pointer" : "cursor-default opacity-80"}`}
             >
               <span className="opacity-70">{typeLabel}:</span>
               <span>{s.name}</span>
