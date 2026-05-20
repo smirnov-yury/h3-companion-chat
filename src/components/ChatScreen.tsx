@@ -98,6 +98,8 @@ export default function ChatScreen() {
       ? 120
       : 40;
   const [bars, setBars] = useState<number[]>(() => Array(BAR_COUNT).fill(0));
+  const [suggestionPool, setSuggestionPool] = useState<string[]>([]);
+  const [shownSuggestions, setShownSuggestions] = useState<string[]>([]);
 
   const teardownAudioVisualizer = useCallback(() => {
     if (visualizerFrameRef.current !== null) {
