@@ -96,11 +96,13 @@ export default function ChatSources({ content, lang }: Props) {
         </span>
         {sources.map((s) => {
           const typeLabel = labels[s.type] ?? s.type;
+          const clickable = !!s.url;
           return (
             <button
               key={`${s.type}:${s.id}`}
-              onClick={() => navigate(s.url)}
-              className="text-[11px] px-2 py-0.5 rounded-full border border-primary text-primary bg-primary/10 hover:bg-primary/20 transition-colors font-medium inline-flex items-center gap-1"
+              onClick={clickable ? () => navigate(s.url!) : undefined}
+              disabled={!clickable}
+              className={`text-[11px] px-2 py-0.5 rounded-full border border-primary text-primary bg-primary/10 font-medium inline-flex items-center gap-1 transition-colors ${clickable ? "hover:bg-primary/20 cursor-pointer" : "cursor-default opacity-80"}`}
             >
               <span className="opacity-70">{typeLabel}:</span>
               <span>{s.name}</span>
