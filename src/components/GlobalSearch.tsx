@@ -610,7 +610,7 @@ export default function GlobalSearch({ mode, onClose, initialQuery = "", autoFoc
       />
       {semanticLoading ? (
         <span className="absolute right-3 top-1/2 -translate-y-1/2 leading-none">
-          <H3MasterSpinner variant="rotate" size={16} className="text-primary" ariaLabel={lang === "RU" ? "Поиск" : "Searching"} />
+          <H3MasterSpinner variant="draw" size={18} className="text-primary" ariaLabel={lang === "RU" ? "Поиск" : "Searching"} />
         </span>
       ) : query ? (
         <button onClick={() => setQuery("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground hover:text-foreground transition-colors">
