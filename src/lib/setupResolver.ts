@@ -258,6 +258,7 @@ export function resolveStartingUnits(
         name_en: u.name_en,
         name_ru: u.name_ru,
         image: u.image,
+        updated_at: u.updated_at ?? null,
         cost: u.cost ?? "",
         tier: f.tier,
       });
