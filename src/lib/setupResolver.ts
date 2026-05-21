@@ -47,6 +47,7 @@ export interface UnitRow {
   number: string | null;
   cost: string | null;
   image: string | null;
+  updated_at?: string | null;
 }
 
 export interface BuildingRow {
