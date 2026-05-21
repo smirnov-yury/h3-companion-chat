@@ -426,6 +426,7 @@ export interface PayloadPlayer {
     name_en: string;
     name_ru: string | null;
     image: string | null;
+    updated_at: string | null;
     attack: number | null;
     defense: number | null;
     power: number | null;
