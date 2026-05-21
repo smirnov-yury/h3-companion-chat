@@ -564,6 +564,7 @@ export function buildPayload(input: BuildPayloadInput): Payload {
       hero: hero
         ? {
             id: hero.id, name_en: hero.name_en, name_ru: hero.name_ru, image: hero.image,
+            updated_at: (hero as { updated_at?: string | null }).updated_at ?? null,
             attack: hero.attack, defense: hero.defense, power: hero.power, knowledge: hero.knowledge,
             class_en: hero.class_en ?? null,
             class_ru: hero.class_ru ?? null,
