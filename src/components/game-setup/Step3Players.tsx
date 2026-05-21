@@ -49,7 +49,7 @@ export default function Step3Players({ form, setForm }: Props) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("heroes")
-        .select("id, name_en, name_ru, town, image, sort_order")
+        .select("id, name_en, name_ru, town, image, sort_order, updated_at")
         .order("sort_order", { ascending: true });
       if (error) throw error;
       return (data ?? []) as HeroOpt[];
