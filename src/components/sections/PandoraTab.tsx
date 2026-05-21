@@ -87,7 +87,7 @@ export default function PandoraTab({ searchQuery = "", initialCardId, onCardOpen
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
             {filtered.map((item) => {
-              const imgSrc = item.image ? componentImageUrl("pandora_box", item.image) : null;
+              const imgSrc = item.image ? componentImageUrl("pandora_box", item.image, item.updated_at) : null;
               return (
                 <button key={item.id} onClick={() => openCard(item)}
                   className="flex flex-col w-full overflow-hidden rounded-lg bg-muted text-left cursor-pointer transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg hover:ring-2 hover:ring-primary">
@@ -108,7 +108,7 @@ export default function PandoraTab({ searchQuery = "", initialCardId, onCardOpen
             <>
               {selected.image && (
                 <div className="w-full shrink-0 flex justify-center bg-muted">
-                  <ImageWithSpinner src={componentImageUrl("pandora_box", selected.image as string)} alt="Pandora's Box" className="w-full aspect-[5/7] object-contain rounded-lg shadow-lg" />
+                  <ImageWithSpinner src={componentImageUrl("pandora_box", selected.image as string, selected.updated_at)} alt="Pandora's Box" className="w-full aspect-[5/7] object-contain rounded-lg shadow-lg" />
                 </div>
               )}
               <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">

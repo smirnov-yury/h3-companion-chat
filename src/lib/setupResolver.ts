@@ -18,6 +18,7 @@ export interface ResolvedUnit {
   name_en: string;
   name_ru: string | null;
   image: string | null;
+  updated_at: string | null;
   cost: string;
   tier: Tier;
 }
@@ -46,6 +47,7 @@ export interface UnitRow {
   number: string | null;
   cost: string | null;
   image: string | null;
+  updated_at?: string | null;
 }
 
 export interface BuildingRow {
@@ -256,6 +258,7 @@ export function resolveStartingUnits(
         name_en: u.name_en,
         name_ru: u.name_ru,
         image: u.image,
+        updated_at: u.updated_at ?? null,
         cost: u.cost ?? "",
         tier: f.tier,
       });
@@ -423,6 +426,7 @@ export interface PayloadPlayer {
     name_en: string;
     name_ru: string | null;
     image: string | null;
+    updated_at: string | null;
     attack: number | null;
     defense: number | null;
     power: number | null;
@@ -560,6 +564,7 @@ export function buildPayload(input: BuildPayloadInput): Payload {
       hero: hero
         ? {
             id: hero.id, name_en: hero.name_en, name_ru: hero.name_ru, image: hero.image,
+            updated_at: (hero as { updated_at?: string | null }).updated_at ?? null,
             attack: hero.attack, defense: hero.defense, power: hero.power, knowledge: hero.knowledge,
             class_en: hero.class_en ?? null,
             class_ru: hero.class_ru ?? null,
