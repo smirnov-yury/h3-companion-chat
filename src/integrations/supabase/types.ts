@@ -2286,6 +2286,17 @@ export type Database = {
           question_text: string
         }[]
       }
+      get_storage_version: {
+        Args: { p_bucket: string; p_path: string }
+        Returns: string
+      }
+      get_storage_versions: {
+        Args: { p_bucket: string; p_paths: string[] }
+        Returns: {
+          path: string
+          version: string
+        }[]
+      }
       is_admin: { Args: never; Returns: boolean }
       match_all_en: {
         Args: {
