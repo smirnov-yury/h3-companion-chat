@@ -25,6 +25,7 @@ interface HeroOpt {
   name_ru: string | null;
   town: string | null;
   image: string | null;
+  updated_at: string | null;
 }
 
 export default function Step3Players({ form, setForm }: Props) {
