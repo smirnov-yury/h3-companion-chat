@@ -237,7 +237,7 @@ export default function Step3Players({ form, setForm }: Props) {
                         <div className="flex items-center gap-2">
                           {h.image && (
                             <img
-                              src={componentImageUrl("heroes", h.image)}
+                              src={componentImageUrl("heroes", h.image, h.updated_at)}
                               alt=""
                               className="w-8 h-8 object-cover rounded"
                               loading="lazy"

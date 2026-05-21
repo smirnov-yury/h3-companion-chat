@@ -122,7 +122,7 @@ export default function PlayerCard({
             <>
               {player.hero.image ? (
                 <img
-                  src={componentImageUrl("heroes", player.hero.image)}
+                  src={componentImageUrl("heroes", player.hero.image, player.hero.updated_at ?? null)}
                   alt={heroName ?? ""}
                   className="w-16 h-16 md:w-20 md:h-20 rounded object-cover border shrink-0"
                   loading="lazy"
@@ -223,7 +223,7 @@ export default function PlayerCard({
                   <div key={`${u.unit_id}-${i}`} className="rounded border bg-muted/30 p-1.5 space-y-1">
                     {u.image ? (
                       <img
-                        src={componentImageUrl("unit_stats", u.image)}
+                        src={componentImageUrl("unit_stats", u.image, u.updated_at ?? null)}
                         alt={name}
                         className="w-full aspect-[5/7] object-cover rounded"
                         loading="lazy"
