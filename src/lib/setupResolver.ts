@@ -18,6 +18,7 @@ export interface ResolvedUnit {
   name_en: string;
   name_ru: string | null;
   image: string | null;
+  updated_at: string | null;
   cost: string;
   tier: Tier;
 }
