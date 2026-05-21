@@ -108,14 +108,14 @@ export default function Step2PlayerCount({ form, setForm }: Props) {
           <span className="text-muted-foreground">
             {lang === "RU" ? "Нативный режим" : "Native"}
           </span>
-        ) : (
+        ) : nearestSupported != null ? (
           <span className="text-yellow-500 flex items-center gap-1">
             <AlertTriangle className="w-3 h-3" />
             {lang === "RU"
               ? `Карта будет масштабирована с ${nearestSupported}p`
               : `Map scaled from ${nearestSupported}p`}
           </span>
-        )}
+        ) : null}
       </div>
     </div>
   );
