@@ -2376,6 +2376,10 @@ export type Database = {
         }[]
       }
       refresh_embeddings_async: { Args: never; Returns: undefined }
+      regen_embedding: {
+        Args: { p_id: string; p_table: string }
+        Returns: Json
+      }
       show_limit: { Args: never; Returns: number }
       show_trgm: { Args: { "": string }; Returns: string[] }
     }
