@@ -4,7 +4,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { useLang } from "@/context/LanguageContext";
 import { useGlyphs } from "@/context/GlyphsContext";
 import { renderGlyphs } from "@/utils/renderGlyphs";
-import { scenarioMediaUrl } from "@/lib/storage";
+import { componentImageUrl } from "@/lib/storage";
 import ImageWithSpinner from "@/components/ImageWithSpinner";
 import type { ScaledMap } from "@/lib/setupResolver";
 
@@ -255,7 +255,7 @@ export default function MapSection({ map, playerCount }: { map: ScaledMap | null
 
       {map.map_image && (
         <ImageWithSpinner
-          src={scenarioMediaUrl(map.map_image)}
+          src={componentImageUrl("scenario_map_variants", map.map_image)}
           alt={(lang === "RU" ? map.variant_label_ru : map.variant_label_en) || "Map"}
           className="max-w-full rounded-lg border cursor-zoom-in"
           loading="lazy"

@@ -1,4 +1,5 @@
-import { Helmet } from "react-helmet-async";
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { useLang } from "@/context/LanguageContext";
 import type { TabId } from "@/components/NavDrawer";
 import { buildBreadcrumbs } from "@/seo/buildBreadcrumbs";
@@ -42,7 +43,6 @@ const DESCRIPTIONS: Record<RouteKey | "default", { en: string; ru: string }> = {
                    ru: "Мастер подготовки партии — выберите сценарий, игроков, фракции и сгенерируйте ссылку на сессию. Поддержка режимов Clash, Campaign, Co-op, Alliance, Solo." },
 };
 
-
 const TITLES: Record<RouteKey, { en: string; ru: string }> = {
   home:          { en: "H3 Master — HoMM III Board Game Companion", ru: "H3 Master — Компаньон для «Герои Меча и Магии III»" },
   about:         { en: "About — H3 Master",                          ru: "О приложении — H3 Master" },
@@ -60,64 +60,86 @@ const TITLES: Record<RouteKey, { en: string; ru: string }> = {
   game_setup:    { en: "Game Setup — H3 Master",                     ru: "Подготовка партии — H3 Master" },
 };
 
+const SEO_BREADCRUMB_SCRIPT_ID = "seo-breadcrumb-jsonld";
+
+const SECTION_ROUTE_KEYS: ReadonlySet<RouteKey> = new Set([
+  "rules", "scenarios", "units", "heroes", "decks",
+  "map_elements", "global_events", "towns", "ai", "game_setup",
+]);
+
+function pathToRouteKey(pathname: string): RouteKey | null {
+  if (pathname === "/") return "home";
+  if (pathname === "/about") return "about";
+  if (pathname === "/privacy") return "privacy";
+  if (pathname === "/terms") return "terms";
+  const seg = pathname.split("/").filter(Boolean)[0];
+  if (seg && SECTION_ROUTE_KEYS.has(seg as RouteKey)) return seg as RouteKey;
+  return null;
+}
+
+function setMetaContent(selector: string, content: string) {
+  const el = document.querySelector(selector);
+  if (el) el.setAttribute("content", content);
+}
+
 interface SEOMetaProps {
   routeKey?: RouteKey;
 }
 
-export default function SEOMeta({ routeKey }: SEOMetaProps) {
+export default function SEOMeta({ routeKey: routeKeyProp }: SEOMetaProps) {
   const { lang } = useLang();
-  const isRu = lang === "RU";
+  const { pathname } = useLocation();
 
-  const titles = routeKey ? TITLES[routeKey] : null;
-  const title = titles ? (isRu ? titles.ru : titles.en) : APP_FULL_NAME;
-  const descs = routeKey ? DESCRIPTIONS[routeKey] : DESCRIPTIONS.default;
-  const description = isRu ? descs.ru : descs.en;
-  const url =
-    typeof window !== "undefined" ? window.location.origin + window.location.pathname : SITE_URL;
-  const pathname =
-    typeof window !== "undefined" ? window.location.pathname : "/";
-  const crumbs = buildBreadcrumbs(pathname, isRu);
-  const breadcrumbJsonLd =
-    crumbs.length >= 2
-      ? {
-          "@context": "https://schema.org",
-          "@type": "BreadcrumbList",
-          itemListElement: crumbs.map((c, idx) => ({
-            "@type": "ListItem",
-            position: idx + 1,
-            name: c.name,
-            item: c.url,
-          })),
-        }
-      : null;
+  useEffect(() => {
+    const isRu = lang === "RU";
+    const routeKey = routeKeyProp ?? pathToRouteKey(pathname);
+    const titles = routeKey ? TITLES[routeKey] : null;
+    const title = titles ? (isRu ? titles.ru : titles.en) : APP_FULL_NAME;
+    const descs = routeKey ? DESCRIPTIONS[routeKey] : DESCRIPTIONS.default;
+    const description = isRu ? descs.ru : descs.en;
+    const url = SITE_URL + pathname;
 
-  return (
-    <Helmet>
-      <html lang={isRu ? "ru" : "en"} />
-      <title>{title}</title>
-      <meta name="description" content={description} />
-      <link rel="canonical" href={url} />
-      <meta property="og:site_name" content={APP_NAME} />
-      <meta property="og:title" content={title} />
-      <meta property="og:description" content={description} />
-      <meta property="og:type" content="website" />
-      <meta property="og:url" content={url} />
-      <meta property="og:image" content="https://h3master.app/og-image.png" />
-      <meta property="og:image:width" content="1200" />
-      <meta property="og:image:height" content="630" />
-      <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:title" content={title} />
-      <meta name="twitter:description" content={description} />
-      <meta name="twitter:image" content="https://h3master.app/og-image.png" />
-      {breadcrumbJsonLd && (
-        <script
-          type="application/ld+json"
-          data-rh-key="breadcrumb-jsonld"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(breadcrumbJsonLd),
-          }}
-        />
-      )}
-    </Helmet>
-  );
+    document.documentElement.lang = isRu ? "ru" : "en";
+    document.title = title;
+
+    setMetaContent('meta[name="description"]', description);
+    setMetaContent('meta[property="og:site_name"]', APP_NAME);
+    setMetaContent('meta[property="og:title"]', title);
+    setMetaContent('meta[property="og:description"]', description);
+    setMetaContent('meta[property="og:url"]', url);
+    setMetaContent('meta[name="twitter:title"]', title);
+    setMetaContent('meta[name="twitter:description"]', description);
+
+    const canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
+    if (canonical) canonical.href = url;
+
+    const crumbs = buildBreadcrumbs(pathname, isRu);
+    const existing = document.getElementById(SEO_BREADCRUMB_SCRIPT_ID);
+    if (crumbs.length >= 2) {
+      const data = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: crumbs.map((c, idx) => ({
+          "@type": "ListItem",
+          position: idx + 1,
+          name: c.name,
+          item: c.url,
+        })),
+      };
+      const json = JSON.stringify(data);
+      if (existing) {
+        existing.textContent = json;
+      } else {
+        const script = document.createElement("script");
+        script.id = SEO_BREADCRUMB_SCRIPT_ID;
+        script.type = "application/ld+json";
+        script.textContent = json;
+        document.head.appendChild(script);
+      }
+    } else if (existing) {
+      existing.remove();
+    }
+  }, [pathname, lang, routeKeyProp]);
+
+  return null;
 }
