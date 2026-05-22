@@ -42,7 +42,6 @@ const DESCRIPTIONS: Record<RouteKey | "default", { en: string; ru: string }> = {
                    ru: "Мастер подготовки партии — выберите сценарий, игроков, фракции и сгенерируйте ссылку на сессию. Поддержка режимов Clash, Campaign, Co-op, Alliance, Solo." },
 };
 
-type RouteKey = TabId | "home" | "about" | "privacy" | "terms";
 
 const TITLES: Record<RouteKey, { en: string; ru: string }> = {
   home:          { en: "H3 Master — HoMM III Board Game Companion", ru: "H3 Master — Компаньон для «Герои Меча и Магии III»" },
