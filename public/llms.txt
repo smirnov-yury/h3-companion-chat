@@ -1,0 +1,32 @@
+# H3 Master
+
+> Unofficial web PWA companion app for Heroes of Might & Magic III: The Board Game (Archon Studio). Reference for all rules, scenarios, units, heroes, towns, artifacts, spells. AI Game Master answers rule questions with citations. Bilingual EN/RU.
+
+## Site
+
+- Site: https://h3master.app
+- Sitemap: https://h3master.app/sitemap.xml
+- Languages: English, Russian
+
+## Core sections
+
+- [Rules](https://h3master.app/rules): 271 rules across game phases (setup, turns, combat, towns, FAQ)
+- [Scenarios](https://h3master.app/scenarios): 61 scenarios across 10 mission books, with setup, story, victory conditions, timed events
+- [Heroes](https://h3master.app/heroes): 65 heroes (Castle, Rampart, Tower, Inferno, Necropolis, Dungeon, Stronghold, Fortress, Conflux, Cove) with specialties, stats, level abilities
+- [Units](https://h3master.app/units): 241 unit cards (Few, Pack, Neutral variants)
+- [Towns](https://h3master.app/towns): 10 town factions with buildings and dwellings
+- [Decks](https://h3master.app/decks): artifacts, spells, abilities, war machines, statistics
+- [Map Elements](https://h3master.app/map-elements): map locations, glyphs, Pandora's Box
+- [Global Events](https://h3master.app/events): events, Astrologers Proclaim, AI cards, Morale cards
+- [AI Game Master](https://h3master.app/ai): RAG chat with rule citations
+- [Game Setup](https://h3master.app/game-setup): partition setup wizard, 5 modes (Clash, Campaign, Co-op, Alliance, Solo)
+
+## Legal
+
+- [About](https://h3master.app/about)
+- [Privacy Policy](https://h3master.app/privacy)
+- [Terms of Service](https://h3master.app/terms)
+
+## Disclaimer
+
+Unofficial fan-made companion. Not affiliated with Ubisoft Entertainment or Archon Studio.
