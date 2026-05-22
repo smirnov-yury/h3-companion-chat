@@ -70,7 +70,8 @@ export default function SEOMeta({ routeKey }: SEOMetaProps) {
 
   const titles = routeKey ? TITLES[routeKey] : null;
   const title = titles ? (isRu ? titles.ru : titles.en) : APP_FULL_NAME;
-  const description = isRu ? DESCRIPTIONS.RU : DESCRIPTIONS.EN;
+  const descs = routeKey ? DESCRIPTIONS[routeKey] : DESCRIPTIONS.default;
+  const description = isRu ? descs.ru : descs.en;
   const url =
     typeof window !== "undefined" ? window.location.origin + window.location.pathname : SITE_URL;
   const pathname =
