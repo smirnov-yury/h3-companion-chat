@@ -2233,6 +2233,42 @@ export type Database = {
         }
         Relationships: []
       }
+      v_db_audit_log_recent: {
+        Row: {
+          action: string | null
+          changed_at: string | null
+          changed_by: string | null
+          field_name: string | null
+          id: number | null
+          new_value: string | null
+          old_value: string | null
+          record_id: string | null
+          table_name: string | null
+        }
+        Insert: {
+          action?: string | null
+          changed_at?: string | null
+          changed_by?: string | null
+          field_name?: string | null
+          id?: number | null
+          new_value?: never
+          old_value?: never
+          record_id?: string | null
+          table_name?: string | null
+        }
+        Update: {
+          action?: string | null
+          changed_at?: string | null
+          changed_by?: string | null
+          field_name?: string | null
+          id?: number | null
+          new_value?: never
+          old_value?: never
+          record_id?: string | null
+          table_name?: string | null
+        }
+        Relationships: []
+      }
       v_entity_searchable: {
         Row: {
           entity_id: string | null
@@ -2280,6 +2316,18 @@ export type Database = {
         Returns: Json
       }
       dev_eval_start_run: { Args: never; Returns: string }
+      find_storage_orphans: {
+        Args: never
+        Returns: {
+          filename: string
+          folder: string
+          full_path: string
+          is_orphan: boolean
+          match_kind: string
+          size_bytes: number
+          updated_at: string
+        }[]
+      }
       get_chat_suggestions: {
         Args: { p_lang: string }
         Returns: {
