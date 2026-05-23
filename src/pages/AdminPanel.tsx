@@ -222,6 +222,7 @@ export default function AdminPanel() {
             <Route path="filter-groups" element={<FilterGroupsEditor />} />
             <Route path="audit-log" element={<AuditLog />} />
             <Route path="ai-metrics" element={<AiMetricsEditor />} />
+            <Route path="maintenance" element={<MaintenanceEditor />} />
             <Route path="*" element={<Navigate to="" replace />} />
           </Routes>
         </main>
