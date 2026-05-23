@@ -2334,6 +2334,7 @@ export type Database = {
           question_text: string
         }[]
       }
+      get_storage_bucket_count: { Args: { p_bucket: string }; Returns: number }
       get_storage_version: {
         Args: { p_bucket: string; p_path: string }
         Returns: string

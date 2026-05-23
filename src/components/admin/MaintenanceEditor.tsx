@@ -226,11 +226,13 @@ type OrphanRow = {
   size_bytes: number;
   updated_at: string;
   is_orphan: boolean;
-  match_kind: string;
+  match_kind: "direct" | "pattern" | "whitelist" | "duplicate" | "no_match";
 };
 
 function CardStorageOrphans() {
   const [rows, setRows] = useState<OrphanRow[] | null>(null);
+  const [lastScanAt, setLastScanAt] = useState<Date | null>(null);
+  const [bucketTotal, setBucketTotal] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [onlyOrphans, setOnlyOrphans] = useState(true);
@@ -238,14 +240,25 @@ function CardStorageOrphans() {
   async function scan() {
     setBusy(true);
     setError(null);
-    const { data, error } = await (supabase.rpc as any)("find_storage_orphans");
-    if (error) {
-      setError(error.message);
+    setRows(null);
+    const [orphansRes, bucketCountRes] = await Promise.all([
+      (supabase.rpc as any)("find_storage_orphans").range(0, 9999),
+      (supabase.rpc as any)("get_storage_bucket_count", { p_bucket: "component-media" }),
+    ]);
+    if (orphansRes.error) {
+      setError(orphansRes.error.message);
       setRows(null);
-      toast.error("Scan failed");
+      setBucketTotal(null);
     } else {
-      setRows((data as OrphanRow[]) || []);
-      toast.success(`Scanned ${(data as OrphanRow[])?.length || 0} files`);
+      setRows((orphansRes.data as OrphanRow[]) || []);
+      setBucketTotal(
+        typeof bucketCountRes.data === "number"
+          ? bucketCountRes.data
+          : bucketCountRes.error
+          ? null
+          : Number(bucketCountRes.data) || null,
+      );
+      setLastScanAt(new Date());
     }
     setBusy(false);
   }
@@ -256,13 +269,14 @@ function CardStorageOrphans() {
   }, [rows, onlyOrphans]);
 
   const stats = useMemo(() => {
-    if (!rows) return null;
+    if (rows === null) return null;
     const total = rows.length;
     const orphan = rows.filter((r) => r.is_orphan).length;
     const direct = rows.filter((r) => r.match_kind === "direct").length;
     const pattern = rows.filter((r) => r.match_kind === "pattern").length;
     const whitelist = rows.filter((r) => r.match_kind === "whitelist").length;
-    return { total, orphan, direct, pattern, whitelist };
+    const duplicate = rows.filter((r) => r.match_kind === "duplicate").length;
+    return { total, orphan, direct, pattern, whitelist, duplicate };
   }, [rows]);
 
   return (
@@ -293,12 +307,34 @@ function CardStorageOrphans() {
       {error && <p className="text-sm text-destructive">{error}</p>}
 
       {stats && (
-        <div className="flex flex-wrap gap-2 text-xs">
-          <Badge variant="outline">total {stats.total}</Badge>
-          <Badge variant={stats.orphan > 0 ? "destructive" : "secondary"}>orphans {stats.orphan}</Badge>
-          <Badge variant="secondary">direct {stats.direct}</Badge>
-          <Badge variant="secondary">pattern {stats.pattern}</Badge>
-          <Badge variant="secondary">whitelist {stats.whitelist}</Badge>
+        <div className="space-y-2">
+          <div className="flex flex-wrap items-center gap-2 text-sm">
+            {bucketTotal !== null && bucketTotal > stats.total ? (
+              <Badge variant="destructive" title="PostgREST truncated response — increase .range() upper bound">
+                scanned {stats.total} / {bucketTotal} in bucket — limit hit
+              </Badge>
+            ) : (
+              <Badge variant="outline">
+                scanned {stats.total}
+                {bucketTotal !== null ? ` / ${bucketTotal} in bucket` : ""}
+              </Badge>
+            )}
+            <Badge variant={stats.orphan > 0 ? "destructive" : "secondary"}>orphans {stats.orphan}</Badge>
+            <Badge variant="secondary">direct {stats.direct}</Badge>
+            <Badge variant="secondary">pattern {stats.pattern}</Badge>
+            <Badge variant="secondary">whitelist {stats.whitelist}</Badge>
+            <Badge
+              variant="secondary"
+              className={stats.duplicate > 0 ? "bg-yellow-500/20 text-foreground border-yellow-500/50" : ""}
+            >
+              duplicate {stats.duplicate}
+            </Badge>
+          </div>
+          {lastScanAt && (
+            <p className="text-xs text-muted-foreground">
+              Last scan: {lastScanAt.toISOString().replace("T", " ").slice(0, 19)} UTC
+            </p>
+          )}
         </div>
       )}
 
@@ -315,12 +351,29 @@ function CardStorageOrphans() {
             </thead>
             <tbody>
               {filtered.map((r) => (
-                <tr key={r.full_path} className={r.is_orphan ? "bg-destructive/10" : "border-t border-border"}>
+                <tr
+                  key={r.full_path}
+                  className={
+                    r.is_orphan
+                      ? "bg-destructive/10"
+                      : r.match_kind === "duplicate"
+                      ? "bg-yellow-500/10 border-t border-yellow-500/30"
+                      : "border-t border-border"
+                  }
+                >
                   <td className="px-2 py-1.5 font-mono break-all">{r.full_path}</td>
                   <td className="px-2 py-1.5 whitespace-nowrap">{formatBytes(r.size_bytes)}</td>
                   <td className="px-2 py-1.5 whitespace-nowrap text-muted-foreground">{formatTs(r.updated_at)}</td>
                   <td className="px-2 py-1.5">
-                    <Badge variant={r.match_kind === "no_match" ? "destructive" : "secondary"} className="text-[10px]">
+                    <Badge
+                      variant={r.match_kind === "no_match" ? "destructive" : "secondary"}
+                      className={
+                        "text-[10px] " +
+                        (r.match_kind === "duplicate"
+                          ? "bg-yellow-500/20 text-foreground border-yellow-500/50"
+                          : "")
+                      }
+                    >
                       {r.match_kind}
                     </Badge>
                   </td>
