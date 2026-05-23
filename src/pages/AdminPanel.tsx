@@ -20,6 +20,7 @@ import AuditLog from "@/components/admin/AuditLog";
 import ScenariosEditor from "@/components/admin/ScenariosEditor";
 
 import AiMetricsEditor from "@/components/admin/AiMetricsEditor";
+import MaintenanceEditor from "@/components/admin/MaintenanceEditor";
 
 const NAV_ITEMS: Array<
   | { path: string; label: string; icon: React.ElementType }
