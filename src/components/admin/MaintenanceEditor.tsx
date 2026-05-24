@@ -395,7 +395,118 @@ function CardStorageOrphans() {
   );
 }
 
+function CardPwaForceRefresh() {
+  const [version, setVersion] = useState<number | null>(null);
+  const [updatedAt, setUpdatedAt] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [bumping, setBumping] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+
+  async function load() {
+    setLoading(true);
+    try {
+      const { data, error } = await (supabase as any)
+        .from("app_settings")
+        .select("value, updated_at")
+        .eq("key", "pwa_force_refresh_version")
+        .maybeSingle();
+      if (error) throw error;
+      if (data) {
+        const raw = data.value;
+        const num = typeof raw === "number" ? raw : Number(raw);
+        setVersion(Number.isFinite(num) ? num : null);
+        setUpdatedAt(data.updated_at || null);
+      }
+    } catch (e) {
+      toast.error(`Load failed: ${(e as Error).message}`);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function bump() {
+    setBumping(true);
+    try {
+      const { data, error } = await (supabase.rpc as any)("bump_pwa_refresh_version");
+      if (error) throw error;
+      const result = data as { ok: boolean; new_version: number } | null;
+      if (result?.ok) {
+        toast.success(`Refresh version bumped to ${result.new_version}. All open tabs will see the banner within 5 min.`);
+        setConfirmOpen(false);
+        await load();
+      } else {
+        toast.error("Bump returned unexpected payload");
+      }
+    } catch (e) {
+      toast.error(`Bump failed: ${(e as Error).message}`);
+    } finally {
+      setBumping(false);
+    }
+  }
+
+  useEffect(() => {
+    load();
+  }, []);
+
+  return (
+    <Section title="PWA force refresh" icon={Zap}>
+      <p className="text-sm text-muted-foreground">
+        Increments <code className="text-xs">app_settings.pwa_force_refresh_version</code>. All open client tabs poll
+        this value every 5 minutes (and on tab focus). When the value increases, the existing PWA Update banner
+        appears. Use after a critical content fix to broadcast a refresh request.
+      </p>
+
+      <div className="flex flex-wrap items-center gap-3 text-sm">
+        <div>
+          <span className="text-muted-foreground">Current version: </span>
+          <span className="font-mono font-semibold">{version ?? "-"}</span>
+        </div>
+        <div>
+          <span className="text-muted-foreground">Last bumped: </span>
+          <span className="font-mono text-muted-foreground">
+            {updatedAt ? new Date(updatedAt).toLocaleString() : "-"}
+          </span>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-2">
+        <Button variant="outline" onClick={load} disabled={loading}>
+          {loading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <RefreshCw className="w-4 h-4 mr-2" />}
+          Reload
+        </Button>
+
+        <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+          <AlertDialogTrigger asChild>
+            <Button disabled={bumping || version === null}>
+              {bumping ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Zap className="w-4 h-4 mr-2" />}
+              Bump version
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Broadcast PWA refresh to all clients?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This will increment <code>app_settings.pwa_force_refresh_version</code> from {version ?? "?"} to{" "}
+                {version != null ? version + 1 : "?"}. All open tabs will surface the existing PWA Update banner
+                within 5 minutes (or on next tab focus). Users still need to click Reload in the banner to actually
+                refresh.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={bumping}>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={bump} disabled={bumping}>
+                {bumping ? "Bumping..." : "Bump"}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
+    </Section>
+  );
+}
+
 type AuditRow = {
+
   id: number;
   changed_at: string;
   table_name: string;
@@ -655,7 +766,9 @@ export default function MaintenanceEditor() {
       <CardCachePurge />
       <CardEmbeddingRegen />
       <CardStorageOrphans />
+      <CardPwaForceRefresh />
       <CardAuditLog />
+
     </div>
   );
 }
