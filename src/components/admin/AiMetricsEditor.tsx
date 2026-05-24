@@ -90,11 +90,22 @@ export default function AiMetricsEditor() {
         setRateLimit(typeof v === "string" ? v : String(v));
       }
 
-      const { data: logsData, error: logsErr } = await supabase
-        .from("v_ai_chat_logs_with_cost" as never)
-        .select("*")
-        .order("created_at", { ascending: false })
-        .limit(200);
+      let logsData: any = null;
+      let logsErr: any = null;
+      if (pageSize === "all") {
+        const res = await (supabase.rpc as any)("get_ai_chat_logs_recent_array");
+        logsData = res.data;
+        logsErr = res.error;
+        if (!logsErr && !Array.isArray(logsData)) logsData = [];
+      } else {
+        const res = await supabase
+          .from("v_ai_chat_logs_with_cost" as never)
+          .select("*")
+          .order("created_at", { ascending: false })
+          .limit(pageSize);
+        logsData = res.data;
+        logsErr = res.error;
+      }
       if (logsErr) throw logsErr;
       setRows(((logsData as unknown) as LogRow[]) ?? []);
     } catch (e) {
