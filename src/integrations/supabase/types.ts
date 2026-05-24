@@ -2282,6 +2282,7 @@ export type Database = {
       }
     }
     Functions: {
+      bump_pwa_refresh_version: { Args: never; Returns: Json }
       check_and_increment_rate_limit: {
         Args: { p_ip_hash: string; p_max_per_hour?: number }
         Returns: boolean
