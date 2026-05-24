@@ -129,4 +129,28 @@ export function initPWA() {
       await Promise.all(regs.map((r) => r.update()));
     }
   };
+
+  // PWA force-refresh broadcast: poll app_settings.pwa_force_refresh_version
+  // Initial check on tab focus, then every 5 minutes while visible.
+  const startPolling = () => {
+    if (pollTimer !== null) return;
+    void checkForceRefreshVersion();
+    pollTimer = window.setInterval(checkForceRefreshVersion, POLL_INTERVAL_MS);
+  };
+  const stopPolling = () => {
+    if (pollTimer !== null) {
+      window.clearInterval(pollTimer);
+      pollTimer = null;
+    }
+  };
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") {
+      startPolling();
+    } else {
+      stopPolling();
+    }
+  });
+  if (document.visibilityState === "visible") {
+    startPolling();
+  }
 }
