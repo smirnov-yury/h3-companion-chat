@@ -1,6 +1,45 @@
 // Service worker registration with iframe / preview-host guards.
 // The SW only ever activates on the published production domain.
 import { registerSW } from "virtual:pwa-register";
+import { supabase } from "@/integrations/supabase/client";
+
+const FORCE_REFRESH_KEY = "h3master_force_refresh_version";
+const POLL_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
+let pollTimer: number | null = null;
+let knownForceVersion: number | null = null;
+
+async function checkForceRefreshVersion(): Promise<void> {
+  try {
+    const { data, error } = await supabase
+      .from("app_settings")
+      .select("value")
+      .eq("key", "pwa_force_refresh_version")
+      .maybeSingle();
+    if (error || !data) return;
+    const raw = (data as { value: unknown }).value;
+    const remote = typeof raw === "number" ? raw : Number(raw);
+    if (!Number.isFinite(remote)) return;
+
+    if (knownForceVersion === null) {
+      const stored = localStorage.getItem(FORCE_REFRESH_KEY);
+      const storedNum = stored ? Number(stored) : null;
+      if (storedNum && Number.isFinite(storedNum)) {
+        knownForceVersion = storedNum;
+      } else {
+        knownForceVersion = remote;
+        localStorage.setItem(FORCE_REFRESH_KEY, String(remote));
+      }
+    }
+
+    if (remote > knownForceVersion) {
+      knownForceVersion = remote;
+      localStorage.setItem(FORCE_REFRESH_KEY, String(remote));
+      notify(true);
+    }
+  } catch {
+    // Network hiccup — try again next poll
+  }
+}
 
 type UpdateListener = (needsRefresh: boolean) => void;
 
