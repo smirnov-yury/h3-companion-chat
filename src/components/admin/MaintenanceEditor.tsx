@@ -242,7 +242,7 @@ function CardStorageOrphans() {
     setError(null);
     setRows(null);
     const [orphansRes, bucketCountRes] = await Promise.all([
-      (supabase.rpc as any)("find_storage_orphans").range(0, 9999),
+      (supabase.rpc as any)("find_storage_orphans_array"),
       (supabase.rpc as any)("get_storage_bucket_count", { p_bucket: "component-media" }),
     ]);
     if (orphansRes.error) {
@@ -250,7 +250,8 @@ function CardStorageOrphans() {
       setRows(null);
       setBucketTotal(null);
     } else {
-      setRows((orphansRes.data as OrphanRow[]) || []);
+      const arr = Array.isArray(orphansRes.data) ? orphansRes.data : [];
+      setRows(arr as OrphanRow[]);
       setBucketTotal(
         typeof bucketCountRes.data === "number"
           ? bucketCountRes.data
@@ -262,6 +263,7 @@ function CardStorageOrphans() {
     }
     setBusy(false);
   }
+
 
   const filtered = useMemo(() => {
     if (!rows) return [];
