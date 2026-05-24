@@ -117,7 +117,7 @@ export default function AiMetricsEditor() {
 
   useEffect(() => {
     loadAll();
-  }, []);
+  }, [pageSize]);
 
   const handleModelChange = async (value: string) => {
     if (!(MODELS as readonly string[]).includes(value)) return;
