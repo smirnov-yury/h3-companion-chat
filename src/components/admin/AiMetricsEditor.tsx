@@ -64,6 +64,7 @@ export default function AiMetricsEditor() {
   const [rateLimit, setRateLimit] = useState<string>("");
   const [savingRateLimit, setSavingRateLimit] = useState(false);
   const [rateLimitError, setRateLimitError] = useState<string | null>(null);
+  const [pageSize, setPageSize] = useState<number | "all">(50);
 
   const loadAll = async () => {
     setLoading(true);
