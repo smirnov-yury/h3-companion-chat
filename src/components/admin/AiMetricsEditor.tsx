@@ -64,6 +64,7 @@ export default function AiMetricsEditor() {
   const [rateLimit, setRateLimit] = useState<string>("");
   const [savingRateLimit, setSavingRateLimit] = useState(false);
   const [rateLimitError, setRateLimitError] = useState<string | null>(null);
+  const [pageSize, setPageSize] = useState<number | "all">(50);
 
   const loadAll = async () => {
     setLoading(true);
@@ -89,11 +90,22 @@ export default function AiMetricsEditor() {
         setRateLimit(typeof v === "string" ? v : String(v));
       }
 
-      const { data: logsData, error: logsErr } = await supabase
-        .from("v_ai_chat_logs_with_cost" as never)
-        .select("*")
-        .order("created_at", { ascending: false })
-        .limit(200);
+      let logsData: any = null;
+      let logsErr: any = null;
+      if (pageSize === "all") {
+        const res = await (supabase.rpc as any)("get_ai_chat_logs_recent_array");
+        logsData = res.data;
+        logsErr = res.error;
+        if (!logsErr && !Array.isArray(logsData)) logsData = [];
+      } else {
+        const res = await supabase
+          .from("v_ai_chat_logs_with_cost" as never)
+          .select("*")
+          .order("created_at", { ascending: false })
+          .limit(pageSize);
+        logsData = res.data;
+        logsErr = res.error;
+      }
       if (logsErr) throw logsErr;
       setRows(((logsData as unknown) as LogRow[]) ?? []);
     } catch (e) {
@@ -105,7 +117,7 @@ export default function AiMetricsEditor() {
 
   useEffect(() => {
     loadAll();
-  }, []);
+  }, [pageSize]);
 
   const handleModelChange = async (value: string) => {
     if (!(MODELS as readonly string[]).includes(value)) return;
@@ -263,9 +275,30 @@ export default function AiMetricsEditor() {
       </div>
 
       <div className="rounded-lg border border-border">
-        <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-          <h2 className="text-sm font-medium">Last 200 requests</h2>
-          <span className="text-xs text-muted-foreground">Tool path share: {toolShare}%</span>
+        <div className="flex items-center justify-between gap-3 px-4 py-3 border-b border-border flex-wrap">
+          <div className="flex items-center gap-2">
+            <h2 className="text-sm font-medium">
+              {pageSize === "all" ? "All requests" : `Last ${pageSize} requests`}
+            </h2>
+            <span className="text-xs text-muted-foreground">(auto-purge 90 days)</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-muted-foreground">Tool path share: {toolShare}%</span>
+            <Select
+              value={String(pageSize)}
+              onValueChange={(v) => setPageSize(v === "all" ? "all" : Number(v))}
+            >
+              <SelectTrigger className="w-24 h-8">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="50">50</SelectItem>
+                <SelectItem value="100">100</SelectItem>
+                <SelectItem value="200">200</SelectItem>
+                <SelectItem value="all">All</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         {loading ? (

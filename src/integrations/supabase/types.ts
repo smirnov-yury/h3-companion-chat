@@ -2329,6 +2329,8 @@ export type Database = {
         }[]
       }
       find_storage_orphans_array: { Args: never; Returns: Json }
+      get_ai_chat_logs_recent_array: { Args: never; Returns: Json }
+      get_audit_log_recent_array: { Args: never; Returns: Json }
       get_chat_suggestions: {
         Args: { p_lang: string }
         Returns: {
@@ -2407,6 +2409,7 @@ export type Database = {
         }[]
       }
       parse_unit_notes: { Args: { notes: string }; Returns: Json }
+      purge_audit_log_older_than: { Args: { p_days: number }; Returns: Json }
       query_units_filtered: {
         Args: { filters: Json }
         Returns: {

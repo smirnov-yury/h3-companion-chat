@@ -412,26 +412,62 @@ function CardAuditLog() {
   const [busy, setBusy] = useState(false);
   const [filterTable, setFilterTable] = useState<string>("all");
   const [filterAction, setFilterAction] = useState<string>("all");
+  const [pageSize, setPageSize] = useState<number | "all">(50);
+  const [purgeDays, setPurgeDays] = useState<number>(90);
+  const [purgeBusy, setPurgeBusy] = useState(false);
+  const [purgeOpen, setPurgeOpen] = useState(false);
 
   async function load() {
     setBusy(true);
-    const { data, error } = await (supabase as any)
-      .from("v_db_audit_log_recent")
-      .select("*")
-      .order("changed_at", { ascending: false })
-      .limit(200);
-    if (error) {
+    try {
+      if (pageSize === "all") {
+        const { data, error } = await (supabase.rpc as any)("get_audit_log_recent_array");
+        if (error) throw error;
+        const arr = Array.isArray(data) ? data : [];
+        setRows(arr as AuditRow[]);
+      } else {
+        const { data, error } = await (supabase as any)
+          .from("v_db_audit_log_recent")
+          .select("*")
+          .order("changed_at", { ascending: false })
+          .limit(pageSize);
+        if (error) throw error;
+        setRows((data as AuditRow[]) || []);
+      }
+    } catch (e) {
       toast.error("Audit log load failed");
       setRows([]);
-    } else {
-      setRows((data as AuditRow[]) || []);
+    } finally {
+      setBusy(false);
     }
-    setBusy(false);
+  }
+
+  async function handlePurge() {
+    setPurgeBusy(true);
+    try {
+      const { data, error } = await (supabase.rpc as any)(
+        "purge_audit_log_older_than",
+        { p_days: purgeDays },
+      );
+      if (error) throw error;
+      const result = data as { ok: boolean; deleted: number } | null;
+      if (result?.ok) {
+        toast.success(`Purged ${result.deleted} rows older than ${purgeDays} days`);
+        setPurgeOpen(false);
+        await load();
+      } else {
+        toast.error("Purge returned unexpected payload");
+      }
+    } catch (e) {
+      toast.error(`Purge failed: ${(e as Error).message}`);
+    } finally {
+      setPurgeBusy(false);
+    }
   }
 
   useEffect(() => {
     load();
-  }, []);
+  }, [pageSize]);
 
   const tableOptions = useMemo(() => {
     const set = new Set<string>();
@@ -457,6 +493,7 @@ function CardAuditLog() {
     <Section title="Audit log (last 30 days)" icon={ScrollText}>
       <p className="text-sm text-muted-foreground">
         From view v_db_audit_log_recent. Long old/new values truncated to 240 chars.
+        Auto-purged after 90 days daily at 03:30 UTC.
       </p>
 
       <div className="flex flex-wrap items-center gap-3">
@@ -464,6 +501,24 @@ function CardAuditLog() {
           {busy ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <RefreshCw className="w-4 h-4 mr-2" />}
           Refresh
         </Button>
+
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-muted-foreground">Show</span>
+          <Select
+            value={String(pageSize)}
+            onValueChange={(v) => setPageSize(v === "all" ? "all" : Number(v))}
+          >
+            <SelectTrigger className="w-24">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="50">50</SelectItem>
+              <SelectItem value="100">100</SelectItem>
+              <SelectItem value="200">200</SelectItem>
+              <SelectItem value="all">All</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
         <div className="flex items-center gap-2">
           <span className="text-xs text-muted-foreground">Table</span>
@@ -491,6 +546,52 @@ function CardAuditLog() {
               ))}
             </SelectContent>
           </Select>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-muted-foreground">Purge older than</span>
+          <Select
+            value={String(purgeDays)}
+            onValueChange={(v) => setPurgeDays(Number(v))}
+          >
+            <SelectTrigger className="w-28">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="30">30 days</SelectItem>
+              <SelectItem value="60">60 days</SelectItem>
+              <SelectItem value="90">90 days</SelectItem>
+              <SelectItem value="180">180 days</SelectItem>
+              <SelectItem value="365">365 days</SelectItem>
+            </SelectContent>
+          </Select>
+          <AlertDialog open={purgeOpen} onOpenChange={setPurgeOpen}>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive" size="sm" disabled={purgeBusy}>
+                {purgeBusy ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Trash2 className="w-4 h-4 mr-2" />}
+                Purge
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Purge audit log entries older than {purgeDays} days?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will permanently DELETE rows from public.db_audit_log where changed_at &lt; now() - {purgeDays} days.
+                  The daily pg_cron job already purges entries older than 90 days; use this only for early/manual cleanup.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel disabled={purgeBusy}>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={(e) => { e.preventDefault(); handlePurge(); }}
+                  disabled={purgeBusy}
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                >
+                  {purgeBusy ? "Purging..." : "Purge"}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
 
         <Badge variant="outline">{filtered.length} / {rows.length} rows</Badge>
