@@ -766,7 +766,9 @@ export default function MaintenanceEditor() {
       <CardCachePurge />
       <CardEmbeddingRegen />
       <CardStorageOrphans />
+      <CardPwaForceRefresh />
       <CardAuditLog />
+
     </div>
   );
 }
