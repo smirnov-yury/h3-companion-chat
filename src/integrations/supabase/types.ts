@@ -2328,6 +2328,7 @@ export type Database = {
           updated_at: string
         }[]
       }
+      find_storage_orphans_array: { Args: never; Returns: Json }
       get_chat_suggestions: {
         Args: { p_lang: string }
         Returns: {
