@@ -21,6 +21,8 @@ const DESCRIPTIONS: Record<RouteKey | "default", { en: string; ru: string }> = {
                    ru: "Политика конфиденциальности H3 Master — какие данные собираются, как хранятся, ваши права согласно GDPR." },
   terms:         { en: "Terms of Service for H3 Master companion app — usage rules, disclaimer, and licensing information.",
                    ru: "Условия использования H3 Master — правила использования, отказ от ответственности и информация о лицензии." },
+  donate:        { en: "Support H3 Master — voluntary tips help cover hosting, AI costs, and keep the project ad-free. Donate via Ko-fi.",
+                   ru: "Поддержать H3 Master — добровольные взносы покрывают хостинг, расходы на AI и помогают держать проект без рекламы. Донат через Ko-fi." },
   rules:         { en: "All 271 rules of Heroes III: The Board Game — preparation, turns, combat, towns, FAQ. Searchable by category.",
                    ru: "Все 271 правило настольной игры «Герои Меча и Магии III» — подготовка, ходы, бой, города, FAQ. Поиск по категориям." },
   scenarios:     { en: "All 61 scenarios from 10 mission books — setup, map variants, story, victory conditions, timed events.",
