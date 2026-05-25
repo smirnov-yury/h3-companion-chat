@@ -8,7 +8,7 @@ const SITE_URL = "https://h3master.app";
 const APP_NAME = "H3 Master";
 const APP_FULL_NAME = "H3 Master — Companion for Heroes of Might & Magic III: The Board Game";
 
-type RouteKey = TabId | "home" | "about" | "privacy" | "terms";
+type RouteKey = TabId | "home" | "about" | "privacy" | "terms" | "donate";
 
 const DESCRIPTIONS: Record<RouteKey | "default", { en: string; ru: string }> = {
   default:       { en: "H3 Master — unofficial companion app for Heroes of Might & Magic III: The Board Game. Rules, scenarios, units, heroes, spells, artifacts. Offline-ready PWA.",
@@ -21,6 +21,8 @@ const DESCRIPTIONS: Record<RouteKey | "default", { en: string; ru: string }> = {
                    ru: "Политика конфиденциальности H3 Master — какие данные собираются, как хранятся, ваши права согласно GDPR." },
   terms:         { en: "Terms of Service for H3 Master companion app — usage rules, disclaimer, and licensing information.",
                    ru: "Условия использования H3 Master — правила использования, отказ от ответственности и информация о лицензии." },
+  donate:        { en: "Support H3 Master — voluntary tips help cover hosting, AI costs, and keep the project ad-free. Donate via Ko-fi.",
+                   ru: "Поддержать H3 Master — добровольные взносы покрывают хостинг, расходы на AI и помогают держать проект без рекламы. Донат через Ko-fi." },
   rules:         { en: "All 271 rules of Heroes III: The Board Game — preparation, turns, combat, towns, FAQ. Searchable by category.",
                    ru: "Все 271 правило настольной игры «Герои Меча и Магии III» — подготовка, ходы, бой, города, FAQ. Поиск по категориям." },
   scenarios:     { en: "All 61 scenarios from 10 mission books — setup, map variants, story, victory conditions, timed events.",
@@ -48,6 +50,7 @@ const TITLES: Record<RouteKey, { en: string; ru: string }> = {
   about:         { en: "About — H3 Master",                          ru: "О приложении — H3 Master" },
   privacy:       { en: "Privacy Policy — H3 Master",                 ru: "Политика конфиденциальности — H3 Master" },
   terms:         { en: "Terms of Service — H3 Master",               ru: "Условия использования — H3 Master" },
+  donate:        { en: "Support — H3 Master",                      ru: "Поддержать — H3 Master" },
   rules:         { en: "Rules — H3 Master",                          ru: "Правила — H3 Master" },
   scenarios:     { en: "Scenarios — H3 Master",                      ru: "Сценарии — H3 Master" },
   units:         { en: "Units — H3 Master",                          ru: "Юниты — H3 Master" },
@@ -72,6 +75,7 @@ function pathToRouteKey(pathname: string): RouteKey | null {
   if (pathname === "/about") return "about";
   if (pathname === "/privacy") return "privacy";
   if (pathname === "/terms") return "terms";
+  if (pathname === "/donate") return "donate";
   const seg = pathname.split("/").filter(Boolean)[0];
   if (seg && SECTION_ROUTE_KEYS.has(seg as RouteKey)) return seg as RouteKey;
   return null;

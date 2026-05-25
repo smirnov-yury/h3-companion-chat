@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
+import { Heart } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
 import { reopenCookieBanner } from "@/components/CookieConsent";
+import { trackDonationIntent } from "@/lib/analytics";
 
 interface FooterProps {
   /** "default" = full footer with links + disclaimer; "minimal" = inline links only (used on HomePage). */
@@ -14,8 +16,16 @@ export default function Footer({ variant = "default" }: FooterProps) {
   const linkClass =
     "text-xs text-muted-foreground hover:text-primary transition-colors";
 
+  const handleSupportClick = () => {
+    trackDonationIntent("footer");
+  };
+
   const links = (
     <>
+      <Link to="/donate" className={linkClass} onClick={handleSupportClick}>
+        <Heart className="w-3 h-3 inline-block mr-1 -mt-0.5" />
+        {isRu ? "Поддержать" : "Support"}
+      </Link>
       <Link to="/about" className={linkClass}>
         {isRu ? "О приложении" : "About"}
       </Link>
