@@ -8,7 +8,7 @@ const SITE_URL = "https://h3master.app";
 const APP_NAME = "H3 Master";
 const APP_FULL_NAME = "H3 Master — Companion for Heroes of Might & Magic III: The Board Game";
 
-type RouteKey = TabId | "home" | "about" | "privacy" | "terms";
+type RouteKey = TabId | "home" | "about" | "privacy" | "terms" | "donate";
 
 const DESCRIPTIONS: Record<RouteKey | "default", { en: string; ru: string }> = {
   default:       { en: "H3 Master — unofficial companion app for Heroes of Might & Magic III: The Board Game. Rules, scenarios, units, heroes, spells, artifacts. Offline-ready PWA.",
@@ -48,6 +48,7 @@ const TITLES: Record<RouteKey, { en: string; ru: string }> = {
   about:         { en: "About — H3 Master",                          ru: "О приложении — H3 Master" },
   privacy:       { en: "Privacy Policy — H3 Master",                 ru: "Политика конфиденциальности — H3 Master" },
   terms:         { en: "Terms of Service — H3 Master",               ru: "Условия использования — H3 Master" },
+  donate:        { en: "Support — H3 Master",                      ru: "Поддержать — H3 Master" },
   rules:         { en: "Rules — H3 Master",                          ru: "Правила — H3 Master" },
   scenarios:     { en: "Scenarios — H3 Master",                      ru: "Сценарии — H3 Master" },
   units:         { en: "Units — H3 Master",                          ru: "Юниты — H3 Master" },
@@ -72,6 +73,7 @@ function pathToRouteKey(pathname: string): RouteKey | null {
   if (pathname === "/about") return "about";
   if (pathname === "/privacy") return "privacy";
   if (pathname === "/terms") return "terms";
+  if (pathname === "/donate") return "donate";
   const seg = pathname.split("/").filter(Boolean)[0];
   if (seg && SECTION_ROUTE_KEYS.has(seg as RouteKey)) return seg as RouteKey;
   return null;

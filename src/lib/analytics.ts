@@ -99,3 +99,8 @@ export function trackVoiceInputRecorded(params: {
     duration_bucket: bucket,
   });
 }
+
+/** User clicked the "Support on Ko-fi" CTA. source = where the click came from. */
+export function trackDonationIntent(source: "footer" | "page"): void {
+  trackEvent("donation_intent_click", { source });
+}

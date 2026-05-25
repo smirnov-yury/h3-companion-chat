@@ -7,6 +7,7 @@ const STATIC_LABELS: Record<string, { en: string; ru: string }> = {
   about:   { en: "About",            ru: "О приложении" },
   privacy: { en: "Privacy Policy",   ru: "Политика конфиденциальности" },
   terms:   { en: "Terms of Service", ru: "Условия использования" },
+  donate:  { en: "Support",          ru: "Поддержать" },
 };
 
 const SECTION_LABELS: Record<string, { en: string; ru: string }> = {
