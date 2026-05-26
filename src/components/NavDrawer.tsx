@@ -1,6 +1,7 @@
 import React from "react";
-import { BookOpen, Map, MapPin, CalendarDays, Layers, Swords, User, Castle, MessageCircle, Info, Sun, Moon, Wand2, type LucideIcon } from "lucide-react";
+import { BookOpen, Map, MapPin, CalendarDays, Layers, Swords, User, Castle, MessageCircle, Info, Sun, Moon, Wand2, Heart, type LucideIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { trackDonationIntent } from "@/lib/analytics";
 import { Separator } from "@/components/ui/separator";
 import { useLang } from "@/context/LanguageContext";
 import {
@@ -112,6 +113,28 @@ function AboutLink({ onSelect }: { onSelect?: () => void }) {
   );
 }
 
+function SupportLink({ onSelect }: { onSelect?: () => void }) {
+  const { lang } = useLang();
+  const navigate = useNavigate();
+  const handleClick = () => {
+    trackDonationIntent("sidebar");
+    navigate("/donate");
+    onSelect?.();
+  };
+  return (
+    <button
+      onClick={handleClick}
+      className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium border border-[#E1BB3A]/50 rounded-md mt-2 text-[#E1BB3A] hover:bg-[#E1BB3A]/10 transition-colors"
+      style={{ borderColor: 'rgba(225, 187, 58, 0.5)', color: '#E1BB3A' }}
+    >
+      <span className="animate-heart-pulse">
+        <Heart className="w-5 h-5 shrink-0" />
+      </span>
+      {lang === "RU" ? "Поддержать проект" : "Support the project"}
+    </button>
+  );
+}
+
 export default function NavDrawer({ open, onOpenChange, active, onChange }: NavDrawerProps) {
   const navigate = useNavigate();
   const goHome = () => {
@@ -136,6 +159,9 @@ export default function NavDrawer({ open, onOpenChange, active, onChange }: NavD
           <NavItemList active={active} onChange={onChange} />
         </nav>
         <SettingsRow />
+        <div className="px-4">
+          <SupportLink />
+        </div>
         <AboutLink />
       </aside>
 
@@ -158,6 +184,9 @@ export default function NavDrawer({ open, onOpenChange, active, onChange }: NavD
             <NavItemList active={active} onChange={onChange} onSelect={() => onOpenChange(false)} />
           </nav>
           <SettingsRow />
+          <div className="px-4">
+            <SupportLink onSelect={() => onOpenChange(false)} />
+          </div>
           <AboutLink onSelect={() => onOpenChange(false)} />
         </SheetContent>
       </Sheet>

@@ -101,6 +101,6 @@ export function trackVoiceInputRecorded(params: {
 }
 
 /** User clicked the "Support on Ko-fi" CTA. source = where the click came from. */
-export function trackDonationIntent(source: "footer" | "page"): void {
+export function trackDonationIntent(source: "footer" | "page" | "sidebar"): void {
   trackEvent("donation_intent_click", { source });
 }
