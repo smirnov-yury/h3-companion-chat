@@ -11,7 +11,7 @@ import {
   Star,
   Building2,
   Bot,
-  Coffee,
+  Heart,
   Mail,
   Smartphone,
   Wand2,
@@ -28,6 +28,9 @@ import type { TabId } from "@/components/NavDrawer";
 import { checkForPWAUpdate } from "@/pwa/registerSW";
 import SEOMeta from "@/components/SEOMeta";
 import Footer from "@/components/Footer";
+
+const EMAIL_USER = "privacy";
+const EMAIL_DOMAIN = "h3master.app";
 
 interface FeatureRow {
   icon: LucideIcon;
@@ -54,6 +57,7 @@ export default function AboutPage() {
   const isRu = lang === "RU";
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [checking, setChecking] = useState(false);
+  const [emailRevealed, setEmailRevealed] = useState(false);
 
   const handleTabChange = (newTab: TabId) => {
     const def: SectionDef | undefined = findSectionByTabId(newTab);
@@ -231,16 +235,17 @@ export default function AboutPage() {
             <h2 className="text-2xl font-semibold">
               {isRu ? "Поддержать проект" : "Support the Project"}
             </h2>
-            <div className="rounded-lg border border-border bg-muted/40 p-6 text-center opacity-70">
-              <Coffee className="w-10 h-10 mx-auto text-muted-foreground" />
-              <p className="mt-3 text-base font-semibold">
-                {isRu ? "Скоро" : "Coming Soon"}
-              </p>
-              <p className="mt-1 text-xs text-muted-foreground">
+            <div className="rounded-lg border border-border bg-card p-6 text-center">
+              <Heart className="w-10 h-10 mx-auto text-primary" />
+              <p className="mt-3 text-sm text-foreground/90 max-w-md mx-auto">
                 {isRu
-                  ? "Поддержка через Ko-fi скоро появится"
-                  : "Ko-fi support coming soon"}
+                  ? "H3 Master — бесплатный фанатский проект без рекламы. Поддержка покрывает хостинг и AI."
+                  : "H3 Master is a free, fan-made project with no ads. Donations cover hosting and AI costs."}
               </p>
+              <Button className="mt-4" onClick={() => navigate("/donate")}>
+                <Heart className="w-4 h-4 mr-2" />
+                {isRu ? "Поддержать проект" : "Support the project"}
+              </Button>
             </div>
           </section>
 
@@ -251,12 +256,24 @@ export default function AboutPage() {
             </h2>
             <div className="rounded-lg border border-border bg-card p-6 text-center">
               <Mail className="w-10 h-10 mx-auto text-primary" />
-              <a
-                href="mailto:privacy@h3master.app"
-                className="mt-3 inline-block text-base font-semibold text-foreground hover:text-primary transition-colors"
-              >
-                privacy@h3master.app
-              </a>
+              {emailRevealed ? (
+                <a
+                  href={`mailto:${EMAIL_USER}@${EMAIL_DOMAIN}`}
+                  className="mt-3 inline-block text-base font-semibold text-foreground hover:text-primary transition-colors"
+                >
+                  {EMAIL_USER}@{EMAIL_DOMAIN}
+                </a>
+              ) : (
+                <button
+                  onClick={() => setEmailRevealed(true)}
+                  className="mt-3 inline-block text-base font-semibold text-foreground hover:text-primary transition-colors cursor-pointer bg-transparent border-none"
+                >
+                  {EMAIL_USER} [at] {EMAIL_DOMAIN}
+                  <span className="block text-xs text-muted-foreground mt-1 font-normal">
+                    {isRu ? "Нажмите чтобы показать" : "Click to reveal"}
+                  </span>
+                </button>
+              )}
               <p className="mt-2 text-xs text-muted-foreground">
                 {isRu
                   ? "Для любых вопросов: конфиденциальность, GDPR-запросы, сообщения об ошибках, обратная связь."

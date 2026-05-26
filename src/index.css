@@ -189,3 +189,12 @@ img.glyph-icon[src*="building_materials"] {
   border-color: #7A3B10;
   color: #7A3B10;
 }
+
+@keyframes heart-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.15); opacity: 0.85; }
+}
+.animate-heart-pulse {
+  animation: heart-pulse 2s ease-in-out infinite;
+  display: inline-block;
+}

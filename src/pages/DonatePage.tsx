@@ -40,8 +40,8 @@ const costs: CostRow[] = [
     icon: Bot,
     labelEn: "OpenAI API (AI Game Master)",
     labelRu: "OpenAI API (ИИ Мастер игры)",
-    valueEn: "~€10-15 / month",
-    valueRu: "~€10-15 / месяц",
+    valueEn: "~€15-20 / month",
+    valueRu: "~€15-20 / месяц",
   },
   {
     icon: Globe,
