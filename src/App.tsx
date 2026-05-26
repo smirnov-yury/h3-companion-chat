@@ -16,6 +16,8 @@ import SEOMeta from "./components/SEOMeta";
 import CookieConsent from "./components/CookieConsent";
 import H3MasterSpinner from "@/components/H3MasterSpinner";
 import { AdminAuthProvider } from "@/context/AdminAuthContext";
+import { RuleExtModalProvider } from "@/context/RuleExtModalContext";
+import RuleExtModal from "@/components/RuleExtModal";
 
 // Lazy-loaded routes. Heavy or rarely visited.
 const AboutPage  = lazy(() => import("./pages/AboutPage.tsx"));
@@ -60,26 +62,29 @@ const App = () => (
       <Sonner position="top-center" richColors theme="dark" />
       <PWAUpdateBanner />
       <BrowserRouter>
-        <SEOMeta />
-        <CookieConsent />
-        <AnalyticsBoot />
-        <Suspense fallback={<RouteFallback />}>
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/about" element={<AboutPage />} />
-            <Route path="/privacy" element={<PrivacyPage />} />
-            <Route path="/terms" element={<TermsPage />} />
-            <Route path="/donate" element={<DonatePage />} />
-            <Route path="/admin" element={<AdminAuthProvider><AdminGuard><AdminPanel /></AdminGuard></AdminAuthProvider>} />
-            <Route path="/dragonutopia/login" element={<AdminAuthProvider><AdminLogin /></AdminAuthProvider>} />
-            <Route path="/dragonutopia/*" element={<AdminAuthProvider><AdminGuard><AdminPanel /></AdminGuard></AdminAuthProvider>} />
-            <Route path="/game-setup" element={<GameSetup />} />
-            <Route path="/game/:uuid" element={<GameSession />} />
-            <Route path="/:section/*" element={<Index />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Suspense>
+        <RuleExtModalProvider>
+          <SEOMeta />
+          <CookieConsent />
+          <AnalyticsBoot />
+          <RuleExtModal />
+          <Suspense fallback={<RouteFallback />}>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/about" element={<AboutPage />} />
+              <Route path="/privacy" element={<PrivacyPage />} />
+              <Route path="/terms" element={<TermsPage />} />
+              <Route path="/donate" element={<DonatePage />} />
+              <Route path="/admin" element={<AdminAuthProvider><AdminGuard><AdminPanel /></AdminGuard></AdminAuthProvider>} />
+              <Route path="/dragonutopia/login" element={<AdminAuthProvider><AdminLogin /></AdminAuthProvider>} />
+              <Route path="/dragonutopia/*" element={<AdminAuthProvider><AdminGuard><AdminPanel /></AdminGuard></AdminAuthProvider>} />
+              <Route path="/game-setup" element={<GameSetup />} />
+              <Route path="/game/:uuid" element={<GameSession />} />
+              <Route path="/:section/*" element={<Index />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
+        </RuleExtModalProvider>
       </BrowserRouter>
     </TooltipProvider>
     </RulesProvider>
