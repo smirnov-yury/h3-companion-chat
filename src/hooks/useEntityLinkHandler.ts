@@ -1,5 +1,6 @@
 import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { useRuleExtModal } from "@/context/RuleExtModalContext";
 
 export function entityLinkUrl(type: string, id: string): string | null {
   switch (type) {
@@ -56,6 +57,8 @@ export function entityLinkUrl(type: string, id: string): string | null {
  */
 export function useEntityLinkHandler() {
   const navigate = useNavigate();
+  const { openRuleExt } = useRuleExtModal();
+
   return useCallback(
     (event: React.MouseEvent<HTMLElement>) => {
       const target = event.target as HTMLElement | null;
@@ -65,12 +68,23 @@ export function useEntityLinkHandler() {
       const type = link.dataset.entityType;
       const id = link.dataset.entityId;
       if (!type || !id) return;
+
+      if (type === "rule_ext") {
+        const parsed = Number.parseInt(id, 10);
+        if (Number.isFinite(parsed)) {
+          event.preventDefault();
+          event.stopPropagation();
+          openRuleExt(parsed);
+        }
+        return;
+      }
+
       const url = entityLinkUrl(type, id);
       if (!url) return;
       event.preventDefault();
       event.stopPropagation();
       navigate(url);
     },
-    [navigate],
+    [navigate, openRuleExt],
   );
 }
