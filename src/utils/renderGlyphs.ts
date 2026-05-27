@@ -62,7 +62,7 @@ export function renderGlyphs(text: string | null | undefined, glyphs: GlyphMap):
   // Inline entity links: [Display Text](type:id) — parsed BEFORE glyph tokens.
   // Display text may contain anything except `]`. Type must be in the allowed set.
   const withLinks = escaped.replace(
-    /\[([^\]]+)\]\(([a-zA-Z]+):([A-Za-z0-9_\-:.]+)\)/g,
+    /\[([^\]]+)\]\(([a-zA-Z_]+):([A-Za-z0-9_\-:.]+)\)/g,
     (match, display: string, type: string, id: string) => {
       const t = type.toLowerCase();
       if (!ENTITY_LINK_TYPES.has(t)) return match;
