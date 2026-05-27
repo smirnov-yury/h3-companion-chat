@@ -158,7 +158,7 @@ export default function DonatePage() {
             <ShieldCheck className="w-5 h-5 shrink-0 text-muted-foreground mt-0.5" />
             <p className="text-sm text-muted-foreground">
               {isRu
-                ? "Никаких карточных данных не проходит через h3master.app"
+                ? "h3master.app не обрабатывает и не хранит данные банковских карт"
                 : "No card data ever passes through h3master.app"}
             </p>
           </section>

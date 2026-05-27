@@ -55,7 +55,7 @@ export default function Footer({ variant = "default" }: FooterProps) {
         {links}
       </nav>
       <p className="text-xs text-muted-foreground">
-        © 2026 H3 Master ·{" "}
+        © {new Date().getFullYear()} H3 Master ·{" "}
         {isRu
           ? "Неофициальный фанатский компаньон"
           : "Unofficial fan-made companion"}
