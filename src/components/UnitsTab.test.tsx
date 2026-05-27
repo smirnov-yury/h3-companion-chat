@@ -1,19 +1,5 @@
 import { describe, expect, it } from "vitest";
-
-// Mirror the production constants from UnitsTab.tsx. Keep this in sync if FACTIONS changes.
-const FACTIONS = [
-  "castle",
-  "necropolis",
-  "dungeon",
-  "tower",
-  "fortress",
-  "rampart",
-  "inferno",
-  "conflux",
-  "stronghold",
-  "cove",
-  "summoned",
-];
+import { FACTIONS } from "./units/factions";
 
 type UnitStat = {
   id: string;
@@ -23,7 +9,7 @@ type UnitStat = {
 };
 
 const isNeutral = (unit: UnitStat) =>
-  !FACTIONS.includes(unit.town?.toLowerCase() ?? "");
+  !(FACTIONS as readonly string[]).includes(unit.town?.toLowerCase() ?? "");
 
 function deriveGroups(units: UnitStat[]) {
   const factionGroups: Record<string, UnitStat[]> = {};
