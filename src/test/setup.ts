@@ -13,3 +13,22 @@ Object.defineProperty(window, "matchMedia", {
     dispatchEvent: () => {},
   }),
 });
+
+const localStorageMock: Storage = {
+  getItem: () => null,
+  setItem: () => {},
+  removeItem: () => {},
+  clear: () => {},
+  key: () => null,
+  length: 0,
+};
+
+Object.defineProperty(window, "localStorage", {
+  writable: true,
+  value: localStorageMock,
+});
+
+Object.defineProperty(window, "sessionStorage", {
+  writable: true,
+  value: localStorageMock,
+});
