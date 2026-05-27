@@ -14,9 +14,9 @@ import SeeAlso from '@/components/SeeAlso';
 import ImageWithSpinner from '@/components/ImageWithSpinner';
 
 import { componentMediaUrl, componentImageUrl } from "@/lib/storage";
+import { FACTIONS } from "./units/factions";
 
-const FACTIONS = ['castle','necropolis','dungeon','tower','fortress','rampart','inferno','conflux','stronghold','cove','summoned'];
-const isNeutral = (unit: UnitStat) => !FACTIONS.includes(unit.town?.toLowerCase() ?? '');
+const isNeutral = (unit: UnitStat) => !(FACTIONS as readonly string[]).includes(unit.town?.toLowerCase() ?? '');
 
 const NEUTRAL_PLACEHOLDERS: Record<string, string> = {
   bronze: componentMediaUrl("units/neutral/empty_neutral_unit_bronze.webp"),
