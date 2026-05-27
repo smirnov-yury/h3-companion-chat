@@ -15,7 +15,7 @@ import ImageWithSpinner from '@/components/ImageWithSpinner';
 
 import { componentMediaUrl, componentImageUrl } from "@/lib/storage";
 
-const FACTIONS = ['castle','necropolis','dungeon','tower','fortress','rampart','inferno','conflux','stronghold','cove'];
+const FACTIONS = ['castle','necropolis','dungeon','tower','fortress','rampart','inferno','conflux','stronghold','cove','summoned'];
 const isNeutral = (unit: UnitStat) => !FACTIONS.includes(unit.town?.toLowerCase() ?? '');
 
 const NEUTRAL_PLACEHOLDERS: Record<string, string> = {
