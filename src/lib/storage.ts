@@ -1,6 +1,18 @@
 import { SUPABASE_URL } from "@/integrations/supabase/client";
 
-export const STORAGE_BASE = `${SUPABASE_URL}/storage/v1/object/public`;
+// Route public storage media through Cloudflare Worker proxy on
+// media.h3master.app so the CF edge absorbs the bandwidth instead of
+// Supabase Storage. See HMM APP/infra/cf-worker/media-proxy.js +
+// DEPLOY-MEDIA.md. Falls back to direct Supabase URL if the env var is
+// not present (eg. local dev without DNS).
+const MEDIA_PROXY_BASE = (import.meta.env.VITE_MEDIA_PROXY_BASE as string | undefined)
+  ?? "https://media.h3master.app";
+
+// STORAGE_BASE points at the CF proxy in production. Falls back to the
+// Supabase origin for buckets we do NOT proxy (none currently - kept for
+// future-proofing).
+export const STORAGE_BASE = MEDIA_PROXY_BASE;
+export const STORAGE_BASE_DIRECT = `${SUPABASE_URL}/storage/v1/object/public`;
 
 /** Build a public storage URL for a bucket + path. */
 export function storageUrl(bucket: string, path: string): string {
