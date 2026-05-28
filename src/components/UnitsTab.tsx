@@ -328,9 +328,14 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
     const items: DisplayItem[] = [];
     const q = searchQuery.toLowerCase();
 
-    // Faction groups show only when mode is 'all' or 'standard'.
-    if (mode === 'all' || mode === 'standard') {
+    // Faction groups show for 'all', 'standard', and 'summoned' modes.
+    // 'summoned' filters down to groups whose town is Summoned; 'standard' excludes them.
+    if (mode === 'all' || mode === 'standard' || mode === 'summoned') {
       for (const [slug, variants] of Object.entries(factionGroups)) {
+        const isSummonedGroup = variants.some((u) => u.town === 'Summoned');
+        if (mode === 'summoned' && !isSummonedGroup) continue;
+        if (mode === 'standard' && isSummonedGroup) continue;
+
         if (filterFaction !== 'all' && !variants.some((u) => u.town === filterFaction)) continue;
         if (filterTier !== 'all' && !variants.some((u) => u.tier === filterTier)) continue;
         if (filterType !== 'all' && !variants.some((u) => u.type === filterType)) continue;
@@ -353,12 +358,14 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
       }
     }
 
-    // Neutral-bucket (Neutral / Creature Bank / Summoned single-card units).
+    // Neutral-bucket (Neutral / Creature Bank single-card units).
+    // 'summoned' is handled by the faction loop above (Summoned units live in
+    // factionGroups since prompt 124). Only 'neutral' and 'creature_bank' route
+    // here.
     const showAllNeutralBucket = mode === 'all' && filterFaction === 'all';
     const requiredTown =
       mode === 'neutral' ? 'Neutral'
       : mode === 'creature_bank' ? 'Creature Bank'
-      : mode === 'summoned' ? 'Summoned'
       : null;
 
     if (showAllNeutralBucket || requiredTown) {
