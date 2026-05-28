@@ -61,9 +61,17 @@ export function onPWAUpdate(listener: UpdateListener): () => void {
 }
 
 export function applyPWAUpdate() {
-  if (updateSWFn) {
-    updateSWFn(true);
-  } else {
+  // Always force a full reload. updateSWFn() alone is a no-op when the banner
+  // was triggered by the force-refresh path (no waiting SW), and waiting
+  // indefinitely for controllerchange masks the issue. The reload picks up
+  // the new HTML on the next request; if a new SW IS waiting, the browser
+  // activates it during the reload cycle.
+  try {
+    if (updateSWFn) {
+      // Fire and forget - posts SKIP_WAITING when a SW is actually waiting.
+      void updateSWFn(true);
+    }
+  } finally {
     window.location.reload();
   }
 }
