@@ -92,6 +92,7 @@ export async function generateSitemap(outDir: string): Promise<void> {
   const staticRoutes: UrlEntry[] = [
     { loc: `${SITE_URL}/`, changefreq: "weekly", priority: "1.0" },
     { loc: `${SITE_URL}/about`, changefreq: "monthly", priority: "0.5" },
+    { loc: `${SITE_URL}/donate`, changefreq: "monthly", priority: "0.5" },
     { loc: `${SITE_URL}/privacy`, changefreq: "yearly", priority: "0.3" },
     { loc: `${SITE_URL}/terms`, changefreq: "yearly", priority: "0.3" },
     { loc: `${SITE_URL}/rules`, changefreq: "monthly", priority: "0.9" },

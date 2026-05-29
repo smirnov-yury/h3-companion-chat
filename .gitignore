@@ -12,6 +12,13 @@ dist
 dist-ssr
 *.local
 
+# Environment variables - defense-in-depth for future env-specific files
+# Note: .env is currently tracked and contains only public VITE_* values (project_id, anon JWT, URL).
+# These rules block future .env.production / .env.staging / .env.local etc if they appear with real secrets.
+.env.*
+!.env.example
+
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
