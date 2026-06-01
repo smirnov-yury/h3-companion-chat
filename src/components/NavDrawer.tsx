@@ -1,5 +1,5 @@
 import React from "react";
-import { BookOpen, Map, MapPin, CalendarDays, Layers, Swords, User, Castle, MessageCircle, Info, Sun, Moon, Wand2, Heart, type LucideIcon } from "lucide-react";
+import { Info, Sun, Moon, Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { trackDonationIntent } from "@/lib/analytics";
 import { Separator } from "@/components/ui/separator";
@@ -12,21 +12,9 @@ import {
 } from "@/components/ui/sheet";
 import H3MasterSpinner from "@/components/H3MasterSpinner";
 import { useNavSections } from "@/hooks/useNavSections";
-
-export type TabId = "rules" | "scenarios" | "map_elements" | "global_events" | "decks" | "units" | "heroes" | "towns" | "ai" | "game_setup";
-
-export const navItems: { id: TabId; labelRU: string; labelEN: string; icon: LucideIcon }[] = [
-  { id: "rules",         labelRU: "Правила",            labelEN: "Rules",           icon: BookOpen },
-  { id: "scenarios",     labelRU: "Сценарии",           labelEN: "Scenarios",       icon: Map },
-  { id: "map_elements",  labelRU: "Элементы карты",     labelEN: "Map Elements",    icon: MapPin },
-  { id: "global_events", labelRU: "Глобальные события", labelEN: "Global Events",   icon: CalendarDays },
-  { id: "decks",         labelRU: "Колоды",             labelEN: "Decks",           icon: Layers },
-  { id: "units",         labelRU: "Юниты",              labelEN: "Units",           icon: Swords },
-  { id: "heroes",        labelRU: "Герои",              labelEN: "Heroes",          icon: User },
-  { id: "towns",         labelRU: "Города",             labelEN: "Towns",           icon: Castle },
-  { id: "ai",            labelRU: "ИИ Мастер игры",     labelEN: "AI Game Master",  icon: MessageCircle },
-  { id: "game_setup",    labelRU: "Подготовка партии",  labelEN: "Game Setup",      icon: Wand2 },
-];
+import type { TabId } from "@/config/navItems";
+export { navItems } from "@/config/navItems";
+export type { TabId } from "@/config/navItems";
 
 interface NavDrawerProps {
   open: boolean;
