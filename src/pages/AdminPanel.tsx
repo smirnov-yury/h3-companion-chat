@@ -21,12 +21,14 @@ import ScenariosEditor from "@/components/admin/ScenariosEditor";
 
 import AiMetricsEditor from "@/components/admin/AiMetricsEditor";
 import MaintenanceEditor from "@/components/admin/MaintenanceEditor";
+import SectionsEditor from "@/components/admin/SectionsEditor";
 
 const NAV_ITEMS: Array<
   | { path: string; label: string; icon: React.ElementType }
   | { label: string; icon: React.ElementType; children: { path: string; label: string }[] }
 > = [
   { path: "", label: "Dashboard", icon: LayoutDashboard },
+  { path: "sections", label: "Navigation", icon: ListTree },
   { path: "rules", label: "Rules", icon: BookOpen },
   { path: "scenarios", label: "Scenarios", icon: Map },
   {
