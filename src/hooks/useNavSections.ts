@@ -4,7 +4,7 @@ import {
   MessageCircle, Wand2, Circle, type LucideIcon,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { navItems, type TabId } from "@/components/NavDrawer";
+import { navItems, type TabId } from "@/config/navItems";
 
 export interface NavSection {
   id: TabId;
