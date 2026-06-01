@@ -11,6 +11,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import H3MasterSpinner from "@/components/H3MasterSpinner";
+import { useNavSections } from "@/hooks/useNavSections";
 
 export type TabId = "rules" | "scenarios" | "map_elements" | "global_events" | "decks" | "units" | "heroes" | "towns" | "ai" | "game_setup";
 
@@ -36,9 +37,10 @@ interface NavDrawerProps {
 
 function NavItemList({ active, onChange, onSelect }: { active: TabId; onChange: (tab: TabId) => void; onSelect?: () => void }) {
   const { lang } = useLang();
+  const items = useNavSections();
   return (
     <>
-      {navItems.map(({ id, labelRU, labelEN, icon: Icon }) => {
+      {items.map(({ id, labelRU, labelEN, icon: Icon }) => {
         const isActive = active === id;
         return (
           <button

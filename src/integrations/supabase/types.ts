@@ -1725,6 +1725,59 @@ export type Database = {
           },
         ]
       }
+      sections: {
+        Row: {
+          created_at: string
+          data_source: string | null
+          icon: string | null
+          id: string
+          is_visible: boolean
+          label_en: string
+          label_ru: string
+          layout_ref: string | null
+          parent_id: string | null
+          slug: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          data_source?: string | null
+          icon?: string | null
+          id: string
+          is_visible?: boolean
+          label_en: string
+          label_ru: string
+          layout_ref?: string | null
+          parent_id?: string | null
+          slug: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          data_source?: string | null
+          icon?: string | null
+          id?: string
+          is_visible?: boolean
+          label_en?: string
+          label_ru?: string
+          layout_ref?: string | null
+          parent_id?: string | null
+          slug?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sections_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "sections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       spells: {
         Row: {
           ai_context: string | null

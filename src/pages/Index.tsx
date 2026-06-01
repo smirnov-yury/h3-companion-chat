@@ -15,6 +15,7 @@ import BackToTop from "@/components/BackToTop";
 import SEOMeta from "@/components/SEOMeta";
 import H3MasterSpinner from "@/components/H3MasterSpinner";
 import { useLang } from "@/context/LanguageContext";
+import { useNavSections } from "@/hooks/useNavSections";
 import {
   DEFAULT_SLUG,
   findSectionBySlug,
@@ -165,7 +166,10 @@ export default function Index() {
     [navigate],
   );
 
-  const current = navItems.find((n) => n.id === tab)!;
+  const navSections = useNavSections();
+  const current =
+    navSections.find((n) => n.id === tab) ??
+    navItems.find((n) => n.id === tab)!;
   const title = lang === "RU" ? current.labelRU : current.labelEN;
 
   return (
