@@ -149,14 +149,14 @@ export default function SpellsTab({ searchQuery = "", initialFilter, initialCard
           ) : filtered.length === 0 ? (
             <EmptyState onReset={hasFilters ? resetFilters : undefined} />
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
+            <CardGrid layout={layout}>
               {filtered.map((item) => {
                 const imgSrc = item.image ? componentImageUrl("spells", item.image, item.updated_at) : null;
                 return (
                   <button key={item.id} onClick={() => openCard(item)}
                     className="flex flex-col rounded-xl border border-border bg-card overflow-hidden text-left hover:border-primary transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg cursor-pointer">
-                    <div className="aspect-[5/7] w-full bg-muted flex items-center justify-center overflow-hidden relative rounded-lg">
-                      <img loading="lazy" decoding="async" src={imgSrc || DECK_PLACEHOLDER} alt={item.name_en} className="w-full h-full object-cover rounded-lg" onError={(e) => { e.currentTarget.src = DECK_PLACEHOLDER; e.currentTarget.onerror = null; }} />
+                    <div style={aspectStyle(layout)} className="w-full bg-muted flex items-center justify-center overflow-hidden relative rounded-lg">
+                      <img loading="lazy" decoding="async" src={imgSrc || DECK_PLACEHOLDER} alt={item.name_en} style={objectStyle(layout)} className="w-full h-full rounded-lg" onError={(e) => { e.currentTarget.src = DECK_PLACEHOLDER; e.currentTarget.onerror = null; }} />
                       {(item.school || item.level) && (
                         <div className="absolute top-2 left-2 flex flex-col gap-1">
                           {item.school && (
@@ -178,7 +178,7 @@ export default function SpellsTab({ searchQuery = "", initialFilter, initialCard
                   </button>
                 );
               })}
-            </div>
+            </CardGrid>
           )}
         </div>
       </div>
