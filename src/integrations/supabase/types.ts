@@ -1085,6 +1085,27 @@ export type Database = {
         }
         Relationships: []
       }
+      media_folders: {
+        Row: {
+          content_key: string
+          created_at: string
+          folder: string
+          note: string | null
+        }
+        Insert: {
+          content_key: string
+          created_at?: string
+          folder: string
+          note?: string | null
+        }
+        Update: {
+          content_key?: string
+          created_at?: string
+          folder?: string
+          note?: string | null
+        }
+        Relationships: []
+      }
       morale_cards: {
         Row: {
           ai_context: string | null

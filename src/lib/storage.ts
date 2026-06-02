@@ -1,4 +1,9 @@
 import { SUPABASE_URL } from "@/integrations/supabase/client";
+import {
+  MEDIA_FOLDER_DEFAULTS,
+  resolveMediaFolder,
+  type ComponentMediaTable,
+} from "@/config/mediaFolders";
 
 // Route public storage media through Cloudflare Worker proxy on
 // media.h3master.app so the CF edge absorbs the bandwidth instead of
@@ -24,38 +29,22 @@ export const componentMediaUrl = (path: string) => storageUrl("component-media",
 export const scenarioMediaUrl = (path: string) => storageUrl("scenario-media", path);
 
 /**
- * Single source of truth for which folder inside `component-media` holds images
- * for each table. Both the admin uploader and the public reader tabs MUST read
- * the folder name from this map. Adding a new entity? Add one row here.
+ * Back-compat re-export. The canonical table->folder map now lives in the neutral
+ * module src/config/mediaFolders.ts so storage.ts and the useMediaFolders hook both
+ * import it without a circular import. componentImageUrl/componentImagePath resolve
+ * the folder via resolveMediaFolder(), which reads the DB-driven override
+ * (media_folders) with this map as the hardcoded fallback (strangler) and the key
+ * itself as the default for unknown keys.
  */
-export const COMPONENT_MEDIA_FOLDERS = {
-  unit_stats: "units",
-  statistics: "statistics",
-  war_machines: "war_machines",
-  glyphs: "glyphs",
-  events: "events",
-  towns: "towns",
-  heroes: "heroes",
-  spells: "spells",
-  artifacts: "artifacts",
-  abilities: "abilities",
-  astrologers_proclaim: "astrologers_proclaim",
-  fields: "fields",
-  ai_cards: "ai_cards",
-  map_events: "map_events",
-  morale_cards: "morale_cards",
-  pandora_box: "pandora_box",
-  scenario_map_variants: "scenario-maps",
-} as const;
-
-export type ComponentMediaTable = keyof typeof COMPONENT_MEDIA_FOLDERS;
+export const COMPONENT_MEDIA_FOLDERS = MEDIA_FOLDER_DEFAULTS;
+export type { ComponentMediaTable };
 
 /**
  * Public URL for an image stored under component-media for the given table.
  *
  * If `updatedAt` is provided, a `?v=<updatedAt>` query parameter is appended
  * to bust the browser / service worker cache whenever the row is updated.
- * Pass the row's `updated_at` value directly — the column is `timestamptz`
+ * Pass the row's `updated_at` value directly - the column is `timestamptz`
  * with a BEFORE UPDATE trigger, so any admin change rotates the cache key.
  */
 export function componentImageUrl(
@@ -63,14 +52,14 @@ export function componentImageUrl(
   filename: string,
   updatedAt?: string | null,
 ): string {
-  const base = componentMediaUrl(`${COMPONENT_MEDIA_FOLDERS[table]}/${filename}`);
+  const base = componentMediaUrl(`${resolveMediaFolder(table)}/${filename}`);
   if (!updatedAt) return base;
   return `${base}?v=${encodeURIComponent(updatedAt)}`;
 }
 
 /** Storage path (relative to component-media bucket) for table + filename. */
 export function componentImagePath(table: ComponentMediaTable, filename: string): string {
-  return `${COMPONENT_MEDIA_FOLDERS[table]}/${filename}`;
+  return `${resolveMediaFolder(table)}/${filename}`;
 }
 
 /** Hard limit on uploaded image size in bytes. Mirrors bucket file_size_limit. */
