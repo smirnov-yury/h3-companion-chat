@@ -178,12 +178,13 @@ export default function Index() {
   const navSections = useNavSections();
   const current =
     navSections.find((n) => n.id === tab) ??
-    navItems.find((n) => n.id === tab)!;
+    navItems.find((n) => n.id === tab) ??
+    { id: tab, labelRU: tab, labelEN: tab, icon: navItems[0].icon };
   const title = lang === "RU" ? current.labelRU : current.labelEN;
 
   return (
     <div className="flex flex-col h-dvh">
-      <SEOMeta routeKey={tab} />
+      <SEOMeta routeKey={tab as TabId} />
       <TopAppBar title={title} icon={current.icon} onMenuClick={() => setDrawerOpen(true)} />
       <NavDrawer open={drawerOpen} onOpenChange={setDrawerOpen} active={tab} onChange={handleTabChange} />
       <div className="flex-1 flex flex-col overflow-hidden pt-11 lg:ml-56">
