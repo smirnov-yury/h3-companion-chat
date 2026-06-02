@@ -46,6 +46,7 @@ export default function StatisticsTab({ searchQuery = "", initialCardId, onCardO
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
   const handleEntityClick = useEntityLinkHandler();
+  const layout = useCardLayout("attributes");
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["statistics"],
     queryFn: async () => {
