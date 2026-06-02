@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import {
   DndContext, closestCenter, PointerSensor, useSensor, useSensors, type DragEndEvent,
@@ -200,13 +201,22 @@ export default function SectionsEditor() {
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
   const sensors = useSensors(useSensor(PointerSensor));
+  const queryClient = useQueryClient();
+  const originalSlugs = useRef<Record<string, string>>({});
+
+  const invalidateNav = () => {
+    queryClient.invalidateQueries({ queryKey: ["nav_sections"] });
+    queryClient.invalidateQueries({ queryKey: ["section_routing"] });
+  };
 
   const load = async () => {
     const { data } = await supabase
       .from("sections")
       .select("id,parent_id,slug,label_en,label_ru,icon,sort_order,is_visible")
       .order("sort_order", { ascending: true });
-    setSections((data as Section[]) ?? []);
+    const rows = (data as Section[]) ?? [];
+    setSections(rows);
+    originalSlugs.current = Object.fromEntries(rows.map((r) => [r.id, r.slug]));
   };
   useEffect(() => { load(); }, []);
 
@@ -223,6 +233,17 @@ export default function SectionsEditor() {
     await supabase.from("sections").update({
       label_en: s.label_en, label_ru: s.label_ru, slug: s.slug, icon: s.icon,
     }).eq("id", id);
+    const oldSlug = originalSlugs.current[id];
+    if (s.parent_id === null && oldSlug && oldSlug !== s.slug) {
+      await supabase.from("slug_redirects").upsert(
+        { old_slug: oldSlug, new_slug: s.slug, note: "auto: admin slug rename" },
+        { onConflict: "old_slug" },
+      );
+      await supabase.from("slug_redirects").update({ new_slug: s.slug }).eq("new_slug", oldSlug);
+      await supabase.from("slug_redirects").delete().eq("old_slug", s.slug);
+    }
+    originalSlugs.current[id] = s.slug;
+    invalidateNav();
     setSavingIds((p) => { const n = new Set(p); n.delete(id); return n; });
   };
 
@@ -232,10 +253,12 @@ export default function SectionsEditor() {
     const next = !s.is_visible;
     setSections((prev) => prev.map((x) => (x.id === id ? { ...x, is_visible: next } : x)));
     await supabase.from("sections").update({ is_visible: next }).eq("id", id);
+    invalidateNav();
   };
 
   const persistOrder = async (rows: Section[]) => {
     for (const r of rows) await supabase.from("sections").update({ sort_order: r.sort_order }).eq("id", r.id);
+    invalidateNav();
   };
 
   const handleTopDragEnd = async (e: DragEndEvent) => {
@@ -263,6 +286,7 @@ export default function SectionsEditor() {
     const maxTop = tops.reduce((m, s) => Math.max(m, s.sort_order), 0);
     setSections((prev) => prev.map((s) => (s.id === id ? { ...s, parent_id: null, sort_order: maxTop + 10 } : s)));
     await supabase.from("sections").update({ parent_id: null, sort_order: maxTop + 10 }).eq("id", id);
+    invalidateNav();
   };
 
   const demote = async (id: string) => {
@@ -273,6 +297,7 @@ export default function SectionsEditor() {
     const maxChild = childrenOf(newParent.id).reduce((m, s) => Math.max(m, s.sort_order), 0);
     setSections((prev) => prev.map((s) => (s.id === id ? { ...s, parent_id: newParent.id, sort_order: maxChild + 10 } : s)));
     await supabase.from("sections").update({ parent_id: newParent.id, sort_order: maxChild + 10 }).eq("id", id);
+    invalidateNav();
   };
 
   const addTop = async () => {
@@ -280,7 +305,11 @@ export default function SectionsEditor() {
     const id = `section_${Date.now()}`;
     const row: Section = { id, parent_id: null, slug: "new-section", label_en: "New Section", label_ru: "Новый раздел", icon: "Circle", sort_order: maxTop + 10, is_visible: true };
     const { error } = await supabase.from("sections").insert(row);
-    if (!error) setSections((prev) => [...prev, row]);
+    if (!error) {
+      setSections((prev) => [...prev, row]);
+      originalSlugs.current[id] = row.slug;
+      invalidateNav();
+    }
   };
 
   const addChild = async (pid: string) => {
@@ -288,7 +317,11 @@ export default function SectionsEditor() {
     const id = `${pid}_child_${Date.now()}`;
     const row: Section = { id, parent_id: pid, slug: "new-subsection", label_en: "New Subsection", label_ru: "Новый подраздел", icon: null, sort_order: maxChild + 10, is_visible: true };
     const { error } = await supabase.from("sections").insert(row);
-    if (!error) setSections((prev) => [...prev, row]);
+    if (!error) {
+      setSections((prev) => [...prev, row]);
+      originalSlugs.current[id] = row.slug;
+      invalidateNav();
+    }
   };
 
   const handleDelete = async () => {
@@ -298,6 +331,7 @@ export default function SectionsEditor() {
     setSections((prev) => prev.filter((s) => s.id !== deleteTarget && s.parent_id !== deleteTarget));
     setDeleting(false);
     setDeleteTarget(null);
+    invalidateNav();
   };
 
   return (

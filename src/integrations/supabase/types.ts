@@ -1778,6 +1778,27 @@ export type Database = {
           },
         ]
       }
+      slug_redirects: {
+        Row: {
+          created_at: string
+          new_slug: string
+          note: string | null
+          old_slug: string
+        }
+        Insert: {
+          created_at?: string
+          new_slug: string
+          note?: string | null
+          old_slug: string
+        }
+        Update: {
+          created_at?: string
+          new_slug?: string
+          note?: string | null
+          old_slug?: string
+        }
+        Relationships: []
+      }
       spells: {
         Row: {
           ai_context: string | null

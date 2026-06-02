@@ -4,10 +4,10 @@ import {
   MessageCircle, Wand2, Circle, type LucideIcon,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { navItems, type TabId } from "@/config/navItems";
+import { navItems } from "@/config/navItems";
 
 export interface NavSection {
-  id: TabId;
+  id: string;
   labelRU: string;
   labelEN: string;
   icon: LucideIcon;
@@ -36,8 +36,6 @@ interface SectionRow {
   parent_id: string | null;
 }
 
-const KNOWN_TAB_IDS = new Set<TabId>(navItems.map((n) => n.id));
-
 /**
  * Top-level navigation sections, sourced from the `sections` table.
  * Falls back to the hardcoded `navItems` while loading, on error, or if the
@@ -55,15 +53,12 @@ export function useNavSections(): NavSection[] {
         .order("sort_order", { ascending: true });
       if (error) throw error;
       const rows = (data ?? []) as SectionRow[];
-      const mapped = rows
-        .filter((r) => KNOWN_TAB_IDS.has(r.id as TabId))
-        .map<NavSection>((r) => ({
-          id: r.id as TabId,
-          labelRU: r.label_ru,
-          labelEN: r.label_en,
-          icon: (r.icon && ICON_MAP[r.icon]) || Circle,
-        }));
-      return mapped;
+      return rows.map<NavSection>((r) => ({
+        id: r.id,
+        labelRU: r.label_ru,
+        labelEN: r.label_en,
+        icon: (r.icon && ICON_MAP[r.icon]) || Circle,
+      }));
     },
     staleTime: 5 * 60 * 1000,
   });

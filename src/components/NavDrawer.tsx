@@ -19,11 +19,11 @@ export type { TabId } from "@/config/navItems";
 interface NavDrawerProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  active: TabId;
-  onChange: (tab: TabId) => void;
+  active: string;
+  onChange: (tab: string) => void;
 }
 
-function NavItemList({ active, onChange, onSelect }: { active: TabId; onChange: (tab: TabId) => void; onSelect?: () => void }) {
+function NavItemList({ active, onChange, onSelect }: { active: string; onChange: (tab: string) => void; onSelect?: () => void }) {
   const { lang } = useLang();
   const items = useNavSections();
   return (

@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import TopAppBar from "@/components/TopAppBar";
 import NavDrawer, { type TabId, navItems } from "@/components/NavDrawer";
@@ -16,6 +16,7 @@ import SEOMeta from "@/components/SEOMeta";
 import H3MasterSpinner from "@/components/H3MasterSpinner";
 import { useLang } from "@/context/LanguageContext";
 import { useNavSections } from "@/hooks/useNavSections";
+import { useSectionRouting } from "@/hooks/useSectionRouting";
 import {
   DEFAULT_SLUG,
   findSectionBySlug,
@@ -42,9 +43,16 @@ export default function Index() {
 
   const initialSearch = searchParams.get("q") ?? "";
 
-  // Derive active tab from URL. Unknown slug → default section.
-  const matched = findSectionBySlug(params.section) ?? findSectionBySlug(DEFAULT_SLUG)!;
-  const tab: TabId = matched.tabId;
+  const routing = useSectionRouting();
+  const { def: matched, redirectTo } = routing.resolveBySlug(params.section);
+  const tab = matched.tabId as TabId;
+
+  useEffect(() => {
+    if (!redirectTo) return;
+    const rest = (params["*"] ?? "");
+    const target = `/${redirectTo}${rest ? `/${rest}` : ""}`;
+    navigate(target, { replace: true });
+  }, [redirectTo, params, navigate]);
 
   // Parse path segments after section slug: e.g. /heroes/castle/adelaide → ["castle","adelaide"]
   const restSegments = (params["*"] ?? "").split("/").filter(Boolean);
@@ -83,20 +91,18 @@ export default function Index() {
   }
 
   const handleTabChange = useCallback(
-    (newTab: TabId) => {
-      const def = findSectionByTabId(newTab);
-      if (def) navigate(`/${def.slug}`);
+    (newTab: string) => {
+      navigate(`/${routing.liveSlugForTabId(newTab)}`);
     },
-    [navigate],
+    [navigate, routing],
   );
 
   const handleNavigateToRule = useCallback(
     (ruleId: string) => {
       setScrollToRuleId(ruleId);
-      const rules = findSectionByTabId("rules");
-      if (rules) navigate(`/${rules.slug}`);
+      navigate(`/${routing.liveSlugForTabId("rules")}`);
     },
-    [navigate],
+    [navigate, routing],
   );
 
   /** Push /:section/:filterSlug, or /:section if filter cleared. */
@@ -129,52 +135,56 @@ export default function Index() {
     [matched.slug, navigate],
   );
 
-  /** Decks: subtype change → /decks/:subtype (clears filter+card). */
+  const decksSlug = routing.liveSlugForTabId("decks");
+
+  /** Decks: subtype change → /:decks/:subtype (clears filter+card). */
   const handleDecksSubtypeChange = useCallback(
     (subtype: string) => {
-      navigate(`/decks/${toSlug(subtype)}`);
+      navigate(`/${decksSlug}/${toSlug(subtype)}`);
     },
-    [navigate],
+    [navigate, decksSlug],
   );
 
   /** Decks: filter change within current subtype. */
   const handleDecksFilterChange = useCallback(
     (subtype: string, filterValue: string | null) => {
-      if (!filterValue) navigate(`/decks/${toSlug(subtype)}`);
-      else navigate(`/decks/${toSlug(subtype)}/${toSlug(filterValue)}`);
+      if (!filterValue) navigate(`/${decksSlug}/${toSlug(subtype)}`);
+      else navigate(`/${decksSlug}/${toSlug(subtype)}/${toSlug(filterValue)}`);
     },
-    [navigate],
+    [navigate, decksSlug],
   );
 
-  /** Decks: open card → /decks/:subtype/:filter/:id or /decks/:subtype/:id */
+  /** Decks: open card → /:decks/:subtype/:filter/:id or /:decks/:subtype/:id */
   const handleDecksCardOpen = useCallback(
     (subtype: string, filterValue: string | null, cardId: string) => {
       const sub = toSlug(subtype);
-      if (filterValue) navigate(`/decks/${sub}/${toSlug(filterValue)}/${cardId}`);
-      else navigate(`/decks/${sub}/${cardId}`);
+      if (filterValue) navigate(`/${decksSlug}/${sub}/${toSlug(filterValue)}/${cardId}`);
+      else navigate(`/${decksSlug}/${sub}/${cardId}`);
     },
-    [navigate],
+    [navigate, decksSlug],
   );
 
-  /** Decks: close card → /decks/:subtype/:filter or /decks/:subtype */
+  /** Decks: close card → /:decks/:subtype/:filter or /:decks/:subtype */
   const handleDecksCardClose = useCallback(
     (subtype: string, filterValue: string | null) => {
       const sub = toSlug(subtype);
-      if (filterValue) navigate(`/decks/${sub}/${toSlug(filterValue)}`);
-      else navigate(`/decks/${sub}`);
+      if (filterValue) navigate(`/${decksSlug}/${sub}/${toSlug(filterValue)}`);
+      else navigate(`/${decksSlug}/${sub}`);
     },
-    [navigate],
+    [navigate, decksSlug],
   );
+
 
   const navSections = useNavSections();
   const current =
     navSections.find((n) => n.id === tab) ??
-    navItems.find((n) => n.id === tab)!;
+    navItems.find((n) => n.id === tab) ??
+    { id: tab, labelRU: tab, labelEN: tab, icon: navItems[0].icon };
   const title = lang === "RU" ? current.labelRU : current.labelEN;
 
   return (
     <div className="flex flex-col h-dvh">
-      <SEOMeta routeKey={tab} />
+      <SEOMeta routeKey={tab as TabId} />
       <TopAppBar title={title} icon={current.icon} onMenuClick={() => setDrawerOpen(true)} />
       <NavDrawer open={drawerOpen} onOpenChange={setDrawerOpen} active={tab} onChange={handleTabChange} />
       <div className="flex-1 flex flex-col overflow-hidden pt-11 lg:ml-56">
@@ -251,7 +261,20 @@ export default function Index() {
             onCardOpen={handleCardOpen}
             onCardClose={handleCardClose}
           />
-        ) : null}
+        ) : (
+          <div className="flex-1 flex items-center justify-center px-6 text-center">
+            <div className="max-w-md space-y-3">
+              <h2 className="text-xl font-semibold text-foreground">
+                {lang === "RU" ? current.labelRU : current.labelEN}
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                {lang === "RU"
+                  ? "Этот раздел пока не имеет настроенного типа контента. Тип контента подключается на этапе Section 6."
+                  : "This section does not have a content type configured yet. Content types are wired up in Section 6."}
+              </p>
+            </div>
+          </div>
+        )}
         </Suspense>
       </div>
       <BackToTop />
