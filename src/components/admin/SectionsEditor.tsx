@@ -201,13 +201,22 @@ export default function SectionsEditor() {
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
   const sensors = useSensors(useSensor(PointerSensor));
+  const queryClient = useQueryClient();
+  const originalSlugs = useRef<Record<string, string>>({});
+
+  const invalidateNav = () => {
+    queryClient.invalidateQueries({ queryKey: ["nav_sections"] });
+    queryClient.invalidateQueries({ queryKey: ["section_routing"] });
+  };
 
   const load = async () => {
     const { data } = await supabase
       .from("sections")
       .select("id,parent_id,slug,label_en,label_ru,icon,sort_order,is_visible")
       .order("sort_order", { ascending: true });
-    setSections((data as Section[]) ?? []);
+    const rows = (data as Section[]) ?? [];
+    setSections(rows);
+    originalSlugs.current = Object.fromEntries(rows.map((r) => [r.id, r.slug]));
   };
   useEffect(() => { load(); }, []);
 
