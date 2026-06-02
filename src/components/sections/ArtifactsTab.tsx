@@ -57,6 +57,7 @@ export default function ArtifactsTab({ searchQuery = "", initialFilter, initialC
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
   const handleEntityClick = useEntityLinkHandler();
+  const layout = useCardLayout("artifacts");
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["artifacts"],
     queryFn: async () => {
