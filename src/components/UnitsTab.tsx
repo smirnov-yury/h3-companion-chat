@@ -592,11 +592,12 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
                   onClick={() => openCard(item.key, item.isNeutral ? item.unit.id : item.unit.slug)}
                   className="flex flex-col rounded-xl border border-border bg-card overflow-hidden text-left hover:border-primary transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg cursor-pointer"
                 >
-                  <div className="relative aspect-square bg-muted">
+                  <div style={aspectStyle(layout)} className="relative bg-muted">
                     <img
                       src={imgSrc ?? getUnitPlaceholder(unit)}
                       alt={unit.name_en}
-                      className="w-full h-full object-contain"
+                      style={objectStyle(layout)}
+                      className="w-full h-full"
                       loading="lazy"
                       onError={(e) => { e.currentTarget.src = getUnitPlaceholder(unit); e.currentTarget.onerror = null; }}
                     />
@@ -625,7 +626,7 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
                 </button>
               );
             })}
-          </div>
+          </CardGrid>
         )}
       </div>
 
