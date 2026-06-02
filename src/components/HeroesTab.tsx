@@ -182,6 +182,7 @@ export default function HeroesTab({ initialFilter, initialCardId, initialSearch,
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
   const handleEntityClick = useEntityLinkHandler();
+  const layout = useCardLayout("heroes");
   const { data: heroes = [], isLoading } = useQuery({
     queryKey: ["heroes"],
     queryFn: async () => {
