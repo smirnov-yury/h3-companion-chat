@@ -115,10 +115,6 @@ export default function AbilitiesTab({ searchQuery = "", initialCardId, onCardOp
               );
             })}
           </CardGrid>
-                </button>
-              );
-            })}
-          </div>
         )}
       </div>
 
