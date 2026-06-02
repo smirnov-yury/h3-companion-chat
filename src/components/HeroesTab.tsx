@@ -14,6 +14,9 @@ import { EmptyState, SkeletonGrid } from "@/components/ui/empty-state";
 import { useEntityLinkHandler, entityLinkUrl } from "@/hooks/useEntityLinkHandler";
 import { useEntityLinks } from "@/hooks/useEntityLinks";
 import ImageWithSpinner from "@/components/ImageWithSpinner";
+import { CardGrid } from "@/components/CardGrid";
+import { useCardLayout } from "@/hooks/useCardLayouts";
+import { aspectStyle, objectStyle } from "@/config/cardLayouts";
 
 import { componentImageUrl } from "@/lib/storage";
 
