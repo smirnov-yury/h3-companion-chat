@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import TopAppBar from "@/components/TopAppBar";
 import NavDrawer, { type TabId, navItems } from "@/components/NavDrawer";
