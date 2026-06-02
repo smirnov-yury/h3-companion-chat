@@ -93,20 +93,20 @@ export default function AstrologersTab({ searchQuery = "", initialCardId, onCard
         ) : filtered.length === 0 ? (
           <EmptyState />
         ) : (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          <CardGrid layout={layout}>
             {filtered.map((item) => {
               const imgSrc = item.image ? componentImageUrl("astrologers_proclaim", item.image, item.updated_at) : null;
               return (
                 <button key={item.id} onClick={() => openCard(item)}
                   className="flex flex-col w-full overflow-hidden rounded-lg bg-muted text-left cursor-pointer transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg hover:ring-2 hover:ring-primary">
-                  <div className="w-full aspect-[4/3] overflow-hidden rounded-t-lg bg-muted">
-                    {imgSrc && <img loading="lazy" decoding="async" src={imgSrc} alt={item.name_en} className="w-full h-full object-cover" />}
+                  <div style={aspectStyle(layout)} className="w-full overflow-hidden rounded-t-lg bg-muted">
+                    {imgSrc && <img loading="lazy" decoding="async" src={imgSrc} alt={item.name_en} style={objectStyle(layout)} className="w-full h-full" />}
                   </div>
                   <p className="w-full text-sm font-medium p-2 truncate text-foreground">{name(item)}</p>
                 </button>
               );
             })}
-          </div>
+          </CardGrid>
         )}
       </div>
 
