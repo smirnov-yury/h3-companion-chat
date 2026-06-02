@@ -40,6 +40,7 @@ interface Props {
 export default function AstrologersTab({ searchQuery = "", initialCardId, onCardOpen, onCardClose }: Props) {
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
+  const layout = useCardLayout("astrologers");
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["astrologers_proclaim"],
     queryFn: async () => {
