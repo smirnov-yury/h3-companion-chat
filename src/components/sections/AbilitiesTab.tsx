@@ -46,6 +46,7 @@ export default function AbilitiesTab({ searchQuery = "", initialCardId, onCardOp
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
   const handleEntityClick = useEntityLinkHandler();
+  const layout = useCardLayout("abilities");
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["abilities"],
     queryFn: async () => {
