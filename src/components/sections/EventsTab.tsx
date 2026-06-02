@@ -38,6 +38,7 @@ interface Props {
 export default function EventsTab({ searchQuery = "", initialCardId, onCardOpen, onCardClose }: Props) {
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
+  const layout = useCardLayout("events");
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["events"],
     queryFn: async () => {
