@@ -46,6 +46,7 @@ interface Props {
 export default function AiCardsTab({ searchQuery = "", initialCardId, onCardOpen, onCardClose }: Props) {
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
+  const layout = useCardLayout("ai_cards");
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["ai_cards"],
     queryFn: async () => {
