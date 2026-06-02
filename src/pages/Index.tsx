@@ -91,20 +91,18 @@ export default function Index() {
   }
 
   const handleTabChange = useCallback(
-    (newTab: TabId) => {
-      const def = findSectionByTabId(newTab);
-      if (def) navigate(`/${def.slug}`);
+    (newTab: string) => {
+      navigate(`/${routing.liveSlugForTabId(newTab)}`);
     },
-    [navigate],
+    [navigate, routing],
   );
 
   const handleNavigateToRule = useCallback(
     (ruleId: string) => {
       setScrollToRuleId(ruleId);
-      const rules = findSectionByTabId("rules");
-      if (rules) navigate(`/${rules.slug}`);
+      navigate(`/${routing.liveSlugForTabId("rules")}`);
     },
-    [navigate],
+    [navigate, routing],
   );
 
   /** Push /:section/:filterSlug, or /:section if filter cleared. */
@@ -137,42 +135,45 @@ export default function Index() {
     [matched.slug, navigate],
   );
 
-  /** Decks: subtype change → /decks/:subtype (clears filter+card). */
+  const decksSlug = routing.liveSlugForTabId("decks");
+
+  /** Decks: subtype change → /:decks/:subtype (clears filter+card). */
   const handleDecksSubtypeChange = useCallback(
     (subtype: string) => {
-      navigate(`/decks/${toSlug(subtype)}`);
+      navigate(`/${decksSlug}/${toSlug(subtype)}`);
     },
-    [navigate],
+    [navigate, decksSlug],
   );
 
   /** Decks: filter change within current subtype. */
   const handleDecksFilterChange = useCallback(
     (subtype: string, filterValue: string | null) => {
-      if (!filterValue) navigate(`/decks/${toSlug(subtype)}`);
-      else navigate(`/decks/${toSlug(subtype)}/${toSlug(filterValue)}`);
+      if (!filterValue) navigate(`/${decksSlug}/${toSlug(subtype)}`);
+      else navigate(`/${decksSlug}/${toSlug(subtype)}/${toSlug(filterValue)}`);
     },
-    [navigate],
+    [navigate, decksSlug],
   );
 
-  /** Decks: open card → /decks/:subtype/:filter/:id or /decks/:subtype/:id */
+  /** Decks: open card → /:decks/:subtype/:filter/:id or /:decks/:subtype/:id */
   const handleDecksCardOpen = useCallback(
     (subtype: string, filterValue: string | null, cardId: string) => {
       const sub = toSlug(subtype);
-      if (filterValue) navigate(`/decks/${sub}/${toSlug(filterValue)}/${cardId}`);
-      else navigate(`/decks/${sub}/${cardId}`);
+      if (filterValue) navigate(`/${decksSlug}/${sub}/${toSlug(filterValue)}/${cardId}`);
+      else navigate(`/${decksSlug}/${sub}/${cardId}`);
     },
-    [navigate],
+    [navigate, decksSlug],
   );
 
-  /** Decks: close card → /decks/:subtype/:filter or /decks/:subtype */
+  /** Decks: close card → /:decks/:subtype/:filter or /:decks/:subtype */
   const handleDecksCardClose = useCallback(
     (subtype: string, filterValue: string | null) => {
       const sub = toSlug(subtype);
-      if (filterValue) navigate(`/decks/${sub}/${toSlug(filterValue)}`);
-      else navigate(`/decks/${sub}`);
+      if (filterValue) navigate(`/${decksSlug}/${sub}/${toSlug(filterValue)}`);
+      else navigate(`/${decksSlug}/${sub}`);
     },
-    [navigate],
+    [navigate, decksSlug],
   );
+
 
   const navSections = useNavSections();
   const current =
