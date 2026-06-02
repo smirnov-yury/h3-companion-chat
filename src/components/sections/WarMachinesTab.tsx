@@ -42,6 +42,7 @@ interface Props {
 export default function WarMachinesTab({ searchQuery = "", initialCardId, onCardOpen, onCardClose }: Props) {
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
+  const layout = useCardLayout("warmachines");
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["war_machines"],
     queryFn: async () => {
