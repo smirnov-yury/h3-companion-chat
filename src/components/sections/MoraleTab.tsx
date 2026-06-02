@@ -92,14 +92,14 @@ export default function MoraleTab({ searchQuery = "", initialCardId, onCardOpen,
         ) : filtered.length === 0 ? (
           <EmptyState />
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
+          <CardGrid layout={layout}>
             {filtered.map((item) => {
               const imgSrc = item.image ? componentImageUrl("morale_cards", item.image, item.updated_at) : null;
               return (
                 <button key={item.id} onClick={() => openCard(item)}
                   className="flex flex-col w-full overflow-hidden rounded-lg bg-muted text-left cursor-pointer transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg hover:ring-2 hover:ring-primary">
-                  <div className="relative w-full aspect-[5/7] overflow-hidden rounded-t-lg bg-muted">
-                    {imgSrc && <img loading="lazy" decoding="async" src={imgSrc} alt={item.type} className="w-full h-full object-cover" />}
+                  <div style={aspectStyle(layout)} className="relative w-full overflow-hidden rounded-t-lg bg-muted">
+                    {imgSrc && <img loading="lazy" decoding="async" src={imgSrc} alt={item.type} style={objectStyle(layout)} className="w-full h-full" />}
                     <span className={`absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded text-[10px] font-medium ${typeBadgeClass(item.type)}`}>
                       {typeLabel(item.type)}
                     </span>
@@ -110,7 +110,7 @@ export default function MoraleTab({ searchQuery = "", initialCardId, onCardOpen,
                 </button>
               );
             })}
-          </div>
+          </CardGrid>
         )}
       </div>
 
