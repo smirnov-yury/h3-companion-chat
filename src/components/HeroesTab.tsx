@@ -299,7 +299,7 @@ export default function HeroesTab({ initialFilter, initialCardId, initialSearch,
         ) : filtered.length === 0 ? (
           <EmptyState onReset={hasFilters ? resetFilters : undefined} />
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
+          <CardGrid layout={layout}>
             {filtered.map(h => (
               <button key={h.id} onClick={() => openCard(h)} className="flex flex-col rounded-xl border border-border bg-card overflow-hidden text-left hover:border-primary transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg cursor-pointer">
                 <div className="relative aspect-square bg-muted">
