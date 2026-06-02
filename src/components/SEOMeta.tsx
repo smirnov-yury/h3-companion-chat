@@ -97,9 +97,9 @@ export default function SEOMeta({ routeKey: routeKeyProp }: SEOMetaProps) {
   useEffect(() => {
     const isRu = lang === "RU";
     const routeKey = routeKeyProp ?? pathToRouteKey(pathname);
-    const titles = routeKey ? TITLES[routeKey] : null;
+    const titles = routeKey && TITLES[routeKey] ? TITLES[routeKey] : null;
     const title = titles ? (isRu ? titles.ru : titles.en) : APP_FULL_NAME;
-    const descs = routeKey ? DESCRIPTIONS[routeKey] : DESCRIPTIONS.default;
+    const descs = (routeKey && DESCRIPTIONS[routeKey]) ? DESCRIPTIONS[routeKey] : DESCRIPTIONS.default;
     const description = isRu ? descs.ru : descs.en;
     const url = SITE_URL + pathname;
 
