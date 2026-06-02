@@ -43,9 +43,16 @@ export default function Index() {
 
   const initialSearch = searchParams.get("q") ?? "";
 
-  // Derive active tab from URL. Unknown slug → default section.
-  const matched = findSectionBySlug(params.section) ?? findSectionBySlug(DEFAULT_SLUG)!;
-  const tab: TabId = matched.tabId;
+  const routing = useSectionRouting();
+  const { def: matched, redirectTo } = routing.resolveBySlug(params.section);
+  const tab = matched.tabId as TabId;
+
+  useEffect(() => {
+    if (!redirectTo) return;
+    const rest = (params["*"] ?? "");
+    const target = `/${redirectTo}${rest ? `/${rest}` : ""}`;
+    navigate(target, { replace: true });
+  }, [redirectTo, params, navigate]);
 
   // Parse path segments after section slug: e.g. /heroes/castle/adelaide → ["castle","adelaide"]
   const restSegments = (params["*"] ?? "").split("/").filter(Boolean);
