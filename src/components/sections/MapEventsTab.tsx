@@ -36,6 +36,7 @@ interface Props {
 export default function MapEventsTab({ searchQuery = "", initialCardId, onCardOpen, onCardClose }: Props) {
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
+  const layout = useCardLayout("map_events");
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["map_events"],
     queryFn: async () => {
