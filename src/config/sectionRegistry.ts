@@ -1,4 +1,4 @@
-import type { TabId } from "@/components/NavDrawer";
+import type { TabId } from "@/config/navItems";
 
 /**
  * Single source of truth for section URL routing.
