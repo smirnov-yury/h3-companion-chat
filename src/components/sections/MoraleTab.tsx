@@ -35,6 +35,7 @@ interface Props {
 export default function MoraleTab({ searchQuery = "", initialCardId, onCardOpen, onCardClose }: Props) {
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
+  const layout = useCardLayout("morale");
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["morale_cards"],
     queryFn: async () => {
