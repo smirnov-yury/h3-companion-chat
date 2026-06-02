@@ -12,6 +12,9 @@ import { EmptyState, SkeletonGrid } from '@/components/ui/empty-state';
 import { useEntityLinkHandler as useEntityLinkHandlerImported } from '@/hooks/useEntityLinkHandler';
 import SeeAlso from '@/components/SeeAlso';
 import ImageWithSpinner from '@/components/ImageWithSpinner';
+import { CardGrid } from '@/components/CardGrid';
+import { useCardLayout } from '@/hooks/useCardLayouts';
+import { aspectStyle, objectStyle } from '@/config/cardLayouts';
 
 import { componentMediaUrl, componentImageUrl } from "@/lib/storage";
 import { FACTIONS } from "./units/factions";
