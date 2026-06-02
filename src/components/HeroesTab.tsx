@@ -347,7 +347,7 @@ export default function HeroesTab({ initialFilter, initialCardId, initialSearch,
                 </div>
               </button>
             ))}
-          </div>
+          </CardGrid>
         )}
       </div>
 
