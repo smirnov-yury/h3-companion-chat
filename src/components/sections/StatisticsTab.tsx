@@ -104,7 +104,6 @@ export default function StatisticsTab({ searchQuery = "", initialCardId, onCardO
           ) : filtered.length === 0 ? (
             <EmptyState onReset={hasFilters ? resetFilters : undefined} />
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
             <CardGrid layout={layout}>
               {filtered.map((item) => {
                 const imgSrc = item.image ? componentImageUrl("statistics", item.image, item.updated_at) : null;
