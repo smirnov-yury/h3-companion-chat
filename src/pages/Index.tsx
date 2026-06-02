@@ -261,7 +261,20 @@ export default function Index() {
             onCardOpen={handleCardOpen}
             onCardClose={handleCardClose}
           />
-        ) : null}
+        ) : (
+          <div className="flex-1 flex items-center justify-center px-6 text-center">
+            <div className="max-w-md space-y-3">
+              <h2 className="text-xl font-semibold text-foreground">
+                {lang === "RU" ? current.labelRU : current.labelEN}
+              </h2>
+              <p className="text-sm text-muted-foreground">
+                {lang === "RU"
+                  ? "Этот раздел пока не имеет настроенного типа контента. Тип контента подключается на этапе Section 6."
+                  : "This section does not have a content type configured yet. Content types are wired up in Section 6."}
+              </p>
+            </div>
+          </div>
+        )}
         </Suspense>
       </div>
       <BackToTop />
