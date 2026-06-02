@@ -389,6 +389,63 @@ export type Database = {
         }
         Relationships: []
       }
+      card_layouts: {
+        Row: {
+          aspect_ratio: string | null
+          badge_slots: Json
+          cols_base: number
+          cols_lg: number | null
+          cols_md: number | null
+          cols_sm: number | null
+          cols_xl: number | null
+          created_at: string
+          gap: number
+          height_px: number | null
+          id: string
+          label: string
+          object_fit: string
+          object_position: string
+          updated_at: string
+          width_px: number | null
+        }
+        Insert: {
+          aspect_ratio?: string | null
+          badge_slots?: Json
+          cols_base?: number
+          cols_lg?: number | null
+          cols_md?: number | null
+          cols_sm?: number | null
+          cols_xl?: number | null
+          created_at?: string
+          gap?: number
+          height_px?: number | null
+          id: string
+          label: string
+          object_fit?: string
+          object_position?: string
+          updated_at?: string
+          width_px?: number | null
+        }
+        Update: {
+          aspect_ratio?: string | null
+          badge_slots?: Json
+          cols_base?: number
+          cols_lg?: number | null
+          cols_md?: number | null
+          cols_sm?: number | null
+          cols_xl?: number | null
+          created_at?: string
+          gap?: number
+          height_px?: number | null
+          id?: string
+          label?: string
+          object_fit?: string
+          object_position?: string
+          updated_at?: string
+          width_px?: number | null
+        }
+        Relationships: []
+      }
       categories: {
         Row: {
           cover_image_url: string | null
@@ -1769,6 +1826,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "fk_sections_layout_ref"
+            columns: ["layout_ref"]
+            isOneToOne: false
+            referencedRelation: "card_layouts"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "sections_parent_id_fkey"
             columns: ["parent_id"]

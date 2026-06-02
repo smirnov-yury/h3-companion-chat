@@ -11,6 +11,9 @@ import { EmptyState, SkeletonGrid } from "@/components/ui/empty-state";
 import { useEntityLinkHandler } from "@/hooks/useEntityLinkHandler";
 import SeeAlso from "@/components/SeeAlso";
 import ImageWithSpinner from "@/components/ImageWithSpinner";
+import { CardGrid } from "@/components/CardGrid";
+import { useCardLayout } from "@/hooks/useCardLayouts";
+import { aspectStyle, objectStyle } from "@/config/cardLayouts";
 
 import { componentMediaUrl } from "@/lib/storage";
 const DECK_PLACEHOLDER = componentMediaUrl("artifacts/empty_art_ability_spec_spell.webp");
@@ -54,6 +57,7 @@ export default function ArtifactsTab({ searchQuery = "", initialFilter, initialC
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
   const handleEntityClick = useEntityLinkHandler();
+  const layout = useCardLayout("artifacts");
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["artifacts"],
     queryFn: async () => {
@@ -134,14 +138,14 @@ export default function ArtifactsTab({ searchQuery = "", initialFilter, initialC
           ) : filtered.length === 0 ? (
             <EmptyState onReset={hasFilters ? resetFilters : undefined} />
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
+            <CardGrid layout={layout}>
               {filtered.map((item) => {
                 const imgSrc = item.image ? componentImageUrl("artifacts", item.image, item.updated_at) : null;
                 return (
                   <button key={item.id} onClick={() => openCard(item)}
                     className="flex flex-col rounded-xl border border-border bg-card overflow-hidden text-left hover:border-primary transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg cursor-pointer">
-                    <div className="aspect-[5/7] w-full bg-muted flex items-center justify-center overflow-hidden relative rounded-lg">
-                      <img loading="lazy" decoding="async" src={imgSrc || DECK_PLACEHOLDER} alt={item.name_en} className="w-full h-full object-cover rounded-lg" onError={(e) => { e.currentTarget.src = DECK_PLACEHOLDER; e.currentTarget.onerror = null; }} />
+                    <div style={aspectStyle(layout)} className="w-full bg-muted flex items-center justify-center overflow-hidden relative rounded-lg">
+                      <img loading="lazy" decoding="async" src={imgSrc || DECK_PLACEHOLDER} alt={item.name_en} style={objectStyle(layout)} className="w-full h-full rounded-lg" onError={(e) => { e.currentTarget.src = DECK_PLACEHOLDER; e.currentTarget.onerror = null; }} />
                       {item.quality && (
                       <span className={`absolute top-1 left-1 text-xs px-2 py-0.5 rounded-full font-medium ${QUALITY_COLORS[item.quality] || "bg-muted text-muted-foreground"}`}>
                           {QUALITY_LABELS[item.quality] || item.quality}
@@ -154,7 +158,7 @@ export default function ArtifactsTab({ searchQuery = "", initialFilter, initialC
                   </button>
                 );
               })}
-            </div>
+            </CardGrid>
           )}
         </div>
       </div>

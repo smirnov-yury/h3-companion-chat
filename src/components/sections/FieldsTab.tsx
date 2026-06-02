@@ -10,6 +10,9 @@ import { CardDialogContent } from "@/components/ui/card-dialog";
 import { EmptyState, SkeletonGrid } from "@/components/ui/empty-state";
 import SeeAlso from "@/components/SeeAlso";
 import ImageWithSpinner from "@/components/ImageWithSpinner";
+import { CardGrid } from "@/components/CardGrid";
+import { useCardLayout } from "@/hooks/useCardLayouts";
+import { aspectStyle, objectStyle } from "@/config/cardLayouts";
 
 
 interface Field {
@@ -38,6 +41,7 @@ interface Props {
 export default function FieldsTab({ searchQuery = "", filterSlug, initialCardId, onCardOpen, onCardClose }: Props) {
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
+  const layout = useCardLayout("fields");
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["fields"],
     queryFn: async () => {
@@ -93,15 +97,15 @@ export default function FieldsTab({ searchQuery = "", filterSlug, initialCardId,
         ) : filtered.length === 0 ? (
           <EmptyState />
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
+          <CardGrid layout={layout}>
             {filtered.map((item) => {
               const imgSrc = item.image ? componentImageUrl("fields", item.image, item.updated_at) : null;
               return (
                 <button key={item.id} onClick={() => openCard(item)}
                   className="flex flex-col w-full overflow-hidden rounded-lg bg-muted text-left cursor-pointer transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg hover:ring-2 hover:ring-primary">
-                  <div className="aspect-[4/3] w-full bg-muted overflow-hidden relative">
+                  <div style={aspectStyle(layout)} className="w-full bg-muted overflow-hidden relative">
                     {imgSrc
-                      ? <img loading="lazy" decoding="async" src={imgSrc} alt={item.name_en} className="w-full h-full object-cover rounded-t-lg" />
+                      ? <img loading="lazy" decoding="async" src={imgSrc} alt={item.name_en} style={objectStyle(layout)} className="w-full h-full rounded-t-lg" />
                       : <div className="w-full h-full flex items-center justify-center"><p className="text-[10px] text-muted-foreground text-center px-1">{item.name_en}</p></div>
                     }
                     {item.type_en && (
@@ -114,7 +118,7 @@ export default function FieldsTab({ searchQuery = "", filterSlug, initialCardId,
                 </button>
               );
             })}
-          </div>
+          </CardGrid>
         )}
       </div>
 

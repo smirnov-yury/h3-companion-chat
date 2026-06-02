@@ -9,6 +9,9 @@ import { CardDialogContent } from "@/components/ui/card-dialog";
 import { EmptyState, SkeletonGrid } from "@/components/ui/empty-state";
 import SeeAlso from "@/components/SeeAlso";
 import ImageWithSpinner from "@/components/ImageWithSpinner";
+import { CardGrid } from "@/components/CardGrid";
+import { useCardLayout } from "@/hooks/useCardLayouts";
+import { aspectStyle, objectStyle } from "@/config/cardLayouts";
 import { componentImageUrl } from "@/lib/storage";
 
 
@@ -31,6 +34,7 @@ interface Props {
 export default function PandoraTab({ searchQuery = "", initialCardId, onCardOpen, onCardClose }: Props) {
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
+  const layout = useCardLayout("pandora");
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["pandora_box"],
     queryFn: async () => {
@@ -85,20 +89,20 @@ export default function PandoraTab({ searchQuery = "", initialCardId, onCardOpen
         ) : filtered.length === 0 ? (
           <EmptyState />
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
+          <CardGrid layout={layout}>
             {filtered.map((item) => {
               const imgSrc = item.image ? componentImageUrl("pandora_box", item.image, item.updated_at) : null;
               return (
                 <button key={item.id} onClick={() => openCard(item)}
                   className="flex flex-col w-full overflow-hidden rounded-lg bg-muted text-left cursor-pointer transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg hover:ring-2 hover:ring-primary">
-                  <div className="w-full aspect-[5/7] overflow-hidden rounded-t-lg bg-muted">
-                    {imgSrc && <img loading="lazy" decoding="async" src={imgSrc} alt="Pandora's Box" className="w-full h-full object-cover" />}
+                  <div style={aspectStyle(layout)} className="w-full overflow-hidden rounded-t-lg bg-muted">
+                    {imgSrc && <img loading="lazy" decoding="async" src={imgSrc} alt="Pandora's Box" style={objectStyle(layout)} className="w-full h-full" />}
                   </div>
                   <p className="w-full text-sm font-medium p-2 truncate text-foreground">{label(item)}</p>
                 </button>
               );
             })}
-          </div>
+          </CardGrid>
         )}
       </div>
 

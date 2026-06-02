@@ -14,6 +14,9 @@ import { EmptyState, SkeletonGrid } from "@/components/ui/empty-state";
 import { useEntityLinkHandler, entityLinkUrl } from "@/hooks/useEntityLinkHandler";
 import { useEntityLinks } from "@/hooks/useEntityLinks";
 import ImageWithSpinner from "@/components/ImageWithSpinner";
+import { CardGrid } from "@/components/CardGrid";
+import { useCardLayout } from "@/hooks/useCardLayouts";
+import { aspectStyle, objectStyle } from "@/config/cardLayouts";
 
 import { componentImageUrl } from "@/lib/storage";
 
@@ -179,6 +182,7 @@ export default function HeroesTab({ initialFilter, initialCardId, initialSearch,
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
   const handleEntityClick = useEntityLinkHandler();
+  const layout = useCardLayout("heroes");
   const { data: heroes = [], isLoading } = useQuery({
     queryKey: ["heroes"],
     queryFn: async () => {
@@ -295,17 +299,18 @@ export default function HeroesTab({ initialFilter, initialCardId, initialSearch,
         ) : filtered.length === 0 ? (
           <EmptyState onReset={hasFilters ? resetFilters : undefined} />
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
+          <CardGrid layout={layout}>
             {filtered.map(h => (
               <button key={h.id} onClick={() => openCard(h)} className="flex flex-col rounded-xl border border-border bg-card overflow-hidden text-left hover:border-primary transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg cursor-pointer">
-                <div className="relative aspect-square bg-muted">
+                <div style={aspectStyle(layout)} className="relative bg-muted">
                   {isHeroPortraitFilename(h.image) ? (
                     <img
                       src={componentImageUrl("heroes", h.image, h.updated_at)}
                       alt={name(h)}
                       loading="lazy"
                       decoding="async"
-                      className="w-full h-full object-cover object-left"
+                      style={objectStyle(layout)}
+                      className="w-full h-full"
                     />
                   ) : (
                     <HeroSilhouette town={h.town} />
@@ -342,7 +347,7 @@ export default function HeroesTab({ initialFilter, initialCardId, initialSearch,
                 </div>
               </button>
             ))}
-          </div>
+          </CardGrid>
         )}
       </div>
 

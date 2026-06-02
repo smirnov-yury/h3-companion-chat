@@ -12,6 +12,9 @@ import { EmptyState, SkeletonGrid } from '@/components/ui/empty-state';
 import { useEntityLinkHandler as useEntityLinkHandlerImported } from '@/hooks/useEntityLinkHandler';
 import SeeAlso from '@/components/SeeAlso';
 import ImageWithSpinner from '@/components/ImageWithSpinner';
+import { CardGrid } from '@/components/CardGrid';
+import { useCardLayout } from '@/hooks/useCardLayouts';
+import { aspectStyle, objectStyle } from '@/config/cardLayouts';
 
 import { componentMediaUrl, componentImageUrl } from "@/lib/storage";
 import { FACTIONS } from "./units/factions";
@@ -228,6 +231,7 @@ interface UnitsTabProps {
 export default function UnitsTab({ initialFilter, initialCardId, initialSearch, onFilterChange, onCardOpen, onCardClose }: UnitsTabProps = {}) {
   const { lang } = useLang();
   const handleEntityClick = useEntityLinkHandlerImported();
+  const layout = useCardLayout("units");
   const { data: units = [], isLoading: loading } = useQuery({
     queryKey: ["unit_stats"],
     queryFn: async () => {
@@ -578,7 +582,7 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
         {displayItems.length === 0 ? (
           <EmptyState onReset={hasFilters ? resetAllFilters : undefined} />
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
+          <CardGrid layout={layout}>
             {displayItems.map((item) => {
               const unit = item.unit;
               const imgSrc = unit.image ? componentImageUrl("unit_stats", unit.image, unit.updated_at) : null;
@@ -588,11 +592,12 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
                   onClick={() => openCard(item.key, item.isNeutral ? item.unit.id : item.unit.slug)}
                   className="flex flex-col rounded-xl border border-border bg-card overflow-hidden text-left hover:border-primary transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg cursor-pointer"
                 >
-                  <div className="relative aspect-square bg-muted">
+                  <div style={aspectStyle(layout)} className="relative bg-muted">
                     <img
                       src={imgSrc ?? getUnitPlaceholder(unit)}
                       alt={unit.name_en}
-                      className="w-full h-full object-contain"
+                      style={objectStyle(layout)}
+                      className="w-full h-full"
                       loading="lazy"
                       onError={(e) => { e.currentTarget.src = getUnitPlaceholder(unit); e.currentTarget.onerror = null; }}
                     />
@@ -621,7 +626,7 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
                 </button>
               );
             })}
-          </div>
+          </CardGrid>
         )}
       </div>
 
