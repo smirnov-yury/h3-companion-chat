@@ -302,14 +302,15 @@ export default function HeroesTab({ initialFilter, initialCardId, initialSearch,
           <CardGrid layout={layout}>
             {filtered.map(h => (
               <button key={h.id} onClick={() => openCard(h)} className="flex flex-col rounded-xl border border-border bg-card overflow-hidden text-left hover:border-primary transition-transform duration-200 hover:scale-[1.02] hover:shadow-lg cursor-pointer">
-                <div className="relative aspect-square bg-muted">
+                <div style={aspectStyle(layout)} className="relative bg-muted">
                   {isHeroPortraitFilename(h.image) ? (
                     <img
                       src={componentImageUrl("heroes", h.image, h.updated_at)}
                       alt={name(h)}
                       loading="lazy"
                       decoding="async"
-                      className="w-full h-full object-cover object-left"
+                      style={objectStyle(layout)}
+                      className="w-full h-full"
                     />
                   ) : (
                     <HeroSilhouette town={h.town} />
