@@ -68,6 +68,7 @@ export default function SpellsTab({ searchQuery = "", initialFilter, initialCard
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
   const handleEntityClick = useEntityLinkHandler();
+  const layout = useCardLayout("spells");
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["spells"],
     queryFn: async () => {
