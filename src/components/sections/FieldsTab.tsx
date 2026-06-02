@@ -41,6 +41,7 @@ interface Props {
 export default function FieldsTab({ searchQuery = "", filterSlug, initialCardId, onCardOpen, onCardClose }: Props) {
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
+  const layout = useCardLayout("fields");
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["fields"],
     queryFn: async () => {
