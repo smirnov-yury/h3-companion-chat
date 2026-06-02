@@ -34,6 +34,7 @@ interface Props {
 export default function PandoraTab({ searchQuery = "", initialCardId, onCardOpen, onCardClose }: Props) {
   const { lang } = useLang();
   const { glyphs } = useGlyphs();
+  const layout = useCardLayout("pandora");
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["pandora_box"],
     queryFn: async () => {
