@@ -231,6 +231,7 @@ interface UnitsTabProps {
 export default function UnitsTab({ initialFilter, initialCardId, initialSearch, onFilterChange, onCardOpen, onCardClose }: UnitsTabProps = {}) {
   const { lang } = useLang();
   const handleEntityClick = useEntityLinkHandlerImported();
+  const layout = useCardLayout("units");
   const { data: units = [], isLoading: loading } = useQuery({
     queryKey: ["unit_stats"],
     queryFn: async () => {
