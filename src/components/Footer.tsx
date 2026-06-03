@@ -3,6 +3,7 @@ import { Heart } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
 import { reopenCookieBanner } from "@/components/CookieConsent";
 import { trackDonationIntent } from "@/lib/analytics";
+import { resolveBranding } from "@/config/branding";
 
 interface FooterProps {
   /** "default" = full footer with links + disclaimer; "minimal" = inline links only (used on HomePage). */
