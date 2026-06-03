@@ -3,10 +3,7 @@ import { useLocation } from "react-router-dom";
 import { useLang } from "@/context/LanguageContext";
 import type { TabId } from "@/components/NavDrawer";
 import { buildBreadcrumbs } from "@/seo/buildBreadcrumbs";
-
-const SITE_URL = "https://h3master.app";
-const APP_NAME = "H3 Master";
-const APP_FULL_NAME = "H3 Master — Companion for Heroes of Might & Magic III: The Board Game";
+import { resolveBranding } from "@/config/branding";
 
 type RouteKey = TabId | "home" | "about" | "privacy" | "terms" | "donate";
 
