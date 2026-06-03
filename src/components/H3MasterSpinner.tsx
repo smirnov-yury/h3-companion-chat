@@ -72,7 +72,7 @@ export default function H3MasterSpinner({
           strokeWidth="69"
           strokeLinejoin="round"
         />
-        <polygon className={triClass} points="443,408 443,616 616,512" fill="#E8B147" />
+        <polygon className={triClass} points="443,408 443,616 616,512" fill={resolveBranding("theme_color_dark")} />
       </svg>
     </span>
   );
