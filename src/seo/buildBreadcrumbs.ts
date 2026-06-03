@@ -1,6 +1,5 @@
 import { SECTION_REGISTRY } from "@/config/sectionRegistry";
-
-const SITE_URL = "https://h3master.app";
+import { resolveBranding } from "@/config/branding";
 
 // Static-page labels not in SECTION_REGISTRY.
 const STATIC_LABELS: Record<string, { en: string; ru: string }> = {
