@@ -18,6 +18,7 @@ import H3MasterSpinner from "@/components/H3MasterSpinner";
 import { AdminAuthProvider } from "@/context/AdminAuthContext";
 import { RuleExtModalProvider } from "@/context/RuleExtModalContext";
 import { useMediaFolders } from "@/hooks/useMediaFolders";
+import { useBranding } from "@/hooks/useBranding";
 import RuleExtModal from "@/components/RuleExtModal";
 
 // Lazy-loaded routes. Heavy or rarely visited.
