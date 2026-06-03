@@ -17,8 +17,7 @@ import { useLang } from "@/context/LanguageContext";
 import { findSectionByTabId, type SectionDef } from "@/config/sectionRegistry";
 import type { TabId } from "@/components/NavDrawer";
 import { trackDonationIntent } from "@/lib/analytics";
-
-const KOFI_URL = "https://ko-fi.com/h3master";
+import { resolveBranding } from "@/config/branding";
 
 interface CostRow {
   icon: typeof Server;
