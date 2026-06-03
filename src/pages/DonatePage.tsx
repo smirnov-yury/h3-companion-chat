@@ -64,7 +64,7 @@ export default function DonatePage() {
 
   const handleSupport = () => {
     trackDonationIntent("page");
-    window.open(KOFI_URL, "_blank", "noopener,noreferrer");
+    window.open(resolveBranding("kofi_url"), "_blank", "noopener,noreferrer");
   };
 
   return (
