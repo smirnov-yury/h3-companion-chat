@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { findSectionByTabId, type SectionDef } from "@/config/sectionRegistry";
 import type { TabId } from "@/components/NavDrawer";
 import Footer from "@/components/Footer";
+import { resolveBranding } from "@/config/branding";
 
 export default function HomePage() {
   const { lang } = useLang();
