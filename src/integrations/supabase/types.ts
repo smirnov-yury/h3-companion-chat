@@ -389,6 +389,27 @@ export type Database = {
         }
         Relationships: []
       }
+      branding_tokens: {
+        Row: {
+          created_at: string
+          note: string | null
+          token_key: string
+          token_value: string
+        }
+        Insert: {
+          created_at?: string
+          note?: string | null
+          token_key: string
+          token_value: string
+        }
+        Update: {
+          created_at?: string
+          note?: string | null
+          token_key?: string
+          token_value?: string
+        }
+        Relationships: []
+      }
       card_layouts: {
         Row: {
           aspect_ratio: string | null
