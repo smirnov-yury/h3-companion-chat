@@ -92,6 +92,9 @@ export default function SEOMeta({ routeKey: routeKeyProp }: SEOMetaProps) {
   const { pathname } = useLocation();
 
   useEffect(() => {
+    const SITE_URL = resolveBranding("site_url");
+    const APP_NAME = resolveBranding("app_name");
+    const APP_FULL_NAME = resolveBranding("app_full_name");
     const isRu = lang === "RU";
     const routeKey = routeKeyProp ?? pathToRouteKey(pathname);
     const titles = routeKey && TITLES[routeKey] ? TITLES[routeKey] : null;
