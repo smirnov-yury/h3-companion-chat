@@ -18,6 +18,7 @@ import H3MasterSpinner from "@/components/H3MasterSpinner";
 import { AdminAuthProvider } from "@/context/AdminAuthContext";
 import { RuleExtModalProvider } from "@/context/RuleExtModalContext";
 import { useMediaFolders } from "@/hooks/useMediaFolders";
+import { useBranding } from "@/hooks/useBranding";
 import RuleExtModal from "@/components/RuleExtModal";
 
 // Lazy-loaded routes. Heavy or rarely visited.
@@ -70,6 +71,11 @@ function MediaFoldersBoot() {
   return null;
 }
 
+function BrandingBoot() {
+  useBranding();
+  return null;
+}
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <LanguageProvider>
@@ -85,6 +91,7 @@ const App = () => (
           <CookieConsent />
           <AnalyticsBoot />
           <MediaFoldersBoot />
+          <BrandingBoot />
           <RuleExtModal />
           <Suspense fallback={<RouteFallback />}>
             <Routes>

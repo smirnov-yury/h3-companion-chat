@@ -28,6 +28,7 @@ import type { TabId } from "@/components/NavDrawer";
 import { checkForPWAUpdate } from "@/pwa/registerSW";
 import SEOMeta from "@/components/SEOMeta";
 import Footer from "@/components/Footer";
+import { resolveBranding } from "@/config/branding";
 
 const EMAIL_USER = "privacy";
 const EMAIL_DOMAIN = "h3master.app";
@@ -108,9 +109,9 @@ export default function AboutPage() {
           <section className="text-center space-y-3">
             <h1
               className="text-3xl sm:text-4xl font-bold tracking-tight"
-              style={{ color: "#E8B147" }}
+              style={{ color: resolveBranding("theme_color_dark") }}
             >
-              H3 Master
+              {resolveBranding("app_name")}
             </h1>
             <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
               {isRu

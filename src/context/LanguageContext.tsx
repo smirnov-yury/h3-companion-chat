@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useCallback, ReactNode } from "react";
+import { resolveBranding } from "@/config/branding";
 
 export type Lang = "RU" | "EN";
 
@@ -13,7 +14,7 @@ const LanguageContext = createContext<LanguageContextValue>({
 });
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [lang, setLang] = useState<Lang>(() => (localStorage.getItem("app_language") as Lang) || "RU");
+  const [lang, setLang] = useState<Lang>(() => (localStorage.getItem("app_language") as Lang) || ((resolveBranding("default_lang") as Lang) || "RU"));
   const toggleLang = useCallback(() => setLang((l) => {
     const next = l === "RU" ? "EN" : "RU";
     localStorage.setItem("app_language", next);
