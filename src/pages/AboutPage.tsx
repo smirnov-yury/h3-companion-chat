@@ -28,6 +28,7 @@ import type { TabId } from "@/components/NavDrawer";
 import { checkForPWAUpdate } from "@/pwa/registerSW";
 import SEOMeta from "@/components/SEOMeta";
 import Footer from "@/components/Footer";
+import { resolveBranding } from "@/config/branding";
 
 const EMAIL_USER = "privacy";
 const EMAIL_DOMAIN = "h3master.app";
