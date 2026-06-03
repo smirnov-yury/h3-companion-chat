@@ -34,6 +34,7 @@ export interface BreadcrumbItem {
 }
 
 export function buildBreadcrumbs(pathname: string, isRu: boolean): BreadcrumbItem[] {
+  const SITE_URL = resolveBranding("site_url");
   const clean = (pathname || "").replace(/^\/+|\/+$/g, "");
   if (!clean) return [];
 
