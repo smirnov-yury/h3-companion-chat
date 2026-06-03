@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useCallback, ReactNode } from "react";
+import { resolveBranding } from "@/config/branding";
 
 export type Lang = "RU" | "EN";
 
