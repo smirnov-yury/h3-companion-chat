@@ -41,12 +41,12 @@ export default function HomePage() {
         <div className="min-h-full flex flex-col items-center justify-center px-4 py-10">
           <div className="w-full max-w-[290px] sm:max-w-[330px] text-center mb-8">
             <img
-              src="/h3master-lockup-horizontal-A-light.svg"
+              src={resolveBranding("logo_light")}
               alt="H3 Master — Board Game Companion"
               className="block dark:hidden w-full h-auto mx-auto"
             />
             <img
-              src="/h3master-lockup-horizontal-A-dark.svg"
+              src={resolveBranding("logo_dark")}
               alt=""
               aria-hidden="true"
               className="hidden dark:block w-full h-auto mx-auto"
