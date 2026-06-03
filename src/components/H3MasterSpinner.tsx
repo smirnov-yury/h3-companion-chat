@@ -1,4 +1,5 @@
 import React from "react";
+import { resolveBranding } from "@/config/branding";
 
 interface H3MasterSpinnerProps {
   /** Size in pixels (renders square). Default 48. */
