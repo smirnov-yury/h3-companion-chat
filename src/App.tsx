@@ -71,6 +71,11 @@ function MediaFoldersBoot() {
   return null;
 }
 
+function BrandingBoot() {
+  useBranding();
+  return null;
+}
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <LanguageProvider>
