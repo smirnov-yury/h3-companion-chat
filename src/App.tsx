@@ -91,6 +91,7 @@ const App = () => (
           <CookieConsent />
           <AnalyticsBoot />
           <MediaFoldersBoot />
+          <BrandingBoot />
           <RuleExtModal />
           <Suspense fallback={<RouteFallback />}>
             <Routes>
