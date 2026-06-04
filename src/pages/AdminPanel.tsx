@@ -209,6 +209,7 @@ export default function AdminPanel() {
             <Route path="rules" element={<RulesEditor />} />
             <Route path="sections" element={<SectionsEditor />} />
             <Route path="content-types" element={<EntityTypesEditor />} />
+            <Route path="content-items" element={<EntitiesEditor />} />
             <Route path="scenarios" element={<ScenariosEditor />} />
             <Route path="fields" element={<MapElementsEditor tab="fields" />} />
             <Route path="map-events" element={<MapElementsEditor tab="map_events" />} />
