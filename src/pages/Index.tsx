@@ -47,7 +47,7 @@ export default function Index() {
   const initialSearch = searchParams.get("q") ?? "";
 
   const routing = useSectionRouting();
-  const { def: matched, redirectTo } = routing.resolveBySlug(params.section);
+  const { def: matched, redirectTo, notFound } = routing.resolveBySlug(params.section);
   const tab = matched.tabId as TabId;
 
   useEffect(() => {
