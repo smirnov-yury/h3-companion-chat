@@ -15,6 +15,8 @@ const GenericSectionTab = lazy(() => import("@/components/GenericSectionTab"));
 import BackToTop from "@/components/BackToTop";
 import SEOMeta from "@/components/SEOMeta";
 import H3MasterSpinner from "@/components/H3MasterSpinner";
+import { MapPinOff } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { useLang } from "@/context/LanguageContext";
 import { useNavSections } from "@/hooks/useNavSections";
 import { useSectionRouting } from "@/hooks/useSectionRouting";
@@ -45,7 +47,7 @@ export default function Index() {
   const initialSearch = searchParams.get("q") ?? "";
 
   const routing = useSectionRouting();
-  const { def: matched, redirectTo } = routing.resolveBySlug(params.section);
+  const { def: matched, redirectTo, notFound } = routing.resolveBySlug(params.section);
   const tab = matched.tabId as TabId;
 
   useEffect(() => {
@@ -189,6 +191,30 @@ export default function Index() {
       <TopAppBar title={title} icon={current.icon} onMenuClick={() => setDrawerOpen(true)} />
       <NavDrawer open={drawerOpen} onOpenChange={setDrawerOpen} active={tab} onChange={handleTabChange} />
       <div className="flex-1 flex flex-col overflow-hidden pt-11 lg:ml-56">
+        {notFound && routing.isReady ? (
+          <div className="max-w-lg mx-auto px-4 py-12 text-center space-y-5">
+            <div className="flex justify-center">
+              <div className="rounded-full bg-muted p-4">
+                <MapPinOff className="w-10 h-10 text-muted-foreground" />
+              </div>
+            </div>
+            <h1 className="text-2xl font-semibold">
+              {lang === "RU" ? "Страница не найдена" : "Page not found"}
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              {lang === "RU"
+                ? "Такой страницы нет или она переехала."
+                : "This page does not exist or has moved."}
+            </p>
+            <div className="flex justify-center pt-2">
+              <Button onClick={() => navigate("/")}>
+                {lang === "RU" ? "На главную" : "Go to Home"}
+              </Button>
+            </div>
+          </div>
+        ) : notFound && !routing.isReady ? (
+          <TabFallback />
+        ) : (
         <Suspense fallback={<TabFallback />}>
         {tab === "ai" ? (
           <ChatScreen />
@@ -266,6 +292,7 @@ export default function Index() {
           <GenericSectionTab tabId={tab} labelEN={current.labelEN} labelRU={current.labelRU} />
         )}
         </Suspense>
+        )}
       </div>
       <BackToTop />
     </div>
