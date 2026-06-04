@@ -22,7 +22,11 @@ export interface ResolvedSection extends SectionDef {
 }
 
 export interface SectionRouting {
-  resolveBySlug: (slug: string | undefined) => { def: ResolvedSection; redirectTo: string | null };
+  resolveBySlug: (slug: string | undefined) => {
+    def: ResolvedSection;
+    redirectTo: string | null;
+    notFound: boolean;
+  };
   liveSlugForTabId: (tabId: string) => string;
 }
 
