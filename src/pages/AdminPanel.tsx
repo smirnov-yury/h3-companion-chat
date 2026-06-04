@@ -30,7 +30,7 @@ const NAV_ITEMS: Array<
 > = [
   { path: "", label: "Dashboard", icon: LayoutDashboard },
   { path: "sections", label: "Navigation", icon: ListTree },
-  { path: "rules", label: "Rules", icon: BookOpen },
+  { path: "content-types", label: "Content Types", icon: Boxes },
   { path: "scenarios", label: "Scenarios", icon: Map },
   {
     label: "Map Elements", icon: Map,
