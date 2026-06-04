@@ -670,6 +670,65 @@ export type Database = {
           },
         ]
       }
+      entities: {
+        Row: {
+          attrs: Json
+          created_at: string
+          embedding_en: string | null
+          embedding_ru: string | null
+          id: string
+          image: string | null
+          name_en: string
+          name_ru: string | null
+          search_text_en: string | null
+          search_text_ru: string | null
+          slug: string
+          sort_order: number
+          type_key: string
+          updated_at: string
+        }
+        Insert: {
+          attrs?: Json
+          created_at?: string
+          embedding_en?: string | null
+          embedding_ru?: string | null
+          id: string
+          image?: string | null
+          name_en: string
+          name_ru?: string | null
+          search_text_en?: string | null
+          search_text_ru?: string | null
+          slug: string
+          sort_order?: number
+          type_key: string
+          updated_at?: string
+        }
+        Update: {
+          attrs?: Json
+          created_at?: string
+          embedding_en?: string | null
+          embedding_ru?: string | null
+          id?: string
+          image?: string | null
+          name_en?: string
+          name_ru?: string | null
+          search_text_en?: string | null
+          search_text_ru?: string | null
+          slug?: string
+          sort_order?: number
+          type_key?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "entities_type_key_fkey"
+            columns: ["type_key"]
+            isOneToOne: false
+            referencedRelation: "entity_types"
+            referencedColumns: ["type_key"]
+          },
+        ]
+      }
       entity_aliases: {
         Row: {
           alias_text: string
@@ -755,6 +814,47 @@ export type Database = {
             columns: ["tag_id"]
             isOneToOne: false
             referencedRelation: "tags"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      entity_types: {
+        Row: {
+          created_at: string
+          fields: Json
+          label_en: string
+          label_ru: string
+          layout_ref: string | null
+          note: string | null
+          type_key: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          fields: Json
+          label_en: string
+          label_ru: string
+          layout_ref?: string | null
+          note?: string | null
+          type_key: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          fields?: Json
+          label_en?: string
+          label_ru?: string
+          layout_ref?: string | null
+          note?: string | null
+          type_key?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "entity_types_layout_ref_fkey"
+            columns: ["layout_ref"]
+            isOneToOne: false
+            referencedRelation: "card_layouts"
             referencedColumns: ["id"]
           },
         ]
