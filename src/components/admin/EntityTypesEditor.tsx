@@ -6,6 +6,7 @@ import {
   ArrowUp, ArrowDown,
 } from "lucide-react";
 import DeleteConfirmDialog from "@/components/admin/DeleteConfirmDialog";
+import PwaBumpButton from "@/components/admin/PwaBumpButton";
 
 type FieldKind = "text" | "int" | "badge" | "image" | "glyphs";
 type CardSlot = "badge" | "stat" | "body";
