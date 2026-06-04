@@ -67,11 +67,12 @@ export function buildSectionRouting(
     const incoming = slug ?? "";
     const newSlug = redirectMap.get(incoming);
     const liveSlug = newSlug ?? incoming;
-    const resolved =
-      resolveLive(liveSlug) ??
-      toResolved(findSectionBySlug(DEFAULT_SLUG)!, findSectionBySlug(DEFAULT_SLUG)!.slug);
+    const live = resolveLive(liveSlug);
+    const defaultDef = toResolved(findSectionBySlug(DEFAULT_SLUG)!, findSectionBySlug(DEFAULT_SLUG)!.slug);
+    const resolved = live ?? defaultDef;
     const redirectTo = newSlug && newSlug !== incoming ? newSlug : null;
-    return { def: resolved, redirectTo };
+    const notFound = !live && !newSlug && incoming !== "";
+    return { def: resolved, redirectTo, notFound };
   };
 
   const liveSlugForTabId = (tabId: string): string => {
