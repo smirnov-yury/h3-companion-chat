@@ -292,6 +292,7 @@ export default function Index() {
           <GenericSectionTab tabId={tab} labelEN={current.labelEN} labelRU={current.labelRU} />
         )}
         </Suspense>
+        )}
       </div>
       <BackToTop />
     </div>
