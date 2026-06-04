@@ -11,6 +11,7 @@ const TownsTab        = lazy(() => import("@/components/TownsTab"));
 const HeroesTab       = lazy(() => import("@/components/HeroesTab"));
 const GlobalEventsTab = lazy(() => import("@/components/GlobalEventsTab"));
 const MapElementsTab  = lazy(() => import("@/components/MapElementsTab"));
+const GenericSectionTab = lazy(() => import("@/components/GenericSectionTab"));
 import BackToTop from "@/components/BackToTop";
 import SEOMeta from "@/components/SEOMeta";
 import H3MasterSpinner from "@/components/H3MasterSpinner";
@@ -262,18 +263,7 @@ export default function Index() {
             onCardClose={handleCardClose}
           />
         ) : (
-          <div className="flex-1 flex items-center justify-center px-6 text-center">
-            <div className="max-w-md space-y-3">
-              <h2 className="text-xl font-semibold text-foreground">
-                {lang === "RU" ? current.labelRU : current.labelEN}
-              </h2>
-              <p className="text-sm text-muted-foreground">
-                {lang === "RU"
-                  ? "Этот раздел пока не имеет настроенного типа контента. Тип контента подключается на этапе Section 6."
-                  : "This section does not have a content type configured yet. Content types are wired up in Section 6."}
-              </p>
-            </div>
-          </div>
+          <GenericSectionTab tabId={tab} labelEN={current.labelEN} labelRU={current.labelRU} />
         )}
         </Suspense>
       </div>

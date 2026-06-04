@@ -1,6 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { CARD_LAYOUT_DEFAULTS, defaultLayoutForGrid, resolveLayoutId, type CardLayout } from "@/config/cardLayouts";
+import {
+  CARD_LAYOUT_DEFAULTS,
+  DEFAULT_LAYOUT_ID,
+  defaultLayoutForGrid,
+  resolveLayoutId,
+  type CardLayout,
+} from "@/config/cardLayouts";
 
 interface CardLayoutRow {
   id: string; aspect_ratio: string | null; width_px: number | null; height_px: number | null;
@@ -18,24 +24,37 @@ function rowToLayout(r: CardLayoutRow): CardLayout {
   };
 }
 
+async function fetchCardLayoutData() {
+  const [layouts, sections] = await Promise.all([
+    (supabase.from as any)("card_layouts").select("*"),
+    supabase.from("sections").select("id,layout_ref"),
+  ]);
+  if (layouts.error) throw layouts.error;
+  const byId: Record<string, CardLayout> = { ...CARD_LAYOUT_DEFAULTS };
+  for (const row of ((layouts.data ?? []) as unknown as CardLayoutRow[])) byId[row.id] = rowToLayout(row);
+  const sectionLayout: Record<string, string> = {};
+  for (const s of ((sections.data ?? []) as unknown as SectionLayoutRow[])) if (s.layout_ref) sectionLayout[s.id] = s.layout_ref;
+  return { byId, sectionLayout };
+}
+
 export function useCardLayout(gridKey: string): CardLayout {
   const { data } = useQuery({
     queryKey: ["card_layouts"],
-    queryFn: async () => {
-      const [layouts, sections] = await Promise.all([
-        (supabase.from as any)("card_layouts").select("*"),
-        supabase.from("sections").select("id,layout_ref"),
-      ]);
-      if (layouts.error) throw layouts.error;
-      const byId: Record<string, CardLayout> = { ...CARD_LAYOUT_DEFAULTS };
-      for (const row of ((layouts.data ?? []) as unknown as CardLayoutRow[])) byId[row.id] = rowToLayout(row);
-      const sectionLayout: Record<string, string> = {};
-      for (const s of ((sections.data ?? []) as unknown as SectionLayoutRow[])) if (s.layout_ref) sectionLayout[s.id] = s.layout_ref;
-      return { byId, sectionLayout };
-    },
+    queryFn: fetchCardLayoutData,
     staleTime: 5 * 60 * 1000,
   });
 
   const id = resolveLayoutId(gridKey);
   return data?.byId[id] ?? defaultLayoutForGrid(gridKey);
+}
+
+export function useCardLayoutById(layoutId: string | null | undefined): CardLayout {
+  const { data } = useQuery({
+    queryKey: ["card_layouts"],
+    queryFn: fetchCardLayoutData,
+    staleTime: 5 * 60 * 1000,
+  });
+  const fallback = CARD_LAYOUT_DEFAULTS[DEFAULT_LAYOUT_ID];
+  if (!layoutId) return data?.byId[DEFAULT_LAYOUT_ID] ?? fallback;
+  return data?.byId[layoutId] ?? data?.byId[DEFAULT_LAYOUT_ID] ?? fallback;
 }
