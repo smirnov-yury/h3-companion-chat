@@ -193,7 +193,9 @@ export default function EntityTypesEditor() {
           <h1 className="text-2xl font-semibold text-foreground">Content Types</h1>
           <p className="text-sm text-muted-foreground">Define generic content types and their field schemas.</p>
         </div>
-        <button
+        <div className="flex items-center gap-2">
+          <PwaBumpButton />
+          <button
           type="button"
           onClick={() => setShowAdd((s) => !s)}
           className="flex items-center gap-1.5 px-3 py-2 rounded-md bg-primary text-primary-foreground text-sm hover:bg-primary/90"
