@@ -255,7 +255,7 @@ export default function GameSetup() {
           </div>
 
           {currentStep < 4 && (
-            <div className="flex justify-between gap-2 mt-8 pt-4 border-t border-border">
+            <div className="flex flex-wrap items-center gap-2 mt-8 pt-4 border-t border-border">
               <Button
                 type="button"
                 variant="outline"
@@ -265,7 +265,17 @@ export default function GameSetup() {
                 <ChevronLeft className="w-4 h-4" />
                 {lang === "RU" ? "Назад" : "Back"}
               </Button>
-              <Button type="button" onClick={goNext} disabled={!stepValid}>
+              {!stepValid && stepHint && (
+                <p className="text-xs text-muted-foreground self-center mr-auto">
+                  {stepHint}
+                </p>
+              )}
+              <Button
+                type="button"
+                onClick={goNext}
+                disabled={!stepValid}
+                className="disabled:opacity-40 disabled:saturate-50 disabled:cursor-not-allowed"
+              >
                 {lang === "RU" ? "Далее" : "Next"}
                 <ChevronRight className="w-4 h-4" />
               </Button>
