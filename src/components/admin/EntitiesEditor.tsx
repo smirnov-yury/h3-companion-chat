@@ -252,6 +252,7 @@ export default function EntitiesEditor() {
           <p className="text-sm text-muted-foreground">Edit rows of the generic content store.</p>
         </div>
         <div className="flex items-center gap-2">
+          <PwaBumpButton />
           <select
             value={selectedKey}
             onChange={(e) => { setSelectedKey(e.target.value); setForm(null); }}
