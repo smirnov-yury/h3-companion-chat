@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Zap, Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -7,10 +7,6 @@ export default function PwaBumpButton() {
   const [arming, setArming] = useState(false);
   const [bumping, setBumping] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  const disarm = useCallback(() => {
-    setArming(false);
-  }, []);
 
   const bump = async () => {
     if (timeoutRef.current) {
