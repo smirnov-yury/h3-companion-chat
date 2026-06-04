@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Plus, Trash2, Pencil, Save, Loader2, X } from "lucide-react";
 import DeleteConfirmDialog from "@/components/admin/DeleteConfirmDialog";
 import ImageUploader from "@/components/admin/ImageUploader";
+import PwaBumpButton from "@/components/admin/PwaBumpButton";
 import { SUPABASE_URL } from "@/integrations/supabase/client";
 
 const STORAGE_BASE = `${SUPABASE_URL}/storage/v1/object/public/component-media`;
@@ -251,6 +252,7 @@ export default function EntitiesEditor() {
           <p className="text-sm text-muted-foreground">Edit rows of the generic content store.</p>
         </div>
         <div className="flex items-center gap-2">
+          <PwaBumpButton />
           <select
             value={selectedKey}
             onChange={(e) => { setSelectedKey(e.target.value); setForm(null); }}
