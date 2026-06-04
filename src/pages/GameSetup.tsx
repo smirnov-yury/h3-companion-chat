@@ -37,7 +37,17 @@ export default function GameSetup() {
   useEffect(() => {
     try {
       const stored = JSON.parse(localStorage.getItem("h3_recent_sessions") ?? "[]");
-      setRecentSessions(Array.isArray(stored) ? stored : []);
+      const arr = Array.isArray(stored) ? (stored as RecentEntry[]) : [];
+      const now = Date.now();
+      const ttl = 24 * 60 * 60 * 1000;
+      const filtered = arr.filter((s) => {
+        const d = new Date(s.createdAt);
+        return !isNaN(d.getTime()) && now - d.getTime() < ttl;
+      });
+      setRecentSessions(filtered);
+      if (filtered.length < arr.length) {
+        localStorage.setItem("h3_recent_sessions", JSON.stringify(filtered));
+      }
     } catch {
       setRecentSessions([]);
     }
