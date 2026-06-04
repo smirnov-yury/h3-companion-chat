@@ -202,6 +202,7 @@ export default function EntityTypesEditor() {
         >
           <Plus className="w-4 h-4" /> Add content type
         </button>
+        </div>
       </div>
 
       {showAdd && (
