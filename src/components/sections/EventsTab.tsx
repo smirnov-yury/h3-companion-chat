@@ -42,7 +42,7 @@ export default function EventsTab({ searchQuery = "", initialCardId, onCardOpen,
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["events"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("events").select("*").order("sort_order");
+      const { data, error } = await supabase.from("events").select("effect_en, effect_ru, id, image, image_status, name_en, name_ru, notes_en, notes_ru, sort_order, updated_at").order("sort_order");
       if (error) throw error;
       return (data ?? []) as GameEvent[];
     },

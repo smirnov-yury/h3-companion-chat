@@ -59,7 +59,7 @@ export default function TownsTab({ initialCardId, onCardOpen }: Props = {}) {
   const { data: allBuildings = [], isLoading: buildingsLoading } = useQuery({
     queryKey: ["town_buildings"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("town_buildings").select("*").order("sort_order");
+      const { data, error } = await supabase.from("town_buildings").select("cost, dwelling_tier, effect_en, effect_ru, id, name_en, name_ru, sort_order, town_id, updated_at").order("sort_order");
       if (error) throw error;
       return (data ?? []) as TownBuilding[];
     },

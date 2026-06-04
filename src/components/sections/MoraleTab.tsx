@@ -39,7 +39,7 @@ export default function MoraleTab({ searchQuery = "", initialCardId, onCardOpen,
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["morale_cards"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("morale_cards").select("*").order("sort_order");
+      const { data, error } = await supabase.from("morale_cards").select("ai_context, created_at, description_en, description_ru, id, image, image_status, sort_order, type, updated_at").order("sort_order");
       if (error) throw error;
       return (data ?? []) as MoraleCard[];
     },

@@ -38,7 +38,7 @@ export default function PandoraTab({ searchQuery = "", initialCardId, onCardOpen
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["pandora_box"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("pandora_box").select("*").order("sort_order");
+      const { data, error } = await supabase.from("pandora_box").select("ai_context, created_at, description_en, description_ru, id, image, image_status, sort_order, updated_at").order("sort_order");
       if (error) throw error;
       return (data ?? []) as PandoraBox[];
     },

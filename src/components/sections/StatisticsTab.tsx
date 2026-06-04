@@ -50,7 +50,7 @@ export default function StatisticsTab({ searchQuery = "", initialCardId, onCardO
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["statistics"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("statistics").select("*").order("sort_order");
+      const { data, error } = await supabase.from("statistics").select("card_type, effect_en, effect_en_expert, effect_en_expert_ru, effect_ru, id, image, name_en, name_ru, notes_en, notes_ru, sort_order, stat_type, updated_at").order("sort_order");
       if (error) throw error;
       return (data ?? []) as Statistic[];
     },

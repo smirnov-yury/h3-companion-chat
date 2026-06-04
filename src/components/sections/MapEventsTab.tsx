@@ -40,7 +40,7 @@ export default function MapEventsTab({ searchQuery = "", initialCardId, onCardOp
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["map_events"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("map_events").select("*").order("sort_order");
+      const { data, error } = await supabase.from("map_events").select("ai_context, created_at, description_en, description_ru, id, image, image_status, name_en, name_ru, sort_order, updated_at").order("sort_order");
       if (error) throw error;
       return (data ?? []) as MapEvent[];
     },

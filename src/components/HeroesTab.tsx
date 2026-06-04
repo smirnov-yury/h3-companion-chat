@@ -186,7 +186,7 @@ export default function HeroesTab({ initialFilter, initialCardId, initialSearch,
   const { data: heroes = [], isLoading } = useQuery({
     queryKey: ["heroes"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("heroes").select("*").order("sort_order");
+      const { data, error } = await supabase.from("heroes").select("ability_id, ai_context, attack, biography_en, biography_ru, class_en, class_ru, defense, id, image, image_status, knowledge, name_en, name_ru, notes_en, notes_ru, power, sort_order, specialty_en, specialty_levels, specialty_ru, town, updated_at").order("sort_order");
       if (error) throw error;
       return (data ?? []) as unknown as Hero[];
     },

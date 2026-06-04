@@ -235,7 +235,7 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
   const { data: units = [], isLoading: loading } = useQuery({
     queryKey: ["unit_stats"],
     queryFn: async () => {
-      const { data, error } = await supabase.from('unit_stats').select('*').order('sort_order');
+      const { data, error } = await supabase.from('unit_stats').select('abilities_en, abilities_ru, ai_context, attack, content, cost, defense, errata_en, errata_ru, health_points, id, image, image_status, initiative, is_summon, name_en, name_ru, notes_en, notes_ru, notes_structured_en, notes_structured_ru, number, slug, sort_order, tier, town, type, updated_at').order('sort_order');
       if (error) throw error;
       return (data ?? []) as UnitStat[];
     },

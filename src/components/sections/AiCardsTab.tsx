@@ -50,7 +50,7 @@ export default function AiCardsTab({ searchQuery = "", initialCardId, onCardOpen
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["ai_cards"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("ai_cards").select("*").order("sort_order");
+      const { data, error } = await supabase.from("ai_cards").select("ai_context, created_at, description_en, description_ru, difficulty, effect_en, effect_ru, id, image, image_status, name_en, name_ru, sort_order, updated_at").order("sort_order");
       if (error) throw error;
       return (data ?? []) as AiCard[];
     },
