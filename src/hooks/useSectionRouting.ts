@@ -8,8 +8,8 @@ import {
   type SectionRouting,
 } from "@/config/sectionRouting";
 
-export function useSectionRouting(): SectionRouting {
-  const { data } = useQuery({
+export function useSectionRouting(): SectionRouting & { isReady: boolean } {
+  const { data, isFetched } = useQuery({
     queryKey: ["section_routing"],
     queryFn: async (): Promise<{ rows: RoutingSectionRow[]; redirects: RedirectRow[] }> => {
       const [secRes, redRes] = await Promise.all([
@@ -25,8 +25,10 @@ export function useSectionRouting(): SectionRouting {
     staleTime: 5 * 60 * 1000,
   });
 
-  return useMemo(
+  const routing = useMemo(
     () => buildSectionRouting(data?.rows ?? [], data?.redirects ?? []),
     [data],
   );
+
+  return { ...routing, isReady: isFetched };
 }
