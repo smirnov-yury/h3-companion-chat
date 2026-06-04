@@ -4,9 +4,10 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   LayoutDashboard, BookOpen, Map, Zap, Layers, Users, Crown,
   Building2, FileText, ListFilter, ScrollText, LogOut, Menu, X,
-  ChevronDown, ChevronRight, BarChart3, Wrench, ListTree, Boxes,
+  ChevronDown, ChevronRight, BarChart3, Wrench, ListTree, Boxes, Package,
 } from "lucide-react";
 import EntityTypesEditor from "@/components/admin/EntityTypesEditor";
+import EntitiesEditor from "@/components/admin/EntitiesEditor";
 import AdminDashboard from "@/components/admin/AdminDashboard";
 import RulesEditor from "@/components/admin/RulesEditor";
 import FilterGroupsEditor from "@/components/admin/FilterGroupsEditor";
