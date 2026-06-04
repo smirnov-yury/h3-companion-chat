@@ -4,9 +4,10 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   LayoutDashboard, BookOpen, Map, Zap, Layers, Users, Crown,
   Building2, FileText, ListFilter, ScrollText, LogOut, Menu, X,
-  ChevronDown, ChevronRight, BarChart3, Wrench, ListTree, Boxes,
+  ChevronDown, ChevronRight, BarChart3, Wrench, ListTree, Boxes, Package,
 } from "lucide-react";
 import EntityTypesEditor from "@/components/admin/EntityTypesEditor";
+import EntitiesEditor from "@/components/admin/EntitiesEditor";
 import AdminDashboard from "@/components/admin/AdminDashboard";
 import RulesEditor from "@/components/admin/RulesEditor";
 import FilterGroupsEditor from "@/components/admin/FilterGroupsEditor";
@@ -31,6 +32,7 @@ const NAV_ITEMS: Array<
   { path: "", label: "Dashboard", icon: LayoutDashboard },
   { path: "sections", label: "Navigation", icon: ListTree },
   { path: "content-types", label: "Content Types", icon: Boxes },
+  { path: "content-items", label: "Content Items", icon: Package },
   { path: "rules", label: "Rules", icon: BookOpen },
   { path: "scenarios", label: "Scenarios", icon: Map },
   {
@@ -207,6 +209,7 @@ export default function AdminPanel() {
             <Route path="rules" element={<RulesEditor />} />
             <Route path="sections" element={<SectionsEditor />} />
             <Route path="content-types" element={<EntityTypesEditor />} />
+            <Route path="content-items" element={<EntitiesEditor />} />
             <Route path="scenarios" element={<ScenariosEditor />} />
             <Route path="fields" element={<MapElementsEditor tab="fields" />} />
             <Route path="map-events" element={<MapElementsEditor tab="map_events" />} />
