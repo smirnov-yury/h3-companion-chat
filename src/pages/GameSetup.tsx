@@ -37,7 +37,17 @@ export default function GameSetup() {
   useEffect(() => {
     try {
       const stored = JSON.parse(localStorage.getItem("h3_recent_sessions") ?? "[]");
-      setRecentSessions(Array.isArray(stored) ? stored : []);
+      const arr = Array.isArray(stored) ? (stored as RecentEntry[]) : [];
+      const now = Date.now();
+      const ttl = 24 * 60 * 60 * 1000;
+      const filtered = arr.filter((s) => {
+        const d = new Date(s.createdAt);
+        return !isNaN(d.getTime()) && now - d.getTime() < ttl;
+      });
+      setRecentSessions(filtered);
+      if (filtered.length < arr.length) {
+        localStorage.setItem("h3_recent_sessions", JSON.stringify(filtered));
+      }
     } catch {
       setRecentSessions([]);
     }
@@ -127,6 +137,50 @@ export default function GameSetup() {
     return true;
   }, [currentStep, form, scenarioMin]);
 
+  const stepHint = useMemo(() => {
+    if (currentStep === 1) {
+      if (!form.scenarioId) {
+        return lang === "RU" ? "Выберите сценарий, чтобы продолжить" : "Select a scenario to continue";
+      }
+    }
+    if (currentStep === 2) {
+      if (form.playerCount < scenarioMin || form.playerCount > 8) {
+        return lang === "RU"
+          ? `Для этого сценария нужно минимум ${scenarioMin} ${pluralizePlayers(scenarioMin, "RU")}`
+          : `This scenario needs at least ${scenarioMin} players`;
+      }
+    }
+    if (currentStep === 3) {
+      for (let i = 0; i < form.players.length; i++) {
+        const p = form.players[i];
+        if (!p.name.trim()) {
+          return lang === "RU" ? `Введите имя игрока ${i + 1}` : `Enter a name for Player ${i + 1}`;
+        }
+        if (!p.town) {
+          return lang === "RU" ? `Выберите фракцию для игрока ${i + 1}` : `Choose a faction for Player ${i + 1}`;
+        }
+        if (!p.heroId) {
+          return lang === "RU" ? `Выберите героя для игрока ${i + 1}` : `Choose a hero for Player ${i + 1}`;
+        }
+      }
+      const towns = new Set<string>();
+      for (const p of form.players) {
+        if (towns.has(p.town!)) {
+          return lang === "RU" ? "У двух игроков одинаковая фракция" : "Two players have the same faction";
+        }
+        towns.add(p.town!);
+      }
+      if (form.mode === "alliance") {
+        const aCount = form.players.filter((p) => p.team === "A").length;
+        const bCount = form.players.filter((p) => p.team === "B").length;
+        if (aCount !== 2 || bCount !== 2) {
+          return lang === "RU" ? "Для альянса нужны две команды по 2 игрока" : "Alliance mode needs two teams of 2";
+        }
+      }
+    }
+    return null;
+  }, [currentStep, form, scenarioMin, lang]);
+
   const handleTabChange = (tab: TabId) => {
     const def = findSectionByTabId(tab);
     if (def) navigate(`/${def.slug}`);
@@ -201,7 +255,7 @@ export default function GameSetup() {
           </div>
 
           {currentStep < 4 && (
-            <div className="flex justify-between gap-2 mt-8 pt-4 border-t border-border">
+            <div className="flex flex-wrap items-center gap-2 mt-8 pt-4 border-t border-border">
               <Button
                 type="button"
                 variant="outline"
@@ -211,7 +265,17 @@ export default function GameSetup() {
                 <ChevronLeft className="w-4 h-4" />
                 {lang === "RU" ? "Назад" : "Back"}
               </Button>
-              <Button type="button" onClick={goNext} disabled={!stepValid}>
+              {!stepValid && stepHint && (
+                <p className="text-xs text-muted-foreground self-center mr-auto">
+                  {stepHint}
+                </p>
+              )}
+              <Button
+                type="button"
+                onClick={goNext}
+                disabled={!stepValid}
+                className="disabled:opacity-40 disabled:saturate-50 disabled:cursor-not-allowed"
+              >
                 {lang === "RU" ? "Далее" : "Next"}
                 <ChevronRight className="w-4 h-4" />
               </Button>
