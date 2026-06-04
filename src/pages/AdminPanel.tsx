@@ -32,6 +32,7 @@ const NAV_ITEMS: Array<
   { path: "", label: "Dashboard", icon: LayoutDashboard },
   { path: "sections", label: "Navigation", icon: ListTree },
   { path: "content-types", label: "Content Types", icon: Boxes },
+  { path: "content-items", label: "Content Items", icon: Package },
   { path: "rules", label: "Rules", icon: BookOpen },
   { path: "scenarios", label: "Scenarios", icon: Map },
   {
