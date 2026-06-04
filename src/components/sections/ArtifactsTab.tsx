@@ -61,7 +61,7 @@ export default function ArtifactsTab({ searchQuery = "", initialFilter, initialC
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["artifacts"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("artifacts").select("*").order("sort_order");
+      const { data, error } = await supabase.from("artifacts").select("ai_context, description_en, description_ru, effect_en, effect_ru, id, image, image_status, name_en, name_ru, quality, sort_order, updated_at").order("sort_order");
       if (error) throw error;
       return (data ?? []) as Artifact[];
     },

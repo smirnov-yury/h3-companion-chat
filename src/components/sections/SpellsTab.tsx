@@ -72,7 +72,7 @@ export default function SpellsTab({ searchQuery = "", initialFilter, initialCard
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["spells"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("spells").select("*").order("sort_order");
+      const { data, error } = await supabase.from("spells").select("ai_context, effect_en, effect_ru, id, image, image_status, level, name_en, name_ru, notes_en, notes_ru, school, sort_order, updated_at").order("sort_order");
       if (error) throw error;
       return (data ?? []) as Spell[];
     },

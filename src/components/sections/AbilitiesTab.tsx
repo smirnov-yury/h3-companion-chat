@@ -50,7 +50,7 @@ export default function AbilitiesTab({ searchQuery = "", initialCardId, onCardOp
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["abilities"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("abilities").select("*").order("sort_order");
+      const { data, error } = await supabase.from("abilities").select("ai_context, effect_empowered_en, effect_empowered_ru, effect_en, effect_expert_en, effect_expert_ru, effect_ru, id, image, image_regular, image_status, name_en, name_ru, notes_en, notes_ru, sort_order, updated_at").order("sort_order");
       if (error) throw error;
       return (data ?? []) as Ability[];
     },

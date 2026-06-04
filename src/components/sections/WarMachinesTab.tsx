@@ -46,7 +46,7 @@ export default function WarMachinesTab({ searchQuery = "", initialCardId, onCard
   const { data: items = [], isLoading } = useQuery({
     queryKey: ["war_machines"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("war_machines").select("*").order("sort_order");
+      const { data, error } = await supabase.from("war_machines").select("ability_en, ability_ru, cost_blacksmith, cost_trade_post, id, image, image_status, name_en, name_ru, notes_en, notes_ru, sort_order, updated_at").order("sort_order");
       if (error) throw error;
       return (data ?? []) as WarMachine[];
     },

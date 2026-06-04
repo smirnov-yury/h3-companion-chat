@@ -45,7 +45,7 @@ const RULES_KEY = ["rules"] as const;
 const COMPONENTS_KEY = ["components"] as const;
 
 async function fetchRules(): Promise<Rule[]> {
-  const { data, error } = await supabase.from("rules").select("*").order("sort_order");
+  const { data, error } = await supabase.from("rules").select("ai_context, category, created_at, id, sort_order, text_en, text_ru, title_en, title_ru, updated_at").order("sort_order");
   if (error) throw error;
   return (data ?? []).map((r: any) => ({
     id: r.id,
