@@ -154,6 +154,13 @@ function escapeRegExp(s: string): string {
   return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
+function unitVariantLabel(id: string, lang: Lang): string | null {
+  if (id.endsWith("_few")) return "Few";
+  if (id.endsWith("_pack")) return "Pack";
+  if (id.endsWith("_neutral")) return lang === "RU" ? "Нейтрал" : "Neutral";
+  return null;
+}
+
 function buildOrFilter(fields: string[], query: string): string {
   // ilike with wildcards; commas inside .or() are separators, escape them in value
   const safe = query.replace(/,/g, "\\,").replace(/%/g, "\\%");
