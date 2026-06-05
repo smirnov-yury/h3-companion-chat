@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, Link } from "react-router-dom";
 import TopAppBar from "@/components/TopAppBar";
 import NavDrawer from "@/components/NavDrawer";
 import GlobalSearch from "@/components/GlobalSearch";
@@ -10,6 +10,8 @@ import { findSectionByTabId, type SectionDef } from "@/config/sectionRegistry";
 import type { TabId } from "@/components/NavDrawer";
 import Footer from "@/components/Footer";
 import { resolveBranding } from "@/config/branding";
+import { useNavSections, ICON_MAP } from "@/hooks/useNavSections";
+import { useSectionRouting } from "@/hooks/useSectionRouting";
 
 export default function HomePage() {
   const { lang } = useLang();
@@ -17,6 +19,8 @@ export default function HomePage() {
   const [searchParams] = useSearchParams();
   const initialQuery = searchParams.get("q") ?? "";
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const sections = useNavSections();
+  const routing = useSectionRouting();
 
   const handleTabChange = (newTab: TabId) => {
     const def: SectionDef | undefined = findSectionByTabId(newTab);
@@ -54,6 +58,24 @@ export default function HomePage() {
           </div>
           <div className="w-full max-w-2xl">
             <GlobalSearch mode="inline" autoFocus initialQuery={initialQuery} />
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 mt-8">
+              {sections.map((s) => {
+                const Icon = s.icon ?? ICON_MAP[s.id];
+                const slug = routing.liveSlugForTabId(s.id);
+                return (
+                  <Link
+                    key={s.id}
+                    to={`/${slug}`}
+                    className="border border-border rounded-lg px-3 py-3 hover:bg-muted transition-colors flex flex-col items-center gap-1.5 text-center"
+                  >
+                    {Icon && <Icon className="w-5 h-5 text-primary" />}
+                    <span className="text-xs font-medium">
+                      {lang === "RU" ? s.labelRU : s.labelEN}
+                    </span>
+                  </Link>
+                );
+              })}
+            </div>
             <div className="mt-6 text-center">
               <Footer variant="minimal" />
             </div>

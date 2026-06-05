@@ -13,7 +13,7 @@ export interface NavSection {
   icon: LucideIcon;
 }
 
-const ICON_MAP: Record<string, LucideIcon> = {
+export const ICON_MAP: Record<string, LucideIcon> = {
   BookOpen,
   Map,
   MapPin,
