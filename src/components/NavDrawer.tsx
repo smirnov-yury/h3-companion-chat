@@ -34,7 +34,7 @@ function NavItemList({ active, onChange, onSelect }: { active: string; onChange:
           <button
             key={id}
             onClick={() => { onChange(id); onSelect?.(); }}
-            className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-medium transition-colors ${
+            className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors ${
               isActive
                 ? "bg-accent text-accent-foreground"
                 : "text-foreground hover:bg-muted"
@@ -94,7 +94,7 @@ function AboutLink({ onSelect }: { onSelect?: () => void }) {
       <Separator />
       <button
         onClick={() => { navigate("/about"); onSelect?.(); }}
-        className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-foreground hover:bg-muted transition-colors"
+        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-foreground hover:bg-muted transition-colors"
       >
         <Info className="w-5 h-5 shrink-0" />
         {lang === "RU" ? "О приложении" : "About"}
@@ -114,7 +114,7 @@ function SupportLink({ onSelect }: { onSelect?: () => void }) {
   return (
     <button
       onClick={handleClick}
-      className="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium border border-[#E1BB3A]/50 rounded-md mt-2 text-[#E1BB3A] hover:bg-[#E1BB3A]/10 transition-colors"
+      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium border border-[#E1BB3A]/50 rounded-md mt-2 text-[#E1BB3A] hover:bg-[#E1BB3A]/10 transition-colors"
       style={{ borderColor: 'rgba(225, 187, 58, 0.5)', color: '#E1BB3A' }}
     >
       <span className="animate-heart-pulse">

@@ -91,7 +91,7 @@ export default function WarMachinesTab({ searchQuery = "", initialCardId, onCard
     <>
       <div className="p-3 overflow-y-auto h-full">
         {!loaded ? (
-          <SkeletonGrid />
+          <SkeletonGrid aspectStyle={aspectStyle(layout)} />
         ) : filtered.length === 0 ? (
           <EmptyState onReset={searchQuery ? () => undefined : undefined} />
         ) : (

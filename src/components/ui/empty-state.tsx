@@ -1,3 +1,4 @@
+import type React from "react";
 import { SearchX } from "lucide-react";
 import { useLang } from "@/context/LanguageContext";
 import { Button } from "@/components/ui/button";
@@ -33,16 +34,22 @@ export function EmptyState({ onReset, title, subtitle }: EmptyStateProps) {
 interface SkeletonGridProps {
   count?: number;
   className?: string;
+  aspectStyle?: React.CSSProperties;
 }
 
 export function SkeletonGrid({
   count = 12,
   className = "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3",
+  aspectStyle,
 }: SkeletonGridProps) {
   return (
     <div className={className}>
       {Array.from({ length: count }).map((_, i) => (
-        <div key={i} className="rounded-lg bg-muted animate-pulse aspect-[3/4]" />
+        <div
+          key={i}
+          className={`rounded-lg bg-muted animate-pulse ${!aspectStyle ? "aspect-[3/4]" : ""}`}
+          style={aspectStyle}
+        />
       ))}
     </div>
   );
