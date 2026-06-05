@@ -295,7 +295,7 @@ export default function HeroesTab({ initialFilter, initialCardId, initialSearch,
 
       <div className="px-3 pb-3 flex-1">
         {!loaded ? (
-          <SkeletonGrid className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3" />
+          <SkeletonGrid className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3" aspectStyle={aspectStyle(layout)} />
         ) : filtered.length === 0 ? (
           <EmptyState onReset={hasFilters ? resetFilters : undefined} />
         ) : (
