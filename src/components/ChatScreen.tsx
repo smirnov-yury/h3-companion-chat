@@ -482,16 +482,16 @@ export default function ChatScreen() {
         {messages.map((m, i) => (
           <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
             <div
-              className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
+              className={`rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
                 m.role === "user"
-                  ? "bg-primary text-primary-foreground rounded-br-md"
-                  : "bg-card text-card-foreground rounded-bl-md"
+                  ? "max-w-[80%] bg-primary text-primary-foreground rounded-br-md"
+                  : "max-w-[80%] md:max-w-[42rem] bg-card text-card-foreground rounded-bl-md"
               }`}
             >
               {m.role === "assistant" ? (
                 <>
                   <div
-                    className="prose prose-sm prose-invert max-w-none [&_p]:m-0"
+                    className="prose prose-sm prose-invert max-w-none whitespace-pre-wrap [&_p]:m-0"
                     onClick={handleEntityClick}
                     dangerouslySetInnerHTML={{ __html: renderGlyphs(m.content, glyphs) }}
                   />
