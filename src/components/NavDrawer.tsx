@@ -151,7 +151,7 @@ export default function NavDrawer({ open, onOpenChange, active, onChange }: NavD
 
       {/* Mobile drawer */}
       <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent side="left" className="w-72 p-0 flex flex-col lg:hidden">
+        <SheetContent side="left" className="w-72 p-0 gap-0 flex flex-col lg:hidden">
           <SheetHeader className="p-4 border-b border-border">
             <SheetTitle className="text-base text-left">
               <button
