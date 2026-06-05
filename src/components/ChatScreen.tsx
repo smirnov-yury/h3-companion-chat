@@ -493,7 +493,7 @@ export default function ChatScreen() {
                   <div
                     className="prose prose-sm prose-invert max-w-none whitespace-pre-wrap [&_p]:m-0"
                     onClick={handleEntityClick}
-                    dangerouslySetInnerHTML={{ __html: renderGlyphs(m.content, glyphs) }}
+                    dangerouslySetInnerHTML={{ __html: renderGlyphs(m.content, glyphs).replace(/\*\*([^*<>]+)\*\*/g, "<strong>$1</strong>") }}
                   />
                   <ChatSources content={m.content} lang={lang} />
                 </>
