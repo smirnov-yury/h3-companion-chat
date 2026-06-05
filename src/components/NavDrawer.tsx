@@ -2,7 +2,6 @@ import React from "react";
 import { Info, Sun, Moon, Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { trackDonationIntent } from "@/lib/analytics";
-import { Separator } from "@/components/ui/separator";
 import { useLang } from "@/context/LanguageContext";
 import {
   Sheet,
@@ -68,7 +67,7 @@ function SettingsRow() {
   };
 
   return (
-    <div className="p-4 border-t border-border flex items-center justify-between gap-2">
+    <div className="px-3 py-2.5 border-t border-border flex items-center justify-between gap-2">
       <button
         onClick={toggleLang}
         className="flex-1 flex items-center justify-center px-3 py-2 text-sm font-bold rounded-lg bg-secondary text-secondary-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
@@ -90,16 +89,13 @@ function AboutLink({ onSelect }: { onSelect?: () => void }) {
   const { lang } = useLang();
   const navigate = useNavigate();
   return (
-    <>
-      <Separator />
-      <button
-        onClick={() => { navigate("/about"); onSelect?.(); }}
-        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-foreground hover:bg-muted transition-colors"
-      >
-        <Info className="w-5 h-5 shrink-0" />
-        {lang === "RU" ? "О приложении" : "About"}
-      </button>
-    </>
+    <button
+      onClick={() => { navigate("/about"); onSelect?.(); }}
+      className="w-full flex items-center gap-3 px-4 py-2 text-sm font-medium text-foreground hover:bg-muted transition-colors"
+    >
+      <Info className="w-5 h-5 shrink-0" />
+      {lang === "RU" ? "О приложении" : "About"}
+    </button>
   );
 }
 
@@ -114,8 +110,7 @@ function SupportLink({ onSelect }: { onSelect?: () => void }) {
   return (
     <button
       onClick={handleClick}
-      className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium border border-[#E1BB3A]/50 rounded-md mt-2 text-[#E1BB3A] hover:bg-[#E1BB3A]/10 transition-colors"
-      style={{ borderColor: 'rgba(225, 187, 58, 0.5)', color: '#E1BB3A' }}
+      className="w-full flex items-center gap-3 px-4 py-2 text-sm font-medium text-[#E1BB3A] hover:bg-[#E1BB3A]/10 transition-colors"
     >
       <span className="animate-heart-pulse">
         <Heart className="w-5 h-5 shrink-0" />
@@ -149,10 +144,9 @@ export default function NavDrawer({ open, onOpenChange, active, onChange }: NavD
           <NavItemList active={active} onChange={onChange} />
         </nav>
         <SettingsRow />
-        <div className="px-4">
-          <SupportLink />
-        </div>
+        <SupportLink />
         <AboutLink />
+        <div className="pb-2" />
       </aside>
 
       {/* Mobile drawer */}
@@ -174,10 +168,9 @@ export default function NavDrawer({ open, onOpenChange, active, onChange }: NavD
             <NavItemList active={active} onChange={onChange} onSelect={() => onOpenChange(false)} />
           </nav>
           <SettingsRow />
-          <div className="px-4">
-            <SupportLink onSelect={() => onOpenChange(false)} />
-          </div>
+          <SupportLink onSelect={() => onOpenChange(false)} />
           <AboutLink onSelect={() => onOpenChange(false)} />
+          <div className="pb-2" />
         </SheetContent>
       </Sheet>
     </>
