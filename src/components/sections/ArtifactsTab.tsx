@@ -134,7 +134,7 @@ export default function ArtifactsTab({ searchQuery = "", initialFilter, initialC
         </div>
         <div className="p-3 pt-0 overflow-y-auto flex-1">
           {!loaded ? (
-            <SkeletonGrid />
+            <SkeletonGrid aspectStyle={aspectStyle(layout)} />
           ) : filtered.length === 0 ? (
             <EmptyState onReset={hasFilters ? resetFilters : undefined} />
           ) : (

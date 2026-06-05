@@ -422,7 +422,7 @@ export default function UnitsTab({ initialFilter, initialCardId, initialSearch, 
   if (loading) {
     return (
       <div className="flex-1 overflow-auto p-4">
-        <SkeletonGrid />
+        <SkeletonGrid aspectStyle={aspectStyle(layout)} />
       </div>
     );
   }

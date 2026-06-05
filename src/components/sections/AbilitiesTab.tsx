@@ -95,7 +95,7 @@ export default function AbilitiesTab({ searchQuery = "", initialCardId, onCardOp
     <>
       <div className="p-3 overflow-y-auto h-full">
         {!loaded ? (
-          <SkeletonGrid />
+          <SkeletonGrid aspectStyle={aspectStyle(layout)} />
         ) : filtered.length === 0 ? (
           <EmptyState />
         ) : (

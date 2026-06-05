@@ -93,7 +93,7 @@ export default function FieldsTab({ searchQuery = "", filterSlug, initialCardId,
     <>
       <div className="p-3 overflow-y-auto h-full">
         {!loaded ? (
-          <SkeletonGrid />
+          <SkeletonGrid aspectStyle={aspectStyle(layout)} />
         ) : filtered.length === 0 ? (
           <EmptyState />
         ) : (

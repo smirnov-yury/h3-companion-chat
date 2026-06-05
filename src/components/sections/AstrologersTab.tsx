@@ -89,7 +89,7 @@ export default function AstrologersTab({ searchQuery = "", initialCardId, onCard
     <>
       <div className="p-3 overflow-y-auto h-full">
         {!loaded ? (
-          <SkeletonGrid className="grid grid-cols-2 lg:grid-cols-4 gap-3" />
+          <SkeletonGrid className="grid grid-cols-2 lg:grid-cols-4 gap-3" aspectStyle={aspectStyle(layout)} />
         ) : filtered.length === 0 ? (
           <EmptyState />
         ) : (
