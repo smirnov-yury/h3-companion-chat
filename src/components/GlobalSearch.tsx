@@ -673,10 +673,21 @@ export default function GlobalSearch({ mode, onClose, initialQuery = "", autoFoc
                     })()}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p
-                      className="text-sm font-medium text-foreground truncate"
-                      dangerouslySetInnerHTML={highlight(hit.name, debounced)}
-                    />
+                    <div className="flex items-center min-w-0">
+                      <p
+                        className="text-sm font-medium text-foreground truncate"
+                        dangerouslySetInnerHTML={highlight(hit.name, debounced)}
+                      />
+                      {section.key === "units" && (() => {
+                        const label = unitVariantLabel(hit.id, lang as Lang);
+                        if (!label) return null;
+                        return (
+                          <span className="ml-1.5 text-[10px] uppercase tracking-wide text-muted-foreground border border-border rounded px-1 py-px align-middle shrink-0">
+                            {label}
+                          </span>
+                        );
+                      })()}
+                    </div>
                     {hit.snippet && (
                       <p
                         className="text-xs text-muted-foreground truncate"
