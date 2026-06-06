@@ -34,6 +34,7 @@ export const SECTION_REGISTRY: readonly SectionDef[] = [
   { slug: "towns",        tabId: "towns",         levels: ["id"],                      table: "towns" },
   { slug: "ai",           tabId: "ai",            levels: [],                          table: null },
   { slug: "game-setup",   tabId: "game_setup",    levels: [],                          table: null },
+  { slug: "guide",        tabId: "guide",         levels: [],                          table: null },
 ] as const;
 
 export const DEFAULT_SLUG = "rules";
