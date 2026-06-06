@@ -1062,6 +1062,92 @@ export type Database = {
         }
         Relationships: []
       }
+      guide_panels: {
+        Row: {
+          content: Json
+          created_at: string
+          id: string
+          kind: string
+          section_id: string
+          sort_order: number
+          title_en: string | null
+          title_ru: string | null
+          updated_at: string
+        }
+        Insert: {
+          content?: Json
+          created_at?: string
+          id?: string
+          kind?: string
+          section_id: string
+          sort_order?: number
+          title_en?: string | null
+          title_ru?: string | null
+          updated_at?: string
+        }
+        Update: {
+          content?: Json
+          created_at?: string
+          id?: string
+          kind?: string
+          section_id?: string
+          sort_order?: number
+          title_en?: string | null
+          title_ru?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "guide_panels_section_id_fkey"
+            columns: ["section_id"]
+            isOneToOne: false
+            referencedRelation: "guide_sections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      guide_sections: {
+        Row: {
+          created_at: string
+          icon: string | null
+          id: string
+          intro_en: string | null
+          intro_ru: string | null
+          is_visible: boolean
+          label_en: string
+          label_ru: string
+          slug: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          icon?: string | null
+          id: string
+          intro_en?: string | null
+          intro_ru?: string | null
+          is_visible?: boolean
+          label_en: string
+          label_ru: string
+          slug: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          icon?: string | null
+          id?: string
+          intro_en?: string | null
+          intro_ru?: string | null
+          is_visible?: boolean
+          label_en?: string
+          label_ru?: string
+          slug?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       heroes: {
         Row: {
           ability_id: string | null

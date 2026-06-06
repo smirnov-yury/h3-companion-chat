@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import {
   BookOpen, Map, MapPin, CalendarDays, Layers, Swords, User, Castle,
-  MessageCircle, Wand2, Circle, type LucideIcon,
+  MessageCircle, Wand2, Circle, GraduationCap, type LucideIcon,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { navItems } from "@/config/navItems";
@@ -24,6 +24,7 @@ export const ICON_MAP: Record<string, LucideIcon> = {
   Castle,
   MessageCircle,
   Wand2,
+  GraduationCap,
 };
 
 interface SectionRow {

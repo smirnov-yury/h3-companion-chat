@@ -5,7 +5,7 @@ import {
 
 export type TabId =
   | "rules" | "scenarios" | "map_elements" | "global_events" | "decks"
-  | "units" | "heroes" | "towns" | "ai" | "game_setup";
+  | "units" | "heroes" | "towns" | "ai" | "game_setup" | "guide";
 
 export const navItems: { id: TabId; labelRU: string; labelEN: string; icon: LucideIcon }[] = [
   { id: "rules",         labelRU: "Правила",            labelEN: "Rules",           icon: BookOpen },
