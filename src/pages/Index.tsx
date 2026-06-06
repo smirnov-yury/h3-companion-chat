@@ -291,6 +291,8 @@ export default function Index() {
             onCardOpen={handleCardOpen}
             onCardClose={handleCardClose}
           />
+        ) : tab === "guide" ? (
+          <GuideTab />
         ) : (
           <GenericSectionTab tabId={tab} labelEN={current.labelEN} labelRU={current.labelRU} />
         )}
