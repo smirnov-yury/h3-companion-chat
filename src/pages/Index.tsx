@@ -12,6 +12,7 @@ const HeroesTab       = lazy(() => import("@/components/HeroesTab"));
 const GlobalEventsTab = lazy(() => import("@/components/GlobalEventsTab"));
 const MapElementsTab  = lazy(() => import("@/components/MapElementsTab"));
 const GenericSectionTab = lazy(() => import("@/components/GenericSectionTab"));
+const GuideTab = lazy(() => import("@/components/GuideTab"));
 import BackToTop from "@/components/BackToTop";
 import SEOMeta from "@/components/SEOMeta";
 import H3MasterSpinner from "@/components/H3MasterSpinner";
