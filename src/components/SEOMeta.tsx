@@ -40,6 +40,8 @@ const DESCRIPTIONS: Record<RouteKey | "default", { en: string; ru: string }> = {
                    ru: "ИИ Мастер игры — задайте любой вопрос по правилам настольной игры «Герои Меча и Магии III». Ответы с цитатами из правил. Двуязычно EN/RU." },
   game_setup:    { en: "Game Setup wizard — pick scenario, players, factions, and generate a ready-to-share session link. Supports Clash, Campaign, Co-op, Alliance, Solo.",
                    ru: "Мастер подготовки партии — выберите сценарий, игроков, фракции и сгенерируйте ссылку на сессию. Поддержка режимов Clash, Campaign, Co-op, Alliance, Solo." },
+  guide:         { en: "How to Play — interactive beginner guide for Heroes III: The Board Game. Learn units, combat, towns step by step.",
+                   ru: "Как играть — интерактивный гид для новичков по настольной игре «Герои Меча и Магии III». Юниты, бой, города пошагово." },
 };
 
 const TITLES: Record<RouteKey, { en: string; ru: string }> = {
@@ -58,13 +60,14 @@ const TITLES: Record<RouteKey, { en: string; ru: string }> = {
   towns:         { en: "Towns — H3 Master",                          ru: "Города — H3 Master" },
   ai:            { en: "AI Game Master — H3 Master",                 ru: "ИИ Мастер игры — H3 Master" },
   game_setup:    { en: "Game Setup — H3 Master",                     ru: "Подготовка партии — H3 Master" },
+  guide:         { en: "How to Play — H3 Master",                    ru: "Как играть — H3 Master" },
 };
 
 const SEO_BREADCRUMB_SCRIPT_ID = "seo-breadcrumb-jsonld";
 
 const SECTION_ROUTE_KEYS: ReadonlySet<RouteKey> = new Set([
   "rules", "scenarios", "units", "heroes", "decks",
-  "map_elements", "global_events", "towns", "ai", "game_setup",
+  "map_elements", "global_events", "towns", "ai", "game_setup", "guide",
 ]);
 
 function pathToRouteKey(pathname: string): RouteKey | null {
