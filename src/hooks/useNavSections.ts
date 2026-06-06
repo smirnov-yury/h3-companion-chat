@@ -24,6 +24,7 @@ export const ICON_MAP: Record<string, LucideIcon> = {
   Castle,
   MessageCircle,
   Wand2,
+  GraduationCap,
 };
 
 interface SectionRow {
