@@ -200,7 +200,7 @@ function StandardPanel({
               <li key={i}>
                 <button
                   type="button"
-                  className="w-full flex items-center gap-3 p-2.5 rounded-lg border border-border hover:bg-accent text-left transition-colors"
+                  className="w-full flex items-center gap-3 p-2.5 rounded-lg border border-border hover:bg-muted text-left transition-colors"
                   onClick={() =>
                     setModal({
                       title: tr(d.title, lang) || label,
@@ -227,7 +227,7 @@ function StandardPanel({
               <button
                 key={i}
                 type="button"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border bg-card hover:bg-accent text-sm transition-colors"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border bg-card hover:bg-muted text-sm transition-colors"
                 onClick={() => {
                   if (it.mode === "open") {
                     setModal({
@@ -342,7 +342,7 @@ function AnatomyPanel({
               <button
                 type="button"
                 className={`w-full flex items-start gap-3 p-2.5 rounded-lg border text-left transition-colors ${
-                  isHot ? "border-primary bg-primary/5" : "border-border hover:bg-accent"
+                  isHot ? "border-primary bg-primary/5" : "border-border hover:bg-muted"
                 }`}
                 onClick={() => {
                   setHot(c.pin);
@@ -385,7 +385,7 @@ function AnatomyPanel({
               <button
                 key={i}
                 type="button"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border bg-card hover:bg-accent text-sm"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border bg-card hover:bg-muted text-sm"
                 onClick={() => setModal({
                   title: tr(a.label, lang),
                   glyph: a.glyph,
@@ -428,7 +428,7 @@ function TypesPanel({
           <li key={i}>
             <button
               type="button"
-              className="w-full flex items-start gap-3 p-2.5 rounded-lg border border-border hover:bg-accent text-left"
+              className="w-full flex items-start gap-3 p-2.5 rounded-lg border border-border hover:bg-muted text-left"
               onClick={() => setModal({
                 title: tr(t.label, lang),
                 glyph: t.glyph,
@@ -457,7 +457,7 @@ function TypesPanel({
               <button
                 key={i}
                 type="button"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border bg-card hover:bg-accent text-sm"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border bg-card hover:bg-muted text-sm"
                 onClick={() => setModal({
                   title: tr(t.label, lang),
                   glyph: t.glyph,
@@ -578,6 +578,7 @@ function ModalImage({
 export default function GuideTab() {
   const { lang } = useLang();
   const navigate = useNavigate();
+  const { glyphs } = useGlyphs();
 
   const [view, setView] = useState<"home" | "toc" | "panel" | "done">("home");
   const [si, setSi] = useState(0);
@@ -688,25 +689,23 @@ export default function GuideTab() {
       <div className="max-w-2xl mx-auto px-4 py-6 pb-32">
         {view === "home" && (
           <div className="space-y-6">
-            <div className="rounded-2xl bg-gradient-to-br from-primary/90 to-primary p-6 text-primary-foreground shadow-lg">
-              <h1 className="text-2xl font-bold mb-2">
+            <div className="rounded-2xl border-2 border-primary/40 bg-primary/5 p-6 shadow-sm">
+              <h1 className="text-2xl font-bold text-primary mb-2">
                 {lang === "RU" ? "Как играть" : "How to Play"}
               </h1>
-              <p className="text-sm opacity-90 mb-5">
+              <p className="text-sm text-muted-foreground mb-5">
                 {lang === "RU"
                   ? "Короткий интерактивный гид для новичков. Юниты, бой, города — шаг за шагом."
                   : "A short interactive beginner guide. Units, combat, towns — step by step."}
               </p>
               <div className="flex flex-wrap gap-2">
                 <Button
-                  variant="secondary"
                   onClick={() => goPanel(0, 0)}
                 >
                   {lang === "RU" ? "Начать обучение" : "Start tutorial"}
                 </Button>
                 <Button
-                  variant="ghost"
-                  className="text-primary-foreground hover:bg-primary-foreground/10"
+                  variant="outline"
                   onClick={() => setView("toc")}
                 >
                   {lang === "RU" ? "Открыть оглавление" : "Open contents"}
@@ -876,7 +875,10 @@ export default function GuideTab() {
               </DialogHeader>
               <div className="space-y-4">
                 {modal.text && (
-                  <p className="text-sm leading-relaxed whitespace-pre-line">{modal.text}</p>
+                  <p
+                    className="text-sm leading-relaxed whitespace-pre-line"
+                    dangerouslySetInnerHTML={{ __html: renderGlyphs(modal.text, glyphs) }}
+                  />
                 )}
                 <ModalImage
                   imagePath={modal.imagePath}
@@ -923,7 +925,7 @@ function SectionList({
           <li key={s.id}>
             <button
               type="button"
-              className="w-full flex items-center gap-3 p-3 rounded-lg border border-border bg-card hover:bg-accent transition-colors text-left"
+              className="w-full flex items-center gap-3 p-3 rounded-lg border border-border bg-card hover:bg-muted transition-colors text-left"
               onClick={() => onPick(idx)}
             >
               <span className="shrink-0 w-8 h-8 rounded-full bg-primary/10 text-primary text-sm font-bold flex items-center justify-center">
