@@ -584,7 +584,7 @@ export default function GuideTab() {
   const [pi, setPi] = useState(0);
   const [modal, setModal] = useState<ModalState | null>(null);
   const [hot, setHot] = useState<number | null>(null);
-  const [ruleExtId, setRuleExtId] = useState<number | null>(null);
+  
 
   const sectionsQ = useQuery({
     queryKey: ["guide_sections"],
