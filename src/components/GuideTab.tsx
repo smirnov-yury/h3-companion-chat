@@ -874,18 +874,6 @@ export default function GuideTab() {
                   lang={lang}
                 />
               )}
-              {detailRuleExt !== null && (
-                <div>
-                  <button
-                    type="button"
-                    onClick={() => setRuleExtId(detailRuleExt)}
-                    className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
-                  >
-                    <BookOpen className="w-4 h-4" />
-                    {lang === "RU" ? "Подробнее" : "More"}
-                  </button>
-                </div>
-              )}
             </div>
           );
         })()}
