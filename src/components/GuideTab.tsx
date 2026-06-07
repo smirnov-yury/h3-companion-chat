@@ -550,7 +550,7 @@ function ModalImage({
 
 // ---------- Rules-extended detail popup ----------
 interface RuleExtRow {
-  section_title_en: string;
+  section_title: string;
   section_title_ru: string | null;
   text_en: string;
   text_ru: string | null;
