@@ -809,10 +809,6 @@ export default function GuideTab() {
             );
           }
           const title = panelTitle(panel);
-          const detailRuleExt: number | null =
-            typeof panel.content?.detail_rule_ext === "number"
-              ? panel.content.detail_rule_ext
-              : null;
           return (
             <div className="space-y-4">
               <div className="flex items-center justify-between gap-3">
