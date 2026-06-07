@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronLeft, ChevronRight, List, Check, ArrowRight, BookOpen } from "lucide-react";
+import { ChevronLeft, ChevronRight, List, Check, ArrowRight, Info } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang, type Lang } from "@/context/LanguageContext";
 import { componentMediaUrl } from "@/lib/storage";
@@ -176,8 +176,7 @@ function StandardPanel({
   navigate: (to: string) => void;
 }) {
   const cap = tr(content.cap, lang);
-  const lines = trList(content.lines, lang);
-  const hint = tr(content.hint, lang);
+  const points: any[] = Array.isArray(content.points) ? content.points : [];
   const items: any[] = Array.isArray(content.items) ? content.items : [];
   return (
     <div className="space-y-4">
@@ -192,7 +191,34 @@ function StandardPanel({
         lang={lang}
       />
       {title && <h2 className="text-lg font-semibold">{title}</h2>}
-      {!!lines.length && <BulletList lines={lines} />}
+      {!!points.length && (
+        <ul className="space-y-2">
+          {points.map((p, i) => {
+            const label = tr(p.label, lang);
+            const d = p.detail ?? {};
+            return (
+              <li key={i}>
+                <button
+                  type="button"
+                  className="w-full flex items-center gap-3 p-2.5 rounded-lg border border-border hover:bg-accent text-left transition-colors"
+                  onClick={() =>
+                    setModal({
+                      title: tr(d.title, lang) || label,
+                      text: tr(d.text, lang),
+                      imagePath: d.image ?? null,
+                      imageLayout: d.layout ?? null,
+                      imageNote: tr(d.image_note, lang),
+                    })
+                  }
+                >
+                  <span className="flex-1 text-sm leading-relaxed">{label}</span>
+                  <Info className="w-4 h-4 shrink-0 text-muted-foreground" />
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      )}
       {!!items.length && (
         <div className="flex flex-wrap gap-2">
           {items.map((it, i) => {
@@ -233,7 +259,6 @@ function StandardPanel({
           })}
         </div>
       )}
-      {hint && <p className="text-xs italic text-muted-foreground">{hint}</p>}
     </div>
   );
 }
@@ -548,67 +573,6 @@ function ModalImage({
   return null;
 }
 
-// ---------- Rules-extended detail popup ----------
-interface RuleExtRow {
-  section_title: string;
-  section_title_ru: string | null;
-  text_en: string;
-  text_ru: string | null;
-}
-
-function RuleExtDialog({
-  id,
-  lang,
-  onClose,
-}: { id: number | null; lang: Lang; onClose: () => void }) {
-  const { glyphs } = useGlyphs();
-  const q = useQuery({
-    queryKey: ["guide_rule_ext", id],
-    enabled: id !== null,
-    staleTime: 5 * 60 * 1000,
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("rules_extended")
-        .select("section_title, section_title_ru, text_en, text_ru")
-        .eq("id", id as number)
-        .single();
-      if (error) throw error;
-      return data as RuleExtRow;
-    },
-  });
-  const row = q.data;
-  const title = row
-    ? (lang === "RU" ? (row.section_title_ru ?? row.section_title) : row.section_title)
-    : (lang === "RU" ? "Загрузка..." : "Loading...");
-  const body = row ? (lang === "RU" ? (row.text_ru ?? row.text_en) : row.text_en) : "";
-  return (
-    <Dialog open={id !== null} onOpenChange={(o) => { if (!o) onClose(); }}>
-      <DialogContent className="max-w-2xl max-h-[85vh] flex flex-col">
-        <DialogHeader>
-          <DialogTitle className="pr-8">{title}</DialogTitle>
-        </DialogHeader>
-        <div className="flex-1 overflow-y-auto min-h-0">
-          {q.isLoading && (
-            <div className="flex justify-center py-8">
-              <H3MasterSpinner size={36} variant="draw" className="text-primary" />
-            </div>
-          )}
-          {q.isError && (
-            <p className="text-sm text-destructive">
-              {lang === "RU" ? "Не удалось загрузить правило." : "Failed to load rule."}
-            </p>
-          )}
-          {row && (
-            <div
-              className="text-sm leading-relaxed whitespace-pre-line text-foreground"
-              dangerouslySetInnerHTML={{ __html: renderGlyphs(body, glyphs) }}
-            />
-          )}
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
-}
 
 // ---------- Main component ----------
 export default function GuideTab() {
@@ -620,7 +584,7 @@ export default function GuideTab() {
   const [pi, setPi] = useState(0);
   const [modal, setModal] = useState<ModalState | null>(null);
   const [hot, setHot] = useState<number | null>(null);
-  const [ruleExtId, setRuleExtId] = useState<number | null>(null);
+  
 
   const sectionsQ = useQuery({
     queryKey: ["guide_sections"],
@@ -716,7 +680,7 @@ export default function GuideTab() {
     si === sections.length - 1 &&
     pi === ((panelsBySection.get(sections[si]?.id) ?? []).length - 1);
 
-  const modalOpen = modal !== null || ruleExtId !== null;
+  const modalOpen = modal !== null;
 
   // ---------- Render ----------
   return (
@@ -784,10 +748,6 @@ export default function GuideTab() {
             );
           }
           const title = panelTitle(panel);
-          const detailRuleExt: number | null =
-            typeof panel.content?.detail_rule_ext === "number"
-              ? panel.content.detail_rule_ext
-              : null;
           return (
             <div className="space-y-4">
               <div className="flex items-center justify-between gap-3">
@@ -848,18 +808,6 @@ export default function GuideTab() {
                   title={title}
                   lang={lang}
                 />
-              )}
-              {detailRuleExt !== null && (
-                <div>
-                  <button
-                    type="button"
-                    onClick={() => setRuleExtId(detailRuleExt)}
-                    className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
-                  >
-                    <BookOpen className="w-4 h-4" />
-                    {lang === "RU" ? "Подробнее" : "More"}
-                  </button>
-                </div>
               )}
             </div>
           );
@@ -952,8 +900,6 @@ export default function GuideTab() {
           )}
         </DialogContent>
       </Dialog>
-
-      <RuleExtDialog id={ruleExtId} lang={lang} onClose={() => setRuleExtId(null)} />
     </div>
   );
 }
