@@ -680,7 +680,7 @@ export default function GuideTab() {
     si === sections.length - 1 &&
     pi === ((panelsBySection.get(sections[si]?.id) ?? []).length - 1);
 
-  const modalOpen = modal !== null || ruleExtId !== null;
+  const modalOpen = modal !== null;
 
   // ---------- Render ----------
   return (
@@ -900,8 +900,6 @@ export default function GuideTab() {
           )}
         </DialogContent>
       </Dialog>
-
-      <RuleExtDialog id={ruleExtId} lang={lang} onClose={() => setRuleExtId(null)} />
     </div>
   );
 }
