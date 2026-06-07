@@ -1,13 +1,16 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronLeft, ChevronRight, List, Check, ArrowRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, List, Check, ArrowRight, BookOpen } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang, type Lang } from "@/context/LanguageContext";
-import { componentImageUrl, componentMediaUrl } from "@/lib/storage";
+import { componentMediaUrl } from "@/lib/storage";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import H3MasterSpinner from "@/components/H3MasterSpinner";
+import { useGlyphs } from "@/context/GlyphsContext";
+import { renderGlyphs } from "@/utils/renderGlyphs";
+import { useCardLayoutById } from "@/hooks/useCardLayouts";
 
 // ---------- Types ----------
 type LocStr = { ru?: string; en?: string } | undefined;
@@ -42,6 +45,8 @@ interface ModalState {
   glyph?: string | null;
   text?: string;
   imagePath?: string | null;
+  imageLayout?: string | null;
+  imageNote?: string;
   route?: string;
   routeLabel?: string;
 }
@@ -56,18 +61,28 @@ const trList = (v: LocList, lang: Lang): string[] => {
   return (lang === "RU" ? v.ru : v.en) ?? v.en ?? v.ru ?? [];
 };
 
-function GlyphIcon({ glyph, size = 20, className = "" }: { glyph?: string | null; size?: number; className?: string }) {
+/** Themed inline glyph icon. Routes through renderGlyphs so the icon
+ *  inherits the app's dark/light theming and multicolor classes. */
+function GlyphIcon({
+  glyph,
+  size,
+  className,
+}: {
+  glyph?: string | null;
+  size?: number;
+  className?: string;
+}) {
+  const { glyphs } = useGlyphs();
   if (!glyph) return null;
-  const src = componentImageUrl("glyphs", `glyph-${glyph}.png`);
+  const style = size ? { fontSize: `${size}px`, lineHeight: 1 } : undefined;
+  const cls = className
+    ? `inline-flex items-center leading-none ${className}`
+    : "inline-flex items-center text-[1.15em] leading-none";
   return (
-    <img
-      src={src}
-      alt=""
-      width={size}
-      height={size}
-      className={`inline-block object-contain ${className}`}
-      style={{ width: size, height: size }}
-      onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+    <span
+      style={style}
+      className={cls}
+      dangerouslySetInnerHTML={{ __html: renderGlyphs(`<${glyph}>`, glyphs) }}
     />
   );
 }
@@ -78,8 +93,9 @@ function FigurePlaceholder({
   page,
   src,
   folder,
+  note,
   lang,
-}: { aspect: "card" | "board"; cap: string; page?: number; src?: string; folder?: string; lang: Lang }) {
+}: { aspect: "card" | "board"; cap: string; page?: number; src?: string; folder?: string; note?: string; lang: Lang }) {
   const tagText = src === "st"
     ? `storage · ${folder ?? ""}`
     : `PDF rc4 · p.${page ?? "?"}`;
@@ -90,6 +106,7 @@ function FigurePlaceholder({
   return (
     <div className={`relative w-full ${aspectClass} rounded-lg border-2 border-dashed border-border bg-muted/30 flex flex-col items-center justify-center text-center p-4`}>
       <div className="text-xs text-muted-foreground">{cap || (lang === "RU" ? "Изображение скоро" : "Image coming soon")}</div>
+      {note && <div className="mt-1 text-[11px] italic text-muted-foreground/80 max-w-[90%]">{note}</div>}
       <div className={`mt-2 text-[10px] px-2 py-0.5 rounded ${tagClass}`}>{tagText}</div>
     </div>
   );
@@ -102,6 +119,7 @@ function Figure({
   page,
   src,
   folder,
+  note,
   lang,
   children,
 }: {
@@ -111,6 +129,7 @@ function Figure({
   page?: number;
   src?: string;
   folder?: string;
+  note?: string;
   lang: Lang;
   children?: React.ReactNode;
 }) {
@@ -118,7 +137,7 @@ function Figure({
   if (!imagePath) {
     return (
       <div className="relative">
-        <FigurePlaceholder aspect={aspect} cap={cap} page={page} src={src} folder={folder} lang={lang} />
+        <FigurePlaceholder aspect={aspect} cap={cap} page={page} src={src} folder={folder} note={note} lang={lang} />
         {children}
       </div>
     );
@@ -149,7 +168,6 @@ function StandardPanel({
   title,
   lang,
   setModal,
-  navigate,
 }: {
   content: any;
   title: string;
@@ -170,6 +188,7 @@ function StandardPanel({
         page={content.page}
         src={content.src}
         folder={content.folder}
+        note={tr(content.image_note, lang)}
         lang={lang}
       />
       {title && <h2 className="text-lg font-semibold">{title}</h2>}
@@ -189,6 +208,9 @@ function StandardPanel({
                       title: label,
                       glyph: it.glyph,
                       text: tr(it.text, lang) || tr(it.cap, lang),
+                      imagePath: it.image ?? null,
+                      imageLayout: it.layout ?? null,
+                      imageNote: tr(it.image_note, lang),
                       route: it.route,
                       routeLabel: tr(it.target, lang),
                     });
@@ -197,6 +219,9 @@ function StandardPanel({
                       title: label,
                       glyph: it.glyph,
                       text: tr(it.text, lang),
+                      imagePath: it.image ?? null,
+                      imageLayout: it.layout ?? null,
+                      imageNote: tr(it.image_note, lang),
                     });
                   }
                 }}
@@ -245,6 +270,7 @@ function AnatomyPanel({
           cap={tr(content.uname, lang) || tr({ en: "Figure", ru: "Рисунок" }, lang)}
           page={content.page}
           src="pdf"
+          note={tr(content.image_note, lang)}
           lang={lang}
         >
           {callouts.map((c, i) => {
@@ -270,6 +296,9 @@ function AnatomyPanel({
                       title: tr(c.label, lang),
                       glyph: c.glyph,
                       text: tr(c.text, lang) || tr(c.d, lang),
+                      imagePath: c.image ?? null,
+                      imageLayout: c.layout ?? null,
+                      imageNote: tr(c.image_note, lang),
                     });
                   }
                 }}
@@ -297,6 +326,9 @@ function AnatomyPanel({
                       title: tr(c.label, lang),
                       glyph: c.glyph,
                       text: tr(c.text, lang) || tr(c.d, lang),
+                      imagePath: c.image ?? null,
+                      imageLayout: c.layout ?? null,
+                      imageNote: tr(c.image_note, lang),
                     });
                   }
                 }}
@@ -333,6 +365,9 @@ function AnatomyPanel({
                   title: tr(a.label, lang),
                   glyph: a.glyph,
                   text: tr(a.text, lang),
+                  imagePath: a.image ?? null,
+                  imageLayout: a.layout ?? null,
+                  imageNote: tr(a.image_note, lang),
                 })}
               >
                 <GlyphIcon glyph={a.glyph} size={18} />
@@ -373,6 +408,9 @@ function TypesPanel({
                 title: tr(t.label, lang),
                 glyph: t.glyph,
                 text: tr(t.text, lang),
+                imagePath: t.image ?? null,
+                imageLayout: t.layout ?? null,
+                imageNote: tr(t.image_note, lang),
               })}
             >
               <GlyphIcon glyph={t.glyph} size={22} className="shrink-0 mt-0.5" />
@@ -399,6 +437,9 @@ function TypesPanel({
                   title: tr(t.label, lang),
                   glyph: t.glyph,
                   text: tr(t.text, lang),
+                  imagePath: t.image ?? null,
+                  imageLayout: t.layout ?? null,
+                  imageNote: tr(t.image_note, lang),
                 })}
               >
                 <GlyphIcon glyph={t.glyph} size={18} />
@@ -467,6 +508,108 @@ function ExamplePanel({
   );
 }
 
+// ---------- Detail-modal image (sized via card_layouts) ----------
+function ModalImage({
+  imagePath,
+  layoutId,
+  note,
+}: {
+  imagePath?: string | null;
+  layoutId?: string | null;
+  note?: string;
+}) {
+  const layout = useCardLayoutById(layoutId ?? null);
+  if (imagePath) {
+    if (!layoutId) {
+      return (
+        <img
+          src={componentMediaUrl(imagePath)}
+          alt=""
+          className="w-full max-h-48 object-contain rounded-md bg-muted/30 border border-border"
+        />
+      );
+    }
+    const ar = (layout.aspectRatio ?? "5/7").replace("/", " / ");
+    return (
+      <div
+        className="rounded-md overflow-hidden bg-muted/30 border border-border w-full"
+        style={{ aspectRatio: ar }}
+      >
+        <img
+          src={componentMediaUrl(imagePath)}
+          alt=""
+          className="w-full h-full"
+          style={{ objectFit: layout.objectFit, objectPosition: layout.objectPosition }}
+        />
+      </div>
+    );
+  }
+  if (note) return <p className="text-xs italic text-muted-foreground">{note}</p>;
+  return null;
+}
+
+// ---------- Rules-extended detail popup ----------
+interface RuleExtRow {
+  section_title: string;
+  section_title_ru: string | null;
+  text_en: string;
+  text_ru: string | null;
+}
+
+function RuleExtDialog({
+  id,
+  lang,
+  onClose,
+}: { id: number | null; lang: Lang; onClose: () => void }) {
+  const { glyphs } = useGlyphs();
+  const q = useQuery({
+    queryKey: ["guide_rule_ext", id],
+    enabled: id !== null,
+    staleTime: 5 * 60 * 1000,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("rules_extended")
+        .select("section_title, section_title_ru, text_en, text_ru")
+        .eq("id", id as number)
+        .single();
+      if (error) throw error;
+      return data as RuleExtRow;
+    },
+  });
+  const row = q.data;
+  const title = row
+    ? (lang === "RU" ? (row.section_title_ru ?? row.section_title) : row.section_title)
+    : (lang === "RU" ? "Загрузка..." : "Loading...");
+  const body = row ? (lang === "RU" ? (row.text_ru ?? row.text_en) : row.text_en) : "";
+  return (
+    <Dialog open={id !== null} onOpenChange={(o) => { if (!o) onClose(); }}>
+      <DialogContent className="max-w-2xl max-h-[85vh] flex flex-col">
+        <DialogHeader>
+          <DialogTitle className="pr-8">{title}</DialogTitle>
+        </DialogHeader>
+        <div className="flex-1 overflow-y-auto min-h-0">
+          {q.isLoading && (
+            <div className="flex justify-center py-8">
+              <H3MasterSpinner size={36} variant="draw" className="text-primary" />
+            </div>
+          )}
+          {q.isError && (
+            <p className="text-sm text-destructive">
+              {lang === "RU" ? "Не удалось загрузить правило." : "Failed to load rule."}
+            </p>
+          )}
+          {row && (
+            <div
+              className="text-sm leading-relaxed whitespace-pre-line text-foreground"
+              dangerouslySetInnerHTML={{ __html: renderGlyphs(body, glyphs) }}
+            />
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 // ---------- Main component ----------
 export default function GuideTab() {
   const { lang } = useLang();
@@ -477,6 +620,7 @@ export default function GuideTab() {
   const [pi, setPi] = useState(0);
   const [modal, setModal] = useState<ModalState | null>(null);
   const [hot, setHot] = useState<number | null>(null);
+  const [ruleExtId, setRuleExtId] = useState<number | null>(null);
 
   const sectionsQ = useQuery({
     queryKey: ["guide_sections"],
@@ -572,7 +716,7 @@ export default function GuideTab() {
     si === sections.length - 1 &&
     pi === ((panelsBySection.get(sections[si]?.id) ?? []).length - 1);
 
-  const modalOpen = modal !== null;
+  const modalOpen = modal !== null || ruleExtId !== null;
 
   // ---------- Render ----------
   return (
@@ -640,6 +784,10 @@ export default function GuideTab() {
             );
           }
           const title = panelTitle(panel);
+          const detailRuleExt: number | null =
+            typeof panel.content?.detail_rule_ext === "number"
+              ? panel.content.detail_rule_ext
+              : null;
           return (
             <div className="space-y-4">
               <div className="flex items-center justify-between gap-3">
@@ -701,6 +849,18 @@ export default function GuideTab() {
                   lang={lang}
                 />
               )}
+              {detailRuleExt !== null && (
+                <div>
+                  <button
+                    type="button"
+                    onClick={() => setRuleExtId(detailRuleExt)}
+                    className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline"
+                  >
+                    <BookOpen className="w-4 h-4" />
+                    {lang === "RU" ? "Подробнее" : "More"}
+                  </button>
+                </div>
+              )}
             </div>
           );
         })()}
@@ -756,7 +916,7 @@ export default function GuideTab() {
         </div>
       )}
 
-      <Dialog open={modalOpen} onOpenChange={(o) => { if (!o) setModal(null); }}>
+      <Dialog open={modal !== null} onOpenChange={(o) => { if (!o) setModal(null); }}>
         <DialogContent className="max-w-md">
           {modal && (
             <>
@@ -766,11 +926,16 @@ export default function GuideTab() {
                   <span>{modal.title}</span>
                 </DialogTitle>
               </DialogHeader>
-              {modal.route ? (
-                <div className="space-y-4">
-                  {modal.text && (
-                    <p className="text-sm leading-relaxed">{modal.text}</p>
-                  )}
+              <div className="space-y-4">
+                {modal.text && (
+                  <p className="text-sm leading-relaxed whitespace-pre-line">{modal.text}</p>
+                )}
+                <ModalImage
+                  imagePath={modal.imagePath}
+                  layoutId={modal.imageLayout}
+                  note={modal.imageNote}
+                />
+                {modal.route && (
                   <Button
                     className="w-full"
                     onClick={() => {
@@ -781,16 +946,14 @@ export default function GuideTab() {
                   >
                     {modal.routeLabel || (lang === "RU" ? "Открыть раздел" : "Open section")}
                   </Button>
-                </div>
-              ) : (
-                modal.text && (
-                  <p className="text-sm leading-relaxed whitespace-pre-line">{modal.text}</p>
-                )
-              )}
+                )}
+              </div>
             </>
           )}
         </DialogContent>
       </Dialog>
+
+      <RuleExtDialog id={ruleExtId} lang={lang} onClose={() => setRuleExtId(null)} />
     </div>
   );
 }
