@@ -573,67 +573,6 @@ function ModalImage({
   return null;
 }
 
-// ---------- Rules-extended detail popup ----------
-interface RuleExtRow {
-  section_title: string;
-  section_title_ru: string | null;
-  text_en: string;
-  text_ru: string | null;
-}
-
-function RuleExtDialog({
-  id,
-  lang,
-  onClose,
-}: { id: number | null; lang: Lang; onClose: () => void }) {
-  const { glyphs } = useGlyphs();
-  const q = useQuery({
-    queryKey: ["guide_rule_ext", id],
-    enabled: id !== null,
-    staleTime: 5 * 60 * 1000,
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("rules_extended")
-        .select("section_title, section_title_ru, text_en, text_ru")
-        .eq("id", id as number)
-        .single();
-      if (error) throw error;
-      return data as RuleExtRow;
-    },
-  });
-  const row = q.data;
-  const title = row
-    ? (lang === "RU" ? (row.section_title_ru ?? row.section_title) : row.section_title)
-    : (lang === "RU" ? "Загрузка..." : "Loading...");
-  const body = row ? (lang === "RU" ? (row.text_ru ?? row.text_en) : row.text_en) : "";
-  return (
-    <Dialog open={id !== null} onOpenChange={(o) => { if (!o) onClose(); }}>
-      <DialogContent className="max-w-2xl max-h-[85vh] flex flex-col">
-        <DialogHeader>
-          <DialogTitle className="pr-8">{title}</DialogTitle>
-        </DialogHeader>
-        <div className="flex-1 overflow-y-auto min-h-0">
-          {q.isLoading && (
-            <div className="flex justify-center py-8">
-              <H3MasterSpinner size={36} variant="draw" className="text-primary" />
-            </div>
-          )}
-          {q.isError && (
-            <p className="text-sm text-destructive">
-              {lang === "RU" ? "Не удалось загрузить правило." : "Failed to load rule."}
-            </p>
-          )}
-          {row && (
-            <div
-              className="text-sm leading-relaxed whitespace-pre-line text-foreground"
-              dangerouslySetInnerHTML={{ __html: renderGlyphs(body, glyphs) }}
-            />
-          )}
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
-}
 
 // ---------- Main component ----------
 export default function GuideTab() {
