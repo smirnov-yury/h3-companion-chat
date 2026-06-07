@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronLeft, ChevronRight, List, Check, ArrowRight, BookOpen } from "lucide-react";
+import { ChevronLeft, ChevronRight, List, Check, ArrowRight, Info } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang, type Lang } from "@/context/LanguageContext";
 import { componentMediaUrl } from "@/lib/storage";
@@ -176,8 +176,7 @@ function StandardPanel({
   navigate: (to: string) => void;
 }) {
   const cap = tr(content.cap, lang);
-  const lines = trList(content.lines, lang);
-  const hint = tr(content.hint, lang);
+  const points: any[] = Array.isArray(content.points) ? content.points : [];
   const items: any[] = Array.isArray(content.items) ? content.items : [];
   return (
     <div className="space-y-4">
@@ -192,7 +191,34 @@ function StandardPanel({
         lang={lang}
       />
       {title && <h2 className="text-lg font-semibold">{title}</h2>}
-      {!!lines.length && <BulletList lines={lines} />}
+      {!!points.length && (
+        <ul className="space-y-2">
+          {points.map((p, i) => {
+            const label = tr(p.label, lang);
+            const d = p.detail ?? {};
+            return (
+              <li key={i}>
+                <button
+                  type="button"
+                  className="w-full flex items-center gap-3 p-2.5 rounded-lg border border-border hover:bg-accent text-left transition-colors"
+                  onClick={() =>
+                    setModal({
+                      title: tr(d.title, lang) || label,
+                      text: tr(d.text, lang),
+                      imagePath: d.image ?? null,
+                      imageLayout: d.layout ?? null,
+                      imageNote: tr(d.image_note, lang),
+                    })
+                  }
+                >
+                  <span className="flex-1 text-sm leading-relaxed">{label}</span>
+                  <Info className="w-4 h-4 shrink-0 text-muted-foreground" />
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      )}
       {!!items.length && (
         <div className="flex flex-wrap gap-2">
           {items.map((it, i) => {
@@ -233,7 +259,6 @@ function StandardPanel({
           })}
         </div>
       )}
-      {hint && <p className="text-xs italic text-muted-foreground">{hint}</p>}
     </div>
   );
 }
