@@ -569,7 +569,7 @@ function RuleExtDialog({
     queryFn: async () => {
       const { data, error } = await supabase
         .from("rules_extended")
-        .select("section_title_en, section_title_ru, text_en, text_ru")
+        .select("section_title, section_title_ru, text_en, text_ru")
         .eq("id", id as number)
         .single();
       if (error) throw error;
@@ -578,7 +578,7 @@ function RuleExtDialog({
   });
   const row = q.data;
   const title = row
-    ? (lang === "RU" ? (row.section_title_ru ?? row.section_title_en) : row.section_title_en)
+    ? (lang === "RU" ? (row.section_title_ru ?? row.section_title) : row.section_title)
     : (lang === "RU" ? "Загрузка..." : "Loading...");
   const body = row ? (lang === "RU" ? (row.text_ru ?? row.text_en) : row.text_en) : "";
   return (
