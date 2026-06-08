@@ -1108,6 +1108,8 @@ export type Database = {
       }
       guide_sections: {
         Row: {
+          category_en: string | null
+          category_ru: string | null
           created_at: string
           icon: string | null
           id: string
@@ -1121,6 +1123,8 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          category_en?: string | null
+          category_ru?: string | null
           created_at?: string
           icon?: string | null
           id: string
@@ -1134,6 +1138,8 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          category_en?: string | null
+          category_ru?: string | null
           created_at?: string
           icon?: string | null
           id?: string
