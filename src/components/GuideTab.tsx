@@ -894,25 +894,43 @@ export default function GuideTab() {
 
       {view === "panel" && (
         <div className="fixed bottom-0 left-0 right-0 lg:left-56 border-t border-border bg-background/95 backdrop-blur p-3 z-30">
-          <div className="max-w-2xl mx-auto flex items-center gap-2">
+          <div className="max-w-2xl mx-auto flex items-stretch gap-2">
             <Button
               variant="outline"
-              className="flex-1"
+              className="flex-1 h-auto py-2 flex-col items-start text-left"
               onClick={handleBack}
               disabled={isFirstPanel || modalOpen}
             >
-              <ChevronLeft className="w-4 h-4 mr-1" />
-              {lang === "RU" ? "Назад" : "Back"}
+              <span className="inline-flex items-center text-sm font-medium">
+                <ChevronLeft className="w-4 h-4 mr-1" />
+                {lang === "RU" ? "Назад" : "Back"}
+              </span>
+              {prevTargetLabel && (
+                <span className="text-xs opacity-80 truncate max-w-full font-normal pl-5">
+                  {prevCrossesSection
+                    ? `${lang === "RU" ? "Раздел" : "Section"}: ${prevTargetLabel}`
+                    : prevTargetLabel}
+                </span>
+              )}
             </Button>
             <Button
-              className="flex-1"
+              className="flex-1 h-auto py-2 flex-col items-end text-right"
               onClick={handleNext}
               disabled={modalOpen}
             >
-              {isLastPanel
-                ? (lang === "RU" ? "Завершить" : "Finish")
-                : (lang === "RU" ? "Далее" : "Next")}
-              <ChevronRight className="w-4 h-4 ml-1" />
+              <span className="inline-flex items-center text-sm font-medium">
+                {isLastPanel
+                  ? (lang === "RU" ? "Завершить" : "Finish")
+                  : (lang === "RU" ? "Далее" : "Next")}
+                <ChevronRight className="w-4 h-4 ml-1" />
+              </span>
+              {!isLastPanel && nextTargetLabel && (
+                <span className="text-xs opacity-80 truncate max-w-full font-normal pr-5">
+                  {nextCrossesSection
+                    ? `${lang === "RU" ? "Раздел" : "Section"}: ${nextTargetLabel}`
+                    : nextTargetLabel}
+                </span>
+              )}
             </Button>
           </div>
         </div>
