@@ -5,7 +5,8 @@ import { ChevronLeft, ChevronRight, List, Check, ArrowRight, Info } from "lucide
 import { supabase } from "@/integrations/supabase/client";
 import { useLang, type Lang } from "@/context/LanguageContext";
 import { componentMediaUrl } from "@/lib/storage";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog } from "@/components/ui/dialog";
+import { CardDialogContent } from "@/components/ui/card-dialog";
 import { Button } from "@/components/ui/button";
 import H3MasterSpinner from "@/components/H3MasterSpinner";
 import { useGlyphs } from "@/context/GlyphsContext";
