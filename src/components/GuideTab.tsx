@@ -862,13 +862,61 @@ export default function GuideTab() {
             <h1 className="text-xl font-bold">
               {lang === "RU" ? "Оглавление" : "Contents"}
             </h1>
-            <SectionList
-              sections={sections}
-              panelsBySection={panelsBySection}
-              lang={lang}
-              onPick={(idx) => goPanel(idx, 0)}
-              onPickStep={(sidx, pidx) => goPanel(sidx, pidx)}
-            />
+            <div className="relative">
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder={lang === "RU" ? "Поиск по гиду…" : "Search the guide…"}
+                aria-label={lang === "RU" ? "Поиск по гиду" : "Search the guide"}
+                className="w-full h-10 pl-9 pr-9 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+              />
+              {query && (
+                <button
+                  type="button"
+                  onClick={() => setQuery("")}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded text-muted-foreground hover:text-foreground"
+                  aria-label={lang === "RU" ? "Очистить" : "Clear"}
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+            {searchResults ? (
+              searchResults.length === 0 ? (
+                <p className="text-sm text-muted-foreground py-6 text-center">
+                  {lang === "RU" ? "Ничего не найдено" : "No results"}
+                </p>
+              ) : (
+                <ul className="space-y-1">
+                  {searchResults.map((r, i) => (
+                    <li key={i}>
+                      <button
+                        type="button"
+                        className="w-full p-3 rounded-lg border border-border bg-card hover:bg-muted text-left transition-colors"
+                        onClick={() => { goPanel(r.sectionIndex, r.stepIndex); setQuery(""); }}
+                      >
+                        <div className="text-xs text-muted-foreground">
+                          {r.sectionLbl}{r.subtitle && r.subtitle !== r.sectionLbl ? ` · ${r.subtitle}` : ""}
+                        </div>
+                        {r.snippet && (
+                          <div className="text-sm mt-1 leading-snug">{r.snippet}</div>
+                        )}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )
+            ) : (
+              <SectionList
+                sections={sections}
+                panelsBySection={panelsBySection}
+                lang={lang}
+                onPick={(idx) => goPanel(idx, 0)}
+                onPickStep={(sidx, pidx) => goPanel(sidx, pidx)}
+              />
+            )}
           </div>
         )}
 
