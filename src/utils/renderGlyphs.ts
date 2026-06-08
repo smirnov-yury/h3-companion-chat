@@ -103,8 +103,10 @@ export function renderGlyphs(text: string | null | undefined, glyphs: GlyphMap):
     const cls = `glyph-icon inline-block align-text-bottom h-[1em] w-auto ${extra}`.trim();
     return `<img src="${GLYPH_STORAGE}/${info.image}" alt="${info.description}" class="${cls}" />`;
   });
-  return DOMPurify.sanitize(rendered, {
-    ALLOWED_TAGS: ["span", "img", "br"],
+  // Bold: **text** -> <strong>text</strong> (run after escaping; ** is untouched by escaping)
+  const withBold = rendered.replace(/\*\*([^*]+?)\*\*/g, "<strong>$1</strong>");
+  return DOMPurify.sanitize(withBold, {
+    ALLOWED_TAGS: ["span", "img", "br", "strong"],
     ALLOWED_ATTR: ["class", "src", "alt", "aria-label", "style",
                    "data-entity-type", "data-entity-id"],
     ADD_TAGS: ["svg", "path", "text", "circle"],
