@@ -635,6 +635,22 @@ export default function GuideTab() {
 
   const isLoading = sectionsQ.isLoading || panelsQ.isLoading;
 
+  const savedPos = useMemo(() => {
+    try {
+      const raw = localStorage.getItem("h3guide_pos");
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      if (!parsed || typeof parsed.sectionId !== "string" || typeof parsed.step !== "number") return null;
+      const secIdx = sections.findIndex((s) => s.id === parsed.sectionId);
+      if (secIdx < 0) return null;
+      const secPanels = panelsBySection.get(sections[secIdx].id) ?? [];
+      const clampedStep = Math.max(0, Math.min(parsed.step, secPanels.length - 1));
+      return { sectionIndex: secIdx, step: clampedStep };
+    } catch {
+      return null;
+    }
+  }, [sections, panelsBySection]);
+
   if (isLoading) {
     return (
       <div className="flex-1 flex items-center justify-center min-h-[60vh]">
@@ -665,6 +681,10 @@ export default function GuideTab() {
     setPi(npi);
     setHot(null);
     setView("panel");
+    try {
+      const sec = sections[nsi];
+      if (sec) localStorage.setItem("h3guide_pos", JSON.stringify({ sectionId: sec.id, step: npi }));
+    } catch {}
   };
 
   const handleNext = () => {
@@ -736,6 +756,22 @@ export default function GuideTab() {
                   : "A short interactive beginner guide. Units, combat, towns — step by step."}
               </p>
               <div className="flex flex-wrap gap-2">
+                {savedPos && (
+                  <Button
+                    variant="secondary"
+                    onClick={() => goPanel(savedPos.sectionIndex, savedPos.step)}
+                  >
+                    <span className="flex flex-col items-start">
+                      <span>{lang === "RU" ? "Продолжить" : "Continue"}</span>
+                      <span className="text-[11px] opacity-80 font-normal">
+                        {sectionLabel(sections[savedPos.sectionIndex])}
+                        {(panelsBySection.get(sections[savedPos.sectionIndex].id)?.length ?? 0) > 1
+                          ? ` · ${lang === "RU" ? "шаг" : "step"} ${savedPos.step + 1}`
+                          : ""}
+                      </span>
+                    </span>
+                  </Button>
+                )}
                 <Button
                   onClick={() => goPanel(0, 0)}
                 >
