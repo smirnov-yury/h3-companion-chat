@@ -35,6 +35,8 @@ interface GuideSectionRow {
   is_visible: boolean;
   intro_en: string | null;
   intro_ru: string | null;
+  category_en: string | null;
+  category_ru: string | null;
 }
 
 type PanelKind = "standard" | "anatomy" | "types" | "example";
