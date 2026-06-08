@@ -811,11 +811,22 @@ export default function GuideTab() {
               {panels.length > 1 && (
                 <div className="flex gap-1.5">
                   {panels.map((_, i) => (
-                    <span
+                    <button
                       key={i}
-                      className={`h-1.5 flex-1 rounded-full ${i === pi ? "bg-primary" : "bg-muted"}`}
+                      type="button"
+                      onClick={() => goPanel(si, i)}
+                      aria-label={lang === "RU" ? `Шаг ${i + 1}` : `Step ${i + 1}`}
+                      aria-current={i === pi ? "step" : undefined}
+                      className={`h-1.5 flex-1 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50 ${
+                        i === pi ? "bg-primary" : "bg-muted hover:bg-primary/60"
+                      }`}
                     />
                   ))}
+                </div>
+              )}
+              {isLastOfSection && (
+                <div className="text-xs text-primary/80">
+                  {lang === "RU" ? "Конец раздела — далее следующий" : "End of section — next one follows"}
                 </div>
               )}
               {panel.kind === "standard" && (
