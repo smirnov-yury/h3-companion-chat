@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import H3MasterSpinner from "@/components/H3MasterSpinner";
 import { useGlyphs } from "@/context/GlyphsContext";
 import { renderGlyphs } from "@/utils/renderGlyphs";
+import { useEntityLinkHandler } from "@/hooks/useEntityLinkHandler";
 import { useCardLayoutById } from "@/hooks/useCardLayouts";
 
 const toPascal = (s: string) =>
