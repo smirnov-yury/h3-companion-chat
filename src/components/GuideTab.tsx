@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronLeft, ChevronRight, ChevronDown, List, Check, ArrowRight, Info } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronDown, List, Check, ArrowRight, Info, Search, X } from "lucide-react";
 import * as LucideIcons from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang, type Lang } from "@/context/LanguageContext";
