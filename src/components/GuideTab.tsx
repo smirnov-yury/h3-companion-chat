@@ -190,7 +190,6 @@ function StandardPanel({
         note={tr(content.image_note, lang)}
         lang={lang}
       />
-      {title && <h2 className="text-lg font-semibold">{title}</h2>}
       {!!points.length && (
         <ul className="space-y-2">
           {points.map((p, i) => {
@@ -285,7 +284,6 @@ function AnatomyPanel({
   const abilities: any[] = Array.isArray(content.abilities) ? content.abilities : [];
   return (
     <div className="space-y-4">
-      {title && <h2 className="text-lg font-semibold">{title}</h2>}
       {lead && <p className="text-sm text-muted-foreground">{lead}</p>}
       {!!intro.length && <BulletList lines={intro} />}
       <div className={frame === "card" ? "max-w-xs mx-auto" : ""}>
@@ -422,7 +420,6 @@ function TypesPanel({
   const note = tr(content.note, lang);
   return (
     <div className="space-y-4">
-      {title && <h2 className="text-lg font-semibold">{title}</h2>}
       <ul className="space-y-2">
         {types.map((t, i) => (
           <li key={i}>
@@ -494,7 +491,7 @@ function ExamplePanel({
   const flip = content.flip ?? {};
   return (
     <div className="space-y-4">
-      {title && <h2 className="text-lg font-semibold">{title}</h2>}
+      
       {intro && <p className="text-sm">{intro}</p>}
       <div className="flex items-stretch gap-2">
         <div className="flex-1 rounded-lg border border-amber-500/40 bg-amber-500/10 p-3 text-center">
@@ -747,6 +744,11 @@ export default function GuideTab() {
             );
           }
           const title = panelTitle(panel);
+          const sepIndex = title.indexOf("·");
+          const subtitle = sepIndex >= 0 ? title.slice(sepIndex + 1).trim() : title.trim();
+          const combinedHeading = subtitle
+            ? `${sectionLabel(sec)} · ${subtitle}`
+            : sectionLabel(sec);
           return (
             <div className="space-y-4">
               <div className="flex items-center justify-between gap-3">
@@ -763,7 +765,7 @@ export default function GuideTab() {
                   {panels.length > 1 ? ` · ${lang === "RU" ? "шаг" : "step"} ${pi + 1}/${panels.length}` : ""}
                 </span>
               </div>
-              <div className="text-sm font-medium">{sectionLabel(sec)}</div>
+              <h2 className="text-lg font-semibold leading-snug">{combinedHeading}</h2>
               {panels.length > 1 && (
                 <div className="flex gap-1.5">
                   {panels.map((_, i) => (
