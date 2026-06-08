@@ -653,6 +653,66 @@ export default function GuideTab() {
     }
   }, [sections, panelsBySection]);
 
+  const searchResults = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (q.length < 2) return null;
+    const results: { sectionIndex: number; stepIndex: number; sectionLbl: string; subtitle: string; snippet: string }[] = [];
+    sections.forEach((s, sIdx) => {
+      const panels = panelsBySection.get(s.id) ?? [];
+      const sectionLbl = lang === "RU" ? s.label_ru : s.label_en;
+      panels.forEach((p, pIdx) => {
+        const title = (lang === "RU" ? p.title_ru : p.title_en) ?? p.title_en ?? p.title_ru ?? "";
+        const sep = title.indexOf("·");
+        const subtitle = (sep >= 0 ? title.slice(sep + 1) : title).trim();
+        const c = p.content ?? {};
+        const fields: string[] = [sectionLbl, title];
+        if (p.kind === "standard") {
+          fields.push(tr(c.cap, lang));
+          for (const pt of c.points ?? []) {
+            fields.push(tr(pt?.label, lang));
+            if (pt?.detail) fields.push(tr(pt.detail.text, lang));
+          }
+        } else if (p.kind === "types") {
+          for (const t of c.types ?? []) {
+            fields.push(tr(t?.label, lang), tr(t?.short, lang), tr(t?.text, lang));
+          }
+          for (const ti of c.tiers ?? []) {
+            fields.push(tr(ti?.label, lang), tr(ti?.text, lang));
+          }
+          fields.push(tr(c.note, lang));
+        } else if (p.kind === "anatomy") {
+          fields.push(tr(c.lead, lang));
+          for (const cl of c.callouts ?? []) {
+            fields.push(tr(cl?.label, lang), tr(cl?.text, lang));
+          }
+        } else if (p.kind === "example") {
+          fields.push(tr(c.intro, lang), tr(c.outro, lang));
+          for (const st of c.steps ?? []) {
+            fields.push(tr(st?.t, lang), tr(st?.d, lang));
+          }
+        }
+        const cleanFields = fields.filter(Boolean);
+        let snippet = "";
+        let matched = false;
+        for (const f of cleanFields) {
+          const fi = f.toLowerCase().indexOf(q);
+          if (fi >= 0) {
+            matched = true;
+            const start = Math.max(0, fi - 40);
+            const end = Math.min(f.length, fi + q.length + 80);
+            snippet = (start > 0 ? "…" : "") + f.slice(start, end) + (end < f.length ? "…" : "");
+            snippet = snippet.replace(/<[^>]+>/g, "");
+            break;
+          }
+        }
+        if (matched) {
+          results.push({ sectionIndex: sIdx, stepIndex: pIdx, sectionLbl, subtitle, snippet });
+        }
+      });
+    });
+    return results;
+  }, [query, sections, panelsBySection, lang]);
+
   if (isLoading) {
     return (
       <div className="flex-1 flex items-center justify-center min-h-[60vh]">
