@@ -654,6 +654,11 @@ export default function GuideTab() {
   const sectionLabel = (s: GuideSectionRow) => (lang === "RU" ? s.label_ru : s.label_en);
   const panelTitle = (p: GuidePanelRow) =>
     (lang === "RU" ? p.title_ru : p.title_en) ?? p.title_en ?? p.title_ru ?? "";
+  const panelSubtitle = (p: GuidePanelRow) => {
+    const t = panelTitle(p);
+    const i = t.indexOf("·");
+    return (i >= 0 ? t.slice(i + 1) : t).trim();
+  };
 
   const goPanel = (nsi: number, npi: number) => {
     setSi(nsi);
@@ -685,9 +690,33 @@ export default function GuideTab() {
   };
 
   const isFirstPanel = si === 0 && pi === 0;
+  const curPanelsForNav = panelsBySection.get(sections[si]?.id) ?? [];
   const isLastPanel =
     si === sections.length - 1 &&
-    pi === ((panelsBySection.get(sections[si]?.id) ?? []).length - 1);
+    pi === (curPanelsForNav.length - 1);
+  const isLastOfSection = pi === curPanelsForNav.length - 1 && !isLastPanel;
+
+  // Next target label
+  let nextTargetLabel = "";
+  let nextCrossesSection = false;
+  if (pi + 1 < curPanelsForNav.length) {
+    nextTargetLabel = panelSubtitle(curPanelsForNav[pi + 1]);
+  } else if (si + 1 < sections.length) {
+    nextCrossesSection = true;
+    nextTargetLabel = sectionLabel(sections[si + 1]);
+  }
+
+  // Prev target label
+  let prevTargetLabel = "";
+  let prevCrossesSection = false;
+  if (pi > 0) {
+    prevTargetLabel = panelSubtitle(curPanelsForNav[pi - 1]);
+  } else if (si > 0) {
+    prevCrossesSection = true;
+    const prevPanels = panelsBySection.get(sections[si - 1].id) ?? [];
+    const lastPrev = prevPanels[prevPanels.length - 1];
+    prevTargetLabel = lastPrev ? panelSubtitle(lastPrev) : sectionLabel(sections[si - 1]);
+  }
 
   const modalOpen = modal !== null;
 
@@ -782,11 +811,22 @@ export default function GuideTab() {
               {panels.length > 1 && (
                 <div className="flex gap-1.5">
                   {panels.map((_, i) => (
-                    <span
+                    <button
                       key={i}
-                      className={`h-1.5 flex-1 rounded-full ${i === pi ? "bg-primary" : "bg-muted"}`}
+                      type="button"
+                      onClick={() => goPanel(si, i)}
+                      aria-label={lang === "RU" ? `Шаг ${i + 1}` : `Step ${i + 1}`}
+                      aria-current={i === pi ? "step" : undefined}
+                      className={`h-1.5 flex-1 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50 ${
+                        i === pi ? "bg-primary" : "bg-muted hover:bg-primary/60"
+                      }`}
                     />
                   ))}
+                </div>
+              )}
+              {isLastOfSection && (
+                <div className="text-xs text-primary/80">
+                  {lang === "RU" ? "Конец раздела — далее следующий" : "End of section — next one follows"}
                 </div>
               )}
               {panel.kind === "standard" && (
@@ -854,25 +894,43 @@ export default function GuideTab() {
 
       {view === "panel" && (
         <div className="fixed bottom-0 left-0 right-0 lg:left-56 border-t border-border bg-background/95 backdrop-blur p-3 z-30">
-          <div className="max-w-2xl mx-auto flex items-center gap-2">
+          <div className="max-w-2xl mx-auto flex items-stretch gap-2">
             <Button
               variant="outline"
-              className="flex-1"
+              className="flex-1 h-auto py-2 flex-col items-start text-left"
               onClick={handleBack}
               disabled={isFirstPanel || modalOpen}
             >
-              <ChevronLeft className="w-4 h-4 mr-1" />
-              {lang === "RU" ? "Назад" : "Back"}
+              <span className="inline-flex items-center text-sm font-medium">
+                <ChevronLeft className="w-4 h-4 mr-1" />
+                {lang === "RU" ? "Назад" : "Back"}
+              </span>
+              {prevTargetLabel && (
+                <span className="text-xs opacity-80 truncate max-w-full font-normal pl-5">
+                  {prevCrossesSection
+                    ? `${lang === "RU" ? "Раздел" : "Section"}: ${prevTargetLabel}`
+                    : prevTargetLabel}
+                </span>
+              )}
             </Button>
             <Button
-              className="flex-1"
+              className="flex-1 h-auto py-2 flex-col items-end text-right"
               onClick={handleNext}
               disabled={modalOpen}
             >
-              {isLastPanel
-                ? (lang === "RU" ? "Завершить" : "Finish")
-                : (lang === "RU" ? "Далее" : "Next")}
-              <ChevronRight className="w-4 h-4 ml-1" />
+              <span className="inline-flex items-center text-sm font-medium">
+                {isLastPanel
+                  ? (lang === "RU" ? "Завершить" : "Finish")
+                  : (lang === "RU" ? "Далее" : "Next")}
+                <ChevronRight className="w-4 h-4 ml-1" />
+              </span>
+              {!isLastPanel && nextTargetLabel && (
+                <span className="text-xs opacity-80 truncate max-w-full font-normal pr-5">
+                  {nextCrossesSection
+                    ? `${lang === "RU" ? "Раздел" : "Section"}: ${nextTargetLabel}`
+                    : nextTargetLabel}
+                </span>
+              )}
             </Button>
           </div>
         </div>
