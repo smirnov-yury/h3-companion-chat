@@ -924,25 +924,51 @@ function SectionList({
   panelsBySection,
   lang,
   onPick,
+  onPickStep,
 }: {
   sections: GuideSectionRow[];
   panelsBySection: Map<string, GuidePanelRow[]>;
   lang: Lang;
   onPick: (sectionIndex: number) => void;
+  onPickStep: (sectionIndex: number, stepIndex: number) => void;
 }) {
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const panelSubtitle = (p: GuidePanelRow) => {
+    const t = (lang === "RU" ? p.title_ru : p.title_en) ?? p.title_en ?? p.title_ru ?? "";
+    const i = t.indexOf("·");
+    return (i >= 0 ? t.slice(i + 1) : t).trim();
+  };
+  let prevCategory: string | null | undefined = undefined;
   return (
-    <ul className="space-y-2">
+    <ul className="space-y-1">
       {sections.map((s, idx) => {
-        const count = panelsBySection.get(s.id)?.length ?? 0;
+        const panels = panelsBySection.get(s.id) ?? [];
+        const count = panels.length;
+        const category = lang === "RU" ? s.category_ru : s.category_en;
+        const showHeader = category !== prevCategory;
+        prevCategory = category;
+        const expanded = expandedId === s.id;
+        const multi = count > 1;
         return (
           <li key={s.id}>
+            {showHeader && category && (
+              <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mt-4 mb-1 first:mt-0">
+                {category}
+              </div>
+            )}
             <button
               type="button"
               className="w-full flex items-center gap-3 p-3 rounded-lg border border-border bg-card hover:bg-muted transition-colors text-left"
-              onClick={() => onPick(idx)}
+              onClick={() => {
+                if (multi) {
+                  setExpandedId(expanded ? null : s.id);
+                } else {
+                  onPick(idx);
+                }
+              }}
             >
-              <span className="shrink-0 w-8 h-8 rounded-full bg-primary/10 text-primary text-sm font-bold flex items-center justify-center">
-                {idx + 1}
+              <span className="shrink-0 w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+                <SectionIcon name={s.icon} className="w-4 h-4" />
               </span>
               <span className="flex-1 text-sm font-medium">
                 {lang === "RU" ? s.label_ru : s.label_en}
@@ -950,7 +976,39 @@ function SectionList({
               <span className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
                 {count} {lang === "RU" ? (count === 1 ? "шаг" : "шага") : (count === 1 ? "step" : "steps")}
               </span>
+              {multi && (
+                <ChevronDown
+                  className={`w-4 h-4 text-muted-foreground transition-transform ${expanded ? "rotate-180" : ""}`}
+                />
+              )}
             </button>
+            {multi && expanded && (
+              <ul className="mt-1 mb-2 ml-4 pl-4 border-l border-border space-y-1">
+                <li>
+                  <button
+                    type="button"
+                    className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-xs text-muted-foreground hover:text-foreground hover:bg-muted text-left"
+                    onClick={() => onPick(idx)}
+                  >
+                    {lang === "RU" ? "Открыть раздел" : "Open section"}
+                  </button>
+                </li>
+                {panels.map((p, pidx) => (
+                  <li key={p.id}>
+                    <button
+                      type="button"
+                      className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md text-sm hover:bg-muted text-left"
+                      onClick={() => onPickStep(idx, pidx)}
+                    >
+                      <span className="shrink-0 w-5 h-5 rounded-full bg-muted text-muted-foreground text-[10px] font-bold flex items-center justify-center">
+                        {pidx + 1}
+                      </span>
+                      <span className="flex-1 leading-snug">{panelSubtitle(p)}</span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
           </li>
         );
       })}
