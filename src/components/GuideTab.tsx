@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronLeft, ChevronRight, List, Check, ArrowRight, Info } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronDown, List, Check, ArrowRight, Info } from "lucide-react";
+import * as LucideIcons from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang, type Lang } from "@/context/LanguageContext";
 import { componentMediaUrl } from "@/lib/storage";
@@ -12,6 +13,13 @@ import H3MasterSpinner from "@/components/H3MasterSpinner";
 import { useGlyphs } from "@/context/GlyphsContext";
 import { renderGlyphs } from "@/utils/renderGlyphs";
 import { useCardLayoutById } from "@/hooks/useCardLayouts";
+
+const toPascal = (s: string) =>
+  s.split(/[-_ ]/).filter(Boolean).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join("");
+function SectionIcon({ name, className }: { name: string | null; className?: string }) {
+  const Comp = (name && (LucideIcons as any)[toPascal(name)]) || (LucideIcons as any).BookOpen;
+  return <Comp className={className} />;
+}
 
 // ---------- Types ----------
 type LocStr = { ru?: string; en?: string } | undefined;
