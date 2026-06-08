@@ -162,13 +162,20 @@ function Figure({
   );
 }
 
-/** Render simple bullets supporting inline <b>...</b>. */
+/** Render simple bullets with glyph tokens and clickable entity links. */
 function BulletList({ lines }: { lines: string[] }) {
+  const { glyphs } = useGlyphs();
+  const handleEntityClick = useEntityLinkHandler();
   if (!lines.length) return null;
   return (
     <ul className="space-y-1.5 list-disc list-outside pl-5 text-sm">
       {lines.map((l, i) => (
-        <li key={i} className="leading-relaxed" dangerouslySetInnerHTML={{ __html: l }} />
+        <li
+          key={i}
+          className="leading-relaxed"
+          onClick={handleEntityClick}
+          dangerouslySetInnerHTML={{ __html: renderGlyphs(l, glyphs) }}
+        />
       ))}
     </ul>
   );
