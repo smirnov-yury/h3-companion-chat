@@ -602,6 +602,7 @@ export default function GuideTab() {
   const [modal, setModal] = useState<ModalState | null>(null);
   const [hot, setHot] = useState<number | null>(null);
   const [query, setQuery] = useState("");
+  const handleEntityClick = useEntityLinkHandler();
   
   
 
