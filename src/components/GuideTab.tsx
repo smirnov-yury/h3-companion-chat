@@ -1103,6 +1103,7 @@ export default function GuideTab() {
                 {modal.text && (
                   <div
                     className="text-sm leading-relaxed whitespace-pre-line"
+                    onClick={handleEntityClick}
                     dangerouslySetInnerHTML={{ __html: renderGlyphs(modal.text, glyphs) }}
                   />
                 )}
