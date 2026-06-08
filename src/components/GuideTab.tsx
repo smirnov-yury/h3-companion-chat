@@ -725,6 +725,7 @@ export default function GuideTab() {
               panelsBySection={panelsBySection}
               lang={lang}
               onPick={(idx) => goPanel(idx, 0)}
+              onPickStep={(sidx, pidx) => goPanel(sidx, pidx)}
             />
           </div>
         )}
@@ -739,6 +740,7 @@ export default function GuideTab() {
               panelsBySection={panelsBySection}
               lang={lang}
               onPick={(idx) => goPanel(idx, 0)}
+              onPickStep={(sidx, pidx) => goPanel(sidx, pidx)}
             />
           </div>
         )}
