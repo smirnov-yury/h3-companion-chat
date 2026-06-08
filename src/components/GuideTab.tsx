@@ -867,18 +867,16 @@ export default function GuideTab() {
       )}
 
       <Dialog open={modal !== null} onOpenChange={(o) => { if (!o) setModal(null); }}>
-        <DialogContent className="max-w-md">
+        <CardDialogContent>
           {modal && (
-            <>
-              <DialogHeader>
-                <DialogTitle className="flex items-center gap-2">
+            <div className="flex flex-col h-full">
+              <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-10 py-12">
+                <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
                   <GlyphIcon glyph={modal.glyph} size={22} />
                   <span>{modal.title}</span>
-                </DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4">
+                </h3>
                 {modal.text && (
-                  <p
+                  <div
                     className="text-sm leading-relaxed whitespace-pre-line"
                     dangerouslySetInnerHTML={{ __html: renderGlyphs(modal.text, glyphs) }}
                   />
@@ -890,7 +888,7 @@ export default function GuideTab() {
                 />
                 {modal.route && (
                   <Button
-                    className="w-full"
+                    className="w-full mt-4"
                     onClick={() => {
                       const r = modal.route!;
                       setModal(null);
@@ -901,9 +899,9 @@ export default function GuideTab() {
                   </Button>
                 )}
               </div>
-            </>
+            </div>
           )}
-        </DialogContent>
+        </CardDialogContent>
       </Dialog>
     </div>
   );
