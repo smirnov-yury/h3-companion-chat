@@ -654,6 +654,11 @@ export default function GuideTab() {
   const sectionLabel = (s: GuideSectionRow) => (lang === "RU" ? s.label_ru : s.label_en);
   const panelTitle = (p: GuidePanelRow) =>
     (lang === "RU" ? p.title_ru : p.title_en) ?? p.title_en ?? p.title_ru ?? "";
+  const panelSubtitle = (p: GuidePanelRow) => {
+    const t = panelTitle(p);
+    const i = t.indexOf("·");
+    return (i >= 0 ? t.slice(i + 1) : t).trim();
+  };
 
   const goPanel = (nsi: number, npi: number) => {
     setSi(nsi);
@@ -685,9 +690,33 @@ export default function GuideTab() {
   };
 
   const isFirstPanel = si === 0 && pi === 0;
+  const curPanelsForNav = panelsBySection.get(sections[si]?.id) ?? [];
   const isLastPanel =
     si === sections.length - 1 &&
-    pi === ((panelsBySection.get(sections[si]?.id) ?? []).length - 1);
+    pi === (curPanelsForNav.length - 1);
+  const isLastOfSection = pi === curPanelsForNav.length - 1 && !isLastPanel;
+
+  // Next target label
+  let nextTargetLabel = "";
+  let nextCrossesSection = false;
+  if (pi + 1 < curPanelsForNav.length) {
+    nextTargetLabel = panelSubtitle(curPanelsForNav[pi + 1]);
+  } else if (si + 1 < sections.length) {
+    nextCrossesSection = true;
+    nextTargetLabel = sectionLabel(sections[si + 1]);
+  }
+
+  // Prev target label
+  let prevTargetLabel = "";
+  let prevCrossesSection = false;
+  if (pi > 0) {
+    prevTargetLabel = panelSubtitle(curPanelsForNav[pi - 1]);
+  } else if (si > 0) {
+    prevCrossesSection = true;
+    const prevPanels = panelsBySection.get(sections[si - 1].id) ?? [];
+    const lastPrev = prevPanels[prevPanels.length - 1];
+    prevTargetLabel = lastPrev ? panelSubtitle(lastPrev) : sectionLabel(sections[si - 1]);
+  }
 
   const modalOpen = modal !== null;
 
