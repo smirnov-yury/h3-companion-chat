@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronLeft, ChevronRight, ChevronDown, List, Check, ArrowRight, Info } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronDown, List, Check, ArrowRight, Info, Search, X } from "lucide-react";
 import * as LucideIcons from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useLang, type Lang } from "@/context/LanguageContext";
@@ -593,6 +593,8 @@ export default function GuideTab() {
   const [pi, setPi] = useState(0);
   const [modal, setModal] = useState<ModalState | null>(null);
   const [hot, setHot] = useState<number | null>(null);
+  const [query, setQuery] = useState("");
+  
   
 
   const sectionsQ = useQuery({
@@ -650,6 +652,66 @@ export default function GuideTab() {
       return null;
     }
   }, [sections, panelsBySection]);
+
+  const searchResults = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    if (q.length < 2) return null;
+    const results: { sectionIndex: number; stepIndex: number; sectionLbl: string; subtitle: string; snippet: string }[] = [];
+    sections.forEach((s, sIdx) => {
+      const panels = panelsBySection.get(s.id) ?? [];
+      const sectionLbl = lang === "RU" ? s.label_ru : s.label_en;
+      panels.forEach((p, pIdx) => {
+        const title = (lang === "RU" ? p.title_ru : p.title_en) ?? p.title_en ?? p.title_ru ?? "";
+        const sep = title.indexOf("·");
+        const subtitle = (sep >= 0 ? title.slice(sep + 1) : title).trim();
+        const c = p.content ?? {};
+        const fields: string[] = [sectionLbl, title];
+        if (p.kind === "standard") {
+          fields.push(tr(c.cap, lang));
+          for (const pt of c.points ?? []) {
+            fields.push(tr(pt?.label, lang));
+            if (pt?.detail) fields.push(tr(pt.detail.text, lang));
+          }
+        } else if (p.kind === "types") {
+          for (const t of c.types ?? []) {
+            fields.push(tr(t?.label, lang), tr(t?.short, lang), tr(t?.text, lang));
+          }
+          for (const ti of c.tiers ?? []) {
+            fields.push(tr(ti?.label, lang), tr(ti?.text, lang));
+          }
+          fields.push(tr(c.note, lang));
+        } else if (p.kind === "anatomy") {
+          fields.push(tr(c.lead, lang));
+          for (const cl of c.callouts ?? []) {
+            fields.push(tr(cl?.label, lang), tr(cl?.text, lang));
+          }
+        } else if (p.kind === "example") {
+          fields.push(tr(c.intro, lang), tr(c.outro, lang));
+          for (const st of c.steps ?? []) {
+            fields.push(tr(st?.t, lang), tr(st?.d, lang));
+          }
+        }
+        const cleanFields = fields.filter(Boolean);
+        let snippet = "";
+        let matched = false;
+        for (const f of cleanFields) {
+          const fi = f.toLowerCase().indexOf(q);
+          if (fi >= 0) {
+            matched = true;
+            const start = Math.max(0, fi - 40);
+            const end = Math.min(f.length, fi + q.length + 80);
+            snippet = (start > 0 ? "…" : "") + f.slice(start, end) + (end < f.length ? "…" : "");
+            snippet = snippet.replace(/<[^>]+>/g, "");
+            break;
+          }
+        }
+        if (matched) {
+          results.push({ sectionIndex: sIdx, stepIndex: pIdx, sectionLbl, subtitle, snippet });
+        }
+      });
+    });
+    return results;
+  }, [query, sections, panelsBySection, lang]);
 
   if (isLoading) {
     return (
@@ -800,13 +862,61 @@ export default function GuideTab() {
             <h1 className="text-xl font-bold">
               {lang === "RU" ? "Оглавление" : "Contents"}
             </h1>
-            <SectionList
-              sections={sections}
-              panelsBySection={panelsBySection}
-              lang={lang}
-              onPick={(idx) => goPanel(idx, 0)}
-              onPickStep={(sidx, pidx) => goPanel(sidx, pidx)}
-            />
+            <div className="relative">
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder={lang === "RU" ? "Поиск по гиду…" : "Search the guide…"}
+                aria-label={lang === "RU" ? "Поиск по гиду" : "Search the guide"}
+                className="w-full h-10 pl-9 pr-9 rounded-lg border border-border bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+              />
+              {query && (
+                <button
+                  type="button"
+                  onClick={() => setQuery("")}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded text-muted-foreground hover:text-foreground"
+                  aria-label={lang === "RU" ? "Очистить" : "Clear"}
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+            {searchResults ? (
+              searchResults.length === 0 ? (
+                <p className="text-sm text-muted-foreground py-6 text-center">
+                  {lang === "RU" ? "Ничего не найдено" : "No results"}
+                </p>
+              ) : (
+                <ul className="space-y-1">
+                  {searchResults.map((r, i) => (
+                    <li key={i}>
+                      <button
+                        type="button"
+                        className="w-full p-3 rounded-lg border border-border bg-card hover:bg-muted text-left transition-colors"
+                        onClick={() => { goPanel(r.sectionIndex, r.stepIndex); setQuery(""); }}
+                      >
+                        <div className="text-xs text-muted-foreground">
+                          {r.sectionLbl}{r.subtitle && r.subtitle !== r.sectionLbl ? ` · ${r.subtitle}` : ""}
+                        </div>
+                        {r.snippet && (
+                          <div className="text-sm mt-1 leading-snug">{r.snippet}</div>
+                        )}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )
+            ) : (
+              <SectionList
+                sections={sections}
+                panelsBySection={panelsBySection}
+                lang={lang}
+                onPick={(idx) => goPanel(idx, 0)}
+                onPickStep={(sidx, pidx) => goPanel(sidx, pidx)}
+              />
+            )}
           </div>
         )}
 
