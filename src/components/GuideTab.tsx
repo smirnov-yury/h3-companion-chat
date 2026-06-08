@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import H3MasterSpinner from "@/components/H3MasterSpinner";
 import { useGlyphs } from "@/context/GlyphsContext";
 import { renderGlyphs } from "@/utils/renderGlyphs";
+import { useEntityLinkHandler } from "@/hooks/useEntityLinkHandler";
 import { useCardLayoutById } from "@/hooks/useCardLayouts";
 
 const toPascal = (s: string) =>
@@ -161,13 +162,20 @@ function Figure({
   );
 }
 
-/** Render simple bullets supporting inline <b>...</b>. */
+/** Render simple bullets with glyph tokens and clickable entity links. */
 function BulletList({ lines }: { lines: string[] }) {
+  const { glyphs } = useGlyphs();
+  const handleEntityClick = useEntityLinkHandler();
   if (!lines.length) return null;
   return (
     <ul className="space-y-1.5 list-disc list-outside pl-5 text-sm">
       {lines.map((l, i) => (
-        <li key={i} className="leading-relaxed" dangerouslySetInnerHTML={{ __html: l }} />
+        <li
+          key={i}
+          className="leading-relaxed"
+          onClick={handleEntityClick}
+          dangerouslySetInnerHTML={{ __html: renderGlyphs(l, glyphs) }}
+        />
       ))}
     </ul>
   );
@@ -594,6 +602,7 @@ export default function GuideTab() {
   const [modal, setModal] = useState<ModalState | null>(null);
   const [hot, setHot] = useState<number | null>(null);
   const [query, setQuery] = useState("");
+  const handleEntityClick = useEntityLinkHandler();
   
   
 
@@ -1094,6 +1103,7 @@ export default function GuideTab() {
                 {modal.text && (
                   <div
                     className="text-sm leading-relaxed whitespace-pre-line"
+                    onClick={handleEntityClick}
                     dangerouslySetInnerHTML={{ __html: renderGlyphs(modal.text, glyphs) }}
                   />
                 )}
