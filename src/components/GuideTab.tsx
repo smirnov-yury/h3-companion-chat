@@ -653,6 +653,58 @@ export default function GuideTab() {
 
   const isLoading = sectionsQ.isLoading || panelsQ.isLoading;
 
+  // ---------- URL ⇄ state sync ----------
+  // URL is the source of truth for the active section + panel.
+  //   /guide                  → home view (no section selected)
+  //   /guide/<sectionSlug>    → panel view, step 1
+  //   /guide/<sectionSlug>#pN → panel view, step N (1-based)
+  useEffect(() => {
+    if (!sections.length) return;
+    if (sectionSlugFromUrl) {
+      const idx = sections.findIndex((s) => s.slug === sectionSlugFromUrl);
+      if (idx < 0) {
+        navigate("/guide", { replace: true });
+        return;
+      }
+      const panels = panelsBySection.get(sections[idx].id) ?? [];
+      const m = location.hash.match(/^#p(\d+)/);
+      const requested = m ? parseInt(m[1], 10) - 1 : 0;
+      const stepIdx = Math.max(0, Math.min(requested, Math.max(panels.length - 1, 0)));
+      setSi(idx);
+      setPi(stepIdx);
+      setHot(null);
+      setView((v) => (v === "done" ? v : "panel"));
+      try {
+        localStorage.setItem(
+          "h3guide_pos",
+          JSON.stringify({ sectionId: sections[idx].id, step: stepIdx }),
+        );
+      } catch {}
+      didInitRef.current = true;
+      return;
+    }
+    // No section slug in URL.
+    if (!didInitRef.current) {
+      didInitRef.current = true;
+      try {
+        const raw = localStorage.getItem("h3guide_pos");
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          const idx = sections.findIndex((s) => s.id === parsed?.sectionId);
+          if (idx >= 0) {
+            const panels = panelsBySection.get(sections[idx].id) ?? [];
+            const step = Math.max(0, Math.min(parsed?.step ?? 0, Math.max(panels.length - 1, 0)));
+            navigate(`/guide/${sections[idx].slug}#p${step + 1}`, { replace: true });
+            return;
+          }
+        }
+      } catch {}
+    }
+    // Back/forward returned to /guide → reset panel view to home.
+    setView((v) => (v === "panel" ? "home" : v));
+  }, [sectionSlugFromUrl, location.hash, sections, panelsBySection, navigate]);
+
+
   const savedPos = useMemo(() => {
     try {
       const raw = localStorage.getItem("h3guide_pos");
