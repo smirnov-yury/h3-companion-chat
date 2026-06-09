@@ -249,7 +249,7 @@ function StandardPanel({
                     })
                   }
                 >
-                  <span className="flex-1 text-sm leading-relaxed">{label}</span>
+                  <RichInline text={label} className="flex-1 text-sm leading-relaxed" />
                   <Info className="w-4 h-4 shrink-0 text-muted-foreground" />
                 </button>
               </li>
