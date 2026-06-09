@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronLeft, ChevronRight, ChevronDown, List, Check, ArrowRight, Info, Search, X } from "lucide-react";
 import * as LucideIcons from "lucide-react";
@@ -14,6 +14,8 @@ import { useGlyphs } from "@/context/GlyphsContext";
 import { renderGlyphs } from "@/utils/renderGlyphs";
 import { useEntityLinkHandler } from "@/hooks/useEntityLinkHandler";
 import { useCardLayoutById } from "@/hooks/useCardLayouts";
+import SEOMeta from "@/components/SEOMeta";
+import { resolveBranding } from "@/config/branding";
 
 const toPascal = (s: string) =>
   s.split(/[-_ ]/).filter(Boolean).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join("");
