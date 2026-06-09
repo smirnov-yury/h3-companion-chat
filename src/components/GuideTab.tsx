@@ -433,7 +433,7 @@ function AnatomyPanel({
                 })}
               >
                 <GlyphIcon glyph={a.glyph} size={18} />
-                <span>{tr(a.label, lang)}</span>
+                <RichInline text={tr(a.label, lang)} />
               </button>
             ))}
           </div>
