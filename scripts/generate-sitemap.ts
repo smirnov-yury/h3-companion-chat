@@ -260,6 +260,21 @@ export async function generateSitemap(outDir: string): Promise<void> {
     "0.5",
   );
 
+  // guide sections: /guide/<slug> (visible only)
+  await pushEntity(
+    "guide_sections",
+    "slug,is_visible,sort_order",
+    (r) => {
+      const slug = r.slug as string | null;
+      const visible = r.is_visible as boolean | null;
+      if (!slug || visible === false) return null;
+      return `/guide/${slug}`;
+    },
+    "monthly",
+    "0.7",
+  );
+
+
   // De-duplicate
   const seen = new Set<string>();
   const unique = urls.filter((u) => {
