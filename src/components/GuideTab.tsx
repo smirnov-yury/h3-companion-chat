@@ -596,6 +596,9 @@ function ModalImage({
 export default function GuideTab() {
   const { lang } = useLang();
   const navigate = useNavigate();
+  const location = useLocation();
+  const routeParams = useParams<{ "*"?: string }>();
+  const sectionSlugFromUrl = (routeParams["*"] ?? "").split("/").filter(Boolean)[0] ?? "";
   const { glyphs } = useGlyphs();
 
   const [view, setView] = useState<"home" | "toc" | "panel" | "done">("home");
@@ -605,6 +608,8 @@ export default function GuideTab() {
   const [hot, setHot] = useState<number | null>(null);
   const [query, setQuery] = useState("");
   const handleEntityClick = useEntityLinkHandler();
+  const didInitRef = useRef(false);
+
   
   
 
