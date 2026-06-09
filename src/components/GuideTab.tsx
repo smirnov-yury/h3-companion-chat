@@ -553,8 +553,8 @@ function ExamplePanel({
               {i + 1}
             </span>
             <span className="text-sm leading-relaxed">
-              <b>{tr(s.t, lang)}</b>
-              {tr(s.d, lang) ? <> {tr(s.d, lang)}</> : null}
+              <b><RichInline text={tr(s.t, lang)} /></b>
+              {tr(s.d, lang) ? <> <RichInline text={tr(s.d, lang)} /></> : null}
             </span>
           </li>
         ))}
