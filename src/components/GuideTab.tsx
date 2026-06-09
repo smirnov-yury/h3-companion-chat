@@ -873,10 +873,34 @@ export default function GuideTab() {
 
   const modalOpen = modal !== null;
 
+  // Per-section SEO: when a section is active, override the guide tab's defaults.
+  const activeSecForSeo = view === "panel" ? sections[si] : null;
+  const appName = resolveBranding("app_name");
+  let seoTitle: string | undefined;
+  let seoDescription: string | undefined;
+  let seoCanonical: string | undefined = "/guide";
+  if (activeSecForSeo) {
+    const lbl = sectionLabel(activeSecForSeo);
+    seoTitle = `${lbl} · ${appName}`;
+    const intro = (lang === "RU" ? activeSecForSeo.intro_ru : activeSecForSeo.intro_en) ?? "";
+    const trimmed = intro.trim().replace(/\s+/g, " ");
+    if (trimmed) {
+      seoDescription = trimmed.length > 155 ? trimmed.slice(0, 152).trimEnd() + "…" : trimmed;
+    }
+    seoCanonical = `/guide/${activeSecForSeo.slug}`;
+  }
+
   // ---------- Render ----------
   return (
     <div className="flex-1 overflow-y-auto">
+      <SEOMeta
+        routeKey="guide"
+        title={seoTitle}
+        description={seoDescription}
+        canonicalPath={seoCanonical}
+      />
       <div className="max-w-2xl mx-auto px-4 py-6 pb-32">
+
         {view === "home" && (
           <div className="space-y-6">
             <div className="rounded-2xl border-2 border-primary/40 bg-primary/5 p-6 shadow-sm">
