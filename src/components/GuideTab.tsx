@@ -291,7 +291,7 @@ function StandardPanel({
                 }}
               >
                 <GlyphIcon glyph={it.glyph} size={18} />
-                <span>{label}</span>
+                <RichInline text={label} />
               </button>
             );
           })}
