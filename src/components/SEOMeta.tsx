@@ -156,7 +156,7 @@ export default function SEOMeta({
     } else if (existing) {
       existing.remove();
     }
-  }, [pathname, lang, routeKeyProp]);
+  }, [pathname, lang, routeKeyProp, titleOverride, descriptionOverride, canonicalPath]);
 
   return null;
 }
