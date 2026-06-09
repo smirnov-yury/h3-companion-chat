@@ -183,6 +183,24 @@ function BulletList({ lines }: { lines: string[] }) {
   );
 }
 
+/** Inline rich text: renders <glyph> tokens, [Display](type:id) entity links,
+ *  and **bold**, and wires entity-link clicks. Use for any inline guide text
+ *  that may contain links or glyph tokens (labels, short descriptions, intro/outro).
+ *  When placed inside a clickable button, an entity-link click navigates and stops
+ *  propagation, so the surrounding button's onClick does not also fire. */
+function RichInline({ text, className }: { text?: string | null; className?: string }) {
+  const { glyphs } = useGlyphs();
+  const handleEntityClick = useEntityLinkHandler();
+  if (!text) return null;
+  return (
+    <span
+      className={className}
+      onClick={handleEntityClick}
+      dangerouslySetInnerHTML={{ __html: renderGlyphs(text, glyphs) }}
+    />
+  );
+}
+
 // ---------- Panel renderers ----------
 function StandardPanel({
   content,
