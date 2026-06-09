@@ -323,7 +323,7 @@ function AnatomyPanel({
   const abilities: any[] = Array.isArray(content.abilities) ? content.abilities : [];
   return (
     <div className="space-y-4">
-      {lead && <p className="text-sm text-muted-foreground">{lead}</p>}
+      {lead && <p className="text-sm text-muted-foreground"><RichInline text={lead} /></p>}
       {!!intro.length && <BulletList lines={intro} />}
       <div className={frame === "card" ? "max-w-xs mx-auto" : ""}>
         <Figure
