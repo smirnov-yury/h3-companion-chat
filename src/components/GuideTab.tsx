@@ -559,7 +559,7 @@ function ExamplePanel({
           </li>
         ))}
       </ol>
-      {outro && <p className="text-sm text-muted-foreground">{outro}</p>}
+      {outro && <p className="text-sm text-muted-foreground"><RichInline text={outro} /></p>}
       <p className="text-xs italic text-amber-600 dark:text-amber-400 bg-amber-500/10 rounded-md p-2">
         {lang === "RU"
           ? "Подробный разбор боя появится в будущем разделе «Бой»."
