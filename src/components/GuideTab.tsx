@@ -807,15 +807,18 @@ export default function GuideTab() {
   };
 
   const goPanel = (nsi: number, npi: number) => {
-    setSi(nsi);
-    setPi(npi);
-    setHot(null);
-    setView("panel");
+    const sec = sections[nsi];
+    if (!sec) return;
+    // Replace history when navigating within the same section; push when crossing sections
+    // so browser Back returns to the previous section rather than every step.
+    const replace = view === "panel" && nsi === si;
+    navigate(`/guide/${sec.slug}#p${npi + 1}`, { replace });
+    // State will be synced by the URL effect; also write fallback localStorage immediately.
     try {
-      const sec = sections[nsi];
-      if (sec) localStorage.setItem("h3guide_pos", JSON.stringify({ sectionId: sec.id, step: npi }));
+      localStorage.setItem("h3guide_pos", JSON.stringify({ sectionId: sec.id, step: npi }));
     } catch {}
   };
+
 
   const handleNext = () => {
     const curSec = sections[si];
