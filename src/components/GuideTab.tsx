@@ -183,6 +183,24 @@ function BulletList({ lines }: { lines: string[] }) {
   );
 }
 
+/** Inline rich text: renders <glyph> tokens, [Display](type:id) entity links,
+ *  and **bold**, and wires entity-link clicks. Use for any inline guide text
+ *  that may contain links or glyph tokens (labels, short descriptions, intro/outro).
+ *  When placed inside a clickable button, an entity-link click navigates and stops
+ *  propagation, so the surrounding button's onClick does not also fire. */
+function RichInline({ text, className }: { text?: string | null; className?: string }) {
+  const { glyphs } = useGlyphs();
+  const handleEntityClick = useEntityLinkHandler();
+  if (!text) return null;
+  return (
+    <span
+      className={className}
+      onClick={handleEntityClick}
+      dangerouslySetInnerHTML={{ __html: renderGlyphs(text, glyphs) }}
+    />
+  );
+}
+
 // ---------- Panel renderers ----------
 function StandardPanel({
   content,
@@ -231,7 +249,7 @@ function StandardPanel({
                     })
                   }
                 >
-                  <span className="flex-1 text-sm leading-relaxed">{label}</span>
+                  <RichInline text={label} className="flex-1 text-sm leading-relaxed" />
                   <Info className="w-4 h-4 shrink-0 text-muted-foreground" />
                 </button>
               </li>
@@ -273,7 +291,7 @@ function StandardPanel({
                 }}
               >
                 <GlyphIcon glyph={it.glyph} size={18} />
-                <span>{label}</span>
+                <RichInline text={label} />
               </button>
             );
           })}
@@ -305,7 +323,7 @@ function AnatomyPanel({
   const abilities: any[] = Array.isArray(content.abilities) ? content.abilities : [];
   return (
     <div className="space-y-4">
-      {lead && <p className="text-sm text-muted-foreground">{lead}</p>}
+      {lead && <p className="text-sm text-muted-foreground"><RichInline text={lead} /></p>}
       {!!intro.length && <BulletList lines={intro} />}
       <div className={frame === "card" ? "max-w-xs mx-auto" : ""}>
         <Figure
@@ -386,8 +404,8 @@ function AnatomyPanel({
                 )}
                 <GlyphIcon glyph={c.glyph} size={20} className="shrink-0 mt-0.5" />
                 <span className="text-sm leading-relaxed">
-                  <b>{tr(c.label, lang)}</b>
-                  {tr(c.d, lang) ? <> - {tr(c.d, lang)}</> : null}
+                  <b><RichInline text={tr(c.label, lang)} /></b>
+                  {tr(c.d, lang) ? <> - <RichInline text={tr(c.d, lang)} /></> : null}
                 </span>
               </button>
             </li>
@@ -415,7 +433,7 @@ function AnatomyPanel({
                 })}
               >
                 <GlyphIcon glyph={a.glyph} size={18} />
-                <span>{tr(a.label, lang)}</span>
+                <RichInline text={tr(a.label, lang)} />
               </button>
             ))}
           </div>
@@ -458,8 +476,8 @@ function TypesPanel({
             >
               <GlyphIcon glyph={t.glyph} size={22} className="shrink-0 mt-0.5" />
               <span className="text-sm leading-relaxed">
-                <b>{tr(t.label, lang)}</b>
-                {tr(t.short, lang) ? <> - {tr(t.short, lang)}</> : null}
+                <b><RichInline text={tr(t.label, lang)} /></b>
+                {tr(t.short, lang) ? <> - <RichInline text={tr(t.short, lang)} /></> : null}
               </span>
             </button>
           </li>
@@ -486,13 +504,13 @@ function TypesPanel({
                 })}
               >
                 <GlyphIcon glyph={t.glyph} size={18} />
-                <span>{tr(t.label, lang)}</span>
+                <RichInline text={tr(t.label, lang)} />
               </button>
             ))}
           </div>
         </div>
       )}
-      {note && <p className="text-xs italic text-muted-foreground">{note}</p>}
+      {note && <p className="text-xs italic text-muted-foreground"><RichInline text={note} /></p>}
     </div>
   );
 }
@@ -513,7 +531,7 @@ function ExamplePanel({
   return (
     <div className="space-y-4">
       
-      {intro && <p className="text-sm">{intro}</p>}
+      {intro && <p className="text-sm"><RichInline text={intro} /></p>}
       <div className="flex items-stretch gap-2">
         <div className="flex-1 rounded-lg border border-amber-500/40 bg-amber-500/10 p-3 text-center">
           <div className="text-2xl font-bold text-amber-600 dark:text-amber-400">{flip.left ?? ""}</div>
@@ -535,13 +553,13 @@ function ExamplePanel({
               {i + 1}
             </span>
             <span className="text-sm leading-relaxed">
-              <b>{tr(s.t, lang)}</b>
-              {tr(s.d, lang) ? <> {tr(s.d, lang)}</> : null}
+              <b><RichInline text={tr(s.t, lang)} /></b>
+              {tr(s.d, lang) ? <> <RichInline text={tr(s.d, lang)} /></> : null}
             </span>
           </li>
         ))}
       </ol>
-      {outro && <p className="text-sm text-muted-foreground">{outro}</p>}
+      {outro && <p className="text-sm text-muted-foreground"><RichInline text={outro} /></p>}
       <p className="text-xs italic text-amber-600 dark:text-amber-400 bg-amber-500/10 rounded-md p-2">
         {lang === "RU"
           ? "Подробный разбор боя появится в будущем разделе «Бой»."
