@@ -404,8 +404,8 @@ function AnatomyPanel({
                 )}
                 <GlyphIcon glyph={c.glyph} size={20} className="shrink-0 mt-0.5" />
                 <span className="text-sm leading-relaxed">
-                  <b>{tr(c.label, lang)}</b>
-                  {tr(c.d, lang) ? <> - {tr(c.d, lang)}</> : null}
+                  <b><RichInline text={tr(c.label, lang)} /></b>
+                  {tr(c.d, lang) ? <> - <RichInline text={tr(c.d, lang)} /></> : null}
                 </span>
               </button>
             </li>
