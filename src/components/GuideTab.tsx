@@ -504,7 +504,7 @@ function TypesPanel({
                 })}
               >
                 <GlyphIcon glyph={t.glyph} size={18} />
-                <span>{tr(t.label, lang)}</span>
+                <RichInline text={tr(t.label, lang)} />
               </button>
             ))}
           </div>
