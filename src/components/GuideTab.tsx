@@ -476,8 +476,8 @@ function TypesPanel({
             >
               <GlyphIcon glyph={t.glyph} size={22} className="shrink-0 mt-0.5" />
               <span className="text-sm leading-relaxed">
-                <b>{tr(t.label, lang)}</b>
-                {tr(t.short, lang) ? <> - {tr(t.short, lang)}</> : null}
+                <b><RichInline text={tr(t.label, lang)} /></b>
+                {tr(t.short, lang) ? <> - <RichInline text={tr(t.short, lang)} /></> : null}
               </span>
             </button>
           </li>
