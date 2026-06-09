@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronLeft, ChevronRight, ChevronDown, List, Check, ArrowRight, Info, Search, X } from "lucide-react";
 import * as LucideIcons from "lucide-react";
@@ -14,6 +14,8 @@ import { useGlyphs } from "@/context/GlyphsContext";
 import { renderGlyphs } from "@/utils/renderGlyphs";
 import { useEntityLinkHandler } from "@/hooks/useEntityLinkHandler";
 import { useCardLayoutById } from "@/hooks/useCardLayouts";
+import SEOMeta from "@/components/SEOMeta";
+import { resolveBranding } from "@/config/branding";
 
 const toPascal = (s: string) =>
   s.split(/[-_ ]/).filter(Boolean).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join("");
@@ -594,6 +596,9 @@ function ModalImage({
 export default function GuideTab() {
   const { lang } = useLang();
   const navigate = useNavigate();
+  const location = useLocation();
+  const routeParams = useParams<{ "*"?: string }>();
+  const sectionSlugFromUrl = (routeParams["*"] ?? "").split("/").filter(Boolean)[0] ?? "";
   const { glyphs } = useGlyphs();
 
   const [view, setView] = useState<"home" | "toc" | "panel" | "done">("home");
@@ -603,6 +608,8 @@ export default function GuideTab() {
   const [hot, setHot] = useState<number | null>(null);
   const [query, setQuery] = useState("");
   const handleEntityClick = useEntityLinkHandler();
+  const didInitRef = useRef(false);
+
   
   
 
@@ -645,6 +652,58 @@ export default function GuideTab() {
   }, [panelsQ.data]);
 
   const isLoading = sectionsQ.isLoading || panelsQ.isLoading;
+
+  // ---------- URL ⇄ state sync ----------
+  // URL is the source of truth for the active section + panel.
+  //   /guide                  → home view (no section selected)
+  //   /guide/<sectionSlug>    → panel view, step 1
+  //   /guide/<sectionSlug>#pN → panel view, step N (1-based)
+  useEffect(() => {
+    if (!sections.length) return;
+    if (sectionSlugFromUrl) {
+      const idx = sections.findIndex((s) => s.slug === sectionSlugFromUrl);
+      if (idx < 0) {
+        navigate("/guide", { replace: true });
+        return;
+      }
+      const panels = panelsBySection.get(sections[idx].id) ?? [];
+      const m = location.hash.match(/^#p(\d+)/);
+      const requested = m ? parseInt(m[1], 10) - 1 : 0;
+      const stepIdx = Math.max(0, Math.min(requested, Math.max(panels.length - 1, 0)));
+      setSi(idx);
+      setPi(stepIdx);
+      setHot(null);
+      setView((v) => (v === "done" ? v : "panel"));
+      try {
+        localStorage.setItem(
+          "h3guide_pos",
+          JSON.stringify({ sectionId: sections[idx].id, step: stepIdx }),
+        );
+      } catch {}
+      didInitRef.current = true;
+      return;
+    }
+    // No section slug in URL.
+    if (!didInitRef.current) {
+      didInitRef.current = true;
+      try {
+        const raw = localStorage.getItem("h3guide_pos");
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          const idx = sections.findIndex((s) => s.id === parsed?.sectionId);
+          if (idx >= 0) {
+            const panels = panelsBySection.get(sections[idx].id) ?? [];
+            const step = Math.max(0, Math.min(parsed?.step ?? 0, Math.max(panels.length - 1, 0)));
+            navigate(`/guide/${sections[idx].slug}#p${step + 1}`, { replace: true });
+            return;
+          }
+        }
+      } catch {}
+    }
+    // Back/forward returned to /guide → reset panel view to home.
+    setView((v) => (v === "panel" ? "home" : v));
+  }, [sectionSlugFromUrl, location.hash, sections, panelsBySection, navigate]);
+
 
   const savedPos = useMemo(() => {
     try {
@@ -748,15 +807,18 @@ export default function GuideTab() {
   };
 
   const goPanel = (nsi: number, npi: number) => {
-    setSi(nsi);
-    setPi(npi);
-    setHot(null);
-    setView("panel");
+    const sec = sections[nsi];
+    if (!sec) return;
+    // Replace history when navigating within the same section; push when crossing sections
+    // so browser Back returns to the previous section rather than every step.
+    const replace = view === "panel" && nsi === si;
+    navigate(`/guide/${sec.slug}#p${npi + 1}`, { replace });
+    // State will be synced by the URL effect; also write fallback localStorage immediately.
     try {
-      const sec = sections[nsi];
-      if (sec) localStorage.setItem("h3guide_pos", JSON.stringify({ sectionId: sec.id, step: npi }));
+      localStorage.setItem("h3guide_pos", JSON.stringify({ sectionId: sec.id, step: npi }));
     } catch {}
   };
+
 
   const handleNext = () => {
     const curSec = sections[si];
@@ -811,10 +873,34 @@ export default function GuideTab() {
 
   const modalOpen = modal !== null;
 
+  // Per-section SEO: when a section is active, override the guide tab's defaults.
+  const activeSecForSeo = view === "panel" ? sections[si] : null;
+  const appName = resolveBranding("app_name");
+  let seoTitle: string | undefined;
+  let seoDescription: string | undefined;
+  let seoCanonical: string | undefined = "/guide";
+  if (activeSecForSeo) {
+    const lbl = sectionLabel(activeSecForSeo);
+    seoTitle = `${lbl} · ${appName}`;
+    const intro = (lang === "RU" ? activeSecForSeo.intro_ru : activeSecForSeo.intro_en) ?? "";
+    const trimmed = intro.trim().replace(/\s+/g, " ");
+    if (trimmed) {
+      seoDescription = trimmed.length > 155 ? trimmed.slice(0, 152).trimEnd() + "…" : trimmed;
+    }
+    seoCanonical = `/guide/${activeSecForSeo.slug}`;
+  }
+
   // ---------- Render ----------
   return (
     <div className="flex-1 overflow-y-auto">
+      <SEOMeta
+        routeKey="guide"
+        title={seoTitle}
+        description={seoDescription}
+        canonicalPath={seoCanonical}
+      />
       <div className="max-w-2xl mx-auto px-4 py-6 pb-32">
+
         {view === "home" && (
           <div className="space-y-6">
             <div className="rounded-2xl border-2 border-primary/40 bg-primary/5 p-6 shadow-sm">

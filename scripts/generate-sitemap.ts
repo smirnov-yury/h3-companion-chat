@@ -105,6 +105,7 @@ export async function generateSitemap(outDir: string): Promise<void> {
     { loc: `${SITE_URL}/decks`, changefreq: "monthly", priority: "0.8" },
     { loc: `${SITE_URL}/ai`, changefreq: "monthly", priority: "0.6" },
     { loc: `${SITE_URL}/game-setup`, changefreq: "monthly", priority: "0.7" },
+    { loc: `${SITE_URL}/guide`, changefreq: "monthly", priority: "0.8" },
   ];
   urls.push(...staticRoutes);
 
@@ -258,6 +259,21 @@ export async function generateSitemap(outDir: string): Promise<void> {
     "monthly",
     "0.5",
   );
+
+  // guide sections: /guide/<slug> (visible only)
+  await pushEntity(
+    "guide_sections",
+    "slug,is_visible,sort_order",
+    (r) => {
+      const slug = r.slug as string | null;
+      const visible = r.is_visible as boolean | null;
+      if (!slug || visible === false) return null;
+      return `/guide/${slug}`;
+    },
+    "monthly",
+    "0.7",
+  );
+
 
   // De-duplicate
   const seen = new Set<string>();

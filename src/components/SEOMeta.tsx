@@ -88,9 +88,17 @@ function setMetaContent(selector: string, content: string) {
 
 interface SEOMetaProps {
   routeKey?: RouteKey;
+  title?: string;
+  description?: string;
+  canonicalPath?: string;
 }
 
-export default function SEOMeta({ routeKey: routeKeyProp }: SEOMetaProps) {
+export default function SEOMeta({
+  routeKey: routeKeyProp,
+  title: titleOverride,
+  description: descriptionOverride,
+  canonicalPath,
+}: SEOMetaProps) {
   const { lang } = useLang();
   const { pathname } = useLocation();
 
@@ -101,10 +109,12 @@ export default function SEOMeta({ routeKey: routeKeyProp }: SEOMetaProps) {
     const isRu = lang === "RU";
     const routeKey = routeKeyProp ?? pathToRouteKey(pathname);
     const titles = routeKey && TITLES[routeKey] ? TITLES[routeKey] : null;
-    const title = titles ? (isRu ? titles.ru : titles.en) : APP_FULL_NAME;
+    const defaultTitle = titles ? (isRu ? titles.ru : titles.en) : APP_FULL_NAME;
+    const title = titleOverride && titleOverride.trim() ? titleOverride : defaultTitle;
     const descs = (routeKey && DESCRIPTIONS[routeKey]) ? DESCRIPTIONS[routeKey] : DESCRIPTIONS.default;
-    const description = isRu ? descs.ru : descs.en;
-    const url = SITE_URL + pathname;
+    const defaultDescription = isRu ? descs.ru : descs.en;
+    const description = descriptionOverride && descriptionOverride.trim() ? descriptionOverride : defaultDescription;
+    const url = SITE_URL + (canonicalPath ?? pathname);
 
     document.documentElement.lang = isRu ? "ru" : "en";
     document.title = title;
@@ -146,7 +156,7 @@ export default function SEOMeta({ routeKey: routeKeyProp }: SEOMetaProps) {
     } else if (existing) {
       existing.remove();
     }
-  }, [pathname, lang, routeKeyProp]);
+  }, [pathname, lang, routeKeyProp, titleOverride, descriptionOverride, canonicalPath]);
 
   return null;
 }
