@@ -190,7 +190,7 @@ export default function Index() {
 
   return (
     <div className="flex flex-col h-dvh">
-      {!notFound && <SEOMeta routeKey={tab as TabId} />}
+      {!notFound && tab !== "guide" && <SEOMeta routeKey={tab as TabId} />}
       <TopAppBar title={title} icon={current.icon} onMenuClick={() => setDrawerOpen(true)} />
       <NavDrawer open={drawerOpen} onOpenChange={setDrawerOpen} active={tab} onChange={handleTabChange} />
       <div className="flex-1 flex flex-col overflow-hidden pt-11 lg:ml-56">
