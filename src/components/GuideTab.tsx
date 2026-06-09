@@ -531,7 +531,7 @@ function ExamplePanel({
   return (
     <div className="space-y-4">
       
-      {intro && <p className="text-sm">{intro}</p>}
+      {intro && <p className="text-sm"><RichInline text={intro} /></p>}
       <div className="flex items-stretch gap-2">
         <div className="flex-1 rounded-lg border border-amber-500/40 bg-amber-500/10 p-3 text-center">
           <div className="text-2xl font-bold text-amber-600 dark:text-amber-400">{flip.left ?? ""}</div>
