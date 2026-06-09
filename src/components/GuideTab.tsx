@@ -510,7 +510,7 @@ function TypesPanel({
           </div>
         </div>
       )}
-      {note && <p className="text-xs italic text-muted-foreground">{note}</p>}
+      {note && <p className="text-xs italic text-muted-foreground"><RichInline text={note} /></p>}
     </div>
   );
 }
