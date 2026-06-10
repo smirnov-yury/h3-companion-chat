@@ -75,6 +75,86 @@ const trList = (v: LocList, lang: Lang): string[] => {
   return (lang === "RU" ? v.ru : v.en) ?? v.en ?? v.ru ?? [];
 };
 
+// Rebuild the popup state for a given modal key (e.g. "pt.2", "co.0") against a
+// panel's content. Mirrors the openModal payloads built inside the panel
+// components so arrow-navigation lands on the same content as a direct tap.
+// Returns null when there is no openable item at that key.
+function buildGuideModalState(content: any, key: string, lang: Lang): ModalState | null {
+  const dot = key.indexOf(".");
+  if (dot < 0) return null;
+  const prefix = key.slice(0, dot);
+  const idx = parseInt(key.slice(dot + 1), 10);
+  if (!Number.isFinite(idx) || idx < 0) return null;
+
+  if (prefix === "pt") {
+    const p = (content.points ?? [])[idx];
+    if (!p) return null;
+    const d = p.detail ?? {};
+    return {
+      title: tr(d.title, lang) || tr(p.label, lang),
+      text: tr(d.text, lang),
+      imagePath: d.image ?? null,
+      imageLayout: d.layout ?? null,
+      imageNote: tr(d.image_note, lang),
+    };
+  }
+  if (prefix === "it") {
+    const it = (content.items ?? [])[idx];
+    if (!it) return null;
+    if (it.mode === "open") {
+      return {
+        title: tr(it.label, lang),
+        glyph: it.glyph,
+        text: tr(it.text, lang) || tr(it.cap, lang),
+        imagePath: it.image ?? null,
+        imageLayout: it.layout ?? null,
+        imageNote: tr(it.image_note, lang),
+        route: it.route,
+        routeLabel: tr(it.target, lang),
+      };
+    }
+    return {
+      title: tr(it.label, lang),
+      glyph: it.glyph,
+      text: tr(it.text, lang),
+      imagePath: it.image ?? null,
+      imageLayout: it.layout ?? null,
+      imageNote: tr(it.image_note, lang),
+    };
+  }
+  if (prefix === "co") {
+    const c = (content.callouts ?? [])[idx];
+    if (!c || !c.text) return null;
+    return {
+      title: tr(c.label, lang),
+      glyph: c.glyph,
+      text: tr(c.text, lang) || tr(c.d, lang),
+      imagePath: c.image ?? null,
+      imageLayout: c.layout ?? null,
+      imageNote: tr(c.image_note, lang),
+    };
+  }
+  if (prefix === "ab" || prefix === "ty" || prefix === "ti") {
+    const arr = prefix === "ab" ? content.abilities : prefix === "ty" ? content.types : content.tiers;
+    const t = (arr ?? [])[idx];
+    if (!t) return null;
+    return {
+      title: tr(t.label, lang),
+      glyph: t.glyph,
+      text: tr(t.text, lang),
+      imagePath: t.image ?? null,
+      imageLayout: t.layout ?? null,
+      imageNote: tr(t.image_note, lang),
+    };
+  }
+  return null;
+}
+
+const GUIDE_LIST_BY_PREFIX: Record<string, string> = {
+  pt: "points", it: "items", co: "callouts", ab: "abilities", ty: "types", ti: "tiers",
+};
+
+
 /** Themed inline glyph icon. Routes through renderGlyphs so the icon
  *  inherits the app's dark/light theming and multicolor classes. */
 function GlyphIcon({
@@ -919,6 +999,32 @@ export default function GuideTab() {
 
   const modalOpen = modal !== null;
 
+  // Prev/next navigation between openable items of the CURRENT panel's popup list.
+  const curPanelForModal = (panelsBySection.get(sections[si]?.id) ?? [])[pi];
+  const activeModalKey = new URLSearchParams(location.search).get("d");
+  let onPrevModal: (() => void) | undefined;
+  let onNextModal: (() => void) | undefined;
+  if (modalOpen && activeModalKey && curPanelForModal) {
+    const content = curPanelForModal.content ?? {};
+    const dot = activeModalKey.indexOf(".");
+    const prefix = dot >= 0 ? activeModalKey.slice(0, dot) : "";
+    const idx = dot >= 0 ? parseInt(activeModalKey.slice(dot + 1), 10) : NaN;
+    const listName = GUIDE_LIST_BY_PREFIX[prefix];
+    if (listName && Number.isFinite(idx)) {
+      const arrLen = (content[listName] ?? []).length;
+      for (let j = idx - 1; j >= 0; j--) {
+        const key = `${prefix}.${j}`;
+        const st = buildGuideModalState(content, key, lang);
+        if (st) { onPrevModal = () => openModal(key, st); break; }
+      }
+      for (let j = idx + 1; j < arrLen; j++) {
+        const key = `${prefix}.${j}`;
+        const st = buildGuideModalState(content, key, lang);
+        if (st) { onNextModal = () => openModal(key, st); break; }
+      }
+    }
+  }
+
   // Per-section SEO: when a section is active, override the guide tab's defaults.
   const activeSecForSeo = view === "panel" ? sections[si] : null;
   const appName = resolveBranding("app_name");
@@ -1224,10 +1330,10 @@ export default function GuideTab() {
       )}
 
       <Dialog open={modal !== null} onOpenChange={(o) => { if (!o) closeModal(); }}>
-        <CardDialogContent>
+        <CardDialogContent onPrev={onPrevModal} onNext={onNextModal}>
           {modal && (
             <div className="flex flex-col h-full">
-              <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-10 py-12">
+              <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-14 py-12">
                 <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
                   <GlyphIcon glyph={modal.glyph} size={22} />
                   <span>{modal.title}</span>
