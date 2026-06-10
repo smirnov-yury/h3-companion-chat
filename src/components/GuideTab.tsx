@@ -880,12 +880,6 @@ export default function GuideTab() {
     }
   };
 
-  // Re-derive the popup from the active history entry (Back/Forward + remount).
-  useEffect(() => {
-    const hasD = new URLSearchParams(location.search).has("d");
-    const stashed = (location.state as { guideModal?: ModalState } | null)?.guideModal ?? null;
-    setModal(hasD ? stashed : null);
-  }, [location.key]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const isFirstPanel = si === 0 && pi === 0;
   const curPanelsForNav = panelsBySection.get(sections[si]?.id) ?? [];
