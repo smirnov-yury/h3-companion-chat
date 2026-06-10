@@ -1120,7 +1120,7 @@ export default function GuideTab() {
                   content={panel.content ?? {}}
                   title={title}
                   lang={lang}
-                  setModal={setModal}
+                  openModal={openModal}
                   navigate={navigate}
                 />
               )}
@@ -1131,7 +1131,7 @@ export default function GuideTab() {
                   lang={lang}
                   hot={hot}
                   setHot={setHot}
-                  setModal={setModal}
+                  openModal={openModal}
                 />
               )}
               {panel.kind === "types" && (
@@ -1139,7 +1139,7 @@ export default function GuideTab() {
                   content={panel.content ?? {}}
                   title={title}
                   lang={lang}
-                  setModal={setModal}
+                  openModal={openModal}
                 />
               )}
               {panel.kind === "example" && (
