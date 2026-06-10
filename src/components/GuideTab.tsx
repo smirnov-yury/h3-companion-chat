@@ -75,6 +75,86 @@ const trList = (v: LocList, lang: Lang): string[] => {
   return (lang === "RU" ? v.ru : v.en) ?? v.en ?? v.ru ?? [];
 };
 
+// Rebuild the popup state for a given modal key (e.g. "pt.2", "co.0") against a
+// panel's content. Mirrors the openModal payloads built inside the panel
+// components so arrow-navigation lands on the same content as a direct tap.
+// Returns null when there is no openable item at that key.
+function buildGuideModalState(content: any, key: string, lang: Lang): ModalState | null {
+  const dot = key.indexOf(".");
+  if (dot < 0) return null;
+  const prefix = key.slice(0, dot);
+  const idx = parseInt(key.slice(dot + 1), 10);
+  if (!Number.isFinite(idx) || idx < 0) return null;
+
+  if (prefix === "pt") {
+    const p = (content.points ?? [])[idx];
+    if (!p) return null;
+    const d = p.detail ?? {};
+    return {
+      title: tr(d.title, lang) || tr(p.label, lang),
+      text: tr(d.text, lang),
+      imagePath: d.image ?? null,
+      imageLayout: d.layout ?? null,
+      imageNote: tr(d.image_note, lang),
+    };
+  }
+  if (prefix === "it") {
+    const it = (content.items ?? [])[idx];
+    if (!it) return null;
+    if (it.mode === "open") {
+      return {
+        title: tr(it.label, lang),
+        glyph: it.glyph,
+        text: tr(it.text, lang) || tr(it.cap, lang),
+        imagePath: it.image ?? null,
+        imageLayout: it.layout ?? null,
+        imageNote: tr(it.image_note, lang),
+        route: it.route,
+        routeLabel: tr(it.target, lang),
+      };
+    }
+    return {
+      title: tr(it.label, lang),
+      glyph: it.glyph,
+      text: tr(it.text, lang),
+      imagePath: it.image ?? null,
+      imageLayout: it.layout ?? null,
+      imageNote: tr(it.image_note, lang),
+    };
+  }
+  if (prefix === "co") {
+    const c = (content.callouts ?? [])[idx];
+    if (!c || !c.text) return null;
+    return {
+      title: tr(c.label, lang),
+      glyph: c.glyph,
+      text: tr(c.text, lang) || tr(c.d, lang),
+      imagePath: c.image ?? null,
+      imageLayout: c.layout ?? null,
+      imageNote: tr(c.image_note, lang),
+    };
+  }
+  if (prefix === "ab" || prefix === "ty" || prefix === "ti") {
+    const arr = prefix === "ab" ? content.abilities : prefix === "ty" ? content.types : content.tiers;
+    const t = (arr ?? [])[idx];
+    if (!t) return null;
+    return {
+      title: tr(t.label, lang),
+      glyph: t.glyph,
+      text: tr(t.text, lang),
+      imagePath: t.image ?? null,
+      imageLayout: t.layout ?? null,
+      imageNote: tr(t.image_note, lang),
+    };
+  }
+  return null;
+}
+
+const GUIDE_LIST_BY_PREFIX: Record<string, string> = {
+  pt: "points", it: "items", co: "callouts", ab: "abilities", ty: "types", ti: "tiers",
+};
+
+
 /** Themed inline glyph icon. Routes through renderGlyphs so the icon
  *  inherits the app's dark/light theming and multicolor classes. */
 function GlyphIcon({
