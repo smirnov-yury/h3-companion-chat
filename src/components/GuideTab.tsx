@@ -999,6 +999,32 @@ export default function GuideTab() {
 
   const modalOpen = modal !== null;
 
+  // Prev/next navigation between openable items of the CURRENT panel's popup list.
+  const curPanelForModal = (panelsBySection.get(sections[si]?.id) ?? [])[pi];
+  const activeModalKey = new URLSearchParams(location.search).get("d");
+  let onPrevModal: (() => void) | undefined;
+  let onNextModal: (() => void) | undefined;
+  if (modalOpen && activeModalKey && curPanelForModal) {
+    const content = curPanelForModal.content ?? {};
+    const dot = activeModalKey.indexOf(".");
+    const prefix = dot >= 0 ? activeModalKey.slice(0, dot) : "";
+    const idx = dot >= 0 ? parseInt(activeModalKey.slice(dot + 1), 10) : NaN;
+    const listName = GUIDE_LIST_BY_PREFIX[prefix];
+    if (listName && Number.isFinite(idx)) {
+      const arrLen = (content[listName] ?? []).length;
+      for (let j = idx - 1; j >= 0; j--) {
+        const key = `${prefix}.${j}`;
+        const st = buildGuideModalState(content, key, lang);
+        if (st) { onPrevModal = () => openModal(key, st); break; }
+      }
+      for (let j = idx + 1; j < arrLen; j++) {
+        const key = `${prefix}.${j}`;
+        const st = buildGuideModalState(content, key, lang);
+        if (st) { onNextModal = () => openModal(key, st); break; }
+      }
+    }
+  }
+
   // Per-section SEO: when a section is active, override the guide tab's defaults.
   const activeSecForSeo = view === "panel" ? sections[si] : null;
   const appName = resolveBranding("app_name");
