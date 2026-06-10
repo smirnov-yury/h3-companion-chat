@@ -206,12 +206,12 @@ function StandardPanel({
   content,
   title,
   lang,
-  setModal,
+  openModal,
 }: {
   content: any;
   title: string;
   lang: Lang;
-  setModal: (m: ModalState) => void;
+  openModal: (key: string, m: ModalState) => void;
   navigate: (to: string) => void;
 }) {
   const cap = tr(content.cap, lang);
@@ -240,7 +240,7 @@ function StandardPanel({
                   type="button"
                   className="w-full flex items-center gap-3 p-2.5 rounded-lg border border-border hover:bg-muted text-left transition-colors"
                   onClick={() =>
-                    setModal({
+                    openModal(`pt.${i}`, {
                       title: tr(d.title, lang) || label,
                       text: tr(d.text, lang),
                       imagePath: d.image ?? null,
@@ -268,7 +268,7 @@ function StandardPanel({
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border bg-card hover:bg-muted text-sm transition-colors"
                 onClick={() => {
                   if (it.mode === "open") {
-                    setModal({
+                    openModal(`it.${i}`, {
                       title: label,
                       glyph: it.glyph,
                       text: tr(it.text, lang) || tr(it.cap, lang),
@@ -279,7 +279,7 @@ function StandardPanel({
                       routeLabel: tr(it.target, lang),
                     });
                   } else {
-                    setModal({
+                    openModal(`it.${i}`, {
                       title: label,
                       glyph: it.glyph,
                       text: tr(it.text, lang),
@@ -307,14 +307,14 @@ function AnatomyPanel({
   lang,
   hot,
   setHot,
-  setModal,
+  openModal,
 }: {
   content: any;
   title: string;
   lang: Lang;
   hot: number | null;
   setHot: (n: number | null) => void;
-  setModal: (m: ModalState) => void;
+  openModal: (key: string, m: ModalState) => void;
 }) {
   const frame: "card" | "board" = content.frame === "board" ? "board" : "card";
   const lead = tr(content.lead, lang);
@@ -354,7 +354,7 @@ function AnatomyPanel({
                 onClick={() => {
                   setHot(c.pin);
                   if (c.text) {
-                    setModal({
+                    openModal(`co.${i}`, {
                       title: tr(c.label, lang),
                       glyph: c.glyph,
                       text: tr(c.text, lang) || tr(c.d, lang),
@@ -384,7 +384,7 @@ function AnatomyPanel({
                 onClick={() => {
                   setHot(c.pin);
                   if (c.text) {
-                    setModal({
+                    openModal(`co.${i}`, {
                       title: tr(c.label, lang),
                       glyph: c.glyph,
                       text: tr(c.text, lang) || tr(c.d, lang),
@@ -423,7 +423,7 @@ function AnatomyPanel({
                 key={i}
                 type="button"
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border bg-card hover:bg-muted text-sm"
-                onClick={() => setModal({
+                onClick={() => openModal(`ab.${i}`, {
                   title: tr(a.label, lang),
                   glyph: a.glyph,
                   text: tr(a.text, lang),
@@ -447,12 +447,12 @@ function TypesPanel({
   content,
   title,
   lang,
-  setModal,
+  openModal,
 }: {
   content: any;
   title: string;
   lang: Lang;
-  setModal: (m: ModalState) => void;
+  openModal: (key: string, m: ModalState) => void;
 }) {
   const types: any[] = Array.isArray(content.types) ? content.types : [];
   const tiers: any[] = Array.isArray(content.tiers) ? content.tiers : [];
@@ -465,7 +465,7 @@ function TypesPanel({
             <button
               type="button"
               className="w-full flex items-start gap-3 p-2.5 rounded-lg border border-border hover:bg-muted text-left"
-              onClick={() => setModal({
+              onClick={() => openModal(`ty.${i}`, {
                 title: tr(t.label, lang),
                 glyph: t.glyph,
                 text: tr(t.text, lang),
@@ -494,7 +494,7 @@ function TypesPanel({
                 key={i}
                 type="button"
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border bg-card hover:bg-muted text-sm"
-                onClick={() => setModal({
+                onClick={() => openModal(`ti.${i}`, {
                   title: tr(t.label, lang),
                   glyph: t.glyph,
                   text: tr(t.text, lang),
@@ -860,6 +860,33 @@ export default function GuideTab() {
     }
   };
 
+  // B1: detail popup is a history entry. Opening pushes ?d=<key> + stashes state.
+  const openModal = (key: string, m: ModalState) => {
+    setModal(m);
+    const sec = sections[si];
+    if (!sec) return;
+    navigate(
+      { pathname: `/guide/${sec.slug}`, search: `?d=${encodeURIComponent(key)}`, hash: `#p${pi + 1}` },
+      { state: { guideModal: m } },
+    );
+  };
+
+  const closeModal = () => {
+    const hasD = new URLSearchParams(location.search).has("d");
+    if (hasD) {
+      navigate(-1);
+    } else {
+      setModal(null);
+    }
+  };
+
+  // Re-derive the popup from the active history entry (Back/Forward + remount).
+  useEffect(() => {
+    const hasD = new URLSearchParams(location.search).has("d");
+    const stashed = (location.state as { guideModal?: ModalState } | null)?.guideModal ?? null;
+    setModal(hasD ? stashed : null);
+  }, [location.key]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const isFirstPanel = si === 0 && pi === 0;
   const curPanelsForNav = panelsBySection.get(sections[si]?.id) ?? [];
   const isLastPanel =
@@ -1093,7 +1120,7 @@ export default function GuideTab() {
                   content={panel.content ?? {}}
                   title={title}
                   lang={lang}
-                  setModal={setModal}
+                  openModal={openModal}
                   navigate={navigate}
                 />
               )}
@@ -1104,7 +1131,7 @@ export default function GuideTab() {
                   lang={lang}
                   hot={hot}
                   setHot={setHot}
-                  setModal={setModal}
+                  openModal={openModal}
                 />
               )}
               {panel.kind === "types" && (
@@ -1112,7 +1139,7 @@ export default function GuideTab() {
                   content={panel.content ?? {}}
                   title={title}
                   lang={lang}
-                  setModal={setModal}
+                  openModal={openModal}
                 />
               )}
               {panel.kind === "example" && (
@@ -1195,7 +1222,7 @@ export default function GuideTab() {
         </div>
       )}
 
-      <Dialog open={modal !== null} onOpenChange={(o) => { if (!o) setModal(null); }}>
+      <Dialog open={modal !== null} onOpenChange={(o) => { if (!o) closeModal(); }}>
         <CardDialogContent>
           {modal && (
             <div className="flex flex-col h-full">
@@ -1219,11 +1246,7 @@ export default function GuideTab() {
                 {modal.route && (
                   <Button
                     className="w-full mt-4"
-                    onClick={() => {
-                      const r = modal.route!;
-                      setModal(null);
-                      navigate(r);
-                    }}
+                    onClick={() => navigate(modal.route!)}
                   >
                     {modal.routeLabel || (lang === "RU" ? "Открыть раздел" : "Open section")}
                   </Button>
