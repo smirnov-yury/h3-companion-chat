@@ -722,6 +722,13 @@ export default function GuideTab() {
     setView((v) => (v === "panel" ? "home" : v));
   }, [sectionSlugFromUrl, location.hash, sections, panelsBySection, navigate]);
 
+  // Re-derive the popup from the active history entry (Back/Forward + remount).
+  useEffect(() => {
+    const hasD = new URLSearchParams(location.search).has("d");
+    const stashed = (location.state as { guideModal?: ModalState } | null)?.guideModal ?? null;
+    setModal(hasD ? stashed : null);
+  }, [location.key]); // eslint-disable-line react-hooks/exhaustive-deps
+
 
   const savedPos = useMemo(() => {
     try {
