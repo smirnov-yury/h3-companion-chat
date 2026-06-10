@@ -958,6 +958,18 @@ export default function GuideTab() {
     );
   };
 
+  // Sibling navigation between popup items REPLACES the ?d entry so the X/Back
+  // closes the popup in one step (history stays [panel, current-popup]).
+  const replaceModal = (key: string, m: ModalState) => {
+    setModal(m);
+    const sec = sections[si];
+    if (!sec) return;
+    navigate(
+      { pathname: `/guide/${sec.slug}`, search: `?d=${encodeURIComponent(key)}`, hash: `#p${pi + 1}` },
+      { replace: true, state: { guideModal: m } },
+    );
+  };
+
   const closeModal = () => {
     const hasD = new URLSearchParams(location.search).has("d");
     if (hasD) {
