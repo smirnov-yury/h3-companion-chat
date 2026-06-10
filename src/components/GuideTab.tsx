@@ -1222,7 +1222,7 @@ export default function GuideTab() {
         </div>
       )}
 
-      <Dialog open={modal !== null} onOpenChange={(o) => { if (!o) setModal(null); }}>
+      <Dialog open={modal !== null} onOpenChange={(o) => { if (!o) closeModal(); }}>
         <CardDialogContent>
           {modal && (
             <div className="flex flex-col h-full">
