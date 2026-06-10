@@ -860,6 +860,33 @@ export default function GuideTab() {
     }
   };
 
+  // B1: detail popup is a history entry. Opening pushes ?d=<key> + stashes state.
+  const openModal = (key: string, m: ModalState) => {
+    setModal(m);
+    const sec = sections[si];
+    if (!sec) return;
+    navigate(
+      { pathname: `/guide/${sec.slug}`, search: `?d=${encodeURIComponent(key)}`, hash: `#p${pi + 1}` },
+      { state: { guideModal: m } },
+    );
+  };
+
+  const closeModal = () => {
+    const hasD = new URLSearchParams(location.search).has("d");
+    if (hasD) {
+      navigate(-1);
+    } else {
+      setModal(null);
+    }
+  };
+
+  // Re-derive the popup from the active history entry (Back/Forward + remount).
+  useEffect(() => {
+    const hasD = new URLSearchParams(location.search).has("d");
+    const stashed = (location.state as { guideModal?: ModalState } | null)?.guideModal ?? null;
+    setModal(hasD ? stashed : null);
+  }, [location.key]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const isFirstPanel = si === 0 && pi === 0;
   const curPanelsForNav = panelsBySection.get(sections[si]?.id) ?? [];
   const isLastPanel =
