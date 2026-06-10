@@ -447,12 +447,12 @@ function TypesPanel({
   content,
   title,
   lang,
-  setModal,
+  openModal,
 }: {
   content: any;
   title: string;
   lang: Lang;
-  setModal: (m: ModalState) => void;
+  openModal: (key: string, m: ModalState) => void;
 }) {
   const types: any[] = Array.isArray(content.types) ? content.types : [];
   const tiers: any[] = Array.isArray(content.tiers) ? content.tiers : [];
@@ -465,7 +465,7 @@ function TypesPanel({
             <button
               type="button"
               className="w-full flex items-start gap-3 p-2.5 rounded-lg border border-border hover:bg-muted text-left"
-              onClick={() => setModal({
+              onClick={() => openModal(`ty.${i}`, {
                 title: tr(t.label, lang),
                 glyph: t.glyph,
                 text: tr(t.text, lang),
@@ -494,7 +494,7 @@ function TypesPanel({
                 key={i}
                 type="button"
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border bg-card hover:bg-muted text-sm"
-                onClick={() => setModal({
+                onClick={() => openModal(`ti.${i}`, {
                   title: tr(t.label, lang),
                   glyph: t.glyph,
                   text: tr(t.text, lang),
