@@ -1027,12 +1027,12 @@ export default function GuideTab() {
       for (let j = idx - 1; j >= 0; j--) {
         const key = `${prefix}.${j}`;
         const st = buildGuideModalState(content, key, lang);
-        if (st) { onPrevModal = () => openModal(key, st); break; }
+        if (st) { onPrevModal = () => replaceModal(key, st); break; }
       }
       for (let j = idx + 1; j < arrLen; j++) {
         const key = `${prefix}.${j}`;
         const st = buildGuideModalState(content, key, lang);
-        if (st) { onNextModal = () => openModal(key, st); break; }
+        if (st) { onNextModal = () => replaceModal(key, st); break; }
       }
     }
   }
