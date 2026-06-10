@@ -307,14 +307,14 @@ function AnatomyPanel({
   lang,
   hot,
   setHot,
-  setModal,
+  openModal,
 }: {
   content: any;
   title: string;
   lang: Lang;
   hot: number | null;
   setHot: (n: number | null) => void;
-  setModal: (m: ModalState) => void;
+  openModal: (key: string, m: ModalState) => void;
 }) {
   const frame: "card" | "board" = content.frame === "board" ? "board" : "card";
   const lead = tr(content.lead, lang);
@@ -354,7 +354,7 @@ function AnatomyPanel({
                 onClick={() => {
                   setHot(c.pin);
                   if (c.text) {
-                    setModal({
+                    openModal(`co.${i}`, {
                       title: tr(c.label, lang),
                       glyph: c.glyph,
                       text: tr(c.text, lang) || tr(c.d, lang),
@@ -384,7 +384,7 @@ function AnatomyPanel({
                 onClick={() => {
                   setHot(c.pin);
                   if (c.text) {
-                    setModal({
+                    openModal(`co.${i}`, {
                       title: tr(c.label, lang),
                       glyph: c.glyph,
                       text: tr(c.text, lang) || tr(c.d, lang),
@@ -423,7 +423,7 @@ function AnatomyPanel({
                 key={i}
                 type="button"
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border bg-card hover:bg-muted text-sm"
-                onClick={() => setModal({
+                onClick={() => openModal(`ab.${i}`, {
                   title: tr(a.label, lang),
                   glyph: a.glyph,
                   text: tr(a.text, lang),
