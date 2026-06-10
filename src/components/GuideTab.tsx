@@ -206,12 +206,12 @@ function StandardPanel({
   content,
   title,
   lang,
-  setModal,
+  openModal,
 }: {
   content: any;
   title: string;
   lang: Lang;
-  setModal: (m: ModalState) => void;
+  openModal: (key: string, m: ModalState) => void;
   navigate: (to: string) => void;
 }) {
   const cap = tr(content.cap, lang);
@@ -240,7 +240,7 @@ function StandardPanel({
                   type="button"
                   className="w-full flex items-center gap-3 p-2.5 rounded-lg border border-border hover:bg-muted text-left transition-colors"
                   onClick={() =>
-                    setModal({
+                    openModal(`pt.${i}`, {
                       title: tr(d.title, lang) || label,
                       text: tr(d.text, lang),
                       imagePath: d.image ?? null,
@@ -268,7 +268,7 @@ function StandardPanel({
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border bg-card hover:bg-muted text-sm transition-colors"
                 onClick={() => {
                   if (it.mode === "open") {
-                    setModal({
+                    openModal(`it.${i}`, {
                       title: label,
                       glyph: it.glyph,
                       text: tr(it.text, lang) || tr(it.cap, lang),
@@ -279,7 +279,7 @@ function StandardPanel({
                       routeLabel: tr(it.target, lang),
                     });
                   } else {
-                    setModal({
+                    openModal(`it.${i}`, {
                       title: label,
                       glyph: it.glyph,
                       text: tr(it.text, lang),
