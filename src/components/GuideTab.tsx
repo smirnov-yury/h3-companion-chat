@@ -1330,10 +1330,10 @@ export default function GuideTab() {
       )}
 
       <Dialog open={modal !== null} onOpenChange={(o) => { if (!o) closeModal(); }}>
-        <CardDialogContent>
+        <CardDialogContent onPrev={onPrevModal} onNext={onNextModal}>
           {modal && (
             <div className="flex flex-col h-full">
-              <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-10 py-12">
+              <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-14 py-12">
                 <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
                   <GlyphIcon glyph={modal.glyph} size={22} />
                   <span>{modal.title}</span>
