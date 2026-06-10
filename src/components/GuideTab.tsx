@@ -958,6 +958,18 @@ export default function GuideTab() {
     );
   };
 
+  // Sibling navigation between popup items REPLACES the ?d entry so the X/Back
+  // closes the popup in one step (history stays [panel, current-popup]).
+  const replaceModal = (key: string, m: ModalState) => {
+    setModal(m);
+    const sec = sections[si];
+    if (!sec) return;
+    navigate(
+      { pathname: `/guide/${sec.slug}`, search: `?d=${encodeURIComponent(key)}`, hash: `#p${pi + 1}` },
+      { replace: true, state: { guideModal: m } },
+    );
+  };
+
   const closeModal = () => {
     const hasD = new URLSearchParams(location.search).has("d");
     if (hasD) {
@@ -1015,12 +1027,12 @@ export default function GuideTab() {
       for (let j = idx - 1; j >= 0; j--) {
         const key = `${prefix}.${j}`;
         const st = buildGuideModalState(content, key, lang);
-        if (st) { onPrevModal = () => openModal(key, st); break; }
+        if (st) { onPrevModal = () => replaceModal(key, st); break; }
       }
       for (let j = idx + 1; j < arrLen; j++) {
         const key = `${prefix}.${j}`;
         const st = buildGuideModalState(content, key, lang);
-        if (st) { onNextModal = () => openModal(key, st); break; }
+        if (st) { onNextModal = () => replaceModal(key, st); break; }
       }
     }
   }
