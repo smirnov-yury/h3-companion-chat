@@ -1246,11 +1246,7 @@ export default function GuideTab() {
                 {modal.route && (
                   <Button
                     className="w-full mt-4"
-                    onClick={() => {
-                      const r = modal.route!;
-                      setModal(null);
-                      navigate(r);
-                    }}
+                    onClick={() => navigate(modal.route!)}
                   >
                     {modal.routeLabel || (lang === "RU" ? "Открыть раздел" : "Open section")}
                   </Button>
