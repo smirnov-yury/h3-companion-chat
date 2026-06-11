@@ -116,6 +116,7 @@ interface ImageUploaderProps {
   hasImageStatus?: boolean;
   filename?: string;
   skipDbUpdate?: boolean;
+  enablePaste?: boolean;
   onUploaded?: (filename?: string) => void;
   onDeleted?: () => void;
 }
@@ -130,6 +131,7 @@ export default function ImageUploader({
   hasImageStatus = true,
   filename: filenameProp,
   skipDbUpdate = false,
+  enablePaste = false,
   onUploaded,
   onDeleted,
 }: ImageUploaderProps) {
@@ -326,6 +328,27 @@ export default function ImageUploader({
 
     prevZoomRef.current = zoom;
   }, [zoom]);
+
+  useEffect(() => {
+    if (!enablePaste) return;
+    const onPaste = (e: ClipboardEvent) => {
+      if (rawSrc) return;
+      const items = e.clipboardData?.items;
+      if (!items) return;
+      for (const item of items) {
+        if (item.type.startsWith("image/")) {
+          const file = item.getAsFile();
+          if (file) {
+            e.preventDefault();
+            handleFile(file);
+          }
+          break;
+        }
+      }
+    };
+    document.addEventListener("paste", onPaste);
+    return () => document.removeEventListener("paste", onPaste);
+  }, [enablePaste, rawSrc]);
 
   const handleUpload = async () => {
     if (!blob) return;
