@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import ImageUploader from "@/components/admin/ImageUploader";
 import DeleteConfirmDialog from "@/components/admin/DeleteConfirmDialog";
+import GuidePanelContentEditor from "@/components/admin/GuidePanelContentEditor";
 
 interface GuideSection {
   id: string;
@@ -428,6 +429,11 @@ export default function GuideEditor() {
                               <Trash2 className="w-4 h-4" />
                             </button>
                           </div>
+
+                          <GuidePanelContentEditor
+                            panel={panel}
+                            onSaved={(c) => setPanels((prev) => prev.map((p) => (p.id === panel.id ? { ...p, content: c } : p)))}
+                          />
 
                           {slots.length === 0 ? (
                             <p className="text-xs text-muted-foreground">No image slots in this panel.</p>
