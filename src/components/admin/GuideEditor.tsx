@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import ImageUploader from "@/components/admin/ImageUploader";
 import DeleteConfirmDialog from "@/components/admin/DeleteConfirmDialog";
+import GuidePanelContentEditor from "@/components/admin/GuidePanelContentEditor";
 
 interface GuideSection {
   id: string;
