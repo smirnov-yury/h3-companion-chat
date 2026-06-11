@@ -228,6 +228,7 @@ export default function AdminPanel() {
             <Route path="war-machines" element={<DecksEditor tab="war-machines" />} />
             <Route path="units" element={<UnitsEditor />} />
             <Route path="heroes" element={<HeroesEditor />} />
+            <Route path="guide" element={<GuideEditor />} />
             <Route path="towns" element={<TownsEditor />} />
             <Route path="about-page" element={<AboutPageEditor />} />
             <Route path="filter-groups" element={<FilterGroupsEditor />} />
