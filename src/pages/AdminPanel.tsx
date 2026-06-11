@@ -4,8 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   LayoutDashboard, BookOpen, Map, Zap, Layers, Users, Crown,
   Building2, FileText, ListFilter, ScrollText, LogOut, Menu, X,
-  ChevronDown, ChevronRight, BarChart3, Wrench, ListTree, Boxes, Package,
+  ChevronDown, ChevronRight, BarChart3, Wrench, ListTree, Boxes, Package, GraduationCap,
 } from "lucide-react";
+import GuideEditor from "@/components/admin/GuideEditor";
 import EntityTypesEditor from "@/components/admin/EntityTypesEditor";
 import EntitiesEditor from "@/components/admin/EntitiesEditor";
 import AdminDashboard from "@/components/admin/AdminDashboard";
@@ -64,6 +65,7 @@ const NAV_ITEMS: Array<
   },
   { path: "units", label: "Units", icon: Users },
   { path: "heroes", label: "Heroes", icon: Crown },
+  { path: "guide", label: "Guide", icon: GraduationCap },
   { path: "towns", label: "Towns", icon: Building2 },
   { path: "about-page", label: "About Page", icon: FileText },
   { path: "filter-groups", label: "Filter Groups", icon: ListFilter },
@@ -226,6 +228,7 @@ export default function AdminPanel() {
             <Route path="war-machines" element={<DecksEditor tab="war-machines" />} />
             <Route path="units" element={<UnitsEditor />} />
             <Route path="heroes" element={<HeroesEditor />} />
+            <Route path="guide" element={<GuideEditor />} />
             <Route path="towns" element={<TownsEditor />} />
             <Route path="about-page" element={<AboutPageEditor />} />
             <Route path="filter-groups" element={<FilterGroupsEditor />} />
