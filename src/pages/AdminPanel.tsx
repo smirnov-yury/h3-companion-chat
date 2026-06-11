@@ -65,6 +65,7 @@ const NAV_ITEMS: Array<
   },
   { path: "units", label: "Units", icon: Users },
   { path: "heroes", label: "Heroes", icon: Crown },
+  { path: "guide", label: "Guide", icon: GraduationCap },
   { path: "towns", label: "Towns", icon: Building2 },
   { path: "about-page", label: "About Page", icon: FileText },
   { path: "filter-groups", label: "Filter Groups", icon: ListFilter },
