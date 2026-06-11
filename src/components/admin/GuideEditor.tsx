@@ -72,6 +72,7 @@ export default function GuideEditor() {
   const [panels, setPanels] = useState<GuidePanel[]>([]);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [filenames, setFilenames] = useState<Record<string, string>>({});
+  const [activeSlot, setActiveSlot] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
   const load = async () => {
@@ -192,35 +193,46 @@ export default function GuideEditor() {
                               const fallback = `${panel.id}_${slot.id.replace(/\./g, "_")}.webp`;
                               const filenameInput = filenames[fkey] ?? current ?? fallback;
                               return (
-                                <div key={slot.id} className="border border-border rounded-lg p-3 space-y-2 bg-card">
-                                  <div className="space-y-1">
-                                    <p className="text-xs font-medium text-foreground">{slot.label}</p>
-                                    <label className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                                <div
+                                  key={slot.id}
+                                  onClick={() => setActiveSlot(fkey)}
+                                  className={`flex gap-4 items-start border-t border-border pt-3 first:border-t-0 first:pt-0 rounded-md cursor-pointer ${activeSlot === fkey ? "ring-1 ring-primary/60 bg-primary/5" : ""}`}
+                                >
+                                  <div className="flex-1 min-w-0">
+                                    <div className="text-xs text-foreground truncate">{slot.label}</div>
+                                    <label className="block text-[11px] text-muted-foreground mt-1 mb-1">
                                       Filename (saved under guide/)
                                     </label>
                                     <input
-                                      type="text"
-                                      value={filenameInput}
+                                      value={filenames[fkey] ?? current ?? ""}
                                       onChange={(e) =>
                                         setFilenames((prev) => ({ ...prev, [fkey]: e.target.value }))
                                       }
                                       placeholder={fallback}
-                                      className="w-full bg-transparent text-xs font-mono text-foreground outline-none border-b border-border focus:border-primary px-1 py-0.5"
+                                      className="w-64 bg-transparent text-xs font-mono text-foreground outline-none border-b border-border focus:border-primary px-1 py-0.5"
                                     />
-                                    <p className="text-[10px] font-mono text-muted-foreground">
+                                    <div className="text-[11px] text-muted-foreground mt-1 font-mono">
                                       {slot.current ?? "no image"}
-                                    </p>
+                                    </div>
+                                    {activeSlot === fkey && (
+                                      <div className="text-[11px] text-primary mt-1">
+                                        Press Ctrl+V to paste an image into this slot
+                                      </div>
+                                    )}
                                   </div>
-
                                   <ImageUploader
                                     table="guide_panels"
                                     recordId={panel.id}
                                     folder="guide"
-                                    imageField="content"
+                                    imageField="image_path"
                                     currentImage={current}
-                                    filename={filenameInput}
                                     skipDbUpdate
                                     hasImageStatus={false}
+                                    defaultCropPreset="free"
+                                    enablePaste={activeSlot === fkey}
+                                    filename={
+                                      (filenames[fkey] && filenames[fkey].trim()) || current || fallback
+                                    }
                                     onUploaded={(fn) => {
                                       if (fn) setSlotImage(panel, slot, fn);
                                     }}
