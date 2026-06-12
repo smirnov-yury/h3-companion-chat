@@ -131,7 +131,7 @@ export default function ImageUploader({
   hasImageStatus = true,
   filename: filenameProp,
   skipDbUpdate = false,
-  enablePaste = false,
+  enablePaste = true,
   onUploaded,
   onDeleted,
 }: ImageUploaderProps) {
@@ -160,6 +160,7 @@ export default function ImageUploader({
   const [status, setStatus] = useState<"idle" | "uploading" | "done" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [armed, setArmed] = useState(false);
 
   const handleFile = (file: File) => {
     const url = URL.createObjectURL(file);
@@ -330,7 +331,7 @@ export default function ImageUploader({
   }, [zoom]);
 
   useEffect(() => {
-    if (!enablePaste) return;
+    if (!enablePaste || !armed) return;
     const onPaste = (e: ClipboardEvent) => {
       if (rawSrc) return;
       const items = e.clipboardData?.items;
@@ -348,7 +349,7 @@ export default function ImageUploader({
     };
     document.addEventListener("paste", onPaste);
     return () => document.removeEventListener("paste", onPaste);
-  }, [enablePaste, rawSrc]);
+  }, [enablePaste, armed, rawSrc]);
 
   const handleUpload = async () => {
     if (!blob) return;
@@ -699,9 +700,11 @@ export default function ImageUploader({
         />
 
         <div
-          className="relative w-32 h-32 rounded-lg border border-border bg-muted/30 overflow-hidden cursor-pointer hover:border-primary transition-colors flex items-center justify-center"
+          className={`relative w-32 h-32 rounded-lg border bg-muted/30 overflow-hidden cursor-pointer transition-colors flex items-center justify-center ${enablePaste && armed ? "border-primary ring-2 ring-primary/40" : "border-border hover:border-primary"}`}
           onClick={() => inputRef.current?.click()}
-          title="Click to select image"
+          onMouseEnter={() => setArmed(true)}
+          onMouseLeave={() => setArmed(false)}
+          title={enablePaste ? "Click to select, or hover and press Ctrl+V to paste" : "Click to select image"}
         >
           {preview || imageUrl ? (
             <img src={preview ?? imageUrl ?? ""} alt="" className="w-full h-full object-cover" />
