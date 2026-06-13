@@ -8,10 +8,7 @@ import {
   SortableContext, useSortable, verticalListSortingStrategy, arrayMove,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import {
-  GripVertical, Plus, Trash2, ChevronRight, Save, Loader2, Eye, EyeOff, ArrowLeft, Pencil,
-} from "lucide-react";
-import ImageUploader from "@/components/admin/ImageUploader";
+import { GripVertical, Plus, Trash2, ChevronRight, Save, Loader2, Eye, EyeOff, Pencil } from "lucide-react";
 import DeleteConfirmDialog from "@/components/admin/DeleteConfirmDialog";
 import GuidePanelContentEditor from "@/components/admin/GuidePanelContentEditor";
 
@@ -24,37 +21,9 @@ interface GuidePanel {
   id: string; section_id: string; sort_order: number; kind: string;
   title_en: string | null; title_ru: string | null; content: any;
 }
-interface Slot { id: string; label: string; kind: "main" | "array"; arr?: string; idx?: number; nested?: string | null; current: string | null; }
 type DeleteTarget = { type: "section" | "panel"; id: string } | null;
 
-const ARRAY_KEYS = ["points", "items", "callouts", "abilities", "types", "tiers"];
 const PANEL_KINDS = ["standard", "anatomy", "types", "example"];
-const SLOT_SINGULAR: Record<string, string> = { points: "point", items: "item", callouts: "callout", abilities: "ability", types: "type", tiers: "tier" };
-
-function basename(path: string | null | undefined): string | null {
-  if (!path) return null;
-  const i = path.lastIndexOf("/");
-  return i >= 0 ? path.slice(i + 1) : path;
-}
-function slotsForPanel(panel: GuidePanel): Slot[] {
-  const c = panel.content ?? {};
-  const slots: Slot[] = [];
-  if (panel.kind === "standard" || panel.kind === "anatomy") slots.push({ id: "main", label: "Main image", kind: "main", current: c.image_path ?? null });
-  for (const key of ARRAY_KEYS) {
-    const arr = Array.isArray(c[key]) ? c[key] : [];
-    arr.forEach((el: any, idx: number) => {
-      const nested = key === "points" ? "detail" : null;
-      const current = nested ? (el?.detail?.image ?? null) : (el?.image ?? null);
-      const elLabel = el?.label?.en ?? el?.title?.en ?? el?.name?.en ?? "";
-      slots.push({ id: `${key}.${idx}`, label: `${key}[${idx}]${elLabel ? " — " + elLabel : ""}`, kind: "array", arr: key, idx, nested, current });
-    });
-  }
-  return slots;
-}
-function slotFilename(sectionSlug: string, panelSort: number, slot: Slot): string {
-  const key = slot.kind === "main" ? "main" : `${SLOT_SINGULAR[slot.arr!] ?? slot.arr}${(slot.idx ?? 0) + 1}`;
-  return `${sectionSlug}_p${panelSort}_${key}.webp`;
-}
 
 function SortableSectionRow({ sec, count, onOpen, onToggleVisible, onDelete }: {
   sec: GuideSection; count: number; onOpen: () => void; onToggleVisible: () => void; onDelete: () => void;
@@ -63,21 +32,17 @@ function SortableSectionRow({ sec, count, onOpen, onToggleVisible, onDelete }: {
   const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.6 : 1 };
   return (
     <div ref={setNodeRef} style={style} className="flex items-center gap-2 border border-border rounded-md bg-card px-2 py-2">
-      <button type="button" {...attributes} {...listeners} className="text-muted-foreground hover:text-foreground cursor-grab active:cursor-grabbing" title="Drag to reorder">
-        <GripVertical className="w-4 h-4" />
+      <button type="button" {...attributes} {...listeners} className="text-muted-foreground hover:text-foreground cursor-grab active:cursor-grabbing" title="Drag"><GripVertical className="w-4 h-4" /></button>
+      <button type="button" onClick={onOpen} className="flex-1 flex items-center gap-3 text-left min-w-0">
+        <span className="font-mono text-xs text-muted-foreground w-32 shrink-0 truncate">{sec.slug}</span>
+        <span className="text-sm text-foreground truncate flex-1">{sec.label_en}</span>
+        <span className="text-[11px] text-muted-foreground shrink-0">{count} panels</span>
+        <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
       </button>
-      <button type="button" onClick={onOpen} className="flex-1 min-w-0 flex items-center gap-3 text-left hover:bg-muted/40 rounded px-1 py-1">
-        <span className="font-mono text-[11px] text-muted-foreground w-32 truncate">{sec.slug}</span>
-        <span className="text-sm text-foreground flex-1 truncate">{sec.label_en}</span>
-        <span className="text-[11px] text-muted-foreground">{count} panels</span>
-        <ChevronRight className="w-4 h-4 text-muted-foreground" />
-      </button>
-      <button type="button" onClick={onToggleVisible} className="text-muted-foreground hover:text-foreground" title={sec.is_visible ? "Visible" : "Hidden"}>
+      <button type="button" onClick={onToggleVisible} className="text-muted-foreground hover:text-foreground" title={sec.is_visible ? "Hide" : "Show"}>
         {sec.is_visible ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
       </button>
-      <button type="button" onClick={onDelete} className="text-destructive/60 hover:text-destructive" title="Delete section">
-        <Trash2 className="w-4 h-4" />
-      </button>
+      <button type="button" onClick={onDelete} className="text-destructive/60 hover:text-destructive" title="Delete"><Trash2 className="w-4 h-4" /></button>
     </div>
   );
 }
@@ -87,17 +52,13 @@ function SortablePanelRow({ panel, onOpen, onDelete }: { panel: GuidePanel; onOp
   const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.6 : 1 };
   return (
     <div ref={setNodeRef} style={style} className="flex items-center gap-2 border border-border rounded-md bg-card px-2 py-2">
-      <button type="button" {...attributes} {...listeners} className="text-muted-foreground hover:text-foreground cursor-grab active:cursor-grabbing" title="Drag to reorder">
-        <GripVertical className="w-4 h-4" />
+      <button type="button" {...attributes} {...listeners} className="text-muted-foreground hover:text-foreground cursor-grab active:cursor-grabbing" title="Drag"><GripVertical className="w-4 h-4" /></button>
+      <button type="button" onClick={onOpen} className="flex-1 flex items-center gap-3 text-left min-w-0">
+        <span className="text-[11px] uppercase tracking-wide text-muted-foreground w-20 shrink-0">{panel.kind}</span>
+        <span className="text-sm text-foreground truncate flex-1">{panel.title_en || "(untitled)"}</span>
+        <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
       </button>
-      <button type="button" onClick={onOpen} className="flex-1 min-w-0 flex items-center gap-3 text-left hover:bg-muted/40 rounded px-1 py-1">
-        <span className="font-mono text-[11px] text-muted-foreground w-20 truncate">{panel.kind}</span>
-        <span className="text-sm text-foreground flex-1 truncate">{panel.title_en || "(untitled)"}</span>
-        <ChevronRight className="w-4 h-4 text-muted-foreground" />
-      </button>
-      <button type="button" onClick={onDelete} className="text-destructive/60 hover:text-destructive" title="Delete panel">
-        <Trash2 className="w-4 h-4" />
-      </button>
+      <button type="button" onClick={onDelete} className="text-destructive/60 hover:text-destructive" title="Delete"><Trash2 className="w-4 h-4" /></button>
     </div>
   );
 }
@@ -109,8 +70,6 @@ export default function GuideEditor() {
   const [secId, setSecId] = useState<string | null>(null);
   const [panelId, setPanelId] = useState<string | null>(null);
   const [editMeta, setEditMeta] = useState(false);
-  const [filenames, setFilenames] = useState<Record<string, string>>({});
-  const [activeSlot, setActiveSlot] = useState<string | null>(null);
   const [savingIds, setSavingIds] = useState<Set<string>>(new Set());
   const [deleteTarget, setDeleteTarget] = useState<DeleteTarget>(null);
   const [deleting, setDeleting] = useState(false);
@@ -208,35 +167,13 @@ export default function GuideEditor() {
     setDeleting(false); setDeleteTarget(null); invalidateGuide();
   };
 
-  const setSlotImage = async (panel: GuidePanel, slot: Slot, filename: string | null) => {
-    const next = JSON.parse(JSON.stringify(panel.content ?? {}));
-    const val = filename ? `guide/${filename}` : null;
-    if (slot.kind === "main") { if (val) next.image_path = val; else delete next.image_path; }
-    else {
-      const arr = Array.isArray(next[slot.arr!]) ? next[slot.arr!] : [];
-      const el = arr[slot.idx!] ?? {};
-      if (slot.nested) { el[slot.nested] = el[slot.nested] ?? {}; if (val) el[slot.nested].image = val; else delete el[slot.nested].image; }
-      else { if (val) el.image = val; else delete el.image; }
-      arr[slot.idx!] = el; next[slot.arr!] = arr;
-    }
-    setPanels((prev) => prev.map((p) => (p.id === panel.id ? { ...p, content: next } : p)));
-    await supabase.from("guide_panels").update({ content: next }).eq("id", panel.id);
-    invalidateGuide();
-  };
-
   const fieldCls = "w-full bg-transparent text-xs text-foreground outline-none border-b border-border focus:border-primary px-1 py-0.5";
   const crumb = (parts: { t: string; go?: () => void }[]) => (
-    <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-2 flex-wrap">
+    <div className="flex items-center gap-1.5 text-xs text-muted-foreground flex-wrap">
       {parts.map((p, i) => (
         <span key={i} className="flex items-center gap-1.5">
           {i > 0 && <ChevronRight className="w-3 h-3" />}
-          {p.go ? (
-            <button type="button" onClick={p.go} className="hover:text-foreground inline-flex items-center gap-1">
-              {i === 0 && <ArrowLeft className="w-3 h-3" />} {p.t}
-            </button>
-          ) : (
-            <span className="text-foreground">{p.t}</span>
-          )}
+          {p.go ? <button type="button" onClick={p.go} className="hover:text-foreground">{p.t}</button> : <span className="text-foreground">{p.t}</span>}
         </span>
       ))}
     </div>
@@ -248,23 +185,17 @@ export default function GuideEditor() {
         <>
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-foreground">Guide</h2>
-            <button type="button" onClick={addSection} className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-primary text-primary-foreground text-xs hover:bg-primary/90">
-              <Plus className="w-3.5 h-3.5" /> Add Section
-            </button>
+            <button type="button" onClick={addSection} className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-primary text-primary-foreground text-xs hover:bg-primary/90"><Plus className="w-3.5 h-3.5" /> Add Section</button>
           </div>
           <p className="text-xs text-muted-foreground">Click a section to open its panels. Drag to reorder.</p>
           <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleSectionDragEnd}>
             <SortableContext items={sections.map((s) => s.id)} strategy={verticalListSortingStrategy}>
               <div className="space-y-2">
                 {sections.map((sec) => (
-                  <SortableSectionRow
-                    key={sec.id}
-                    sec={sec}
-                    count={(panelsBySection[sec.id] ?? []).length}
+                  <SortableSectionRow key={sec.id} sec={sec} count={(panelsBySection[sec.id] ?? []).length}
                     onOpen={() => { setSecId(sec.id); setView("panels"); setEditMeta(false); }}
                     onToggleVisible={() => toggleSectionVisible(sec.id)}
-                    onDelete={() => setDeleteTarget({ type: "section", id: sec.id })}
-                  />
+                    onDelete={() => setDeleteTarget({ type: "section", id: sec.id })} />
                 ))}
               </div>
             </SortableContext>
@@ -277,14 +208,12 @@ export default function GuideEditor() {
           {crumb([{ t: "Guide", go: () => { setView("sections"); setSecId(null); } }, { t: curSec.label_en }])}
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-foreground">{curSec.label_en}</h2>
-            <button type="button" onClick={() => setEditMeta((v) => !v)} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground">
-              <Pencil className="w-3.5 h-3.5" /> {editMeta ? "Hide section fields" : "Edit section fields"}
-            </button>
+            <button type="button" onClick={() => setEditMeta((v) => !v)} className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground"><Pencil className="w-3.5 h-3.5" /> {editMeta ? "Hide section fields" : "Edit section fields"}</button>
           </div>
 
           {editMeta && (
-            <div className="border border-border rounded-lg p-4 bg-card space-y-3">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="border border-border rounded-lg p-3 bg-card space-y-3">
+              <div className="grid grid-cols-2 gap-3">
                 <div><label className="block text-[11px] text-muted-foreground mb-1">Slug</label><input value={curSec.slug} onChange={(e) => editSection(curSec.id, "slug", e.target.value)} className={`${fieldCls} font-mono`} /></div>
                 <div><label className="block text-[11px] text-muted-foreground mb-1">Icon (lucide name)</label><input value={curSec.icon ?? ""} onChange={(e) => editSection(curSec.id, "icon", e.target.value || null)} className={fieldCls} /></div>
                 <div><label className="block text-[11px] text-muted-foreground mb-1">Label EN</label><input value={curSec.label_en} onChange={(e) => editSection(curSec.id, "label_en", e.target.value)} className={fieldCls} /></div>
@@ -295,9 +224,7 @@ export default function GuideEditor() {
                 <div><label className="block text-[11px] text-muted-foreground mb-1">Intro RU</label><textarea value={curSec.intro_ru ?? ""} onChange={(e) => editSection(curSec.id, "intro_ru", e.target.value || null)} rows={2} className={`${fieldCls} resize-y`} /></div>
               </div>
               <div className="flex justify-end">
-                <button type="button" onClick={() => saveSection(curSec.id)} disabled={savingIds.has(curSec.id)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-primary text-primary-foreground text-xs hover:bg-primary/90 disabled:opacity-50">
-                  {savingIds.has(curSec.id) ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />} Save section
-                </button>
+                <button type="button" onClick={() => saveSection(curSec.id)} disabled={savingIds.has(curSec.id)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-primary text-primary-foreground text-xs hover:bg-primary/90 disabled:opacity-50">{savingIds.has(curSec.id) ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />} Save section</button>
               </div>
             </div>
           )}
@@ -307,7 +234,7 @@ export default function GuideEditor() {
               <div className="space-y-2">
                 {(panelsBySection[curSec.id] ?? []).map((panel) => (
                   <SortablePanelRow key={panel.id} panel={panel}
-                    onOpen={() => { setPanelId(panel.id); setView("panel"); setActiveSlot(null); }}
+                    onOpen={() => { setPanelId(panel.id); setView("panel"); }}
                     onDelete={() => setDeleteTarget({ type: "panel", id: panel.id })} />
                 ))}
               </div>
@@ -336,35 +263,12 @@ export default function GuideEditor() {
               <button type="button" onClick={() => setDeleteTarget({ type: "panel", id: curPanel.id })} className="text-destructive/60 hover:text-destructive" title="Delete panel"><Trash2 className="w-4 h-4" /></button>
             </div>
 
-            <GuidePanelContentEditor panel={curPanel} onSaved={(c) => setPanels((prev) => prev.map((p) => (p.id === curPanel.id ? { ...p, content: c } : p)))} />
-
-            {(() => {
-              const slots = slotsForPanel(curPanel);
-              if (!slots.length) return <p className="text-xs text-muted-foreground">No image slots in this panel.</p>;
-              return (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {slots.map((slot) => {
-                    const fkey = `${curPanel.id}::${slot.id}`;
-                    const current = basename(slot.current);
-                    const fallback = slotFilename(curSec.slug, curPanel.sort_order, slot);
-                    return (
-                      <div key={slot.id} onClick={() => setActiveSlot(fkey)} className={`flex gap-4 items-start border-t border-border pt-3 first:border-t-0 first:pt-0 rounded-md cursor-pointer ${activeSlot === fkey ? "ring-1 ring-primary/60 bg-primary/5" : ""}`}>
-                        <div className="flex-1 min-w-0">
-                          <div className="text-xs text-foreground truncate">{slot.label}</div>
-                          <label className="block text-[11px] text-muted-foreground mt-1 mb-1">Filename (saved under guide/)</label>
-                          <input value={filenames[fkey] ?? current ?? ""} onChange={(e) => setFilenames((prev) => ({ ...prev, [fkey]: e.target.value }))} placeholder={fallback} className="w-64 bg-transparent text-xs font-mono text-foreground outline-none border-b border-border focus:border-primary px-1 py-0.5" />
-                          <div className="text-[11px] text-muted-foreground mt-1 font-mono">{slot.current ?? "no image"}</div>
-                        </div>
-                        <ImageUploader table="guide_panels" recordId={curPanel.id} folder="guide" imageField="image_path" currentImage={current} skipDbUpdate hasImageStatus={false} defaultCropPreset="free"
-                          filename={(filenames[fkey] && filenames[fkey].trim()) || current || fallback}
-                          onUploaded={(fn) => { if (fn) setSlotImage(curPanel, slot, fn); }}
-                          onDeleted={() => setSlotImage(curPanel, slot, null)} />
-                      </div>
-                    );
-                  })}
-                </div>
-              );
-            })()}
+            <GuidePanelContentEditor
+              panel={curPanel}
+              sectionSlug={curSec.slug}
+              panelSort={curPanel.sort_order}
+              onSaved={(c) => setPanels((prev) => prev.map((p) => (p.id === curPanel.id ? { ...p, content: c } : p)))}
+            />
           </div>
         </>
       )}
