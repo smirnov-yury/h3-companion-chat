@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Plus, Trash2, ChevronUp, ChevronDown, Save, Loader2, MapPin } from "lucide-react";
 import ImageUploader from "@/components/admin/ImageUploader";
 import { componentMediaUrl } from "@/lib/storage";
+import GlyphToolbar from "@/components/admin/GlyphToolbar";
 
 interface Props {
   panel: { id: string; kind: string; content: any };
@@ -30,6 +31,9 @@ export default function GuidePanelContentEditor({ panel, sectionSlug, panelSort,
   const [placing, setPlacing] = useState(false);
   const dragRef = useRef<number | null>(null);
   const boardRef = useRef<HTMLDivElement | null>(null);
+  const [glyphOpen, setGlyphOpen] = useState(false);
+  const focusRef = useRef<{ el: HTMLInputElement | HTMLTextAreaElement; set: (v: string) => void } | null>(null);
+  const glyphTargetRef = { get current() { return focusRef.current?.el ?? null; } } as React.RefObject<HTMLTextAreaElement>;
   const contentRef = useRef<any>(content);
   contentRef.current = content;
 
@@ -143,6 +147,14 @@ export default function GuidePanelContentEditor({ panel, sectionSlug, panelSort,
           {(["en", "ru"] as const).map((l) => (<button key={l} type="button" onClick={() => setLang(l)} className={`text-xs px-3 py-1 ${lang === l ? "bg-primary text-primary-foreground" : "bg-transparent text-muted-foreground"}`}>{l.toUpperCase()}</button>))}
         </div>
         <div className="flex items-center gap-2">
+          <div className="relative">
+            <button type="button" onClick={() => setGlyphOpen((v) => !v)} className="text-[11px] text-muted-foreground hover:text-foreground border border-border rounded px-2 py-1">Glyph</button>
+            {glyphOpen && (
+              <div className="absolute right-0 z-20 mt-1">
+                <GlyphToolbar textareaRef={glyphTargetRef} onChange={(v) => { focusRef.current?.set(v); }} />
+              </div>
+            )}
+          </div>
           <button type="button" onClick={() => setAdv((v) => !v)} className="text-[11px] text-muted-foreground hover:text-foreground">{adv ? "Hide advanced" : "Show advanced"}</button>
           <button type="button" onClick={save} disabled={saving} className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-primary text-primary-foreground text-xs hover:bg-primary/90 disabled:opacity-50">{saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />} Save content</button>
         </div>
