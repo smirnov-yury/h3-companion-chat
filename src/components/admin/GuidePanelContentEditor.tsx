@@ -104,8 +104,8 @@ export default function GuidePanelContentEditor({ panel, sectionSlug, panelSort,
     <div>
       <label className="block text-[10px] text-muted-foreground mb-0.5">{label} ({lang.toUpperCase()})</label>
       {area
-        ? <textarea value={loc(obj, k)} onChange={(e) => setLocPath(path, e.target.value)} rows={2} className={`${FIELD} resize-y`} />
-        : <input value={loc(obj, k)} onChange={(e) => setLocPath(path, e.target.value)} className={FIELD} />}
+        ? <textarea value={loc(obj, k)} onFocus={(e) => { focusRef.current = { el: e.currentTarget, set: (v) => setLocPath(path, v) }; }} onChange={(e) => setLocPath(path, e.target.value)} rows={2} className={`${FIELD} resize-y`} />
+        : <input value={loc(obj, k)} onFocus={(e) => { focusRef.current = { el: e.currentTarget, set: (v) => setLocPath(path, v) }; }} onChange={(e) => setLocPath(path, e.target.value)} className={FIELD} />}
     </div>
   );
   const imgSlot = (slotKey: string, current: string | null, imgPath: (string | number)[]) => {
