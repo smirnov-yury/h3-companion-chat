@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { GLYPH_SVGS } from "@/utils/glyphSvgs";
 
 interface GlyphToolbarProps {
@@ -52,39 +53,60 @@ function insertAtCursor(
 }
 
 export default function GlyphToolbar({ textareaRef, onChange }: GlyphToolbarProps) {
+  const [search, setSearch] = useState("");
+  const q = search.toLowerCase().trim();
+
+  const filtered = GLYPH_GROUPS.map((group) => ({
+    ...group,
+    tokens: q ? group.tokens.filter((t) => t.includes(q)) : group.tokens,
+  })).filter((g) => g.tokens.length > 0);
+
   return (
-    <div className="flex flex-wrap gap-3 p-2 rounded-lg border border-border bg-muted/20">
-      {GLYPH_GROUPS.map((group) => (
-        <div key={group.label} className="flex flex-col gap-1">
-          <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
-            {group.label}
-          </span>
-          <div className="flex flex-wrap gap-1">
-            {group.tokens.map((token) => {
-              const svg = GLYPH_SVGS[token];
-              if (!svg) return null;
-              const sized = svg.replace(
-                "<svg ",
-                `<svg class="w-5 h-5" `,
-              );
-              return (
-                <button
-                  key={token}
-                  type="button"
-                  title={`<${token}>`}
-                  onClick={() => {
-                    if (textareaRef.current) {
-                      insertAtCursor(textareaRef.current, token, onChange);
-                    }
-                  }}
-                  className="w-7 h-7 flex items-center justify-center rounded hover:bg-accent border border-transparent hover:border-border transition-colors shrink-0"
-                  dangerouslySetInnerHTML={{ __html: sized }}
-                />
-              );
-            })}
+    <div className="flex flex-col gap-2 p-2 rounded-lg border border-border bg-muted/20 w-full">
+      <input
+        type="text"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        placeholder="Search glyphs..."
+        className="w-full bg-transparent text-xs text-foreground outline-none border border-border rounded px-2 py-1 placeholder:text-muted-foreground"
+        autoFocus
+      />
+      <div className="flex flex-wrap gap-3 max-h-[400px] overflow-y-auto">
+        {filtered.map((group) => (
+          <div key={group.label} className="flex flex-col gap-1">
+            <span className="text-[10px] uppercase tracking-wide text-muted-foreground">
+              {group.label}
+            </span>
+            <div className="flex flex-wrap gap-1">
+              {group.tokens.map((token) => {
+                const svg = GLYPH_SVGS[token];
+                if (!svg) return null;
+                const sized = svg.replace(
+                  "<svg ",
+                  `<svg class="w-5 h-5" `,
+                );
+                return (
+                  <button
+                    key={token}
+                    type="button"
+                    title={`<${token}>`}
+                    onClick={() => {
+                      if (textareaRef.current) {
+                        insertAtCursor(textareaRef.current, token, onChange);
+                      }
+                    }}
+                    className="w-7 h-7 flex items-center justify-center rounded hover:bg-accent border border-transparent hover:border-border transition-colors shrink-0"
+                    dangerouslySetInnerHTML={{ __html: sized }}
+                  />
+                );
+              })}
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+        {filtered.length === 0 && (
+          <span className="text-xs text-muted-foreground italic">No glyphs match</span>
+        )}
+      </div>
     </div>
   );
 }
