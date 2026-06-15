@@ -29,11 +29,10 @@ import SectionsEditor from "@/components/admin/SectionsEditor";
 const NAV_ITEMS: Array<
   | { path: string; label: string; icon: React.ElementType }
   | { label: string; icon: React.ElementType; children: { path: string; label: string }[] }
+  | { type: "section"; label: string }
 > = [
   { path: "", label: "Dashboard", icon: LayoutDashboard },
-  { path: "sections", label: "Navigation", icon: ListTree },
-  { path: "content-types", label: "Content Types", icon: Boxes },
-  { path: "content-items", label: "Content Items", icon: Package },
+  { type: "section", label: "Content" },
   { path: "rules", label: "Rules", icon: BookOpen },
   { path: "scenarios", label: "Scenarios", icon: Map },
   {
@@ -67,11 +66,16 @@ const NAV_ITEMS: Array<
   { path: "heroes", label: "Heroes", icon: Crown },
   { path: "guide", label: "Guide", icon: GraduationCap },
   { path: "towns", label: "Towns", icon: Building2 },
+  { type: "section", label: "Adjustments" },
+  { path: "sections", label: "Navigation", icon: ListTree },
+  { path: "content-types", label: "Content Types", icon: Boxes },
+  { path: "content-items", label: "Content Items", icon: Package },
   { path: "about-page", label: "About Page", icon: FileText },
   { path: "filter-groups", label: "Filter Groups", icon: ListFilter },
+  { path: "maintenance", label: "Maintenance", icon: Wrench },
+  { type: "section", label: "Website health" },
   { path: "audit-log", label: "Audit Log", icon: ScrollText },
   { path: "ai-metrics", label: "AI Metrics", icon: BarChart3 },
-  { path: "maintenance", label: "Maintenance", icon: Wrench },
 ];
 
 function SidebarLink({ path, label, icon: Icon, onNavigate }: { path: string; label: string; icon?: React.ElementType; onNavigate?: () => void }) {
@@ -158,7 +162,12 @@ export default function AdminPanel() {
       </div>
       <nav className="flex-1 overflow-y-auto p-2 space-y-1">
         {NAV_ITEMS.map((item, i) =>
-          "children" in item ? (
+          "type" in item ? (
+            <div key={i} className="flex items-center gap-2 mt-3 mb-1 px-2">
+              <span className="text-[10px] uppercase tracking-widest text-muted-foreground whitespace-nowrap">{item.label}</span>
+              <div className="flex-1 h-px bg-border" />
+            </div>
+          ) : "children" in item ? (
             <SidebarGroup key={i} label={item.label} icon={item.icon} children={item.children} onNavigate={closeMobile} />
           ) : (
             <SidebarLink key={i} path={item.path} label={item.label} icon={item.icon} onNavigate={closeMobile} />
