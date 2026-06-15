@@ -29,11 +29,10 @@ import SectionsEditor from "@/components/admin/SectionsEditor";
 const NAV_ITEMS: Array<
   | { path: string; label: string; icon: React.ElementType }
   | { label: string; icon: React.ElementType; children: { path: string; label: string }[] }
+  | { type: "section"; label: string }
 > = [
   { path: "", label: "Dashboard", icon: LayoutDashboard },
-  { path: "sections", label: "Navigation", icon: ListTree },
-  { path: "content-types", label: "Content Types", icon: Boxes },
-  { path: "content-items", label: "Content Items", icon: Package },
+  { type: "section", label: "Content" },
   { path: "rules", label: "Rules", icon: BookOpen },
   { path: "scenarios", label: "Scenarios", icon: Map },
   {
@@ -67,11 +66,16 @@ const NAV_ITEMS: Array<
   { path: "heroes", label: "Heroes", icon: Crown },
   { path: "guide", label: "Guide", icon: GraduationCap },
   { path: "towns", label: "Towns", icon: Building2 },
+  { type: "section", label: "Adjustments" },
+  { path: "sections", label: "Navigation", icon: ListTree },
+  { path: "content-types", label: "Content Types", icon: Boxes },
+  { path: "content-items", label: "Content Items", icon: Package },
   { path: "about-page", label: "About Page", icon: FileText },
   { path: "filter-groups", label: "Filter Groups", icon: ListFilter },
+  { path: "maintenance", label: "Maintenance", icon: Wrench },
+  { type: "section", label: "Website health" },
   { path: "audit-log", label: "Audit Log", icon: ScrollText },
   { path: "ai-metrics", label: "AI Metrics", icon: BarChart3 },
-  { path: "maintenance", label: "Maintenance", icon: Wrench },
 ];
 
 function SidebarLink({ path, label, icon: Icon, onNavigate }: { path: string; label: string; icon?: React.ElementType; onNavigate?: () => void }) {
