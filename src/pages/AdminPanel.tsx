@@ -162,7 +162,7 @@ export default function AdminPanel() {
       </div>
       <nav className="flex-1 overflow-y-auto p-2 space-y-1">
         {NAV_ITEMS.map((item, i) =>
-          item.type === "section" ? (
+          "type" in item ? (
             <div key={i} className="flex items-center gap-2 mt-3 mb-1 px-2">
               <span className="text-[10px] uppercase tracking-widest text-muted-foreground whitespace-nowrap">{item.label}</span>
               <div className="flex-1 h-px bg-border" />
