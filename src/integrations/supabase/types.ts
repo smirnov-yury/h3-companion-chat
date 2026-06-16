@@ -158,6 +158,7 @@ export type Database = {
           input_tokens: number
           ip_hash: string | null
           is_dont_know: boolean | null
+          is_eval: boolean
           lang: string | null
           latency_ms: number | null
           model: string
@@ -176,6 +177,7 @@ export type Database = {
           input_tokens?: number
           ip_hash?: string | null
           is_dont_know?: boolean | null
+          is_eval?: boolean
           lang?: string | null
           latency_ms?: number | null
           model: string
@@ -194,6 +196,7 @@ export type Database = {
           input_tokens?: number
           ip_hash?: string | null
           is_dont_know?: boolean | null
+          is_eval?: boolean
           lang?: string | null
           latency_ms?: number | null
           model?: string
@@ -638,6 +641,54 @@ export type Database = {
         }
         Relationships: []
       }
+      dev_eval_results: {
+        Row: {
+          ans: boolean | null
+          answer_excerpt: string | null
+          citations: Json | null
+          cite: boolean | null
+          ent: boolean | null
+          http_status: number | null
+          idk: boolean | null
+          lang: string | null
+          latency_ms: number | null
+          model: string | null
+          question_id: number
+          run_id: string
+          scored_at: string
+        }
+        Insert: {
+          ans?: boolean | null
+          answer_excerpt?: string | null
+          citations?: Json | null
+          cite?: boolean | null
+          ent?: boolean | null
+          http_status?: number | null
+          idk?: boolean | null
+          lang?: string | null
+          latency_ms?: number | null
+          model?: string | null
+          question_id: number
+          run_id: string
+          scored_at?: string
+        }
+        Update: {
+          ans?: boolean | null
+          answer_excerpt?: string | null
+          citations?: Json | null
+          cite?: boolean | null
+          ent?: boolean | null
+          http_status?: number | null
+          idk?: boolean | null
+          lang?: string | null
+          latency_ms?: number | null
+          model?: string | null
+          question_id?: number
+          run_id?: string
+          scored_at?: string
+        }
+        Relationships: []
+      }
       dev_eval_runs: {
         Row: {
           fired_at: string | null
@@ -669,6 +720,51 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      dev_eval_schedule: {
+        Row: {
+          chunk_size: number
+          enabled: boolean
+          id: number
+          last_run_date: string | null
+          last_status: string | null
+          last_tick: string | null
+          max_qid: number
+          min_qid: number
+          next_qid: number
+          run_id: string | null
+          window_end_hour: number
+          window_start_hour: number
+        }
+        Insert: {
+          chunk_size?: number
+          enabled?: boolean
+          id?: number
+          last_run_date?: string | null
+          last_status?: string | null
+          last_tick?: string | null
+          max_qid?: number
+          min_qid?: number
+          next_qid?: number
+          run_id?: string | null
+          window_end_hour?: number
+          window_start_hour?: number
+        }
+        Update: {
+          chunk_size?: number
+          enabled?: boolean
+          id?: number
+          last_run_date?: string | null
+          last_status?: string | null
+          last_tick?: string | null
+          max_qid?: number
+          min_qid?: number
+          next_qid?: number
+          run_id?: string | null
+          window_end_hour?: number
+          window_start_hour?: number
+        }
+        Relationships: []
       }
       entities: {
         Row: {
@@ -1415,6 +1511,36 @@ export type Database = {
           search_text_ru?: string | null
           sort_order?: number | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      query_synonyms: {
+        Row: {
+          canonical: string
+          created_at: string
+          id: number
+          is_active: boolean
+          lang: string | null
+          note: string | null
+          pattern: string
+        }
+        Insert: {
+          canonical: string
+          created_at?: string
+          id?: never
+          is_active?: boolean
+          lang?: string | null
+          note?: string | null
+          pattern: string
+        }
+        Update: {
+          canonical?: string
+          created_at?: string
+          id?: never
+          is_active?: boolean
+          lang?: string | null
+          note?: string | null
+          pattern?: string
         }
         Relationships: []
       }
@@ -2605,6 +2731,21 @@ export type Database = {
         }
         Relationships: []
       }
+      v_ai_usage_daily: {
+        Row: {
+          chat: number | null
+          chat_en: number | null
+          chat_ru: number | null
+          day: string | null
+          errors: number | null
+          idk: number | null
+          p50_ms: number | null
+          p95_ms: number | null
+          users: number | null
+          voice: number | null
+        }
+        Relationships: []
+      }
       v_db_audit_log_recent: {
         Row: {
           action: string | null
@@ -2663,8 +2804,8 @@ export type Database = {
       cleanup_audit_log: { Args: never; Returns: undefined }
       cleanup_expired_game_sessions: { Args: never; Returns: undefined }
       dev_eval_collect: { Args: { p_run_id: string }; Returns: Json }
+      dev_eval_cron_tick: { Args: never; Returns: string }
       dev_eval_extract_citations: { Args: { answer: string }; Returns: Json }
-      dev_eval_fire_all: { Args: { p_anon_key: string }; Returns: string }
       dev_eval_fire_batch: {
         Args: {
           p_anon_key: string
@@ -2675,20 +2816,20 @@ export type Database = {
         Returns: number
       }
       dev_eval_parse_sse: { Args: { body: string }; Returns: string }
-      dev_eval_run_full: {
-        Args: {
-          p_anon_key: string
-          p_batch_size?: number
-          p_pause_sec?: number
-          p_run_id: string
-        }
-        Returns: Json
-      }
+      dev_eval_report: { Args: { p_run_id: string }; Returns: Json }
       dev_eval_score: {
         Args: { answer: string; expect_any_of: Json; expect_dont_know: boolean }
         Returns: Json
       }
+      dev_eval_score_batch: {
+        Args: { p_end: number; p_run_id: string; p_start: number }
+        Returns: Json
+      }
       dev_eval_start_run: { Args: never; Returns: string }
+      expand_query_synonyms: {
+        Args: { p_lang?: string; p_query: string }
+        Returns: string
+      }
       find_storage_orphans: {
         Args: never
         Returns: {
