@@ -25,6 +25,7 @@ import ScenariosEditor from "@/components/admin/ScenariosEditor";
 import AiMetricsEditor from "@/components/admin/AiMetricsEditor";
 import MaintenanceEditor from "@/components/admin/MaintenanceEditor";
 import SectionsEditor from "@/components/admin/SectionsEditor";
+import CronJobsMonitor from "@/components/admin/CronJobsMonitor";
 
 const NAV_ITEMS: Array<
   | { path: string; label: string; icon: React.ElementType }
@@ -76,6 +77,7 @@ const NAV_ITEMS: Array<
   { type: "section", label: "Website health" },
   { path: "audit-log", label: "Audit Log", icon: ScrollText },
   { path: "ai-metrics", label: "AI Metrics", icon: BarChart3 },
+  { path: "cron-jobs", label: "Cron / Jobs", icon: ListTree },
 ];
 
 function SidebarLink({ path, label, icon: Icon, onNavigate }: { path: string; label: string; icon?: React.ElementType; onNavigate?: () => void }) {
@@ -243,6 +245,7 @@ export default function AdminPanel() {
             <Route path="filter-groups" element={<FilterGroupsEditor />} />
             <Route path="audit-log" element={<AuditLog />} />
             <Route path="ai-metrics" element={<AiMetricsEditor />} />
+            <Route path="cron-jobs" element={<CronJobsMonitor />} />
             <Route path="maintenance" element={<MaintenanceEditor />} />
             <Route path="*" element={<Navigate to="" replace />} />
           </Routes>

@@ -578,6 +578,42 @@ export type Database = {
         }
         Relationships: []
       }
+      cron_job_meta: {
+        Row: {
+          expected_interval: string | null
+          human_schedule: string | null
+          is_critical: boolean
+          jobname: string
+          owner: string | null
+          purpose: string | null
+          stuck_after: string
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          expected_interval?: string | null
+          human_schedule?: string | null
+          is_critical?: boolean
+          jobname: string
+          owner?: string | null
+          purpose?: string | null
+          stuck_after?: string
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          expected_interval?: string | null
+          human_schedule?: string | null
+          is_critical?: boolean
+          jobname?: string
+          owner?: string | null
+          purpose?: string | null
+          stuck_after?: string
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       db_audit_log: {
         Row: {
           action: string
@@ -2746,6 +2782,30 @@ export type Database = {
         }
         Relationships: []
       }
+      v_cron_status: {
+        Row: {
+          active: boolean | null
+          avg_sec_7d: number | null
+          cron_expr: string | null
+          failed_7d: number | null
+          health: string | null
+          is_critical: boolean | null
+          jobid: number | null
+          jobname: string | null
+          last_duration_sec: number | null
+          last_end: string | null
+          last_message: string | null
+          last_run_status: string | null
+          last_start: string | null
+          ok_7d: number | null
+          owner: string | null
+          purpose: string | null
+          runs_7d: number | null
+          schedule_human: string | null
+          title: string | null
+        }
+        Relationships: []
+      }
       v_db_audit_log_recent: {
         Row: {
           action: string | null
@@ -2795,6 +2855,7 @@ export type Database = {
       }
     }
     Functions: {
+      admin_cron_status: { Args: never; Returns: Json }
       bump_pwa_refresh_version: { Args: never; Returns: Json }
       check_and_increment_rate_limit: {
         Args: { p_ip_hash: string; p_max_per_hour?: number }
