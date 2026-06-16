@@ -168,8 +168,8 @@ export default function CronJobsMonitor() {
                   const isOpen = expanded[j.jobid];
                   const v = healthVariant(j.health);
                   return (
-                    <>
-                      <tr key={j.jobid} className="border-t border-border align-top">
+                    <Fragment key={j.jobid}>
+                      <tr className="border-t border-border align-top">
                         <td className="px-3 py-3">
                           <button
                             type="button"
