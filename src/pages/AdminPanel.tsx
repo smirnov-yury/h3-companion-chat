@@ -25,6 +25,7 @@ import ScenariosEditor from "@/components/admin/ScenariosEditor";
 import AiMetricsEditor from "@/components/admin/AiMetricsEditor";
 import MaintenanceEditor from "@/components/admin/MaintenanceEditor";
 import SectionsEditor from "@/components/admin/SectionsEditor";
+import CronJobsMonitor from "@/components/admin/CronJobsMonitor";
 
 const NAV_ITEMS: Array<
   | { path: string; label: string; icon: React.ElementType }
