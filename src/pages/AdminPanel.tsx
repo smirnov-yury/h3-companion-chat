@@ -77,6 +77,7 @@ const NAV_ITEMS: Array<
   { type: "section", label: "Website health" },
   { path: "audit-log", label: "Audit Log", icon: ScrollText },
   { path: "ai-metrics", label: "AI Metrics", icon: BarChart3 },
+  { path: "cron-jobs", label: "Cron / Jobs", icon: ListTree },
 ];
 
 function SidebarLink({ path, label, icon: Icon, onNavigate }: { path: string; label: string; icon?: React.ElementType; onNavigate?: () => void }) {
