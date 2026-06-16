@@ -25,9 +25,11 @@ type DeleteTarget = { type: "section" | "panel"; id: string } | null;
 
 const PANEL_KINDS = ["standard", "anatomy", "types", "example"];
 
-function SortableSectionRow({ sec, count, onOpen, onToggleVisible, onDelete }: {
-  sec: GuideSection; count: number; onOpen: () => void; onToggleVisible: () => void; onDelete: () => void;
+function SortableSectionRow({ sec, count, onOpen, onToggleVisible, onDelete, onRename }: {
+  sec: GuideSection; count: number; onOpen: () => void; onToggleVisible: () => void; onDelete: () => void; onRename: (newLabel: string) => void;
 }) {
+  const [renaming, setRenaming] = useState(false);
+  const [nameVal, setNameVal] = useState(sec.label_en);
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: sec.id });
   const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.6 : 1 };
   return (
@@ -35,13 +37,18 @@ function SortableSectionRow({ sec, count, onOpen, onToggleVisible, onDelete }: {
       <button type="button" {...attributes} {...listeners} className="text-muted-foreground hover:text-foreground cursor-grab active:cursor-grabbing" title="Drag"><GripVertical className="w-4 h-4" /></button>
       <button type="button" onClick={onOpen} className="flex-1 flex items-center gap-3 text-left min-w-0">
         <span className="font-mono text-xs text-muted-foreground w-32 shrink-0 truncate">{sec.slug}</span>
-        <span className="text-sm text-foreground truncate flex-1">{sec.label_en}</span>
+        {renaming ? (
+          <input autoFocus value={nameVal} onChange={(e) => setNameVal(e.target.value)} onBlur={() => { onRename(nameVal); setRenaming(false); }} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); onRename(nameVal); setRenaming(false); } if (e.key === "Escape") { setNameVal(sec.label_en); setRenaming(false); } }} onClick={(e) => e.stopPropagation()} className="flex-1 min-w-0 bg-transparent text-sm text-foreground border-b border-primary outline-none px-0" />
+        ) : (
+          <span className="text-sm text-foreground truncate flex-1">{sec.label_en}</span>
+        )}
         <span className="text-[11px] text-muted-foreground shrink-0">{count} panels</span>
         <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
       </button>
       <button type="button" onClick={onToggleVisible} className="text-muted-foreground hover:text-foreground" title={sec.is_visible ? "Hide" : "Show"}>
         {sec.is_visible ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
       </button>
+      <button type="button" onClick={(e) => { e.stopPropagation(); setNameVal(sec.label_en); setRenaming(true); }} className="text-muted-foreground hover:text-foreground" title="Rename"><Pencil className="w-4 h-4" /></button>
       <button type="button" onClick={onDelete} className="text-destructive/60 hover:text-destructive" title="Delete"><Trash2 className="w-4 h-4" /></button>
     </div>
   );
@@ -195,7 +202,8 @@ export default function GuideEditor() {
                   <SortableSectionRow key={sec.id} sec={sec} count={(panelsBySection[sec.id] ?? []).length}
                     onOpen={() => { setSecId(sec.id); setView("panels"); setEditMeta(false); }}
                     onToggleVisible={() => toggleSectionVisible(sec.id)}
-                    onDelete={() => setDeleteTarget({ type: "section", id: sec.id })} />
+                    onDelete={() => setDeleteTarget({ type: "section", id: sec.id })}
+                    onRename={(newLabel) => { editSection(sec.id, "label_en", newLabel); saveSection(sec.id); }} />
                 ))}
               </div>
             </SortableContext>
