@@ -235,7 +235,7 @@ export default function CronJobsMonitor() {
                           </td>
                         </tr>
                       )}
-                    </>
+                    </Fragment>
                   );
                 })}
               </tbody>
