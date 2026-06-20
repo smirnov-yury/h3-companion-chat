@@ -1254,6 +1254,7 @@ export default function GuideTab() {
                   lang={lang}
                   openModal={openModal}
                   navigate={navigate}
+                  updatedAt={panel.updated_at}
                 />
               )}
               {panel.kind === "anatomy" && (
@@ -1264,6 +1265,7 @@ export default function GuideTab() {
                   hot={hot}
                   setHot={setHot}
                   openModal={openModal}
+                  updatedAt={panel.updated_at}
                 />
               )}
               {panel.kind === "types" && (
