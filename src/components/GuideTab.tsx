@@ -1351,6 +1351,14 @@ export default function GuideTab() {
           {modal && (
             <div className="flex flex-col h-full">
               <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-14 py-12">
+                <div className="mb-3">
+                  <ModalImage
+                    imagePath={modal.imagePath}
+                    layoutId={modal.imageLayout}
+                    note={modal.imageNote}
+                    updatedAt={curPanelForModal?.updated_at}
+                  />
+                </div>
                 <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
                   <GlyphIcon glyph={modal.glyph} size={22} />
                   <span>{modal.title}</span>
@@ -1362,12 +1370,6 @@ export default function GuideTab() {
                     dangerouslySetInnerHTML={{ __html: renderGlyphs(modal.text, glyphs) }}
                   />
                 )}
-                <ModalImage
-                  imagePath={modal.imagePath}
-                  layoutId={modal.imageLayout}
-                  note={modal.imageNote}
-                  updatedAt={curPanelForModal?.updated_at}
-                />
                 {modal.route && (
                   <Button
                     className="w-full mt-4"
