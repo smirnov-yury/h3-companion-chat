@@ -415,7 +415,7 @@ function AnatomyPanel({
     <div className="space-y-4">
       {lead && <p className="text-sm text-muted-foreground"><RichInline text={lead} /></p>}
       {!!intro.length && <BulletList lines={intro} />}
-      <div className={frame === "card" ? "max-w-xs mx-auto" : ""}>
+      <div>
         <Figure
           imagePath={content.image_path}
           aspect={frame}
