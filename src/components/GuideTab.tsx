@@ -199,7 +199,7 @@ function FigurePlaceholder({
   const tagClass = src === "st"
     ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
     : "bg-amber-500/15 text-amber-600 dark:text-amber-400";
-  const aspectClass = aspect === "card" ? "aspect-[5/7]" : "aspect-[16/10]";
+  const aspectClass = "aspect-[16/10]";
   return (
     <div className={`relative w-full ${aspectClass} rounded-lg border-2 border-dashed border-border bg-muted/30 flex flex-col items-center justify-center text-center p-4`}>
       <div className="text-xs text-muted-foreground">{cap || (lang === "RU" ? "Изображение скоро" : "Image coming soon")}</div>
