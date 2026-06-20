@@ -4,6 +4,7 @@ import { Plus, Trash2, ChevronUp, ChevronDown, Save, Loader2, MapPin } from "luc
 import ImageUploader from "@/components/admin/ImageUploader";
 import { componentMediaUrl } from "@/lib/storage";
 import GlyphToolbar from "@/components/admin/GlyphToolbar";
+import EntityLinkToolbar from "@/components/admin/EntityLinkToolbar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 interface Props {
