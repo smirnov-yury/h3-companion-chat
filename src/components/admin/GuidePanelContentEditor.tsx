@@ -159,6 +159,14 @@ export default function GuidePanelContentEditor({ panel, sectionSlug, panelSort,
               <GlyphToolbar textareaRef={glyphTargetRef} onChange={(v) => { focusRef.current?.set(v); setGlyphOpen(false); }} />
             </PopoverContent>
           </Popover>
+          <Popover open={linkOpen} onOpenChange={setLinkOpen}>
+            <PopoverTrigger asChild>
+              <button type="button" className="text-[11px] text-muted-foreground hover:text-foreground border border-border rounded px-2 py-1">Link</button>
+            </PopoverTrigger>
+            <PopoverContent className="w-[360px] p-0">
+              <EntityLinkToolbar textareaRef={glyphTargetRef} onChange={(v) => { focusRef.current?.set(v); setLinkOpen(false); }} />
+            </PopoverContent>
+          </Popover>
           <button type="button" onClick={() => setAdv((v) => !v)} className="text-[11px] text-muted-foreground hover:text-foreground">{adv ? "Hide advanced" : "Show advanced"}</button>
           <button type="button" onClick={save} disabled={saving} className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-primary text-primary-foreground text-xs hover:bg-primary/90 disabled:opacity-50">{saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />} Save content</button>
         </div>
