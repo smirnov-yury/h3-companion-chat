@@ -232,7 +232,7 @@ function Figure({
   updatedAt?: string | null;
   children?: React.ReactNode;
 }) {
-  const aspectClass = aspect === "card" ? "aspect-[5/7]" : "aspect-[16/10]";
+  const aspectClass = "aspect-[16/10]";
   if (!imagePath) {
     return (
       <div className="relative">
