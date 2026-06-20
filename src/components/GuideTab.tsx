@@ -673,27 +673,17 @@ function ModalImage({
   updatedAt?: string | null;
 }) {
   const layout = useCardLayoutById(layoutId ?? null);
+  void layout;
   if (imagePath) {
-    if (!layoutId) {
-      return (
-        <img
-          src={withVer(componentMediaUrl(imagePath), updatedAt)}
-          alt=""
-          className="w-full max-h-48 object-contain rounded-md bg-muted/30 border border-border"
-        />
-      );
-    }
-    const ar = (layout.aspectRatio ?? "5/7").replace("/", " / ");
     return (
       <div
         className="rounded-md overflow-hidden bg-muted/30 border border-border w-full"
-        style={{ aspectRatio: ar }}
+        style={{ aspectRatio: "16 / 10" }}
       >
         <img
           src={withVer(componentMediaUrl(imagePath), updatedAt)}
           alt=""
-          className="w-full h-full"
-          style={{ objectFit: layout.objectFit, objectPosition: layout.objectPosition }}
+          className="w-full h-full object-contain"
         />
       </div>
     );
