@@ -1376,6 +1376,7 @@ export default function GuideTab() {
                   imagePath={modal.imagePath}
                   layoutId={modal.imageLayout}
                   note={modal.imageNote}
+                  updatedAt={curPanelForModal?.updated_at}
                 />
                 {modal.route && (
                   <Button
