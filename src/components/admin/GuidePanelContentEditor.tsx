@@ -169,10 +169,9 @@ export default function GuidePanelContentEditor({ panel, sectionSlug, panelSort,
             {kind === "standard" && Lfield("Caption", content, "cap", ["cap"])}
             {kind === "anatomy" && Lfield("Figure name", content, "uname", ["uname"])}
             {Lfield("Image note", content, "image_note", ["image_note"], true)}
-                {adv && <div><label className="block text-[10px] text-muted-foreground mb-0.5">PDF page</label><input type="number" value={content.page ?? ""} onChange={(e) => setNumPath(["page"], e.target.value)} className={`${FIELD} w-20`} /></div>}
+            {adv && (
               <div className="flex gap-3">
                 <div><label className="block text-[10px] text-muted-foreground mb-0.5">PDF page</label><input type="number" value={content.page ?? ""} onChange={(e) => setNumPath(["page"], e.target.value)} className={`${FIELD} w-20`} /></div>
-                {kind === "anatomy" && <div><label className="block text-[10px] text-muted-foreground mb-0.5">Frame</label><select value={content.frame ?? "card"} onChange={(e) => setStrPath(["frame"], e.target.value)} className="bg-transparent text-xs border-b border-border outline-none"><option value="card">card</option><option value="board">board</option></select></div>}
               </div>
             )}
           </div>
