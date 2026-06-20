@@ -396,6 +396,7 @@ function AnatomyPanel({
   hot,
   setHot,
   openModal,
+  updatedAt,
 }: {
   content: any;
   title: string;
@@ -403,6 +404,7 @@ function AnatomyPanel({
   hot: number | null;
   setHot: (n: number | null) => void;
   openModal: (key: string, m: ModalState) => void;
+  updatedAt?: string | null;
 }) {
   const frame: "card" | "board" = content.frame === "board" ? "board" : "card";
   const lead = tr(content.lead, lang);
@@ -422,6 +424,7 @@ function AnatomyPanel({
           src="pdf"
           note={tr(content.image_note, lang)}
           lang={lang}
+          updatedAt={updatedAt}
         >
           {callouts.map((c, i) => {
             if (c.noPin) return null;
