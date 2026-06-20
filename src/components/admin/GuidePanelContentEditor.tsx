@@ -33,6 +33,7 @@ export default function GuidePanelContentEditor({ panel, sectionSlug, panelSort,
   const dragRef = useRef<number | null>(null);
   const boardRef = useRef<HTMLDivElement | null>(null);
   const [glyphOpen, setGlyphOpen] = useState(false);
+  const [previewVer, setPreviewVer] = useState<number>(() => Date.now());
   const focusRef = useRef<{ el: HTMLInputElement | HTMLTextAreaElement; set: (v: string) => void } | null>(null);
   const glyphTargetRef = { get current() { return focusRef.current?.el ?? null; } } as React.RefObject<HTMLTextAreaElement>;
   const contentRef = useRef<any>(content);
