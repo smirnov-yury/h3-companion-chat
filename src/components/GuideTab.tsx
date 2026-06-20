@@ -292,12 +292,14 @@ function StandardPanel({
   title,
   lang,
   openModal,
+  updatedAt,
 }: {
   content: any;
   title: string;
   lang: Lang;
   openModal: (key: string, m: ModalState) => void;
   navigate: (to: string) => void;
+  updatedAt?: string | null;
 }) {
   const cap = tr(content.cap, lang);
   const points: any[] = Array.isArray(content.points) ? content.points : [];
@@ -313,6 +315,7 @@ function StandardPanel({
         folder={content.folder}
         note={tr(content.image_note, lang)}
         lang={lang}
+        updatedAt={updatedAt}
       />
       {!!points.length && (
         <ul className="space-y-2">
