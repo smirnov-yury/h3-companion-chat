@@ -71,7 +71,7 @@ export default function GuidePanelContentEditor({ panel, sectionSlug, panelSort,
     await persist(next);
   };
 
-  const save = async () => { setSaving(true); await persist(clone(contentRef.current)); setSaving(false); };
+  const save = async () => { setSaving(true); await persist(clone(contentRef.current)); setPreviewVer(Date.now()); setSaving(false); };
 
   const callouts: any[] = Array.isArray(content.callouts) ? content.callouts : [];
   const nextPin = () => callouts.reduce((m: number, c: any) => Math.max(m, typeof c.pin === "number" ? c.pin : 0), 0) + 1;
