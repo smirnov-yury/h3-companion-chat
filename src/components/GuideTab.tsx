@@ -199,7 +199,7 @@ function FigurePlaceholder({
   const tagClass = src === "st"
     ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
     : "bg-amber-500/15 text-amber-600 dark:text-amber-400";
-  const aspectClass = aspect === "card" ? "aspect-[5/7]" : "aspect-[16/10]";
+  const aspectClass = "aspect-[16/10]";
   return (
     <div className={`relative w-full ${aspectClass} rounded-lg border-2 border-dashed border-border bg-muted/30 flex flex-col items-center justify-center text-center p-4`}>
       <div className="text-xs text-muted-foreground">{cap || (lang === "RU" ? "Изображение скоро" : "Image coming soon")}</div>
@@ -232,7 +232,7 @@ function Figure({
   updatedAt?: string | null;
   children?: React.ReactNode;
 }) {
-  const aspectClass = aspect === "card" ? "aspect-[5/7]" : "aspect-[16/10]";
+  const aspectClass = "aspect-[16/10]";
   if (!imagePath) {
     return (
       <div className="relative">
@@ -415,7 +415,7 @@ function AnatomyPanel({
     <div className="space-y-4">
       {lead && <p className="text-sm text-muted-foreground"><RichInline text={lead} /></p>}
       {!!intro.length && <BulletList lines={intro} />}
-      <div className={frame === "card" ? "max-w-xs mx-auto" : ""}>
+      <div>
         <Figure
           imagePath={content.image_path}
           aspect={frame}
@@ -673,27 +673,17 @@ function ModalImage({
   updatedAt?: string | null;
 }) {
   const layout = useCardLayoutById(layoutId ?? null);
+  void layout;
   if (imagePath) {
-    if (!layoutId) {
-      return (
-        <img
-          src={withVer(componentMediaUrl(imagePath), updatedAt)}
-          alt=""
-          className="w-full max-h-48 object-contain rounded-md bg-muted/30 border border-border"
-        />
-      );
-    }
-    const ar = (layout.aspectRatio ?? "5/7").replace("/", " / ");
     return (
       <div
         className="rounded-md overflow-hidden bg-muted/30 border border-border w-full"
-        style={{ aspectRatio: ar }}
+        style={{ aspectRatio: "16 / 10" }}
       >
         <img
           src={withVer(componentMediaUrl(imagePath), updatedAt)}
           alt=""
-          className="w-full h-full"
-          style={{ objectFit: layout.objectFit, objectPosition: layout.objectPosition }}
+          className="w-full h-full object-contain"
         />
       </div>
     );
@@ -1361,6 +1351,14 @@ export default function GuideTab() {
           {modal && (
             <div className="flex flex-col h-full">
               <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-14 py-12">
+                <div className="mb-3">
+                  <ModalImage
+                    imagePath={modal.imagePath}
+                    layoutId={modal.imageLayout}
+                    note={modal.imageNote}
+                    updatedAt={curPanelForModal?.updated_at}
+                  />
+                </div>
                 <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
                   <GlyphIcon glyph={modal.glyph} size={22} />
                   <span>{modal.title}</span>
@@ -1372,12 +1370,6 @@ export default function GuideTab() {
                     dangerouslySetInnerHTML={{ __html: renderGlyphs(modal.text, glyphs) }}
                   />
                 )}
-                <ModalImage
-                  imagePath={modal.imagePath}
-                  layoutId={modal.imageLayout}
-                  note={modal.imageNote}
-                  updatedAt={curPanelForModal?.updated_at}
-                />
                 {modal.route && (
                   <Button
                     className="w-full mt-4"

@@ -4,6 +4,7 @@ import { Plus, Trash2, ChevronUp, ChevronDown, Save, Loader2, MapPin } from "luc
 import ImageUploader from "@/components/admin/ImageUploader";
 import { componentMediaUrl } from "@/lib/storage";
 import GlyphToolbar from "@/components/admin/GlyphToolbar";
+import EntityLinkToolbar from "@/components/admin/EntityLinkToolbar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 interface Props {
@@ -33,6 +34,7 @@ export default function GuidePanelContentEditor({ panel, sectionSlug, panelSort,
   const dragRef = useRef<number | null>(null);
   const boardRef = useRef<HTMLDivElement | null>(null);
   const [glyphOpen, setGlyphOpen] = useState(false);
+  const [linkOpen, setLinkOpen] = useState(false);
   const [previewVer, setPreviewVer] = useState<number>(() => Date.now());
   const focusRef = useRef<{ el: HTMLInputElement | HTMLTextAreaElement; set: (v: string) => void } | null>(null);
   const glyphTargetRef = { get current() { return focusRef.current?.el ?? null; } } as React.RefObject<HTMLTextAreaElement>;
@@ -114,7 +116,7 @@ export default function GuidePanelContentEditor({ panel, sectionSlug, panelSort,
     const base = basename(current);
     return (
       <div className="w-32 shrink-0">
-        <ImageUploader table="guide_panels" recordId={panel.id} folder="guide" imageField="image_path" currentImage={base} skipDbUpdate hasImageStatus={false} defaultCropPreset="free"
+        <ImageUploader table="guide_panels" recordId={panel.id} folder="guide" imageField="image_path" currentImage={base} skipDbUpdate hasImageStatus={false} defaultCropPreset="landscape"
           filename={(filenames[slotKey] && filenames[slotKey].trim()) || base || slotName(slotKey)}
           onUploaded={(fn) => { if (fn) { setImageAt(imgPath, fn); setPreviewVer(Date.now()); } }} onDeleted={() => { setImageAt(imgPath, null); setPreviewVer(Date.now()); }} />
         <input value={filenames[slotKey] ?? base ?? ""} onChange={(e) => setFilenames((p) => ({ ...p, [slotKey]: e.target.value }))} placeholder={slotName(slotKey)} className="w-32 mt-1 bg-transparent text-[10px] font-mono text-muted-foreground outline-none border-b border-border focus:border-primary px-1" />
@@ -157,6 +159,14 @@ export default function GuidePanelContentEditor({ panel, sectionSlug, panelSort,
               <GlyphToolbar textareaRef={glyphTargetRef} onChange={(v) => { focusRef.current?.set(v); setGlyphOpen(false); }} />
             </PopoverContent>
           </Popover>
+          <Popover open={linkOpen} onOpenChange={setLinkOpen}>
+            <PopoverTrigger asChild>
+              <button type="button" className="text-[11px] text-muted-foreground hover:text-foreground border border-border rounded px-2 py-1">Link</button>
+            </PopoverTrigger>
+            <PopoverContent className="w-[360px] p-0">
+              <EntityLinkToolbar textareaRef={glyphTargetRef} onChange={(v) => { focusRef.current?.set(v); setLinkOpen(false); }} />
+            </PopoverContent>
+          </Popover>
           <button type="button" onClick={() => setAdv((v) => !v)} className="text-[11px] text-muted-foreground hover:text-foreground">{adv ? "Hide advanced" : "Show advanced"}</button>
           <button type="button" onClick={save} disabled={saving} className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-primary text-primary-foreground text-xs hover:bg-primary/90 disabled:opacity-50">{saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />} Save content</button>
         </div>
@@ -172,7 +182,6 @@ export default function GuidePanelContentEditor({ panel, sectionSlug, panelSort,
             {adv && (
               <div className="flex gap-3">
                 <div><label className="block text-[10px] text-muted-foreground mb-0.5">PDF page</label><input type="number" value={content.page ?? ""} onChange={(e) => setNumPath(["page"], e.target.value)} className={`${FIELD} w-20`} /></div>
-                {kind === "anatomy" && <div><label className="block text-[10px] text-muted-foreground mb-0.5">Frame</label><select value={content.frame ?? "card"} onChange={(e) => setStrPath(["frame"], e.target.value)} className="bg-transparent text-xs border-b border-border outline-none"><option value="card">card</option><option value="board">board</option></select></div>}
               </div>
             )}
           </div>
