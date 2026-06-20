@@ -44,6 +44,8 @@ interface GuideSectionRow {
 
 type PanelKind = "standard" | "anatomy" | "types" | "example";
 
+const withVer = (url: string, v?: string | null) => (v ? `${url}?v=${encodeURIComponent(v)}` : url);
+
 interface GuidePanelRow {
   id: string;
   section_id: string;
@@ -52,6 +54,7 @@ interface GuidePanelRow {
   title_en: string | null;
   title_ru: string | null;
   content: any;
+  updated_at: string;
 }
 
 interface ModalState {
@@ -215,6 +218,7 @@ function Figure({
   folder,
   note,
   lang,
+  updatedAt,
   children,
 }: {
   imagePath: string | null | undefined;
@@ -225,6 +229,7 @@ function Figure({
   folder?: string;
   note?: string;
   lang: Lang;
+  updatedAt?: string | null;
   children?: React.ReactNode;
 }) {
   const aspectClass = aspect === "card" ? "aspect-[5/7]" : "aspect-[16/10]";
@@ -238,7 +243,7 @@ function Figure({
   }
   return (
     <div className={`relative w-full ${aspectClass} rounded-lg overflow-hidden bg-muted/30 border border-border`}>
-      <img src={componentMediaUrl(imagePath)} alt={cap} className="w-full h-full object-contain" />
+      <img src={withVer(componentMediaUrl(imagePath), updatedAt)} alt={cap} className="w-full h-full object-contain" />
       {children}
     </div>
   );
@@ -287,12 +292,14 @@ function StandardPanel({
   title,
   lang,
   openModal,
+  updatedAt,
 }: {
   content: any;
   title: string;
   lang: Lang;
   openModal: (key: string, m: ModalState) => void;
   navigate: (to: string) => void;
+  updatedAt?: string | null;
 }) {
   const cap = tr(content.cap, lang);
   const points: any[] = Array.isArray(content.points) ? content.points : [];
@@ -308,6 +315,7 @@ function StandardPanel({
         folder={content.folder}
         note={tr(content.image_note, lang)}
         lang={lang}
+        updatedAt={updatedAt}
       />
       {!!points.length && (
         <ul className="space-y-2">
@@ -388,6 +396,7 @@ function AnatomyPanel({
   hot,
   setHot,
   openModal,
+  updatedAt,
 }: {
   content: any;
   title: string;
@@ -395,6 +404,7 @@ function AnatomyPanel({
   hot: number | null;
   setHot: (n: number | null) => void;
   openModal: (key: string, m: ModalState) => void;
+  updatedAt?: string | null;
 }) {
   const frame: "card" | "board" = content.frame === "board" ? "board" : "card";
   const lead = tr(content.lead, lang);
@@ -414,6 +424,7 @@ function AnatomyPanel({
           src="pdf"
           note={tr(content.image_note, lang)}
           lang={lang}
+          updatedAt={updatedAt}
         >
           {callouts.map((c, i) => {
             if (c.noPin) return null;
@@ -654,17 +665,19 @@ function ModalImage({
   imagePath,
   layoutId,
   note,
+  updatedAt,
 }: {
   imagePath?: string | null;
   layoutId?: string | null;
   note?: string;
+  updatedAt?: string | null;
 }) {
   const layout = useCardLayoutById(layoutId ?? null);
   if (imagePath) {
     if (!layoutId) {
       return (
         <img
-          src={componentMediaUrl(imagePath)}
+          src={withVer(componentMediaUrl(imagePath), updatedAt)}
           alt=""
           className="w-full max-h-48 object-contain rounded-md bg-muted/30 border border-border"
         />
@@ -677,7 +690,7 @@ function ModalImage({
         style={{ aspectRatio: ar }}
       >
         <img
-          src={componentMediaUrl(imagePath)}
+          src={withVer(componentMediaUrl(imagePath), updatedAt)}
           alt=""
           className="w-full h-full"
           style={{ objectFit: layout.objectFit, objectPosition: layout.objectPosition }}
@@ -1241,6 +1254,7 @@ export default function GuideTab() {
                   lang={lang}
                   openModal={openModal}
                   navigate={navigate}
+                  updatedAt={panel.updated_at}
                 />
               )}
               {panel.kind === "anatomy" && (
@@ -1251,6 +1265,7 @@ export default function GuideTab() {
                   hot={hot}
                   setHot={setHot}
                   openModal={openModal}
+                  updatedAt={panel.updated_at}
                 />
               )}
               {panel.kind === "types" && (
@@ -1361,6 +1376,7 @@ export default function GuideTab() {
                   imagePath={modal.imagePath}
                   layoutId={modal.imageLayout}
                   note={modal.imageNote}
+                  updatedAt={curPanelForModal?.updated_at}
                 />
                 {modal.route && (
                   <Button

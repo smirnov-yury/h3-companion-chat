@@ -33,6 +33,7 @@ export default function GuidePanelContentEditor({ panel, sectionSlug, panelSort,
   const dragRef = useRef<number | null>(null);
   const boardRef = useRef<HTMLDivElement | null>(null);
   const [glyphOpen, setGlyphOpen] = useState(false);
+  const [previewVer, setPreviewVer] = useState<number>(() => Date.now());
   const focusRef = useRef<{ el: HTMLInputElement | HTMLTextAreaElement; set: (v: string) => void } | null>(null);
   const glyphTargetRef = { get current() { return focusRef.current?.el ?? null; } } as React.RefObject<HTMLTextAreaElement>;
   const contentRef = useRef<any>(content);
@@ -70,7 +71,7 @@ export default function GuidePanelContentEditor({ panel, sectionSlug, panelSort,
     await persist(next);
   };
 
-  const save = async () => { setSaving(true); await persist(clone(contentRef.current)); setSaving(false); };
+  const save = async () => { setSaving(true); await persist(clone(contentRef.current)); setPreviewVer(Date.now()); setSaving(false); };
 
   const callouts: any[] = Array.isArray(content.callouts) ? content.callouts : [];
   const nextPin = () => callouts.reduce((m: number, c: any) => Math.max(m, typeof c.pin === "number" ? c.pin : 0), 0) + 1;
@@ -115,7 +116,7 @@ export default function GuidePanelContentEditor({ panel, sectionSlug, panelSort,
       <div className="w-32 shrink-0">
         <ImageUploader table="guide_panels" recordId={panel.id} folder="guide" imageField="image_path" currentImage={base} skipDbUpdate hasImageStatus={false} defaultCropPreset="free"
           filename={(filenames[slotKey] && filenames[slotKey].trim()) || base || slotName(slotKey)}
-          onUploaded={(fn) => { if (fn) setImageAt(imgPath, fn); }} onDeleted={() => setImageAt(imgPath, null)} />
+          onUploaded={(fn) => { if (fn) { setImageAt(imgPath, fn); setPreviewVer(Date.now()); } }} onDeleted={() => { setImageAt(imgPath, null); setPreviewVer(Date.now()); }} />
         <input value={filenames[slotKey] ?? base ?? ""} onChange={(e) => setFilenames((p) => ({ ...p, [slotKey]: e.target.value }))} placeholder={slotName(slotKey)} className="w-32 mt-1 bg-transparent text-[10px] font-mono text-muted-foreground outline-none border-b border-border focus:border-primary px-1" />
       </div>
     );
@@ -196,7 +197,7 @@ export default function GuidePanelContentEditor({ panel, sectionSlug, panelSort,
             </div>
             {content.image_path ? (
               <div ref={boardRef} onClick={onBoardClick} onPointerMove={onBoardMove} className="relative w-full max-w-md rounded-md border border-border overflow-hidden select-none" style={{ cursor: placing ? "crosshair" : "default" }}>
-                <img src={componentMediaUrl(content.image_path)} alt="" className="w-full block pointer-events-none" />
+                <img src={`${componentMediaUrl(content.image_path)}?v=${previewVer}`} alt="" className="w-full block pointer-events-none" />
                 {callouts.map((c, i) => c.noPin ? null : (
                   <button key={i} type="button"
                     onPointerDown={(e) => { e.stopPropagation(); setSel(i); dragRef.current = i; (e.target as HTMLElement).setPointerCapture(e.pointerId); }}
