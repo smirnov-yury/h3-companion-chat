@@ -44,6 +44,8 @@ interface GuideSectionRow {
 
 type PanelKind = "standard" | "anatomy" | "types" | "example";
 
+const withVer = (url: string, v?: string | null) => (v ? `${url}?v=${encodeURIComponent(v)}` : url);
+
 interface GuidePanelRow {
   id: string;
   section_id: string;
@@ -52,6 +54,7 @@ interface GuidePanelRow {
   title_en: string | null;
   title_ru: string | null;
   content: any;
+  updated_at: string;
 }
 
 interface ModalState {
