@@ -218,6 +218,7 @@ function Figure({
   folder,
   note,
   lang,
+  updatedAt,
   children,
 }: {
   imagePath: string | null | undefined;
@@ -228,6 +229,7 @@ function Figure({
   folder?: string;
   note?: string;
   lang: Lang;
+  updatedAt?: string | null;
   children?: React.ReactNode;
 }) {
   const aspectClass = aspect === "card" ? "aspect-[5/7]" : "aspect-[16/10]";
@@ -241,7 +243,7 @@ function Figure({
   }
   return (
     <div className={`relative w-full ${aspectClass} rounded-lg overflow-hidden bg-muted/30 border border-border`}>
-      <img src={componentMediaUrl(imagePath)} alt={cap} className="w-full h-full object-contain" />
+      <img src={withVer(componentMediaUrl(imagePath), updatedAt)} alt={cap} className="w-full h-full object-contain" />
       {children}
     </div>
   );
