@@ -197,7 +197,7 @@ export default function GuidePanelContentEditor({ panel, sectionSlug, panelSort,
             </div>
             {content.image_path ? (
               <div ref={boardRef} onClick={onBoardClick} onPointerMove={onBoardMove} className="relative w-full max-w-md rounded-md border border-border overflow-hidden select-none" style={{ cursor: placing ? "crosshair" : "default" }}>
-                <img src={componentMediaUrl(content.image_path)} alt="" className="w-full block pointer-events-none" />
+                <img src={`${componentMediaUrl(content.image_path)}?v=${previewVer}`} alt="" className="w-full block pointer-events-none" />
                 {callouts.map((c, i) => c.noPin ? null : (
                   <button key={i} type="button"
                     onPointerDown={(e) => { e.stopPropagation(); setSel(i); dragRef.current = i; (e.target as HTMLElement).setPointerCapture(e.pointerId); }}
