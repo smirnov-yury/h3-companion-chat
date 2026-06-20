@@ -116,7 +116,7 @@ export default function GuidePanelContentEditor({ panel, sectionSlug, panelSort,
       <div className="w-32 shrink-0">
         <ImageUploader table="guide_panels" recordId={panel.id} folder="guide" imageField="image_path" currentImage={base} skipDbUpdate hasImageStatus={false} defaultCropPreset="free"
           filename={(filenames[slotKey] && filenames[slotKey].trim()) || base || slotName(slotKey)}
-          onUploaded={(fn) => { if (fn) setImageAt(imgPath, fn); }} onDeleted={() => setImageAt(imgPath, null)} />
+          onUploaded={(fn) => { if (fn) { setImageAt(imgPath, fn); setPreviewVer(Date.now()); } }} onDeleted={() => { setImageAt(imgPath, null); setPreviewVer(Date.now()); }} />
         <input value={filenames[slotKey] ?? base ?? ""} onChange={(e) => setFilenames((p) => ({ ...p, [slotKey]: e.target.value }))} placeholder={slotName(slotKey)} className="w-32 mt-1 bg-transparent text-[10px] font-mono text-muted-foreground outline-none border-b border-border focus:border-primary px-1" />
       </div>
     );
