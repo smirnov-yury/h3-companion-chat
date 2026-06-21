@@ -923,7 +923,7 @@ export default function GuideTab() {
     // Replace history when navigating within the same section; push when crossing sections
     // so browser Back returns to the previous section rather than every step.
     const replace = view === "panel" && nsi === si;
-    navigate(`/guide/${sec.slug}#p${npi + 1}`, { replace });
+    navigate(`${GUIDE_BASE}/${sec.slug}#p${npi + 1}`, { replace });
     // State will be synced by the URL effect; also write fallback localStorage immediately.
     try {
       localStorage.setItem("h3guide_pos", JSON.stringify({ sectionId: sec.id, step: npi }));
