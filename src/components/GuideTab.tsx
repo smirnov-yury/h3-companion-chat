@@ -798,13 +798,13 @@ export default function GuideTab() {
           if (idx >= 0) {
             const panels = panelsBySection.get(sections[idx].id) ?? [];
             const step = Math.max(0, Math.min(parsed?.step ?? 0, Math.max(panels.length - 1, 0)));
-            navigate(`/guide/${sections[idx].slug}#p${step + 1}`, { replace: true });
+            navigate(`${GUIDE_BASE}/${sections[idx].slug}#p${step + 1}`, { replace: true });
             return;
           }
         }
       } catch {}
     }
-    // Back/forward returned to /guide → reset panel view to home.
+    // Back/forward returned to /how-to-play → reset panel view to home.
     setView((v) => (v === "panel" ? "home" : v));
   }, [sectionSlugFromUrl, location.hash, sections, panelsBySection, navigate]);
 
