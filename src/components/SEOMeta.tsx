@@ -77,6 +77,7 @@ function pathToRouteKey(pathname: string): RouteKey | null {
   if (pathname === "/terms") return "terms";
   if (pathname === "/donate") return "donate";
   const seg = pathname.split("/").filter(Boolean)[0];
+  if (seg === "how-to-play") return "guide";
   if (seg && SECTION_ROUTE_KEYS.has(seg as RouteKey)) return seg as RouteKey;
   return null;
 }
