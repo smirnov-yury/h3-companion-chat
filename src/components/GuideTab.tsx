@@ -17,6 +17,9 @@ import { useCardLayoutById } from "@/hooks/useCardLayouts";
 import SEOMeta from "@/components/SEOMeta";
 import { resolveBranding } from "@/config/branding";
 
+const GUIDE_BASE = "/how-to-play";
+
+
 const toPascal = (s: string) =>
   s.split(/[-_ ]/).filter(Boolean).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join("");
 function SectionIcon({ name, className }: { name: string | null; className?: string }) {
