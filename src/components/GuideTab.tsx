@@ -1048,7 +1048,7 @@ export default function GuideTab() {
   const appName = resolveBranding("app_name");
   let seoTitle: string | undefined;
   let seoDescription: string | undefined;
-  let seoCanonical: string | undefined = "/guide";
+  let seoCanonical: string | undefined = GUIDE_BASE;
   if (activeSecForSeo) {
     const lbl = sectionLabel(activeSecForSeo);
     seoTitle = `${lbl} · ${appName}`;
@@ -1057,7 +1057,7 @@ export default function GuideTab() {
     if (trimmed) {
       seoDescription = trimmed.length > 155 ? trimmed.slice(0, 152).trimEnd() + "…" : trimmed;
     }
-    seoCanonical = `/guide/${activeSecForSeo.slug}`;
+    seoCanonical = `${GUIDE_BASE}/${activeSecForSeo.slug}`;
   }
 
   // ---------- Render ----------
