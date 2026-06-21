@@ -971,7 +971,7 @@ export default function GuideTab() {
     const sec = sections[si];
     if (!sec) return;
     navigate(
-      { pathname: `/guide/${sec.slug}`, search: `?d=${encodeURIComponent(key)}`, hash: `#p${pi + 1}` },
+      { pathname: `${GUIDE_BASE}/${sec.slug}`, search: `?d=${encodeURIComponent(key)}`, hash: `#p${pi + 1}` },
       { replace: true, state: { guideModal: m } },
     );
   };
