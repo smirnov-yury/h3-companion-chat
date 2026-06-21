@@ -759,15 +759,15 @@ export default function GuideTab() {
 
   // ---------- URL ⇄ state sync ----------
   // URL is the source of truth for the active section + panel.
-  //   /guide                  → home view (no section selected)
-  //   /guide/<sectionSlug>    → panel view, step 1
-  //   /guide/<sectionSlug>#pN → panel view, step N (1-based)
+  //   /how-to-play                  → home view (no section selected)
+  //   /how-to-play/<sectionSlug>    → panel view, step 1
+  //   /how-to-play/<sectionSlug>#pN → panel view, step N (1-based)
   useEffect(() => {
     if (!sections.length) return;
     if (sectionSlugFromUrl) {
       const idx = sections.findIndex((s) => s.slug === sectionSlugFromUrl);
       if (idx < 0) {
-        navigate("/guide", { replace: true });
+        navigate(GUIDE_BASE, { replace: true });
         return;
       }
       const panels = panelsBySection.get(sections[idx].id) ?? [];
