@@ -105,7 +105,7 @@ export async function generateSitemap(outDir: string): Promise<void> {
     { loc: `${SITE_URL}/decks`, changefreq: "monthly", priority: "0.8" },
     { loc: `${SITE_URL}/ai`, changefreq: "monthly", priority: "0.6" },
     { loc: `${SITE_URL}/game-setup`, changefreq: "monthly", priority: "0.7" },
-    { loc: `${SITE_URL}/guide`, changefreq: "monthly", priority: "0.8" },
+    { loc: `${SITE_URL}/how-to-play`, changefreq: "monthly", priority: "0.8" },
   ];
   urls.push(...staticRoutes);
 
