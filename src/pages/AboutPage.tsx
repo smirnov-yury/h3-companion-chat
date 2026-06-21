@@ -148,6 +148,13 @@ export default function AboutPage() {
                 <p className="text-sm leading-relaxed text-foreground/90">
                   Полные правила, все книги миссий (MB1–MB9), карточки юнитов и героев, артефакты, заклинания, умения, городские постройки, элементы карты и глобальные события — всё в одном месте. Поддержка русского языка, ИИ Мастер игры с голосовым вводом и многоходовым диалогом с памятью, генератор подготовки партии для быстрого старта.
                 </p>
+                <p className="text-sm leading-relaxed text-foreground/90">
+                  Впервые играете? Начните с раздела{" "}
+                  <Link to="/how-to-play" className="underline hover:text-primary transition-colors">
+                    Как играть
+                  </Link>
+                  .
+                </p>
                 <p className="text-xs text-muted-foreground">
                   Ключевые слова: H3 Master, настольная игра Герои Меча и Магии 3, HoMM3BG, приложение-компаньон, правила игры, Archon Studio, просмотр сценариев, карточки юнитов, голосовой ввод, ИИ Мастер игры, подготовка партии.
                 </p>
@@ -159,6 +166,13 @@ export default function AboutPage() {
                 </p>
                 <p className="text-sm leading-relaxed text-foreground/90">
                   Covers the full rulebook, all mission books (MB1–MB9), unit and hero cards, artifact, spell and ability decks, town buildings, map elements, and global events — all in one place. Russian language support, an AI Game Master with voice input and multi-turn conversation memory, plus a Game Setup generator for quick game configuration.
+                </p>
+                <p className="text-sm leading-relaxed text-foreground/90">
+                  New to the game? Start with{" "}
+                  <Link to="/how-to-play" className="underline hover:text-primary transition-colors">
+                    How to Play
+                  </Link>
+                  .
                 </p>
                 <p className="text-xs text-muted-foreground">
                   Keywords: H3 Master, Heroes of Might and Magic III board game, HoMM3BG, companion app, rules reference, offline rulebook, Archon Studio, scenario viewer, unit cards, voice input, AI Game Master, game setup generator.

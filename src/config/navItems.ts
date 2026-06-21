@@ -1,6 +1,6 @@
 import {
   BookOpen, Map, MapPin, CalendarDays, Layers, Swords, User, Castle,
-  MessageCircle, Wand2, type LucideIcon,
+  MessageCircle, Wand2, GraduationCap, type LucideIcon,
 } from "lucide-react";
 
 export type TabId =
@@ -18,4 +18,6 @@ export const navItems: { id: TabId; labelRU: string; labelEN: string; icon: Luci
   { id: "towns",         labelRU: "Города",             labelEN: "Towns",           icon: Castle },
   { id: "ai",            labelRU: "ИИ Мастер игры",     labelEN: "AI Game Master",  icon: MessageCircle },
   { id: "game_setup",    labelRU: "Подготовка партии",  labelEN: "Game Setup",      icon: Wand2 },
+  { id: "guide",         labelRU: "Как играть",         labelEN: "How to Play",     icon: GraduationCap },
 ];
+

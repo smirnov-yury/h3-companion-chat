@@ -17,6 +17,9 @@ import { useCardLayoutById } from "@/hooks/useCardLayouts";
 import SEOMeta from "@/components/SEOMeta";
 import { resolveBranding } from "@/config/branding";
 
+const GUIDE_BASE = "/how-to-play";
+
+
 const toPascal = (s: string) =>
   s.split(/[-_ ]/).filter(Boolean).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join("");
 function SectionIcon({ name, className }: { name: string | null; className?: string }) {
@@ -756,15 +759,15 @@ export default function GuideTab() {
 
   // ---------- URL ⇄ state sync ----------
   // URL is the source of truth for the active section + panel.
-  //   /guide                  → home view (no section selected)
-  //   /guide/<sectionSlug>    → panel view, step 1
-  //   /guide/<sectionSlug>#pN → panel view, step N (1-based)
+  //   /how-to-play                  → home view (no section selected)
+  //   /how-to-play/<sectionSlug>    → panel view, step 1
+  //   /how-to-play/<sectionSlug>#pN → panel view, step N (1-based)
   useEffect(() => {
     if (!sections.length) return;
     if (sectionSlugFromUrl) {
       const idx = sections.findIndex((s) => s.slug === sectionSlugFromUrl);
       if (idx < 0) {
-        navigate("/guide", { replace: true });
+        navigate(GUIDE_BASE, { replace: true });
         return;
       }
       const panels = panelsBySection.get(sections[idx].id) ?? [];
@@ -795,13 +798,13 @@ export default function GuideTab() {
           if (idx >= 0) {
             const panels = panelsBySection.get(sections[idx].id) ?? [];
             const step = Math.max(0, Math.min(parsed?.step ?? 0, Math.max(panels.length - 1, 0)));
-            navigate(`/guide/${sections[idx].slug}#p${step + 1}`, { replace: true });
+            navigate(`${GUIDE_BASE}/${sections[idx].slug}#p${step + 1}`, { replace: true });
             return;
           }
         }
       } catch {}
     }
-    // Back/forward returned to /guide → reset panel view to home.
+    // Back/forward returned to /how-to-play → reset panel view to home.
     setView((v) => (v === "panel" ? "home" : v));
   }, [sectionSlugFromUrl, location.hash, sections, panelsBySection, navigate]);
 
@@ -920,7 +923,7 @@ export default function GuideTab() {
     // Replace history when navigating within the same section; push when crossing sections
     // so browser Back returns to the previous section rather than every step.
     const replace = view === "panel" && nsi === si;
-    navigate(`/guide/${sec.slug}#p${npi + 1}`, { replace });
+    navigate(`${GUIDE_BASE}/${sec.slug}#p${npi + 1}`, { replace });
     // State will be synced by the URL effect; also write fallback localStorage immediately.
     try {
       localStorage.setItem("h3guide_pos", JSON.stringify({ sectionId: sec.id, step: npi }));
@@ -956,7 +959,7 @@ export default function GuideTab() {
     const sec = sections[si];
     if (!sec) return;
     navigate(
-      { pathname: `/guide/${sec.slug}`, search: `?d=${encodeURIComponent(key)}`, hash: `#p${pi + 1}` },
+      { pathname: `${GUIDE_BASE}/${sec.slug}`, search: `?d=${encodeURIComponent(key)}`, hash: `#p${pi + 1}` },
       { state: { guideModal: m } },
     );
   };
@@ -968,7 +971,7 @@ export default function GuideTab() {
     const sec = sections[si];
     if (!sec) return;
     navigate(
-      { pathname: `/guide/${sec.slug}`, search: `?d=${encodeURIComponent(key)}`, hash: `#p${pi + 1}` },
+      { pathname: `${GUIDE_BASE}/${sec.slug}`, search: `?d=${encodeURIComponent(key)}`, hash: `#p${pi + 1}` },
       { replace: true, state: { guideModal: m } },
     );
   };
@@ -1045,7 +1048,7 @@ export default function GuideTab() {
   const appName = resolveBranding("app_name");
   let seoTitle: string | undefined;
   let seoDescription: string | undefined;
-  let seoCanonical: string | undefined = "/guide";
+  let seoCanonical: string | undefined = GUIDE_BASE;
   if (activeSecForSeo) {
     const lbl = sectionLabel(activeSecForSeo);
     seoTitle = `${lbl} · ${appName}`;
@@ -1054,7 +1057,7 @@ export default function GuideTab() {
     if (trimmed) {
       seoDescription = trimmed.length > 155 ? trimmed.slice(0, 152).trimEnd() + "…" : trimmed;
     }
-    seoCanonical = `/guide/${activeSecForSeo.slug}`;
+    seoCanonical = `${GUIDE_BASE}/${activeSecForSeo.slug}`;
   }
 
   // ---------- Render ----------
