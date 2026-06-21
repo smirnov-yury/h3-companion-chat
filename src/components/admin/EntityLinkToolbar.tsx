@@ -52,12 +52,13 @@ export default function EntityLinkToolbar({ textareaRef, onChange }: EntityLinkT
       try {
         const { data: embedData, error: embedErr } = await supabase.functions.invoke('embed-query', { body: { text: debounced } });
         if (embedErr || !embedData?.embedding) throw new Error('embed failed');
-        const rpc = lang === 'RU' ? 'match_all_ru' : 'match_all_en';
+        const rpc = lang === 'RU' ? 'match_hybrid_ru' : 'match_hybrid_en';
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const { data } = await (supabase.rpc as any)(rpc, {
+          query_text: debounced,
           query_embedding: embedData.embedding,
-          match_count: 20,
-          match_threshold: 0.35,
+          match_count: 30,
+          match_threshold: 0.15,
         });
         if (!cancelled) setMatches((data as Match[]) ?? []);
       } catch {
