@@ -23,6 +23,17 @@ A bilingual (EN/RU), offline-ready Progressive Web App that gives players a sear
 
 ---
 
+## Credits & acknowledgements
+
+The in-app rules content builds on two MIT-licensed community projects, with thanks to the teams behind them.
+
+- **Rules explanations** adapted from the [HoMM3:BG Rules Rewrite](https://github.com/Heegu-sama/Homm3BG) by Heegu-sama and contributors (Hermanni Karppela, Johannes Wolz, Andrzej Wiącek, Alexey Sokolov)
+- **Scenario data** from the [Fan-Made Mission Book](https://github.com/qwrtln/Homm3BG-mission-book)
+
+Both projects are MIT-licensed; their copyright and permission notices are retained per the license.
+
+---
+
 ## Tech stack
 
 | Layer | Tool |

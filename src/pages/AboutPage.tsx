@@ -297,6 +297,38 @@ export default function AboutPage() {
             </div>
           </section>
 
+          {/* Credits */}
+          <section className="space-y-3">
+            <h2 className="text-2xl font-semibold">
+              {isRu ? "Благодарности" : "Credits"}
+            </h2>
+            {isRu ? (
+              <p className="text-sm leading-relaxed text-foreground/90">
+                Объяснения правил в приложении опираются на community-проект{" "}
+                <a href="https://github.com/Heegu-sama/Homm3BG" target="_blank" rel="noopener noreferrer" className="underline hover:text-primary transition-colors">
+                  HoMM3:BG Rules Rewrite
+                </a>{" "}
+                (лицензия MIT) от Heegu-sama и участников (Hermanni Karppela, Johannes Wolz, Andrzej Wiącek, Alexey Sokolov). Материалы сценариев используют проект{" "}
+                <a href="https://github.com/qwrtln/Homm3BG-mission-book" target="_blank" rel="noopener noreferrer" className="underline hover:text-primary transition-colors">
+                  Fan-Made Mission Book
+                </a>{" "}
+                (лицензия MIT). Спасибо этим командам за большую работу для сообщества.
+              </p>
+            ) : (
+              <p className="text-sm leading-relaxed text-foreground/90">
+                The in-app rules explanations build on the community{" "}
+                <a href="https://github.com/Heegu-sama/Homm3BG" target="_blank" rel="noopener noreferrer" className="underline hover:text-primary transition-colors">
+                  HoMM3:BG Rules Rewrite
+                </a>{" "}
+                (MIT License) by Heegu-sama and contributors (Hermanni Karppela, Johannes Wolz, Andrzej Wiącek, Alexey Sokolov). Scenario content draws on the{" "}
+                <a href="https://github.com/qwrtln/Homm3BG-mission-book" target="_blank" rel="noopener noreferrer" className="underline hover:text-primary transition-colors">
+                  Fan-Made Mission Book
+                </a>{" "}
+                project (MIT License). Huge thanks to these teams for their work for the community.
+              </p>
+            )}
+          </section>
+
           {/* 7. Disclaimer */}
           <section className="space-y-2">
             <p className="text-xs text-muted-foreground leading-relaxed">
