@@ -72,6 +72,7 @@ const NAV_ITEMS: Array<
   { path: "sections", label: "Navigation", icon: ListTree },
   { path: "content-types", label: "Content Types", icon: Boxes },
   { path: "content-items", label: "Content Items", icon: Package },
+  { path: "entity-links", label: "Entity Links", icon: Link2 },
   { path: "about-page", label: "About Page", icon: FileText },
   { path: "filter-groups", label: "Filter Groups", icon: ListFilter },
   { path: "maintenance", label: "Maintenance", icon: Wrench },
