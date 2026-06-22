@@ -4,8 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   LayoutDashboard, BookOpen, Map, Zap, Layers, Users, Crown,
   Building2, FileText, ListFilter, ScrollText, LogOut, Menu, X,
-  ChevronDown, ChevronRight, BarChart3, Wrench, ListTree, Boxes, Package, GraduationCap,
+  ChevronDown, ChevronRight, BarChart3, Wrench, ListTree, Boxes, Package, GraduationCap, Link2,
 } from "lucide-react";
+import EntityLinksEditor from "@/components/admin/EntityLinksEditor";
 import GuideEditor from "@/components/admin/GuideEditor";
 import EntityTypesEditor from "@/components/admin/EntityTypesEditor";
 import EntitiesEditor from "@/components/admin/EntitiesEditor";
