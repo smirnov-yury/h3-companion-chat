@@ -23,17 +23,6 @@ A bilingual (EN/RU), offline-ready Progressive Web App that gives players a sear
 
 ---
 
-## Credits & acknowledgements
-
-The in-app rules content builds on two MIT-licensed community projects, with thanks to the teams behind them.
-
-- **Rules explanations** adapted from the [HoMM3:BG Rules Rewrite](https://github.com/Heegu-sama/Homm3BG) by Heegu-sama and contributors (Hermanni Karppela, Johannes Wolz, Andrzej Wiącek, Alexey Sokolov)
-- **Scenario data** from the [Fan-Made Mission Book](https://github.com/qwrtln/Homm3BG-mission-book)
-
-Both projects are MIT-licensed; their copyright and permission notices are retained per the license.
-
----
-
 ## Tech stack
 
 | Layer | Tool |
@@ -110,11 +99,14 @@ If H3 Master saves you table-side time, you can drop a tip at <https://ko-fi.com
 
 ---
 
-## Credits
+## Credits & acknowledgements
 
-- Designed and run by **Jurijs Smirnovs** (Riga, Latvia).
-- Rule content sourced from the official Heroes 3 Board Game rulebooks and the community **Heroes 3 Rules Rewrite 2.0-rc4** (used with permission for fair-use navigation).
-- Built using Lovable.dev, Supabase, OpenAI, and the open-source React ecosystem.
+- App designed and run by **Jurijs Smirnovs** (Riga, Latvia).
+- Built with Lovable.dev, Supabase, OpenAI, and the open-source React ecosystem.
+- **Rules explanations** are adapted from the community [HoMM3:BG Rules Rewrite](https://github.com/Heegu-sama/Homm3BG) (MIT License) by Heegu-sama and contributors (Hermanni Karppela, Johannes Wolz, Andrzej Wiącek, Alexey Sokolov).
+- **Scenario data** draws on the community [Fan-Made Mission Book](https://github.com/qwrtln/Homm3BG-mission-book) (MIT License).
+- Both community projects above are MIT-licensed; their copyright and permission notices are retained per the license. Huge thanks to these teams for their work for the community.
+- Official Heroes 3 Board Game rulebooks remain the property of Archon Studio / Ubisoft and are referenced for navigation only (see Legal).
 
 ---
 
