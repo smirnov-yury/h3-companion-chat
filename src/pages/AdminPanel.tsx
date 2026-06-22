@@ -4,8 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   LayoutDashboard, BookOpen, Map, Zap, Layers, Users, Crown,
   Building2, FileText, ListFilter, ScrollText, LogOut, Menu, X,
-  ChevronDown, ChevronRight, BarChart3, Wrench, ListTree, Boxes, Package, GraduationCap,
+  ChevronDown, ChevronRight, BarChart3, Wrench, ListTree, Boxes, Package, GraduationCap, Link2,
 } from "lucide-react";
+import EntityLinksEditor from "@/components/admin/EntityLinksEditor";
 import GuideEditor from "@/components/admin/GuideEditor";
 import EntityTypesEditor from "@/components/admin/EntityTypesEditor";
 import EntitiesEditor from "@/components/admin/EntitiesEditor";
@@ -71,6 +72,7 @@ const NAV_ITEMS: Array<
   { path: "sections", label: "Navigation", icon: ListTree },
   { path: "content-types", label: "Content Types", icon: Boxes },
   { path: "content-items", label: "Content Items", icon: Package },
+  { path: "entity-links", label: "Entity Links", icon: Link2 },
   { path: "about-page", label: "About Page", icon: FileText },
   { path: "filter-groups", label: "Filter Groups", icon: ListFilter },
   { path: "maintenance", label: "Maintenance", icon: Wrench },
@@ -223,6 +225,7 @@ export default function AdminPanel() {
             <Route path="sections" element={<SectionsEditor />} />
             <Route path="content-types" element={<EntityTypesEditor />} />
             <Route path="content-items" element={<EntitiesEditor />} />
+            <Route path="entity-links" element={<EntityLinksEditor />} />
             <Route path="scenarios" element={<ScenariosEditor />} />
             <Route path="fields" element={<MapElementsEditor tab="fields" />} />
             <Route path="map-events" element={<MapElementsEditor tab="map_events" />} />
