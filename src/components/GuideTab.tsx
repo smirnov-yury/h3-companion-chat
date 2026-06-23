@@ -1458,7 +1458,7 @@ function SectionList({
                 {lang === "RU" ? s.label_ru : s.label_en}
               </span>
               <span className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
-                {count} {lang === "RU" ? (count === 1 ? "шаг" : "шага") : (count === 1 ? "step" : "steps")}
+                {count} {lang === "RU" ? pluralRu(count, ["шаг", "шага", "шагов"]) : (count === 1 ? "step" : "steps")}
               </span>
               {multi && (
                 <ChevronDown
