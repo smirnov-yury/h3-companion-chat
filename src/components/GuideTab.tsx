@@ -854,7 +854,7 @@ export default function GuideTab() {
       panels.forEach((p, pIdx) => {
         const title = (lang === "RU" ? p.title_ru : p.title_en) ?? p.title_en ?? p.title_ru ?? "";
         const sep = title.indexOf("·");
-        const subtitle = (sep >= 0 ? title.slice(sep + 1) : title).trim();
+        const subtitle = stripMarkup((sep >= 0 ? title.slice(sep + 1) : title).trim());
         const c = p.content ?? {};
         const fields: string[] = [sectionLbl, title];
         if (p.kind === "standard") {
