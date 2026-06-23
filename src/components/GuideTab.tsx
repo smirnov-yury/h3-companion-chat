@@ -27,6 +27,29 @@ function SectionIcon({ name, className }: { name: string | null; className?: str
   return <Comp className={className} />;
 }
 
+/** Russian plural selector. forms = [one, few, many], e.g. ["шаг","шага","шагов"].
+ *  1 шаг · 2 шага · 5 шагов · 21 шаг · 11 шагов. */
+function pluralRu(n: number, forms: [string, string, string]): string {
+  const mod100 = n % 100;
+  const mod10 = n % 10;
+  if (mod10 === 1 && mod100 !== 11) return forms[0];
+  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return forms[1];
+  return forms[2];
+}
+
+/** Strip guide rich-markup for plain-text contexts (search snippets/subtitles):
+ *  [label](type:id) → label, drop <glyph>/<...> tokens and ** bold markers,
+ *  collapse whitespace. */
+function stripMarkup(s: string): string {
+  return s
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
+    .replace(/<[^>]+>/g, "")
+    .replace(/\*\*/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+
 // ---------- Types ----------
 type LocStr = { ru?: string; en?: string } | undefined;
 type LocList = { ru?: string[]; en?: string[] } | undefined;
@@ -787,25 +810,14 @@ export default function GuideTab() {
       didInitRef.current = true;
       return;
     }
-    // No section slug in URL.
-    if (!didInitRef.current) {
-      didInitRef.current = true;
-      try {
-        const raw = localStorage.getItem("h3guide_pos");
-        if (raw) {
-          const parsed = JSON.parse(raw);
-          const idx = sections.findIndex((s) => s.id === parsed?.sectionId);
-          if (idx >= 0) {
-            const panels = panelsBySection.get(sections[idx].id) ?? [];
-            const step = Math.max(0, Math.min(parsed?.step ?? 0, Math.max(panels.length - 1, 0)));
-            navigate(`${GUIDE_BASE}/${sections[idx].slug}#p${step + 1}`, { replace: true });
-            return;
-          }
-        }
-      } catch {}
-    }
-    // Back/forward returned to /how-to-play → reset panel view to home.
+    // No section slug in URL → always land on the guide home. Contents and the
+    // "Continue where you left off" button both live there. The previous silent
+    // localStorage auto-redirect into the middle of the guide is removed: a
+    // first-time visitor who taps "How to Play" must see the start, not the last
+    // saved position. The saved position is still offered via the Continue button.
+    didInitRef.current = true;
     setView((v) => (v === "panel" ? "home" : v));
+
   }, [sectionSlugFromUrl, location.hash, sections, panelsBySection, navigate]);
 
   // Re-derive the popup from the active history entry (Back/Forward + remount).
@@ -842,7 +854,7 @@ export default function GuideTab() {
       panels.forEach((p, pIdx) => {
         const title = (lang === "RU" ? p.title_ru : p.title_en) ?? p.title_en ?? p.title_ru ?? "";
         const sep = title.indexOf("·");
-        const subtitle = (sep >= 0 ? title.slice(sep + 1) : title).trim();
+        const subtitle = stripMarkup((sep >= 0 ? title.slice(sep + 1) : title).trim());
         const c = p.content ?? {};
         const fields: string[] = [sectionLbl, title];
         if (p.kind === "standard") {
@@ -874,15 +886,16 @@ export default function GuideTab() {
         let snippet = "";
         let matched = false;
         for (const f of cleanFields) {
-          const fi = f.toLowerCase().indexOf(q);
+          const plain = stripMarkup(f);
+          const fi = plain.toLowerCase().indexOf(q);
           if (fi >= 0) {
             matched = true;
             const start = Math.max(0, fi - 40);
-            const end = Math.min(f.length, fi + q.length + 80);
-            snippet = (start > 0 ? "…" : "") + f.slice(start, end) + (end < f.length ? "…" : "");
-            snippet = snippet.replace(/<[^>]+>/g, "");
+            const end = Math.min(plain.length, fi + q.length + 80);
+            snippet = (start > 0 ? "…" : "") + plain.slice(start, end) + (end < plain.length ? "…" : "");
             break;
           }
+
         }
         if (matched) {
           results.push({ sectionIndex: sIdx, stepIndex: pIdx, sectionLbl, subtitle, snippet });
@@ -1445,7 +1458,7 @@ function SectionList({
                 {lang === "RU" ? s.label_ru : s.label_en}
               </span>
               <span className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
-                {count} {lang === "RU" ? (count === 1 ? "шаг" : "шага") : (count === 1 ? "step" : "steps")}
+                {count} {lang === "RU" ? pluralRu(count, ["шаг", "шага", "шагов"]) : (count === 1 ? "step" : "steps")}
               </span>
               {multi && (
                 <ChevronDown
