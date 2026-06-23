@@ -592,10 +592,11 @@ function TypesPanel({
               })}
             >
               <GlyphIcon glyph={t.glyph} size={22} className="shrink-0 mt-0.5" />
-              <span className="text-sm leading-relaxed">
+              <span className="flex-1 text-sm leading-relaxed">
                 <b><RichInline text={tr(t.label, lang)} /></b>
                 {tr(t.short, lang) ? <> - <RichInline text={tr(t.short, lang)} /></> : null}
               </span>
+              <Info className="w-4 h-4 shrink-0 mt-0.5 text-muted-foreground" />
             </button>
           </li>
         ))}
@@ -715,7 +716,7 @@ function ModalImage({
         <img
           src={withVer(componentMediaUrl(imagePath), updatedAt)}
           alt=""
-          className="w-full h-full object-contain"
+          className={bleed ? "w-full h-full object-cover" : "w-full h-full object-contain"}
         />
       </div>
     );
