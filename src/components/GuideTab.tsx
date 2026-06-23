@@ -692,18 +692,24 @@ function ModalImage({
   layoutId,
   note,
   updatedAt,
+  bleed,
 }: {
   imagePath?: string | null;
   layoutId?: string | null;
   note?: string;
   updatedAt?: string | null;
+  bleed?: boolean;
 }) {
   const layout = useCardLayoutById(layoutId ?? null);
   void layout;
   if (imagePath) {
     return (
       <div
-        className="rounded-md overflow-hidden bg-muted/30 border border-border w-full"
+        className={
+          bleed
+            ? "overflow-hidden bg-muted/30 w-full"
+            : "rounded-md overflow-hidden bg-muted/30 border border-border w-full"
+        }
         style={{ aspectRatio: "16 / 10" }}
       >
         <img
