@@ -1369,37 +1369,43 @@ export default function GuideTab() {
       )}
 
       <Dialog open={modal !== null} onOpenChange={(o) => { if (!o) closeModal(); }}>
-        <CardDialogContent onPrev={onPrevModal} onNext={onNextModal}>
+        <CardDialogContent onPrev={onPrevModal} onNext={onNextModal} className="sm:max-w-2xl">
           {modal && (
             <div className="flex flex-col h-full">
-              <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-14 py-12">
-                <div className="mb-3">
+              <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain">
+                {modal.imagePath && (
                   <ModalImage
                     imagePath={modal.imagePath}
                     layoutId={modal.imageLayout}
                     note={modal.imageNote}
                     updatedAt={curPanelForModal?.updated_at}
+                    bleed
                   />
+                )}
+                <div className={modal.imagePath ? "px-14 pt-4 pb-12" : "px-14 pt-12 pb-12"}>
+                  {!modal.imagePath && modal.imageNote && (
+                    <p className="text-xs italic text-muted-foreground mb-3">{modal.imageNote}</p>
+                  )}
+                  <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
+                    <GlyphIcon glyph={modal.glyph} size={22} />
+                    <span>{modal.title}</span>
+                  </h3>
+                  {modal.text && (
+                    <div
+                      className="text-sm leading-relaxed whitespace-pre-line"
+                      onClick={handleEntityClick}
+                      dangerouslySetInnerHTML={{ __html: renderGlyphs(modal.text, glyphs) }}
+                    />
+                  )}
+                  {modal.route && (
+                    <Button
+                      className="w-full mt-4"
+                      onClick={() => navigate(modal.route!)}
+                    >
+                      {modal.routeLabel || (lang === "RU" ? "Открыть раздел" : "Open section")}
+                    </Button>
+                  )}
                 </div>
-                <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
-                  <GlyphIcon glyph={modal.glyph} size={22} />
-                  <span>{modal.title}</span>
-                </h3>
-                {modal.text && (
-                  <div
-                    className="text-sm leading-relaxed whitespace-pre-line"
-                    onClick={handleEntityClick}
-                    dangerouslySetInnerHTML={{ __html: renderGlyphs(modal.text, glyphs) }}
-                  />
-                )}
-                {modal.route && (
-                  <Button
-                    className="w-full mt-4"
-                    onClick={() => navigate(modal.route!)}
-                  >
-                    {modal.routeLabel || (lang === "RU" ? "Открыть раздел" : "Open section")}
-                  </Button>
-                )}
               </div>
             </div>
           )}
