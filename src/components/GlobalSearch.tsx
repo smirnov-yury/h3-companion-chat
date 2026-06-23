@@ -112,10 +112,18 @@ function buildSnippet(
   query: string,
   candidates: Array<string | null | undefined>,
 ): string {
+  const clean = (raw: string) =>
+    String(raw)
+      .replace(/\[([^\]]+)\]\([a-z_]+:[^)]+\)/g, "$1")
+      .replace(/<[^>]+>/g, " ")
+      .replace(/\s+/g, " ")
+      .replace(/\s+([.,;:!?»)])/g, "$1")
+      .replace(/([«(])\s+/g, "$1")
+      .trim();
   const lower = query.toLowerCase();
   for (const raw of candidates) {
     if (!raw) continue;
-    const text = String(raw).replace(/\[([^\]]+)\]\([a-z_]+:[^)]+\)/g, "$1").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+    const text = clean(raw);
     const idx = text.toLowerCase().indexOf(lower);
     if (idx >= 0) {
       const start = Math.max(0, idx - 30);
@@ -126,7 +134,7 @@ function buildSnippet(
   // fallback to first non-empty
   for (const raw of candidates) {
     if (!raw) continue;
-    const text = String(raw).replace(/\[([^\]]+)\]\([a-z_]+:[^)]+\)/g, "$1").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+    const text = clean(raw);
     if (text) return text.slice(0, 100) + (text.length > 100 ? "…" : "");
   }
   return "";
