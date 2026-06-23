@@ -810,25 +810,14 @@ export default function GuideTab() {
       didInitRef.current = true;
       return;
     }
-    // No section slug in URL.
-    if (!didInitRef.current) {
-      didInitRef.current = true;
-      try {
-        const raw = localStorage.getItem("h3guide_pos");
-        if (raw) {
-          const parsed = JSON.parse(raw);
-          const idx = sections.findIndex((s) => s.id === parsed?.sectionId);
-          if (idx >= 0) {
-            const panels = panelsBySection.get(sections[idx].id) ?? [];
-            const step = Math.max(0, Math.min(parsed?.step ?? 0, Math.max(panels.length - 1, 0)));
-            navigate(`${GUIDE_BASE}/${sections[idx].slug}#p${step + 1}`, { replace: true });
-            return;
-          }
-        }
-      } catch {}
-    }
-    // Back/forward returned to /how-to-play → reset panel view to home.
+    // No section slug in URL → always land on the guide home. Contents and the
+    // "Continue where you left off" button both live there. The previous silent
+    // localStorage auto-redirect into the middle of the guide is removed: a
+    // first-time visitor who taps "How to Play" must see the start, not the last
+    // saved position. The saved position is still offered via the Continue button.
+    didInitRef.current = true;
     setView((v) => (v === "panel" ? "home" : v));
+
   }, [sectionSlugFromUrl, location.hash, sections, panelsBySection, navigate]);
 
   // Re-derive the popup from the active history entry (Back/Forward + remount).
