@@ -886,15 +886,16 @@ export default function GuideTab() {
         let snippet = "";
         let matched = false;
         for (const f of cleanFields) {
-          const fi = f.toLowerCase().indexOf(q);
+          const plain = stripMarkup(f);
+          const fi = plain.toLowerCase().indexOf(q);
           if (fi >= 0) {
             matched = true;
             const start = Math.max(0, fi - 40);
-            const end = Math.min(f.length, fi + q.length + 80);
-            snippet = (start > 0 ? "…" : "") + f.slice(start, end) + (end < f.length ? "…" : "");
-            snippet = snippet.replace(/<[^>]+>/g, "");
+            const end = Math.min(plain.length, fi + q.length + 80);
+            snippet = (start > 0 ? "…" : "") + plain.slice(start, end) + (end < plain.length ? "…" : "");
             break;
           }
+
         }
         if (matched) {
           results.push({ sectionIndex: sIdx, stepIndex: pIdx, sectionLbl, subtitle, snippet });
