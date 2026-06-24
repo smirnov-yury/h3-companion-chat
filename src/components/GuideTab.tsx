@@ -245,6 +245,7 @@ function Figure({
   note,
   lang,
   updatedAt,
+  natural,
   children,
 }: {
   imagePath: string | null | undefined;
@@ -256,6 +257,7 @@ function Figure({
   note?: string;
   lang: Lang;
   updatedAt?: string | null;
+  natural?: boolean;
   children?: React.ReactNode;
 }) {
   const aspectClass = "aspect-[16/10]";
@@ -267,9 +269,17 @@ function Figure({
       </div>
     );
   }
+  // `natural` = full-bleed hero: drop the fixed 16:10 box and render the image at
+  // its own aspect ratio, full width — no letterbox bars, no crop. Do NOT pass
+  // `natural` for panels with positioned callout pins (anatomy): their pins are
+  // calibrated to the fixed 16:10 box.
   return (
-    <div className={`relative w-full ${aspectClass} rounded-lg overflow-hidden bg-muted/30 border border-border`}>
-      <img src={withVer(componentMediaUrl(imagePath), updatedAt)} alt={cap} className="w-full h-full object-contain" />
+    <div className={`relative w-full ${natural ? "" : aspectClass} rounded-lg overflow-hidden bg-muted/30 border border-border`}>
+      <img
+        src={withVer(componentMediaUrl(imagePath), updatedAt)}
+        alt={cap}
+        className={natural ? "block w-full h-auto" : "w-full h-full object-contain"}
+      />
       {children}
     </div>
   );
