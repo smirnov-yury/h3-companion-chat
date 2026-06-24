@@ -16,6 +16,8 @@ import {
   Smartphone,
   Wand2,
   RefreshCw,
+  GraduationCap,
+  ChevronRight,
   type LucideIcon,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -37,19 +39,21 @@ interface FeatureRow {
   icon: LucideIcon;
   en: string;
   ru: string;
+  slug: string;
 }
 
 const features: FeatureRow[] = [
-  { icon: BookOpen, en: "Rules", ru: "Правила" },
-  { icon: Map, en: "Scenarios", ru: "Сценарии" },
-  { icon: Layers, en: "Map Elements", ru: "Элементы карты" },
-  { icon: Zap, en: "Global Events", ru: "Глобальные события" },
-  { icon: Package, en: "Decks", ru: "Колоды" },
-  { icon: Shield, en: "Units", ru: "Юниты" },
-  { icon: Star, en: "Heroes", ru: "Герои" },
-  { icon: Building2, en: "Towns", ru: "Города" },
-  { icon: Bot, en: "AI Game Master", ru: "ИИ Мастер игры" },
-  { icon: Wand2, en: "Game Setup", ru: "Подготовка партии" },
+  { icon: GraduationCap, en: "How to Play", ru: "Как играть", slug: "how-to-play" },
+  { icon: BookOpen, en: "Rules", ru: "Правила", slug: "rules" },
+  { icon: Map, en: "Scenarios", ru: "Сценарии", slug: "scenarios" },
+  { icon: Layers, en: "Map Elements", ru: "Элементы карты", slug: "map-elements" },
+  { icon: Zap, en: "Global Events", ru: "Глобальные события", slug: "events" },
+  { icon: Package, en: "Decks", ru: "Колоды", slug: "decks" },
+  { icon: Shield, en: "Units", ru: "Юниты", slug: "units" },
+  { icon: Star, en: "Heroes", ru: "Герои", slug: "heroes" },
+  { icon: Building2, en: "Towns", ru: "Города", slug: "towns" },
+  { icon: Bot, en: "AI Game Master", ru: "ИИ Мастер игры", slug: "ai" },
+  { icon: Wand2, en: "Game Setup", ru: "Подготовка партии", slug: "game-setup" },
 ];
 
 export default function AboutPage() {
@@ -120,18 +124,28 @@ export default function AboutPage() {
             </p>
           </section>
 
-          {/* 2. Features list */}
+          {/* 2. Section launchpad */}
           <section>
             <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {features.map(({ icon: Icon, en, ru }) => (
-                <li
-                  key={en}
-                  className="flex items-center gap-3 px-3 py-2 rounded-md border border-border bg-card"
-                >
-                  <Icon className="w-5 h-5 shrink-0 text-primary" />
-                  <span className="text-sm font-medium">{isRu ? ru : en}</span>
-                </li>
-              ))}
+              {features.map(({ icon: Icon, en, ru, slug }, i) => {
+                const isFirst = i === 0;
+                return (
+                  <li key={slug} className={isFirst ? "sm:col-span-2" : ""}>
+                    <Link
+                      to={`/${slug}`}
+                      className={`group flex items-center gap-3 px-3 py-2 rounded-md border transition-colors ${
+                        isFirst
+                          ? "border-primary/50 bg-primary/5 hover:bg-primary/10"
+                          : "border-border bg-card hover:border-primary/60 hover:bg-muted"
+                      }`}
+                    >
+                      <Icon className="w-5 h-5 shrink-0 text-primary" />
+                      <span className="text-sm font-medium">{isRu ? ru : en}</span>
+                      <ChevronRight className="w-4 h-4 ml-auto shrink-0 text-muted-foreground transition-colors group-hover:text-primary" />
+                    </Link>
+                  </li>
+                );
+              })}
             </ul>
           </section>
 
