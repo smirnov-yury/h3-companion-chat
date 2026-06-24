@@ -345,6 +345,7 @@ function StandardPanel({
       <Figure
         imagePath={content.image_path}
         aspect="board"
+        natural
         cap={cap}
         page={content.page}
         src={content.src}
